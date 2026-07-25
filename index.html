@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="assets/logo-icon.png" />
-<title>澄果團隊｜美術館・農十六・瑞豐巨蛋・中都重劃區，商耕房仲第一首選</title>
+<title>澄果團隊｜美術館・農十六・瑞豐巨蛋・中都，你的第一個家</title>
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -222,7 +222,7 @@ function AreasSection() {
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         {(data ? data.areas : []).map(a => (
           <div key={a.code} className="bg-white rounded-2xl overflow-hidden border border-ink/5 hover:border-orange/40 transition">
-            <img src={AREA_IMG[a.code]} alt={a.name} className="w-full aspect-[4/3] object-cover" />
+            <img src={AREA_IMG[a.code]} alt={a.name} className="w-full aspect-[3/2] object-cover" />
             <div className="p-6">
               <span className="font-mono text-xs text-sage">CG·{a.code}</span>
               <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
@@ -265,7 +265,7 @@ function AboutSection() {
     <section id="about" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 items-start">
       <div className="md:col-span-1">
         <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊 門市"
-          className="w-full aspect-square object-cover rounded-3xl" />
+          className="w-full aspect-[4/5] object-cover rounded-3xl" />
       </div>
       <div className="md:col-span-2">
         <Eyebrow code="CG·02">關於澄果團隊</Eyebrow>
