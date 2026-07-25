@@ -1,38 +1,31 @@
 {
-  "updatedAt": "2026-07-25T04:43:52.252Z",
-  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）",
+  "_說明": "路名關鍵字依實際生活圈範圍查證更新（2026/07），符合任一關鍵字即算在該生活圈內。",
   "areas": [
     {
       "code": "01",
       "name": "美術館特區",
-      "avgPricePerPing": 40.4,
-      "sampleSize": 10,
-      "lowSample": false,
-      "trendPct": 10.7
+      "district": "鼓山區",
+      "keywords": ["美術館", "青海", "裕誠", "馬卡道"]
     },
     {
       "code": "02",
       "name": "農十六特區",
-      "avgPricePerPing": 23.3,
-      "sampleSize": 3,
-      "lowSample": true,
-      "trendPct": 3.1
+      "district": "鼓山區",
+      "keywords": ["明誠三路", "中華一路", "大順一路", "博愛二路"]
     },
     {
       "code": "03",
       "name": "瑞豐・巨蛋",
-      "avgPricePerPing": 28.5,
-      "sampleSize": 2,
-      "lowSample": true,
-      "trendPct": -15.7
+      "district": "左營區",
+      "keywords": ["裕誠", "南屏", "博愛二路", "博愛三路", "新莊一路"]
     },
     {
       "code": "04",
       "name": "中都重劃區",
-      "avgPricePerPing": null,
-      "sampleSize": 0,
-      "lowSample": true,
-      "trendPct": null
+      "district": "三民區",
+      "keywords": ["同盟三路", "中華二路", "中華橫路", "美都路", "九如"]
     }
-  ]
+  ],
+  "propertyTypeFilter": "住宅大樓",
+  "monthsForTrend": 6
 }
