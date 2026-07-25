@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>澄果團隊｜美術館・農十六・瑞豐巨蛋・中都，你的第一個家</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream:   '#FBF8F3',
+          peach:   '#FFE8D1',
+          orange:  '#FD7305',
+          orangeDark: '#D65F00',
+          ink:     '#3A2E27',
+          sage:    '#7C8B6F',
+          sageLight: '#E7EBDF',
+        },
+        fontFamily: {
+          heading: ['"Zen Maru Gothic"', 'sans-serif'],
+          body: ['"Noto Sans TC"', 'sans-serif'],
+          mono: ['"IBM Plex Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<!-- React -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  body { background: #FBF8F3; }
+  .citrus-divider { display: flex; justify-content: center; margin: 0; }
+  ::selection { background: #FFE8D1; color: #3A2E27; }
+</style>
+</head>
+<body class="font-body text-ink">
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+/* ---------- 簽名視覺：柑橘切片分隔線 ---------- */
+function CitrusDivider() {
+  return (
+    <div className="citrus-divider py-10">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+        <circle cx="36" cy="36" r="34" stroke="#FD7305" strokeWidth="2" fill="#FFE8D1" />
+        <circle cx="36" cy="36" r="26" stroke="#FD7305" strokeWidth="1.5" fill="none" />
+        {[0,45,90,135].map((deg,i) => (
+          <line key={i} x1="36" y1="36"
+            x2={36 + 26*Math.cos(deg*Math.PI/180)}
+            y2={36 + 26*Math.sin(deg*Math.PI/180)}
+            stroke="#FD7305" strokeWidth="1.5" />
+        ))}
+        <circle cx="36" cy="36" r="4" fill="#FD7305" />
+      </svg>
+    </div>
+  );
+}
+
+/* ---------- Eyebrow 標籤 ---------- */
+function Eyebrow({ code, children }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="font-mono text-xs tracking-widest text-orangeDark bg-peach px-2 py-1 rounded-full">{code}</span>
+      <span className="font-mono text-xs tracking-widest text-sage uppercase">{children}</span>
+    </div>
+  );
+}
+
+function CTAButton({ children, primary = true, href = "#" }) {
+  return (
+    <a href={href}
+      className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-heading font-bold text-sm transition
+        ${primary
+          ? "bg-orange text-white hover:bg-orangeDark shadow-lg shadow-orange/20"
+          : "bg-white text-ink border border-ink/10 hover:border-orange"}`}>
+      {children}
+    </a>
+  );
+}
+
+/* ---------- Header ---------- */
+function Header() {
+  const [open, setOpen] = useState(false);
+  const nav = [
+    ["#areas", "四大生活圈"],
+    ["#about", "關於澄果"],
+    ["#services", "首購・換屋"],
+    ["#knowledge", "知識文章"],
+    ["#tools", "試算工具"],
+  ];
+  return (
+    <header className="sticky top-0 z-50 bg-cream/90 backdrop-blur border-b border-ink/5">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="#" className="flex items-center gap-2 font-heading font-900 text-lg text-orangeDark">
+          <span className="w-8 h-8 rounded-full bg-orange flex items-center justify-center text-white text-sm">澄</span>
+          澄果團隊
+        </a>
+        <nav className="hidden md:flex items-center gap-6 font-medium text-sm text-ink/80">
+          {nav.map(([href, label]) => (
+            <a key={href} href={href} className="hover:text-orangeDark transition">{label}</a>
+          ))}
+        </nav>
+        <div className="hidden md:block">
+          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+        </div>
+        <button className="md:hidden text-2xl" onClick={() => setOpen(!open)}>☰</button>
+      </div>
+      {open && (
+        <div className="md:hidden px-6 pb-4 flex flex-col gap-3 bg-cream border-t border-ink/5">
+          {nav.map(([href, label]) => (
+            <a key={href} href={href} className="py-1" onClick={() => setOpen(false)}>{label}</a>
+          ))}
+          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+        </div>
+      )}
+    </header>
+  );
+}
+
+/* ---------- Hero ---------- */
+function Hero() {
+  return (
+    <section className="max-w-6xl mx-auto px-6 pt-16 pb-8 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <Eyebrow code="CG·HOME">在地生活圈房仲</Eyebrow>
+        <h1 className="font-heading font-900 text-4xl md:text-5xl leading-tight text-ink">
+          美術館・農十六<br/>瑞豐巨蛋・中都<br/>
+          <span className="text-orange">你的第一個家，</span>我們慢慢找
+        </h1>
+        <p className="mt-6 text-base md:text-lg text-ink/70 leading-relaxed">
+          澄果團隊專注首購與換屋家庭，用清楚的行情數據和貼心陪伴，
+          陪你在熟悉的生活圈裡，找到住得久、住得安心的家。
+        </p>
+        <div className="mt-8 flex flex-wrap gap-4">
+          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+          <CTAButton primary={false} href="#areas">看四大生活圈行情</CTAButton>
+        </div>
+        <p className="mt-6 text-xs text-ink/40 font-mono">
+          ※ 團隊資訊、聯絡方式為預留位，待品牌素材提供後更新
+        </p>
+      </div>
+      <div className="relative">
+        <div className="aspect-[4/3] rounded-3xl bg-peach flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 200 150" className="w-2/3 opacity-90">
+            <circle cx="100" cy="75" r="60" fill="#FD7305" opacity="0.15" />
+            <circle cx="100" cy="75" r="45" fill="#FD7305" opacity="0.25" />
+            <circle cx="100" cy="75" r="30" fill="#FD7305" opacity="0.4" />
+            <circle cx="100" cy="75" r="14" fill="#FD7305" />
+          </svg>
+        </div>
+        <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg px-5 py-4 font-mono text-xs">
+          <div className="text-sage">中都重劃區・大樓均價</div>
+          <div className="text-2xl text-ink font-bold">24.8 <span className="text-sm font-normal">萬/坪</span></div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 四大生活圈：說明文字（固定），行情數字（動態抓取） ---------- */
+const AREA_DESC = {
+  "01": "公園綠帶、學區優良，家庭客首選生活圈",
+  "02": "重劃區新成屋多，機能完整、停車方便",
+  "03": "商圈生活機能強，交通樞紐、通勤族愛",
+  "04": "愛河景觀、濕地公園，新興換屋熱區",
+};
+
+function AreasSection() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+
+  React.useEffect(() => {
+    fetch("./data/market-data.json")
+      .then(res => res.json())
+      .then(setData)
+      .catch(() => setError(true));
+  }, []);
+
+  return (
+    <section id="areas" className="max-w-6xl mx-auto px-6 py-10">
+      <Eyebrow code="CG·01">四大主力生活圈</Eyebrow>
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">澄果團隊主攻的家，都在這四區</h2>
+      <p className="text-ink/60 mb-2 text-sm">
+        近 6 個月大樓成交每坪均價與走勢
+      </p>
+      <p className="text-ink/40 mb-8 text-xs font-mono">
+        {error && "資料讀取失敗，顯示為暫時性錯誤"}
+        {!error && data && (data.updatedAt ? `資料更新於 ${new Date(data.updatedAt).toLocaleString("zh-TW")}` : "尚未執行首次自動抓取，以下為示意資料")}
+        {!error && !data && "讀取中…"}
+      </p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {(data ? data.areas : []).map(a => (
+          <div key={a.code} className="bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
+            <span className="font-mono text-xs text-sage">CG·{a.code}</span>
+            <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
+            <p className="text-sm text-ink/60 leading-relaxed mb-4">{AREA_DESC[a.code]}</p>
+            <div className="flex items-end justify-between font-mono">
+              <span className="text-2xl font-bold text-orangeDark">
+                {a.avgPricePerPing ?? "—"}<span className="text-xs text-ink/50 font-normal">萬/坪</span>
+              </span>
+              <span className="text-sm text-sage">
+                {a.trendPct == null ? "—" : `${a.trendPct > 0 ? "▲" : "▼"} ${Math.abs(a.trendPct)}%`}
+              </span>
+            </div>
+            {a.lowSample && (
+              <p className="text-[11px] text-orangeDark/70 mt-2">樣本數偏少，僅供參考</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 關於澄果 ---------- */
+function AboutSection() {
+  return (
+    <section id="about" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 items-center">
+      <div className="md:col-span-1">
+        <div className="aspect-square rounded-3xl bg-sageLight flex items-center justify-center text-sage font-mono text-sm">
+          團隊照片預留位
+        </div>
+      </div>
+      <div className="md:col-span-2">
+        <Eyebrow code="CG·02">關於澄果團隊</Eyebrow>
+        <h2 className="font-heading font-900 text-2xl md:text-3xl mb-4">陪首購族與換屋家庭，一起把日子過安穩</h2>
+        <ul className="space-y-2 text-ink/70 text-sm leading-relaxed">
+          <li>・ 團隊經歷、成立年份 — 待補</li>
+          <li>・ 專精首購貸款規劃、換屋稅務試算</li>
+          <li>・ 深耕美術館・農十六・瑞豐・中都生活圈</li>
+          <li>・ 相關證照與得獎紀錄 — 待補</li>
+        </ul>
+        <div className="mt-6">
+          <CTAButton href="#contact">加 LINE 聊聊你的需求</CTAButton>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 首購／換屋服務 ---------- */
+function ServicesSection() {
+  const cards = [
+    { title: "首購友善", desc: "從看屋、議價到貸款試算，第一次買房不再手忙腳亂。", cta: "了解首購流程 →" },
+    { title: "換屋規劃", desc: "舊屋賣價評估、稅務試算，換屋時機與資金一次算清楚。", cta: "詢問換屋評估 →" },
+  ];
+  return (
+    <section id="services" className="max-w-6xl mx-auto px-6 py-10">
+      <Eyebrow code="CG·03">澄果能幫你</Eyebrow>
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-8">首購也好，換屋也好</h2>
+      <div className="grid md:grid-cols-2 gap-6">
+        {cards.map((c,i) => (
+          <div key={i} className="bg-orange/5 rounded-3xl p-8 border border-orange/10">
+            <h3 className="font-heading font-bold text-xl mb-3">{c.title}</h3>
+            <p className="text-ink/70 text-sm leading-relaxed mb-6">{c.desc}</p>
+            <a href="#contact" className="font-mono text-sm text-orangeDark hover:underline">{c.cta}</a>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 知識文章（首購/換屋導向） ---------- */
+const ARTICLES = [
+  { tag: "首購知識", title: "青安3.0是什麼？首購族最該搞懂的貸款新制", desc: "8/1上路，利率、額度、資格門檻一次看懂。" },
+  { tag: "換屋稅務", title: "換屋要繳哪些稅？房地合一稅與重購退稅整理", desc: "賣舊屋前，先把稅務時程算進換屋計畫。" },
+  { tag: "生活圈情報", title: "農十六重劃區生活機能大盤點", desc: "從學區、公園到採買動線，帶你認識這個生活圈。" },
+];
+
+function ArticlesSection() {
+  return (
+    <section id="knowledge" className="max-w-6xl mx-auto px-6 py-10">
+      <Eyebrow code="CG·04">知識文章</Eyebrow>
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-8">買房前，先把該懂的事搞懂</h2>
+      <div className="grid md:grid-cols-3 gap-6">
+        {ARTICLES.map((a,i) => (
+          <a key={i} href="#" className="block bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
+            <span className="font-mono text-xs text-sage">{a.tag}</span>
+            <h3 className="font-heading font-bold mt-2 mb-2 leading-snug">{a.title}</h3>
+            <p className="text-sm text-ink/60 leading-relaxed">{a.desc}</p>
+            <span className="inline-block mt-4 text-xs font-mono text-orangeDark">→ 閱讀全文（待補內容）</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 試算工具 ---------- */
+const TOOLS = [
+  { code: "T-01", title: "學區地圖查詢", desc: "輸入門牌，馬上查讀哪間國中小。" },
+  { code: "T-02", title: "房貸試算", desc: "月薪多少買得起，每月要繳多少一次算清楚。" },
+  { code: "T-03", title: "青安3.0試算", desc: "符不符合資格，前3年月付多少先算給你看。" },
+  { code: "T-04", title: "房地合一稅試算", desc: "換屋賣舊屋前，先算清楚要繳多少稅。" },
+];
+
+function ToolsSection() {
+  return (
+    <section id="tools" className="max-w-6xl mx-auto px-6 py-10">
+      <Eyebrow code="CG·05">免費工具</Eyebrow>
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">先算清楚，再做決定</h2>
+      <p className="text-ink/60 text-sm mb-8">首購／換屋族群最常用的 4 個試算工具（其餘工具規劃中）</p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {TOOLS.map(t => (
+          <div key={t.code} className="bg-peach/60 rounded-2xl p-6 hover:bg-peach transition">
+            <span className="font-mono text-xs text-orangeDark">{t.code}</span>
+            <h3 className="font-heading font-bold mt-2 mb-2">{t.title}</h3>
+            <p className="text-sm text-ink/60 leading-relaxed mb-4">{t.desc}</p>
+            <span className="text-xs font-mono text-orangeDark">開始試算 →</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 聯絡／Footer ---------- */
+function ContactFooter() {
+  return (
+    <footer id="contact" className="bg-ink text-cream/80 mt-16">
+      <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-10">
+        <div>
+          <h2 className="font-heading font-900 text-2xl text-white mb-3">聊聊你的第一個家</h2>
+          <p className="text-sm leading-relaxed mb-6">
+            美術館・農十六・瑞豐巨蛋・中都，澄果團隊在地陪你找家、算清楚每一筆費用。
+          </p>
+          <CTAButton href="#">LINE 免費諮詢（待補連結）</CTAButton>
+        </div>
+        <div className="text-sm font-mono space-y-2 md:text-right">
+          <div>澄果團隊（品牌全名待補）</div>
+          <div>地址：待補</div>
+          <div>電話：待補</div>
+          <div>經紀人證號：待補</div>
+        </div>
+      </div>
+      <div className="text-center text-xs py-4 border-t border-white/10 font-mono">
+        © 澄果團隊 All rights reserved.
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Header />
+      <Hero />
+      <CitrusDivider />
+      <AreasSection />
+      <CitrusDivider />
+      <AboutSection />
+      <ServicesSection />
+      <CitrusDivider />
+      <ArticlesSection />
+      <ToolsSection />
+      <ContactFooter />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
