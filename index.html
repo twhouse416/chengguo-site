@@ -489,7 +489,7 @@ function ArticlesSection() {
 /* ================= 試算工具 ================= */
 const TOOLS = [
   { title: "學區查詢", desc: "選行政區與里別，查出對應的國小學區。", href: "tools/school-zone/index.html" },
-  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。", href: null },
+  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。", href: "tools/mortgage/index.html" },
   { title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。", href: null },
   { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: null },
 ];
@@ -509,7 +509,7 @@ function ToolsSection() {
               <h3 className="text-[17px] font-bold mb-2 tracking-tight">{t.title}</h3>
               <p className="text-[15px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
               <span className={`font-mono text-[12px] ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
-                {t.href ? "開始查詢 →" : "即將上線"}
+                {t.href ? "開始使用 →" : "即將上線"}
               </span>
             </>
           );
