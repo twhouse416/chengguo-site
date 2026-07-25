@@ -152,6 +152,14 @@ function Header() {
 
 /* ---------- Hero ---------- */
 function Hero() {
+  const [top, setTop] = useState(null);
+  React.useEffect(() => {
+    fetch("./data/market-data.json")
+      .then(res => res.json())
+      .then(d => setTop((d.areas || []).find(a => a.code === "01")))
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="max-w-6xl mx-auto px-6 pt-16 pb-8 grid md:grid-cols-2 gap-10 items-center">
       <div>
@@ -175,7 +183,12 @@ function Hero() {
         </div>
         <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg px-5 py-4 font-mono text-xs">
           <div className="text-sage">美術館特區・大樓均價</div>
-          <div className="text-2xl text-ink font-bold">40.4 <span className="text-sm font-normal">萬/坪</span></div>
+          <div className="text-2xl text-ink font-bold">
+            {top?.avgPricePerPing ?? "—"} <span className="text-sm font-normal">萬/坪</span>
+          </div>
+          {top?.bandLow && (
+            <div className="text-[11px] text-ink/45 mt-0.5">成交帶 {top.bandLow}–{top.bandHigh} 萬</div>
+          )}
         </div>
       </div>
     </section>
@@ -212,12 +225,15 @@ function AreasSection() {
       <Eyebrow code="CG·01">四大主力生活圈</Eyebrow>
       <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">澄果團隊主攻的家，都在這四區</h2>
       <p className="text-ink/60 mb-2 text-sm">
-        近 6 個月大樓成交每坪均價與走勢
+        近 6 個月大樓實際成交的每坪均價與常見價格帶
       </p>
-      <p className="text-ink/40 mb-8 text-xs font-mono">
-        {error && "資料讀取失敗，顯示為暫時性錯誤"}
-        {!error && data && (data.updatedAt ? `資料更新於 ${new Date(data.updatedAt).toLocaleString("zh-TW")}` : "尚未執行首次自動抓取，以下為示意資料")}
-        {!error && !data && "讀取中…"}
+      <p className="text-ink/45 mb-8 text-xs leading-relaxed">
+        數字僅供抓範圍參考，實際行情會因屋齡、樓層、格局與座向而有落差。
+        <span className="block font-mono text-ink/35 mt-1">
+          {error && "資料讀取失敗，顯示為暫時性錯誤"}
+          {!error && data && (data.updatedAt ? `資料更新於 ${new Date(data.updatedAt).toLocaleDateString("zh-TW")}・來源：內政部實價登錄` : "尚未執行首次自動抓取，以下為示意資料")}
+          {!error && !data && "讀取中…"}
+        </span>
       </p>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         {(data ? data.areas : []).map(a => (
@@ -227,13 +243,15 @@ function AreasSection() {
               <span className="font-mono text-xs text-sage">CG·{a.code}</span>
               <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
               <p className="text-sm text-ink/60 leading-relaxed mb-4">{AREA_DESC[a.code]}</p>
-              <div className="flex items-end justify-between font-mono">
+              <div className="font-mono">
                 <span className="text-2xl font-bold text-orangeDark">
                   {a.avgPricePerPing ?? "—"}<span className="text-xs text-ink/50 font-normal">萬/坪</span>
                 </span>
-                <span className="text-sm text-sage">
-                  {a.trendPct == null ? "—" : `${a.trendPct > 0 ? "▲" : "▼"} ${Math.abs(a.trendPct)}%`}
-                </span>
+                <div className="text-xs text-ink/45 mt-1">
+                  {a.bandLow && a.bandHigh
+                    ? `近半年成交帶 ${a.bandLow}–${a.bandHigh} 萬`
+                    : "成交資料不足"}
+                </div>
               </div>
               {a.lowSample && (
                 <p className="text-[11px] text-orangeDark/70 mt-2">樣本數偏少，僅供參考</p>
