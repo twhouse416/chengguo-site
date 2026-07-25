@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="assets/logo-icon.png" />
 <title>澄果團隊｜美術館・農十六・瑞豐巨蛋・中都，你的第一個家</title>
 
 <!-- Fonts -->
@@ -93,6 +94,18 @@ function CTAButton({ children, primary = true, href = "#" }) {
   );
 }
 
+/* ---------- 品牌資料（統一在這裡維護） ---------- */
+const BRAND = {
+  teamName: "台灣房屋 澄果團隊",
+  legalName: "澄果資產有限公司",
+  address: "804 高雄市鼓山區青海路416號",
+  phone: "07-9766977",
+  phoneHref: "tel:0797669977", // 07-9766977
+  officialSite: "https://store.twhg.com.tw/TE80",
+  facebook: "https://www.facebook.com/TWhouseo8",
+  instagram: "https://www.instagram.com/twhouse_o8",
+};
+
 /* ---------- Header ---------- */
 function Header() {
   const [open, setOpen] = useState(false);
@@ -106,17 +119,21 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 bg-cream/90 backdrop-blur border-b border-ink/5">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 font-heading font-900 text-lg text-orangeDark">
-          <span className="w-8 h-8 rounded-full bg-orange flex items-center justify-center text-white text-sm">澄</span>
-          澄果團隊
+        <a href="#" className="flex items-center gap-2 font-heading font-900 text-base md:text-lg text-orangeDark">
+          <img src="assets/logo-icon.png" alt="澄果團隊 Logo" className="w-9 h-9 rounded-full object-cover shrink-0" />
+          <span className="leading-tight">
+            <span className="block text-xs font-normal text-ink/50">台灣房屋</span>
+            澄果團隊
+          </span>
         </a>
         <nav className="hidden md:flex items-center gap-6 font-medium text-sm text-ink/80">
           {nav.map(([href, label]) => (
             <a key={href} href={href} className="hover:text-orangeDark transition">{label}</a>
           ))}
         </nav>
-        <div className="hidden md:block">
-          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+        <div className="hidden md:flex items-center gap-4">
+          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink/70 hover:text-orangeDark">{BRAND.phone}</a>
+          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
         </div>
         <button className="md:hidden text-2xl" onClick={() => setOpen(!open)}>☰</button>
       </div>
@@ -125,7 +142,8 @@ function Header() {
           {nav.map(([href, label]) => (
             <a key={href} href={href} className="py-1" onClick={() => setOpen(false)}>{label}</a>
           ))}
-          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink/70">{BRAND.phone}</a>
+          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
         </div>
       )}
     </header>
@@ -147,37 +165,35 @@ function Hero() {
           陪你在熟悉的生活圈裡，找到住得久、住得安心的家。
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
-          <CTAButton href="#contact">LINE 免費諮詢</CTAButton>
+          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
           <CTAButton primary={false} href="#areas">看四大生活圈行情</CTAButton>
         </div>
-        <p className="mt-6 text-xs text-ink/40 font-mono">
-          ※ 團隊資訊、聯絡方式為預留位，待品牌素材提供後更新
-        </p>
       </div>
       <div className="relative">
-        <div className="aspect-[4/3] rounded-3xl bg-peach flex items-center justify-center overflow-hidden">
-          <svg viewBox="0 0 200 150" className="w-2/3 opacity-90">
-            <circle cx="100" cy="75" r="60" fill="#FD7305" opacity="0.15" />
-            <circle cx="100" cy="75" r="45" fill="#FD7305" opacity="0.25" />
-            <circle cx="100" cy="75" r="30" fill="#FD7305" opacity="0.4" />
-            <circle cx="100" cy="75" r="14" fill="#FD7305" />
-          </svg>
+        <div className="aspect-[4/3] rounded-3xl overflow-hidden">
+          <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍" className="w-full h-full object-cover" />
         </div>
         <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg px-5 py-4 font-mono text-xs">
-          <div className="text-sage">中都重劃區・大樓均價</div>
-          <div className="text-2xl text-ink font-bold">24.8 <span className="text-sm font-normal">萬/坪</span></div>
+          <div className="text-sage">美術館特區・大樓均價</div>
+          <div className="text-2xl text-ink font-bold">40.4 <span className="text-sm font-normal">萬/坪</span></div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ---------- 四大生活圈：說明文字（固定），行情數字（動態抓取） ---------- */
+/* ---------- 四大生活圈：說明文字、照片（固定），行情數字（動態抓取） ---------- */
 const AREA_DESC = {
   "01": "公園綠帶、學區優良，家庭客首選生活圈",
   "02": "重劃區新成屋多，機能完整、停車方便",
   "03": "商圈生活機能強，交通樞紐、通勤族愛",
   "04": "愛河景觀、濕地公園，新興換屋熱區",
+};
+const AREA_IMG = {
+  "01": "assets/area-01-artmuseum.jpg",
+  "02": "assets/area-02-nong16.jpg",
+  "03": "assets/area-03-ruifeng.jpg",
+  "04": "assets/area-04-zhongdu.jpg",
 };
 
 function AreasSection() {
@@ -205,21 +221,24 @@ function AreasSection() {
       </p>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         {(data ? data.areas : []).map(a => (
-          <div key={a.code} className="bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
-            <span className="font-mono text-xs text-sage">CG·{a.code}</span>
-            <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
-            <p className="text-sm text-ink/60 leading-relaxed mb-4">{AREA_DESC[a.code]}</p>
-            <div className="flex items-end justify-between font-mono">
-              <span className="text-2xl font-bold text-orangeDark">
-                {a.avgPricePerPing ?? "—"}<span className="text-xs text-ink/50 font-normal">萬/坪</span>
-              </span>
-              <span className="text-sm text-sage">
-                {a.trendPct == null ? "—" : `${a.trendPct > 0 ? "▲" : "▼"} ${Math.abs(a.trendPct)}%`}
-              </span>
+          <div key={a.code} className="bg-white rounded-2xl overflow-hidden border border-ink/5 hover:border-orange/40 transition">
+            <img src={AREA_IMG[a.code]} alt={a.name} className="w-full aspect-[4/3] object-cover" />
+            <div className="p-6">
+              <span className="font-mono text-xs text-sage">CG·{a.code}</span>
+              <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
+              <p className="text-sm text-ink/60 leading-relaxed mb-4">{AREA_DESC[a.code]}</p>
+              <div className="flex items-end justify-between font-mono">
+                <span className="text-2xl font-bold text-orangeDark">
+                  {a.avgPricePerPing ?? "—"}<span className="text-xs text-ink/50 font-normal">萬/坪</span>
+                </span>
+                <span className="text-sm text-sage">
+                  {a.trendPct == null ? "—" : `${a.trendPct > 0 ? "▲" : "▼"} ${Math.abs(a.trendPct)}%`}
+                </span>
+              </div>
+              {a.lowSample && (
+                <p className="text-[11px] text-orangeDark/70 mt-2">樣本數偏少，僅供參考</p>
+              )}
             </div>
-            {a.lowSample && (
-              <p className="text-[11px] text-orangeDark/70 mt-2">樣本數偏少，僅供參考</p>
-            )}
           </div>
         ))}
       </div>
@@ -227,26 +246,48 @@ function AreasSection() {
   );
 }
 
+/* ---------- 得獎紀錄清單 ---------- */
+const AWARDS = [
+  "104年度評鑑優質", "104年度第2季團隊績效第3名",
+  "106年度評鑑優質",
+  "107年度評鑑優質", "107年度第1季團隊績效第2名", "107年度上半季戰力精進第1名",
+  "108年度評鑑優質", "108年度第1季團隊績效第3名",
+  "109年度評鑑優質",
+  "110年度評鑑優質", "820全國房仲日捐血競賽亞軍",
+  "111年度評鑑優質", "111第3季王者之王獎第3名",
+  "112年度評鑑優質",
+  "113年度評鑑優質",
+];
+
 /* ---------- 關於澄果 ---------- */
 function AboutSection() {
   return (
-    <section id="about" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 items-center">
+    <section id="about" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 items-start">
       <div className="md:col-span-1">
-        <div className="aspect-square rounded-3xl bg-sageLight flex items-center justify-center text-sage font-mono text-sm">
-          團隊照片預留位
-        </div>
+        <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊 門市"
+          className="w-full aspect-square object-cover rounded-3xl" />
       </div>
       <div className="md:col-span-2">
         <Eyebrow code="CG·02">關於澄果團隊</Eyebrow>
         <h2 className="font-heading font-900 text-2xl md:text-3xl mb-4">陪首購族與換屋家庭，一起把日子過安穩</h2>
         <ul className="space-y-2 text-ink/70 text-sm leading-relaxed">
-          <li>・ 團隊經歷、成立年份 — 待補</li>
-          <li>・ 專精首購貸款規劃、換屋稅務試算</li>
-          <li>・ 深耕美術館・農十六・瑞豐・中都生活圈</li>
-          <li>・ 相關證照與得獎紀錄 — 待補</li>
+          <li>・ 長期深耕高雄鼓山美術館特區、農十六特區、瑞豐巨蛋生活圈與三民區中都重劃區，10 年以上在地經驗</li>
+          <li>・ 服務件數超過 150 件</li>
+          <li>・ 提供區域房價分析、市場趨勢、熱門社區介紹、首購族購屋建議及換屋規劃服務</li>
         </ul>
+
+        <details className="mt-5 group">
+          <summary className="cursor-pointer text-sm font-mono text-orangeDark inline-flex items-center gap-1 select-none">
+            歷年獲獎紀錄（{AWARDS.length} 項）
+            <span className="transition group-open:rotate-180">▾</span>
+          </summary>
+          <ul className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-ink/60 font-mono">
+            {AWARDS.map((a, i) => <li key={i}>・ {a}</li>)}
+          </ul>
+        </details>
+
         <div className="mt-6">
-          <CTAButton href="#contact">加 LINE 聊聊你的需求</CTAButton>
+          <CTAButton href={BRAND.officialSite}>線上諮詢澄果團隊</CTAButton>
         </div>
       </div>
     </section>
@@ -340,17 +381,24 @@ function ContactFooter() {
           <p className="text-sm leading-relaxed mb-6">
             美術館・農十六・瑞豐巨蛋・中都，澄果團隊在地陪你找家、算清楚每一筆費用。
           </p>
-          <CTAButton href="#">LINE 免費諮詢（待補連結）</CTAButton>
+          <div className="flex flex-wrap gap-3">
+            <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
+            <CTAButton primary={false} href={BRAND.phoneHref}>致電 {BRAND.phone}</CTAButton>
+          </div>
+          <div className="flex gap-4 mt-6 text-sm">
+            <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange">Facebook</a>
+            <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-orange">Instagram</a>
+          </div>
         </div>
         <div className="text-sm font-mono space-y-2 md:text-right">
-          <div>澄果團隊（品牌全名待補）</div>
-          <div>地址：待補</div>
-          <div>電話：待補</div>
-          <div>經紀人證號：待補</div>
+          <div>{BRAND.teamName}</div>
+          <div className="text-cream/50">{BRAND.legalName}</div>
+          <div>地址：{BRAND.address}</div>
+          <div>電話：<a href={BRAND.phoneHref} className="hover:text-orange">{BRAND.phone}</a></div>
         </div>
       </div>
       <div className="text-center text-xs py-4 border-t border-white/10 font-mono">
-        © 澄果團隊 All rights reserved.
+        © {BRAND.teamName} All rights reserved.
       </div>
     </footer>
   );
