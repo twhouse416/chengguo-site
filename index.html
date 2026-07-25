@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="assets/logo-icon.png" />
-<title>台灣房屋 澄果團隊｜美術館・農十六・瑞豐巨蛋・中都 在地房仲</title>
-<meta name="description" content="深耕高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上。用實價登錄數據，陪首購與換屋家庭做決定。" />
+<title>台灣房屋 澄果團隊｜美術館房地產顧問，為您解決家的大小事</title>
+<meta name="description" content="美術館房地產顧問。深耕高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上，用實價登錄數據陪首購與換屋家庭做決定。" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +18,8 @@
       extend: {
         colors: {
           ink:       '#16191D',
-          inkSoft:   '#565C66',
-          inkFaint:  '#8A9099',
+          inkSoft:   '#474D55',
+          inkFaint:  '#737A83',
           paper:     '#F4F4F2',
           surface:   '#FFFFFF',
           line:      '#DEDCD7',
@@ -81,16 +81,16 @@ const BRAND = {
 function SectionHead({ label, title, note }) {
   return (
     <div className="mb-10">
-      <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">{label}</div>
+      <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">{label}</div>
       <h2 className="display text-2xl md:text-[28px] text-ink">{title}</h2>
-      {note && <p className="mt-3 text-sm text-inkSoft leading-relaxed max-w-2xl">{note}</p>}
+      {note && <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-3xl">{note}</p>}
       <div className="mt-6 h-px bg-line" />
     </div>
   );
 }
 
 function Button({ children, href, variant = "solid", external = false }) {
-  const base = "inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-sm transition";
+  const base = "inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm transition";
   const styles = {
     solid: "bg-orange text-white hover:bg-orangeDeep",
     outline: "border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-white",
@@ -122,19 +122,19 @@ function Header() {
         <a href="#top" className="flex items-center gap-3 shrink-0">
           <img src="assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
           <span className="leading-tight">
-            <span className="block font-mono text-[10px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
-            <span className="block text-[15px] font-bold tracking-tight text-ink">澄果團隊</span>
+            <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+            <span className="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
           </span>
         </a>
 
-        <nav className="hidden lg:flex items-center gap-7 text-[13px] text-inkSoft">
+        <nav className="hidden lg:flex items-center gap-7 text-[15px] text-inkSoft">
           {nav.map(([href, label]) => (
             <a key={href} href={href} className="hover:text-ink transition">{label}</a>
           ))}
         </nav>
 
         <div className="hidden lg:flex items-center gap-5">
-          <a href={BRAND.phoneHref} className="font-mono text-[13px] text-ink hover:text-orangeDeep">{BRAND.phone}</a>
+          <a href={BRAND.phoneHref} className="font-mono text-[15px] text-ink hover:text-orangeDeep">{BRAND.phone}</a>
           <Button href={BRAND.officialSite} external>線上諮詢</Button>
         </div>
 
@@ -147,9 +147,9 @@ function Header() {
       {open && (
         <div className="lg:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
           {nav.map(([href, label]) => (
-            <a key={href} href={href} className="text-sm text-inkSoft" onClick={() => setOpen(false)}>{label}</a>
+            <a key={href} href={href} className="text-[16px] text-inkSoft py-1" onClick={() => setOpen(false)}>{label}</a>
           ))}
-          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink">{BRAND.phone}</a>
+          <a href={BRAND.phoneHref} className="font-mono text-[15px] text-ink">{BRAND.phone}</a>
           <Button href={BRAND.officialSite} external>線上諮詢</Button>
         </div>
       )}
@@ -177,14 +177,14 @@ function Hero({ market }) {
     <section id="top" className="border-b border-line">
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-16 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-6">
-          <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-5">
+          <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">
             高雄 · 鼓山 / 左營 / 三民
           </div>
           <h1 className="display text-[34px] md:text-[46px] text-ink">
-            用實際成交數字<br />
-            陪你決定第一個家
+            美術館房地產顧問<br />
+            為您解決家的大小事
           </h1>
-          <p className="mt-6 text-[15px] text-inkSoft leading-[1.9] max-w-lg">
+          <p className="mt-7 text-[17px] text-inkSoft leading-[2] max-w-xl">
             澄果團隊深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上。
             我們把內政部實價登錄整理成看得懂的價格帶，讓首購與換屋家庭在談價之前，先知道行情落在哪裡。
           </p>
@@ -199,12 +199,12 @@ function Hero({ market }) {
             <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍"
               className="w-full aspect-[3/2] object-cover rounded-sm" />
             <figcaption className="absolute bottom-0 left-0 bg-surface border-t border-r border-line px-5 py-4">
-              <div className="font-mono text-[11px] tracking-wider text-inkFaint">美術館特區・大樓</div>
+              <div className="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・大樓</div>
               <div className="font-mono text-[26px] font-semibold text-ink leading-none mt-1">
-                {top?.avgPricePerPing ?? "—"}<span className="text-xs font-normal text-inkSoft ml-1">萬/坪</span>
+                {top?.avgPricePerPing ?? "—"}<span className="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span>
               </div>
               {top?.bandLow && (
-                <div className="font-mono text-[11px] text-inkSoft mt-1.5">
+                <div className="font-mono text-[12px] text-inkSoft mt-1.5">
                   成交帶 {top.bandLow}–{top.bandHigh} 萬
                 </div>
               )}
@@ -227,7 +227,7 @@ const AREA_META = {
 /* 簽名元素：四區共用刻度的成交價格帶 */
 function PriceBand({ area, domain }) {
   if (!area.bandLow || !area.bandHigh || !domain) {
-    return <div className="h-9 flex items-center font-mono text-[11px] text-inkFaint">成交資料不足</div>;
+    return <div className="h-9 flex items-center font-mono text-[12px] text-inkFaint">成交資料不足</div>;
   }
   const span = domain.max - domain.min || 1;
   const left = ((area.bandLow - domain.min) / span) * 100;
@@ -242,7 +242,7 @@ function PriceBand({ area, domain }) {
         <div className="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm"
           style={{ left: `calc(${Math.min(Math.max(avgPos, 0), 100)}% - 1.5px)` }} />
       </div>
-      <div className="font-mono text-[11px] text-inkSoft mt-2">
+      <div className="font-mono text-[12px] text-inkSoft mt-2">
         成交帶 {area.bandLow}–{area.bandHigh} 萬
       </div>
     </div>
@@ -270,19 +270,19 @@ function AreasSection({ market, error }) {
           return (
             <article key={a.code}>
               <img src={meta.img} alt={a.name} className="w-full aspect-[3/2] object-cover rounded-sm mb-4" />
-              <div className="font-mono text-[11px] tracking-wider text-inkFaint">{meta.district}</div>
+              <div className="font-mono text-[12px] tracking-wider text-inkFaint">{meta.district}</div>
               <h3 className="text-lg font-bold mt-1 mb-2 tracking-tight">{a.name}</h3>
-              <p className="text-[13px] text-inkSoft leading-[1.85] mb-4 min-h-[72px]">{meta.desc}</p>
+              <p className="text-[15px] text-inkSoft leading-[1.85] mb-4 min-h-[72px]">{meta.desc}</p>
 
               <div className="font-mono text-[28px] font-semibold text-ink leading-none">
                 {a.avgPricePerPing ?? "—"}
-                <span className="text-xs font-normal text-inkSoft ml-1">萬/坪</span>
+                <span className="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span>
               </div>
 
               <PriceBand area={a} domain={domain} />
 
               {a.lowSample && (
-                <p className="font-mono text-[11px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>
+                <p className="font-mono text-[12px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>
               )}
             </article>
           );
@@ -290,14 +290,14 @@ function AreasSection({ market, error }) {
       </div>
 
       {domain && (
-        <div className="mt-8 pt-4 border-t border-line flex justify-between font-mono text-[11px] text-inkFaint">
+        <div className="mt-8 pt-4 border-t border-line flex justify-between font-mono text-[12px] text-inkFaint">
           <span>{domain.min} 萬/坪</span>
           <span>四區共用刻度｜直線為該區均價</span>
           <span>{domain.max} 萬/坪</span>
         </div>
       )}
 
-      <p className="mt-4 font-mono text-[11px] text-inkFaint">
+      <p className="mt-4 font-mono text-[12px] text-inkFaint">
         {error && "資料讀取失敗，請稍後再試"}
         {!error && market && (market.updatedAt
           ? `資料更新於 ${new Date(market.updatedAt).toLocaleDateString("zh-TW")}・來源：內政部不動產交易實價查詢服務網`
@@ -337,7 +337,7 @@ function AboutSection() {
         </div>
 
         <div className="lg:col-span-8">
-          <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">About</div>
+          <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">About</div>
           <h2 className="display text-2xl md:text-[28px]">在同一片生活圈裡，待得夠久</h2>
           <div className="mt-6 h-px bg-line" />
 
@@ -345,25 +345,25 @@ function AboutSection() {
             {FACTS.map(([n, unit, label], i) => (
               <div key={i}>
                 <div className="font-mono text-[30px] font-semibold leading-none">
-                  {n}<span className="text-xs font-normal text-inkSoft ml-1">{unit}</span>
+                  {n}<span className="text-[13px] font-normal text-inkSoft ml-1">{unit}</span>
                 </div>
-                <div className="text-[12px] text-inkSoft mt-2 leading-snug">{label}</div>
+                <div className="text-[13px] text-inkSoft mt-2 leading-snug">{label}</div>
               </div>
             ))}
           </div>
 
-          <p className="mt-8 text-[15px] text-inkSoft leading-[1.9]">
+          <p className="mt-8 text-[17px] text-inkSoft leading-[1.9]">
             澄果團隊長期深耕鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區。
             我們提供區域房價分析、市場趨勢、社區條件比較，以及首購購屋建議與換屋規劃，
             協助買賣雙方在同一組數據上討論，而不是各說各話。
           </p>
 
           <details className="mt-8 group">
-            <summary className="cursor-pointer font-mono text-[12px] text-orangeDeep inline-flex items-center gap-2 select-none">
+            <summary className="cursor-pointer font-mono text-[13px] text-orangeDeep inline-flex items-center gap-2 select-none">
               歷年獲獎紀錄（{AWARDS.length} 項）
-              <span className="transition group-open:rotate-180 text-[10px]">▼</span>
+              <span className="transition group-open:rotate-180 text-[11px]">▼</span>
             </summary>
-            <ul className="mt-4 grid sm:grid-cols-2 gap-x-8 gap-y-1.5 font-mono text-[12px] text-inkSoft">
+            <ul className="mt-4 grid sm:grid-cols-2 gap-x-8 gap-y-1.5 font-mono text-[13px] text-inkSoft">
               {AWARDS.map((a, i) => (
                 <li key={i} className="flex gap-2">
                   <span className="text-line">—</span><span>{a}</span>
@@ -422,13 +422,13 @@ function ServicesSection() {
       <div className="grid md:grid-cols-2 gap-px bg-line border border-line rounded-sm overflow-hidden">
         {SERVICES.map((s, i) => (
           <div key={i} className="bg-surface p-9 flex flex-col">
-            <div className="font-mono text-[11px] tracking-[0.18em] text-inkFaint uppercase">{s.kicker}</div>
+            <div className="font-mono text-[12px] tracking-[0.18em] text-inkFaint uppercase">{s.kicker}</div>
             <h3 className="display text-xl mt-2 mb-3">{s.title}</h3>
-            <p className="text-[14px] text-inkSoft leading-relaxed mb-7">{s.lead}</p>
-            <ul className="space-y-3 text-[14px] text-ink/80 leading-relaxed mb-8 flex-1">
+            <p className="text-[15px] text-inkSoft leading-relaxed mb-7">{s.lead}</p>
+            <ul className="space-y-3 text-[15px] text-ink/80 leading-relaxed mb-8 flex-1">
               {s.items.map((t, j) => (
                 <li key={j} className="flex gap-3 pb-3 border-b border-line last:border-0">
-                  <span className="font-mono text-[11px] text-orangeDeep pt-1 shrink-0">
+                  <span className="font-mono text-[12px] text-orangeDeep pt-1 shrink-0">
                     {String(j + 1).padStart(2, "0")}
                   </span>
                   <span>{t}</span>
@@ -436,7 +436,7 @@ function ServicesSection() {
               ))}
             </ul>
             <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
-              className="font-mono text-[13px] text-orangeDeep hover:underline">
+              className="font-mono text-[15px] text-orangeDeep hover:underline">
               {s.cta} →
             </a>
           </div>
@@ -474,10 +474,10 @@ function ArticlesSection() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
           {ARTICLES.map((a, i) => (
             <article key={i} className="border-t-2 border-ink pt-5">
-              <div className="font-mono text-[11px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
-              <h3 className="text-[16px] font-bold leading-snug mb-3 tracking-tight">{a.title}</h3>
-              <p className="text-[13px] text-inkSoft leading-[1.85]">{a.desc}</p>
-              <div className="font-mono text-[11px] text-inkFaint mt-5">內文撰寫中</div>
+              <div className="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
+              <h3 className="text-[17px] font-bold leading-snug mb-3 tracking-tight">{a.title}</h3>
+              <p className="text-[15px] text-inkSoft leading-[1.85]">{a.desc}</p>
+              <div className="font-mono text-[12px] text-inkFaint mt-5">內文撰寫中</div>
             </article>
           ))}
         </div>
@@ -505,9 +505,9 @@ function ToolsSection() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-sm overflow-hidden">
         {TOOLS.map((t, i) => (
           <div key={i} className="bg-surface p-7 hover:bg-tint transition">
-            <h3 className="text-[15px] font-bold mb-2 tracking-tight">{t.title}</h3>
-            <p className="text-[13px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
-            <span className="font-mono text-[11px] text-inkFaint">即將上線</span>
+            <h3 className="text-[17px] font-bold mb-2 tracking-tight">{t.title}</h3>
+            <p className="text-[15px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
+            <span className="font-mono text-[12px] text-inkFaint">即將上線</span>
           </div>
         ))}
       </div>
@@ -537,8 +537,8 @@ function DealsSection() {
               <img src={d.img} alt={`${d.area} ${d.caption} 成交`}
                 className="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
               <figcaption className="mt-4">
-                <div className="font-mono text-[11px] tracking-wider text-inkFaint">{d.area}</div>
-                <div className="text-[14px] text-ink mt-1">{d.caption}</div>
+                <div className="font-mono text-[12px] tracking-wider text-inkFaint">{d.area}</div>
+                <div className="text-[15px] text-ink mt-1">{d.caption}</div>
               </figcaption>
             </figure>
           ))}
@@ -555,7 +555,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
         <div className="md:col-span-7">
           <h2 className="display text-2xl text-white">先聊聊，不用急著決定</h2>
-          <p className="mt-4 text-sm leading-[1.9] max-w-md">
+          <p className="mt-5 text-[16px] leading-[2] max-w-md">
             不論是想知道自己的預算能買哪一區，或是手上房子現在值多少，
             都可以先問。我們會用實際成交資料回答你。
           </p>
@@ -563,14 +563,14 @@ function Footer() {
             <Button href={BRAND.officialSite} external>線上諮詢</Button>
             <Button href={BRAND.phoneHref} variant="ghostDark">致電 {BRAND.phone}</Button>
           </div>
-          <div className="flex gap-6 mt-8 font-mono text-[12px]">
+          <div className="flex gap-6 mt-8 font-mono text-[13px]">
             <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Facebook</a>
             <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Instagram</a>
             <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">官方網站</a>
           </div>
         </div>
 
-        <div className="md:col-span-5 md:text-right font-mono text-[12px] leading-[2] text-white/60">
+        <div className="md:col-span-5 md:text-right font-mono text-[13px] leading-[2] text-white/60">
           <div className="text-white">{BRAND.teamName}</div>
           <div>{BRAND.legalName}</div>
           <div>{BRAND.address}</div>
@@ -578,7 +578,7 @@ function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-6 py-5 font-mono text-[11px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+        <div className="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
           <span>© {new Date().getFullYear()} {BRAND.legalName}</span>
           <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
         </div>
