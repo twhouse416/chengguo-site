@@ -297,19 +297,51 @@ function AboutSection() {
 /* ---------- 首購／換屋服務 ---------- */
 function ServicesSection() {
   const cards = [
-    { title: "首購友善", desc: "從看屋、議價到貸款試算，第一次買房不再手忙腳亂。", cta: "了解首購流程 →" },
-    { title: "換屋規劃", desc: "舊屋賣價評估、稅務試算，換屋時機與資金一次算清楚。", cta: "詢問換屋評估 →" },
+    {
+      title: "首購友善",
+      lead: "第一次買房，我們把每個步驟拆開講清楚。",
+      items: [
+        "依收入與自備款，先抓出合理的總價帶",
+        "新青安 3.0 資格、額度與月付試算",
+        "四大生活圈比較：學區、通勤、機能怎麼取捨",
+        "看屋陪同、實價登錄比對、議價策略",
+        "貸款送件到交屋，全程有人可以問",
+      ],
+      cta: "聊聊我的預算能買哪一區 →",
+    },
+    {
+      title: "換屋規劃",
+      lead: "先買後賣還是先賣後買，數字先算清楚再決定。",
+      items: [
+        "舊屋合理售價評估（社區行情＋實價登錄比對）",
+        "房地合一稅、重購退稅試算，抓出稅務時程",
+        "資金缺口與過渡期方案盤點",
+        "新屋條件排序：坪數、格局、學區的取捨",
+        "兩案時程銜接，避免空窗期或雙重負擔",
+      ],
+      cta: "請澄果幫我評估換屋時機 →",
+    },
   ];
   return (
     <section id="services" className="max-w-6xl mx-auto px-6 py-10">
       <Eyebrow code="CG·03">澄果能幫你</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-8">首購也好，換屋也好</h2>
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">首購也好，換屋也好</h2>
+      <p className="text-ink/60 mb-8 text-sm">買房不是一次決定，是一連串小決定。我們把每一步都陪你走過。</p>
       <div className="grid md:grid-cols-2 gap-6">
         {cards.map((c,i) => (
-          <div key={i} className="bg-orange/5 rounded-3xl p-8 border border-orange/10">
-            <h3 className="font-heading font-bold text-xl mb-3">{c.title}</h3>
-            <p className="text-ink/70 text-sm leading-relaxed mb-6">{c.desc}</p>
-            <a href="#contact" className="font-mono text-sm text-orangeDark hover:underline">{c.cta}</a>
+          <div key={i} className="bg-orange/5 rounded-3xl p-8 border border-orange/10 flex flex-col">
+            <h3 className="font-heading font-bold text-xl mb-2">{c.title}</h3>
+            <p className="text-ink/70 text-sm leading-relaxed mb-5">{c.lead}</p>
+            <ul className="space-y-2 text-sm text-ink/70 leading-relaxed mb-6 flex-1">
+              {c.items.map((t, j) => (
+                <li key={j} className="flex gap-2">
+                  <span className="text-orange shrink-0">・</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
+              className="font-mono text-sm text-orangeDark hover:underline">{c.cta}</a>
           </div>
         ))}
       </div>
@@ -319,24 +351,52 @@ function ServicesSection() {
 
 /* ---------- 知識文章（首購/換屋導向） ---------- */
 const ARTICLES = [
-  { tag: "首購知識", title: "青安3.0是什麼？首購族最該搞懂的貸款新制", desc: "8/1上路，利率、額度、資格門檻一次看懂。" },
-  { tag: "換屋稅務", title: "換屋要繳哪些稅？房地合一稅與重購退稅整理", desc: "賣舊屋前，先把稅務時程算進換屋計畫。" },
-  { tag: "生活圈情報", title: "農十六重劃區生活機能大盤點", desc: "從學區、公園到採買動線，帶你認識這個生活圈。" },
+  {
+    tag: "首購知識",
+    title: "新青安 3.0 上路：額度提高了，但多了三道門檻",
+    desc: "額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，還改成一生限貸一次。先看自己過不過得了門檻。",
+  },
+  {
+    tag: "首購知識",
+    title: "自備款要準備多少？四大生活圈總價帶實算",
+    desc: "用近半年實價登錄均價，換算 25～35 坪三房在各區的總價與自備款區間，先知道要存多久。",
+  },
+  {
+    tag: "換屋稅務",
+    title: "重購退稅：順序錯了就退不到",
+    desc: "先買後賣、先賣後買在稅上是兩件事，時間差幾個月結果差很多。買賣前先把時程表排出來。",
+  },
+  {
+    tag: "換屋規劃",
+    title: "先買後賣 vs 先賣後買，資金壓力差在哪",
+    desc: "兩條路線各自的現金流缺口、過渡期成本與風險，用一張表比較給你看。",
+  },
+  {
+    tag: "生活圈情報",
+    title: "美術館特區 vs 農十六：同樣家庭客，差在哪？",
+    desc: "價差近 10 萬/坪，差的不只是位置。從學區、綠地、屋齡到停車條件逐項比較。",
+  },
+  {
+    tag: "生活圈情報",
+    title: "中都重劃區值得等嗎？從實價登錄看變化",
+    desc: "四區裡總價門檻最低的一區，愛河與濕地公園是加分題。看看近兩年成交結構怎麼走。",
+  },
 ];
 
 function ArticlesSection() {
   return (
     <section id="knowledge" className="max-w-6xl mx-auto px-6 py-10">
       <Eyebrow code="CG·04">知識文章</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-8">買房前，先把該懂的事搞懂</h2>
-      <div className="grid md:grid-cols-3 gap-6">
+      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">買房前，先把該懂的事搞懂</h2>
+      <p className="text-ink/60 mb-8 text-sm">首購與換屋最常卡住的幾個問題，我們寫成好讀的整理。</p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {ARTICLES.map((a,i) => (
-          <a key={i} href="#" className="block bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
+          <div key={i} className="block bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
             <span className="font-mono text-xs text-sage">{a.tag}</span>
             <h3 className="font-heading font-bold mt-2 mb-2 leading-snug">{a.title}</h3>
             <p className="text-sm text-ink/60 leading-relaxed">{a.desc}</p>
-            <span className="inline-block mt-4 text-xs font-mono text-orangeDark">→ 閱讀全文（待補內容）</span>
-          </a>
+            <span className="inline-block mt-4 text-xs font-mono text-ink/35">內文撰寫中</span>
+          </div>
         ))}
       </div>
     </section>
@@ -345,10 +405,10 @@ function ArticlesSection() {
 
 /* ---------- 試算工具 ---------- */
 const TOOLS = [
-  { code: "T-01", title: "學區地圖查詢", desc: "輸入門牌，馬上查讀哪間國中小。" },
-  { code: "T-02", title: "房貸試算", desc: "月薪多少買得起，每月要繳多少一次算清楚。" },
-  { code: "T-03", title: "青安3.0試算", desc: "符不符合資格，前3年月付多少先算給你看。" },
-  { code: "T-04", title: "房地合一稅試算", desc: "換屋賣舊屋前，先算清楚要繳多少稅。" },
+  { code: "T-01", title: "學區地圖查詢", desc: "輸入門牌，查對應的學區國中小。" },
+  { code: "T-02", title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。" },
+  { code: "T-03", title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。" },
+  { code: "T-04", title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。" },
 ];
 
 function ToolsSection() {
