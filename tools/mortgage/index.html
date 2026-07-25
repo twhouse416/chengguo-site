@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="../../assets/logo-icon.png" />
+<title>房貸試算｜台灣房屋 澄果團隊</title>
+<meta name="description" content="輸入總價、貸款成數、年限與利率，立刻算出月付金、總利息與收入負擔比。首購與換屋前先把數字看清楚。" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+          paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+          orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3',
+        },
+        fontFamily: {
+          sans: ['"Noto Sans TC"','sans-serif'],
+          mono: ['"IBM Plex Mono"','monospace'],
+        },
+        borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+      }
+    }
+  }
+</script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
+  ::selection { background:#FD7305; color:#fff; }
+  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
+  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  input[type=range] { accent-color:#FD7305; }
+</style>
+</head>
+<body class="font-sans text-ink">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const BRAND = {
+  officialSite: "https://store.twhg.com.tw/TE80",
+  phone: "07-9766977",
+  phoneHref: "tel:0797669977",
+};
+
+const fmtWan = n => (Math.round(n * 10) / 10).toLocaleString("zh-TW");
+const fmtMoney = n => Math.round(n).toLocaleString("zh-TW");
+
+/* 本息平均攤還，支援寬限期（寬限期內只繳息） */
+function calc({ price, ratio, years, rate, graceYears }) {
+  const loanWan = price * (ratio / 100);          // 貸款金額（萬）
+  const P = loanWan * 10000;                       // 元
+  const i = rate / 100 / 12;                       // 月利率
+  const n = years * 12;                            // 總期數
+  const g = Math.min(graceYears * 12, n - 1);      // 寬限期數
+
+  const gracePayment = P * i;                      // 寬限期月付（只繳息）
+  const m = n - g;                                 // 攤還期數
+  const payment = i === 0 ? P / m : (P * i) / (1 - Math.pow(1 + i, -m));
+
+  const totalPaid = gracePayment * g + payment * m;
+  const totalInterest = totalPaid - P;
+
+  return {
+    loanWan,
+    downWan: price - loanWan,
+    P,
+    gracePayment,
+    payment,
+    graceMonths: g,
+    totalPaid,
+    totalInterest,
+  };
+}
+
+function Field({ label, hint, children }) {
+  return (
+    <label className="block">
+      <span className="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">{label}</span>
+      {children}
+      {hint && <span className="block text-[13px] text-inkFaint mt-1.5">{hint}</span>}
+    </label>
+  );
+}
+
+function NumInput({ value, onChange, suffix, step = 1, min = 0 }) {
+  return (
+    <div className="flex items-center border border-line rounded-sm bg-surface focus-within:border-orange">
+      <input
+        type="number" inputMode="decimal" step={step} min={min}
+        className="w-full px-4 py-3 text-[17px] font-mono bg-transparent outline-none"
+        value={value}
+        onChange={e => onChange(e.target.value === "" ? "" : Number(e.target.value))} />
+      {suffix && <span className="px-4 text-[14px] text-inkFaint shrink-0">{suffix}</span>}
+    </div>
+  );
+}
+
+function App() {
+  const [price, setPrice] = useState(1200);
+  const [ratio, setRatio] = useState(80);
+  const [years, setYears] = useState(30);
+  const [rate, setRate] = useState(2.3);
+  const [graceYears, setGraceYears] = useState(0);
+  const [income, setIncome] = useState("");
+
+  const ok = price > 0 && years > 0 && rate >= 0;
+  const r = useMemo(() => ok ? calc({ price, ratio, years, rate, graceYears }) : null, [price, ratio, years, rate, graceYears, ok]);
+
+  const burden = r && income > 0 ? (r.payment / (income * 10000)) * 100 : null;
+
+  return (
+    <div>
+      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+        <div className="max-w-4xl mx-auto px-6 h-[68px] flex items-center justify-between">
+          <a href="../../index.html" className="flex items-center gap-3">
+            <img src="../../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
+            <span className="leading-tight">
+              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
+            </span>
+          </a>
+          <a href="../../index.html#tools" className="text-[15px] text-inkSoft hover:text-ink">← 回工具列表</a>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-14">
+        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 02</div>
+        <h1 className="display text-[30px] md:text-[36px]">房貸試算</h1>
+        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
+          把總價、成數、年限與利率填進去，立刻看到每月要繳多少、一共付出多少利息。
+          數字會即時跟著變，可以直接拉來比較不同方案。
+        </p>
+        <div className="mt-6 h-px bg-line" />
+
+        <div className="mt-8 grid lg:grid-cols-5 gap-8">
+          {/* 輸入 */}
+          <div className="lg:col-span-2 bg-surface border border-line rounded-sm p-7 space-y-6 h-fit">
+            <Field label="房屋總價" hint="以萬元為單位">
+              <NumInput value={price} onChange={setPrice} suffix="萬" step={10} />
+            </Field>
+
+            <Field label={`貸款成數　${ratio}%`} hint={r ? `貸款 ${fmtWan(r.loanWan)} 萬・自備 ${fmtWan(r.downWan)} 萬` : null}>
+              <input type="range" min="10" max="90" step="1" value={ratio}
+                onChange={e => setRatio(Number(e.target.value))} className="w-full mt-1" />
+            </Field>
+
+            <Field label="貸款年限">
+              <NumInput value={years} onChange={setYears} suffix="年" min={1} />
+            </Field>
+
+            <Field label="年利率" hint="預設 2.3% 僅供試算，實際以銀行核貸為準">
+              <NumInput value={rate} onChange={setRate} suffix="%" step={0.01} />
+            </Field>
+
+            <Field label="寬限期" hint="寬限期內只繳利息，不還本金">
+              <NumInput value={graceYears} onChange={setGraceYears} suffix="年" min={0} />
+            </Field>
+
+            <Field label="家庭月收入（選填）" hint="填了才會顯示負擔比">
+              <NumInput value={income} onChange={setIncome} suffix="萬" step={0.5} />
+            </Field>
+          </div>
+
+          {/* 結果 */}
+          <div className="lg:col-span-3 space-y-6">
+            {!ok && (
+              <div className="bg-surface border border-line rounded-sm p-7 text-[16px] text-inkSoft">
+                請填入總價、年限與利率。
+              </div>
+            )}
+
+            {ok && r && (
+              <>
+                <div className="bg-surface border border-line rounded-sm p-7">
+                  {r.graceMonths > 0 && (
+                    <div className="mb-6 pb-6 border-b border-line">
+                      <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-1">
+                        寬限期月付（前 {graceYears} 年，只繳息）
+                      </div>
+                      <div className="font-mono text-[32px] font-semibold leading-none">
+                        {fmtMoney(r.gracePayment)}
+                        <span className="text-[14px] font-normal text-inkSoft ml-2">元 / 月</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-1">
+                    {r.graceMonths > 0 ? `寬限期後月付（第 ${graceYears + 1} 年起）` : "每月應繳"}
+                  </div>
+                  <div className="font-mono text-[40px] font-semibold text-orangeDeep leading-none">
+                    {fmtMoney(r.payment)}
+                    <span className="text-[15px] font-normal text-inkSoft ml-2">元 / 月</span>
+                  </div>
+
+                  {burden !== null && (
+                    <div className="mt-6 pt-6 border-t border-line">
+                      <div className="flex items-baseline justify-between mb-2">
+                        <span className="font-mono text-[12px] tracking-wider text-inkFaint">佔家庭月收入</span>
+                        <span className="font-mono text-[20px] font-semibold">{burden.toFixed(1)}%</span>
+                      </div>
+                      <div className="h-[6px] bg-line rounded-sm overflow-hidden">
+                        <div className="h-full bg-orange"
+                          style={{ width: `${Math.min(burden, 100)}%` }} />
+                      </div>
+                      <p className="text-[14px] text-inkSoft leading-[1.8] mt-3">
+                        {burden <= 30
+                          ? "負擔比偏低，除了月付之外還有餘裕應付裝潢、稅費與突發支出。"
+                          : burden <= 40
+                          ? "負擔比落在常見範圍。記得把管理費、房屋稅、地價稅與修繕費一起算進生活開支。"
+                          : "負擔比偏高，建議重新檢視總價或成數，並預留至少半年生活準備金再進場。"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-surface border border-line rounded-sm p-7">
+                  <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">Summary</div>
+                  <dl className="divide-y divide-line">
+                    {[
+                      ["貸款金額", `${fmtWan(r.loanWan)} 萬元`],
+                      ["自備款", `${fmtWan(r.downWan)} 萬元`],
+                      ["利息總額", `${fmtMoney(r.totalInterest)} 元`],
+                      ["本息合計", `${fmtMoney(r.totalPaid)} 元`],
+                    ].map(([k, v]) => (
+                      <div key={k} className="flex items-baseline justify-between py-3">
+                        <dt className="text-[15px] text-inkSoft">{k}</dt>
+                        <dd className="font-mono text-[17px]">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <div className="mt-6">
+                    <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-2">本金與利息比例</div>
+                    <div className="flex h-[10px] rounded-sm overflow-hidden">
+                      <div className="bg-ink" style={{ width: `${(r.P / r.totalPaid) * 100}%` }} />
+                      <div className="bg-orange" style={{ width: `${(r.totalInterest / r.totalPaid) * 100}%` }} />
+                    </div>
+                    <div className="flex justify-between font-mono text-[12px] text-inkSoft mt-2">
+                      <span>本金 {((r.P / r.totalPaid) * 100).toFixed(0)}%</span>
+                      <span className="text-orangeDeep">利息 {((r.totalInterest / r.totalPaid) * 100).toFixed(0)}%</span>
+                    </div>
+                  </div>
+
+                  {r.graceMonths > 0 && (
+                    <p className="text-[14px] text-inkSoft leading-[1.85] mt-6 pt-6 border-t border-line">
+                      寬限期讓前期壓力變小，但本金沒有減少，寬限期結束後月付會跳升，
+                      而且整段期間付出的利息會比不用寬限期更多。用之前先確認寬限期滿後的月付負擔得起。
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* 說明 */}
+        <section className="mt-14 border-t border-line pt-8">
+          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
+          <ul className="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
+            <li>・ 採本息平均攤還法計算，假設利率固定不變。實際多為機動利率，會隨央行升降息調整。</li>
+            <li>・ 試算結果不含開辦費、鑑價費、契稅、印花稅、代書費、火險地震險與後續的房屋稅、地價稅、管理費。</li>
+            <li>・ 實際可貸成數與利率由銀行依物件條件與個人信用評估，與試算值可能有落差。</li>
+            <li>・ 本工具不會蒐集或傳送你輸入的任何資料，全部在瀏覽器本機計算。</li>
+          </ul>
+        </section>
+
+        <section className="mt-12 bg-ink text-white/75 rounded-sm p-8">
+          <h2 className="display text-[20px] text-white">算出來的數字，跟你想的不一樣？</h2>
+          <p className="mt-3 text-[16px] leading-[1.9] max-w-xl">
+            成數、利率、寬限期都可以談，不同銀行給的條件差距不小。
+            把你的狀況告訴我們，澄果團隊幫你評估合理的總價帶與貸款規劃。
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+              線上諮詢
+            </a>
+            <a href={BRAND.phoneHref}
+              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
+              致電 {BRAND.phone}
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-line">
+        <div className="max-w-4xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
+          <a href="../../index.html" className="hover:text-orangeDeep">回首頁</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
