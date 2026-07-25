@@ -1,0 +1,33 @@
+yaml
+name: 每日更新四大生活圈行情
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取出程式碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 執行抓取與計算
+        run: node scripts/fetch-market-data.js
+
+      - name: 若資料有變動，提交回儲存庫
+        run: |
+          git config user.name "chengguo-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/market-data.json
+          git diff --cached --quiet && echo "沒有變動，略過提交" || git commit -m "更新行情資料 $(date +'%Y-%m-%d')"
+          git push
