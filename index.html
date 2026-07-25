@@ -4,267 +4,311 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="assets/logo-icon.png" />
-<title>澄果團隊｜美術館・農十六・瑞豐巨蛋・中都，你的第一個家</title>
+<title>台灣房屋 澄果團隊｜美術館・農十六・瑞豐巨蛋・中都 在地房仲</title>
+<meta name="description" content="深耕高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上。用實價登錄數據，陪首購與換屋家庭做決定。" />
 
-<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
     theme: {
       extend: {
         colors: {
-          cream:   '#FBF8F3',
-          peach:   '#FFE8D1',
-          orange:  '#FD7305',
-          orangeDark: '#D65F00',
-          ink:     '#3A2E27',
-          sage:    '#7C8B6F',
-          sageLight: '#E7EBDF',
+          ink:       '#16191D',
+          inkSoft:   '#565C66',
+          inkFaint:  '#8A9099',
+          paper:     '#F4F4F2',
+          surface:   '#FFFFFF',
+          line:      '#DEDCD7',
+          orange:    '#FD7305',
+          orangeDeep:'#B85400',
+          tint:      '#FCEFE3',
         },
         fontFamily: {
-          heading: ['"Zen Maru Gothic"', 'sans-serif'],
-          body: ['"Noto Sans TC"', 'sans-serif'],
+          sans: ['"Noto Sans TC"', 'sans-serif'],
           mono: ['"IBM Plex Mono"', 'monospace'],
+        },
+        borderRadius: {
+          DEFAULT: '3px',
+          sm: '2px',
+          md: '4px',
         },
       }
     }
   }
 </script>
 
-<!-- React -->
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <style>
-  body { background: #FBF8F3; }
-  .citrus-divider { display: flex; justify-content: center; margin: 0; }
-  ::selection { background: #FFE8D1; color: #3A2E27; }
+  html { scroll-behavior: smooth; }
+  body { background: #F4F4F2; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #FD7305; color: #fff; }
+  .display { font-weight: 900; letter-spacing: -0.02em; line-height: 1.25; }
+  :focus-visible { outline: 2px solid #FD7305; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
 </style>
 </head>
-<body class="font-body text-ink">
+<body class="font-sans text-ink">
 
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
-/* ---------- 簽名視覺：柑橘切片分隔線 ---------- */
-function CitrusDivider() {
-  return (
-    <div className="citrus-divider py-10">
-      <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-        <circle cx="36" cy="36" r="34" stroke="#FD7305" strokeWidth="2" fill="#FFE8D1" />
-        <circle cx="36" cy="36" r="26" stroke="#FD7305" strokeWidth="1.5" fill="none" />
-        {[0,45,90,135].map((deg,i) => (
-          <line key={i} x1="36" y1="36"
-            x2={36 + 26*Math.cos(deg*Math.PI/180)}
-            y2={36 + 26*Math.sin(deg*Math.PI/180)}
-            stroke="#FD7305" strokeWidth="1.5" />
-        ))}
-        <circle cx="36" cy="36" r="4" fill="#FD7305" />
-      </svg>
-    </div>
-  );
-}
-
-/* ---------- Eyebrow 標籤 ---------- */
-function Eyebrow({ code, children }) {
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      <span className="font-mono text-xs tracking-widest text-orangeDark bg-peach px-2 py-1 rounded-full">{code}</span>
-      <span className="font-mono text-xs tracking-widest text-sage uppercase">{children}</span>
-    </div>
-  );
-}
-
-function CTAButton({ children, primary = true, href = "#" }) {
-  return (
-    <a href={href}
-      className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-heading font-bold text-sm transition
-        ${primary
-          ? "bg-orange text-white hover:bg-orangeDark shadow-lg shadow-orange/20"
-          : "bg-white text-ink border border-ink/10 hover:border-orange"}`}>
-      {children}
-    </a>
-  );
-}
-
-/* ---------- 品牌資料（統一在這裡維護） ---------- */
+/* ================= 品牌資料（統一在這裡維護） ================= */
 const BRAND = {
   teamName: "台灣房屋 澄果團隊",
   legalName: "澄果資產有限公司",
   address: "804 高雄市鼓山區青海路416號",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977", // 07-9766977
+  phoneHref: "tel:0797669977",
   officialSite: "https://store.twhg.com.tw/TE80",
   facebook: "https://www.facebook.com/TWhouseo8",
   instagram: "https://www.instagram.com/twhouse_o8",
 };
 
-/* ---------- Header ---------- */
+/* ================= 共用元件 ================= */
+
+function SectionHead({ label, title, note }) {
+  return (
+    <div className="mb-10">
+      <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">{label}</div>
+      <h2 className="display text-2xl md:text-[28px] text-ink">{title}</h2>
+      {note && <p className="mt-3 text-sm text-inkSoft leading-relaxed max-w-2xl">{note}</p>}
+      <div className="mt-6 h-px bg-line" />
+    </div>
+  );
+}
+
+function Button({ children, href, variant = "solid", external = false }) {
+  const base = "inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-sm transition";
+  const styles = {
+    solid: "bg-orange text-white hover:bg-orangeDeep",
+    outline: "border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-white",
+    ghostDark: "border border-white/30 text-white hover:bg-white hover:text-ink",
+  };
+  return (
+    <a href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className={`${base} ${styles[variant]}`}>
+      {children}
+    </a>
+  );
+}
+
+/* ================= Header ================= */
 function Header() {
   const [open, setOpen] = useState(false);
   const nav = [
-    ["#areas", "四大生活圈"],
-    ["#about", "關於澄果"],
-    ["#services", "首購・換屋"],
+    ["#areas", "生活圈行情"],
+    ["#about", "關於團隊"],
+    ["#services", "服務內容"],
     ["#knowledge", "知識文章"],
     ["#tools", "試算工具"],
+    ["#deals", "近期成交"],
   ];
   return (
-    <header className="sticky top-0 z-50 bg-cream/90 backdrop-blur border-b border-ink/5">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 font-heading font-900 text-base md:text-lg text-orangeDark">
-          <img src="assets/logo-icon.png" alt="澄果團隊 Logo" className="w-9 h-9 rounded-full object-cover shrink-0" />
+    <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+      <div className="max-w-6xl mx-auto px-6 h-[68px] flex items-center justify-between">
+        <a href="#top" className="flex items-center gap-3 shrink-0">
+          <img src="assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
           <span className="leading-tight">
-            <span className="block text-xs font-normal text-ink/50">台灣房屋</span>
-            澄果團隊
+            <span className="block font-mono text-[10px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+            <span className="block text-[15px] font-bold tracking-tight text-ink">澄果團隊</span>
           </span>
         </a>
-        <nav className="hidden md:flex items-center gap-6 font-medium text-sm text-ink/80">
+
+        <nav className="hidden lg:flex items-center gap-7 text-[13px] text-inkSoft">
           {nav.map(([href, label]) => (
-            <a key={href} href={href} className="hover:text-orangeDark transition">{label}</a>
+            <a key={href} href={href} className="hover:text-ink transition">{label}</a>
           ))}
         </nav>
-        <div className="hidden md:flex items-center gap-4">
-          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink/70 hover:text-orangeDark">{BRAND.phone}</a>
-          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
+
+        <div className="hidden lg:flex items-center gap-5">
+          <a href={BRAND.phoneHref} className="font-mono text-[13px] text-ink hover:text-orangeDeep">{BRAND.phone}</a>
+          <Button href={BRAND.officialSite} external>線上諮詢</Button>
         </div>
-        <button className="md:hidden text-2xl" onClick={() => setOpen(!open)}>☰</button>
+
+        <button className="lg:hidden w-9 h-9 flex items-center justify-center border border-line rounded-sm"
+          aria-label="開啟選單" onClick={() => setOpen(!open)}>
+          <span className="text-lg leading-none">{open ? "✕" : "☰"}</span>
+        </button>
       </div>
+
       {open && (
-        <div className="md:hidden px-6 pb-4 flex flex-col gap-3 bg-cream border-t border-ink/5">
+        <div className="lg:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
           {nav.map(([href, label]) => (
-            <a key={href} href={href} className="py-1" onClick={() => setOpen(false)}>{label}</a>
+            <a key={href} href={href} className="text-sm text-inkSoft" onClick={() => setOpen(false)}>{label}</a>
           ))}
-          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink/70">{BRAND.phone}</a>
-          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
+          <a href={BRAND.phoneHref} className="font-mono text-sm text-ink">{BRAND.phone}</a>
+          <Button href={BRAND.officialSite} external>線上諮詢</Button>
         </div>
       )}
     </header>
   );
 }
 
-/* ---------- Hero ---------- */
-function Hero() {
-  const [top, setTop] = useState(null);
-  React.useEffect(() => {
-    fetch("./data/market-data.json")
-      .then(res => res.json())
-      .then(d => setTop((d.areas || []).find(a => a.code === "01")))
-      .catch(() => {});
-  }, []);
-
-  return (
-    <section className="max-w-6xl mx-auto px-6 pt-16 pb-8 grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <Eyebrow code="CG·HOME">在地生活圈房仲</Eyebrow>
-        <h1 className="font-heading font-900 text-4xl md:text-5xl leading-tight text-ink">
-          美術館・農十六<br/>瑞豐巨蛋・中都<br/>
-          <span className="text-orange">你的第一個家，</span>我們慢慢找
-        </h1>
-        <p className="mt-6 text-base md:text-lg text-ink/70 leading-relaxed">
-          澄果團隊專注首購與換屋家庭，用清楚的行情數據和貼心陪伴，
-          陪你在熟悉的生活圈裡，找到住得久、住得安心的家。
-        </p>
-        <div className="mt-8 flex flex-wrap gap-4">
-          <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
-          <CTAButton primary={false} href="#areas">看四大生活圈行情</CTAButton>
-        </div>
-      </div>
-      <div className="relative">
-        <div className="aspect-[4/3] rounded-3xl overflow-hidden">
-          <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍" className="w-full h-full object-cover" />
-        </div>
-        <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-lg px-5 py-4 font-mono text-xs">
-          <div className="text-sage">美術館特區・大樓均價</div>
-          <div className="text-2xl text-ink font-bold">
-            {top?.avgPricePerPing ?? "—"} <span className="text-sm font-normal">萬/坪</span>
-          </div>
-          {top?.bandLow && (
-            <div className="text-[11px] text-ink/45 mt-0.5">成交帶 {top.bandLow}–{top.bandHigh} 萬</div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ---------- 四大生活圈：說明文字、照片（固定），行情數字（動態抓取） ---------- */
-const AREA_DESC = {
-  "01": "公園綠帶、學區優良，家庭客首選生活圈",
-  "02": "重劃區新成屋多，機能完整、停車方便",
-  "03": "商圈生活機能強，交通樞紐、通勤族愛",
-  "04": "愛河景觀、濕地公園，新興換屋熱區",
-};
-const AREA_IMG = {
-  "01": "assets/area-01-artmuseum.jpg",
-  "02": "assets/area-02-nong16.jpg",
-  "03": "assets/area-03-ruifeng.jpg",
-  "04": "assets/area-04-zhongdu.jpg",
-};
-
-function AreasSection() {
+/* ================= 行情資料 hook ================= */
+function useMarketData() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("./data/market-data.json")
-      .then(res => res.json())
+      .then(r => r.json())
       .then(setData)
       .catch(() => setError(true));
   }, []);
+  return { data, error };
+}
 
+/* ================= Hero ================= */
+function Hero({ market }) {
+  const top = market?.areas?.find(a => a.code === "01");
   return (
-    <section id="areas" className="max-w-6xl mx-auto px-6 py-10">
-      <Eyebrow code="CG·01">四大主力生活圈</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">澄果團隊主攻的家，都在這四區</h2>
-      <p className="text-ink/60 mb-2 text-sm">
-        近 6 個月大樓實際成交的每坪均價與常見價格帶
-      </p>
-      <p className="text-ink/45 mb-8 text-xs leading-relaxed">
-        數字僅供抓範圍參考，實際行情會因屋齡、樓層、格局與座向而有落差。
-        <span className="block font-mono text-ink/35 mt-1">
-          {error && "資料讀取失敗，顯示為暫時性錯誤"}
-          {!error && data && (data.updatedAt ? `資料更新於 ${new Date(data.updatedAt).toLocaleDateString("zh-TW")}・來源：內政部實價登錄` : "尚未執行首次自動抓取，以下為示意資料")}
-          {!error && !data && "讀取中…"}
-        </span>
-      </p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {(data ? data.areas : []).map(a => (
-          <div key={a.code} className="bg-white rounded-2xl overflow-hidden border border-ink/5 hover:border-orange/40 transition">
-            <img src={AREA_IMG[a.code]} alt={a.name} className="w-full aspect-[3/2] object-cover" />
-            <div className="p-6">
-              <span className="font-mono text-xs text-sage">CG·{a.code}</span>
-              <h3 className="font-heading font-bold text-lg mt-2 mb-2">{a.name}</h3>
-              <p className="text-sm text-ink/60 leading-relaxed mb-4">{AREA_DESC[a.code]}</p>
-              <div className="font-mono">
-                <span className="text-2xl font-bold text-orangeDark">
-                  {a.avgPricePerPing ?? "—"}<span className="text-xs text-ink/50 font-normal">萬/坪</span>
-                </span>
-                <div className="text-xs text-ink/45 mt-1">
-                  {a.bandLow && a.bandHigh
-                    ? `近半年成交帶 ${a.bandLow}–${a.bandHigh} 萬`
-                    : "成交資料不足"}
-                </div>
-              </div>
-              {a.lowSample && (
-                <p className="text-[11px] text-orangeDark/70 mt-2">樣本數偏少，僅供參考</p>
-              )}
-            </div>
+    <section id="top" className="border-b border-line">
+      <div className="max-w-6xl mx-auto px-6 pt-16 pb-16 grid lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-6">
+          <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-5">
+            高雄 · 鼓山 / 左營 / 三民
           </div>
-        ))}
+          <h1 className="display text-[34px] md:text-[46px] text-ink">
+            用實際成交數字<br />
+            陪你決定第一個家
+          </h1>
+          <p className="mt-6 text-[15px] text-inkSoft leading-[1.9] max-w-lg">
+            澄果團隊深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上。
+            我們把內政部實價登錄整理成看得懂的價格帶，讓首購與換屋家庭在談價之前，先知道行情落在哪裡。
+          </p>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <Button href={BRAND.officialSite} external>線上諮詢</Button>
+            <Button href="#areas" variant="outline">查看四區行情</Button>
+          </div>
+        </div>
+
+        <div className="lg:col-span-6">
+          <figure className="relative">
+            <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍"
+              className="w-full aspect-[3/2] object-cover rounded-sm" />
+            <figcaption className="absolute bottom-0 left-0 bg-surface border-t border-r border-line px-5 py-4">
+              <div className="font-mono text-[11px] tracking-wider text-inkFaint">美術館特區・大樓</div>
+              <div className="font-mono text-[26px] font-semibold text-ink leading-none mt-1">
+                {top?.avgPricePerPing ?? "—"}<span className="text-xs font-normal text-inkSoft ml-1">萬/坪</span>
+              </div>
+              {top?.bandLow && (
+                <div className="font-mono text-[11px] text-inkSoft mt-1.5">
+                  成交帶 {top.bandLow}–{top.bandHigh} 萬
+                </div>
+              )}
+            </figcaption>
+          </figure>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- 得獎紀錄清單 ---------- */
+/* ================= 四大生活圈 ================= */
+const AREA_META = {
+  "01": { district: "鼓山區", desc: "公園綠帶與美術館園區環繞，學區成熟，四區中總價門檻最高。", img: "assets/area-01-artmuseum.jpg" },
+  "02": { district: "鼓山區", desc: "重劃區規劃完整，新成屋比例高，車位與公設條件普遍較好。", img: "assets/area-02-nong16.jpg" },
+  "03": { district: "左營區", desc: "巨蛋商圈與捷運紅線交會，生活機能密集，通勤族接受度高。", img: "assets/area-03-ruifeng.jpg" },
+  "04": { district: "三民區", desc: "愛河與中都濕地公園相鄰，新興換屋區，總價門檻相對親民。", img: "assets/area-04-zhongdu.jpg" },
+};
+
+/* 簽名元素：四區共用刻度的成交價格帶 */
+function PriceBand({ area, domain }) {
+  if (!area.bandLow || !area.bandHigh || !domain) {
+    return <div className="h-9 flex items-center font-mono text-[11px] text-inkFaint">成交資料不足</div>;
+  }
+  const span = domain.max - domain.min || 1;
+  const left = ((area.bandLow - domain.min) / span) * 100;
+  const width = ((area.bandHigh - area.bandLow) / span) * 100;
+  const avgPos = ((area.avgPricePerPing - domain.min) / span) * 100;
+
+  return (
+    <div className="h-9 pt-3">
+      <div className="relative h-[3px] bg-line rounded-sm">
+        <div className="absolute h-[3px] bg-orange/35 rounded-sm"
+          style={{ left: `${left}%`, width: `${width}%` }} />
+        <div className="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm"
+          style={{ left: `calc(${Math.min(Math.max(avgPos, 0), 100)}% - 1.5px)` }} />
+      </div>
+      <div className="font-mono text-[11px] text-inkSoft mt-2">
+        成交帶 {area.bandLow}–{area.bandHigh} 萬
+      </div>
+    </div>
+  );
+}
+
+function AreasSection({ market, error }) {
+  const areas = market?.areas ?? [];
+  const bands = areas.filter(a => a.bandLow && a.bandHigh);
+  const domain = bands.length
+    ? { min: Math.min(...bands.map(a => a.bandLow)), max: Math.max(...bands.map(a => a.bandHigh)) }
+    : null;
+
+  return (
+    <section id="areas" className="max-w-6xl mx-auto px-6 py-20">
+      <SectionHead
+        label="Market Data"
+        title="四個主力生活圈，現在的行情"
+        note="近六個月大樓實際成交的每坪均價與常見價格帶（取 25%–75% 百分位）。數字用來抓範圍，實際行情會因屋齡、樓層、格局與座向而有落差。"
+      />
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+        {areas.map(a => {
+          const meta = AREA_META[a.code] || {};
+          return (
+            <article key={a.code}>
+              <img src={meta.img} alt={a.name} className="w-full aspect-[3/2] object-cover rounded-sm mb-4" />
+              <div className="font-mono text-[11px] tracking-wider text-inkFaint">{meta.district}</div>
+              <h3 className="text-lg font-bold mt-1 mb-2 tracking-tight">{a.name}</h3>
+              <p className="text-[13px] text-inkSoft leading-[1.85] mb-4 min-h-[72px]">{meta.desc}</p>
+
+              <div className="font-mono text-[28px] font-semibold text-ink leading-none">
+                {a.avgPricePerPing ?? "—"}
+                <span className="text-xs font-normal text-inkSoft ml-1">萬/坪</span>
+              </div>
+
+              <PriceBand area={a} domain={domain} />
+
+              {a.lowSample && (
+                <p className="font-mono text-[11px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>
+              )}
+            </article>
+          );
+        })}
+      </div>
+
+      {domain && (
+        <div className="mt-8 pt-4 border-t border-line flex justify-between font-mono text-[11px] text-inkFaint">
+          <span>{domain.min} 萬/坪</span>
+          <span>四區共用刻度｜直線為該區均價</span>
+          <span>{domain.max} 萬/坪</span>
+        </div>
+      )}
+
+      <p className="mt-4 font-mono text-[11px] text-inkFaint">
+        {error && "資料讀取失敗，請稍後再試"}
+        {!error && market && (market.updatedAt
+          ? `資料更新於 ${new Date(market.updatedAt).toLocaleDateString("zh-TW")}・來源：內政部不動產交易實價查詢服務網`
+          : "尚未執行首次自動更新，目前為示意資料")}
+        {!error && !market && "讀取中…"}
+      </p>
+    </section>
+  );
+}
+
+/* ================= 關於團隊 ================= */
 const AWARDS = [
   "104年度評鑑優質", "104年度第2季團隊績效第3名",
   "106年度評鑑優質",
@@ -277,89 +321,124 @@ const AWARDS = [
   "113年度評鑑優質",
 ];
 
-/* ---------- 關於澄果 ---------- */
+const FACTS = [
+  ["10", "年以上", "深耕四大生活圈"],
+  ["150", "件以上", "累計服務件數"],
+  ["15", "項", "歷年評鑑與競賽獲獎"],
+];
+
 function AboutSection() {
   return (
-    <section id="about" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 items-start">
-      <div className="md:col-span-1">
-        <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊 門市"
-          className="w-full aspect-[4/5] object-cover rounded-3xl" />
-      </div>
-      <div className="md:col-span-2">
-        <Eyebrow code="CG·02">關於澄果團隊</Eyebrow>
-        <h2 className="font-heading font-900 text-2xl md:text-3xl mb-4">陪首購族與換屋家庭，一起把日子過安穩</h2>
-        <ul className="space-y-2 text-ink/70 text-sm leading-relaxed">
-          <li>・ 長期深耕高雄鼓山美術館特區、農十六特區、瑞豐巨蛋生活圈與三民區中都重劃區，10 年以上在地經驗</li>
-          <li>・ 服務件數超過 150 件</li>
-          <li>・ 提供區域房價分析、市場趨勢、熱門社區介紹、首購族購屋建議及換屋規劃服務</li>
-        </ul>
+    <section id="about" className="bg-surface border-y border-line">
+      <div className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-4">
+          <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊 門市"
+            className="w-full aspect-[4/5] object-cover rounded-sm" />
+        </div>
 
-        <details className="mt-5 group">
-          <summary className="cursor-pointer text-sm font-mono text-orangeDark inline-flex items-center gap-1 select-none">
-            歷年獲獎紀錄（{AWARDS.length} 項）
-            <span className="transition group-open:rotate-180">▾</span>
-          </summary>
-          <ul className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-ink/60 font-mono">
-            {AWARDS.map((a, i) => <li key={i}>・ {a}</li>)}
-          </ul>
-        </details>
+        <div className="lg:col-span-8">
+          <div className="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">About</div>
+          <h2 className="display text-2xl md:text-[28px]">在同一片生活圈裡，待得夠久</h2>
+          <div className="mt-6 h-px bg-line" />
 
-        <div className="mt-6">
-          <CTAButton href={BRAND.officialSite}>線上諮詢澄果團隊</CTAButton>
+          <div className="grid grid-cols-3 gap-6 mt-8">
+            {FACTS.map(([n, unit, label], i) => (
+              <div key={i}>
+                <div className="font-mono text-[30px] font-semibold leading-none">
+                  {n}<span className="text-xs font-normal text-inkSoft ml-1">{unit}</span>
+                </div>
+                <div className="text-[12px] text-inkSoft mt-2 leading-snug">{label}</div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-[15px] text-inkSoft leading-[1.9]">
+            澄果團隊長期深耕鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區。
+            我們提供區域房價分析、市場趨勢、社區條件比較，以及首購購屋建議與換屋規劃，
+            協助買賣雙方在同一組數據上討論，而不是各說各話。
+          </p>
+
+          <details className="mt-8 group">
+            <summary className="cursor-pointer font-mono text-[12px] text-orangeDeep inline-flex items-center gap-2 select-none">
+              歷年獲獎紀錄（{AWARDS.length} 項）
+              <span className="transition group-open:rotate-180 text-[10px]">▼</span>
+            </summary>
+            <ul className="mt-4 grid sm:grid-cols-2 gap-x-8 gap-y-1.5 font-mono text-[12px] text-inkSoft">
+              {AWARDS.map((a, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="text-line">—</span><span>{a}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+
+          <div className="mt-9">
+            <Button href={BRAND.officialSite} external>線上諮詢澄果團隊</Button>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-/* ---------- 首購／換屋服務 ---------- */
+/* ================= 服務內容 ================= */
+const SERVICES = [
+  {
+    kicker: "First Home",
+    title: "首購",
+    lead: "第一次買房，我們把每個步驟拆開講清楚。",
+    items: [
+      "依收入與自備款，先抓出合理的總價帶",
+      "新青安 3.0 資格、額度與月付試算",
+      "四區比較：學區、通勤、機能怎麼取捨",
+      "看屋陪同、實價登錄比對、議價策略",
+      "貸款送件到交屋，全程有人可以問",
+    ],
+    cta: "聊聊我的預算能買哪一區",
+  },
+  {
+    kicker: "Trade Up",
+    title: "換屋",
+    lead: "先買後賣還是先賣後買，數字先算清楚再決定。",
+    items: [
+      "舊屋合理售價評估（社區行情＋實價登錄比對）",
+      "房地合一稅、重購退稅試算，抓出稅務時程",
+      "資金缺口與過渡期方案盤點",
+      "新屋條件排序：坪數、格局、學區的取捨",
+      "兩案時程銜接，避免空窗期或雙重負擔",
+    ],
+    cta: "請澄果評估換屋時機",
+  },
+];
+
 function ServicesSection() {
-  const cards = [
-    {
-      title: "首購友善",
-      lead: "第一次買房，我們把每個步驟拆開講清楚。",
-      items: [
-        "依收入與自備款，先抓出合理的總價帶",
-        "新青安 3.0 資格、額度與月付試算",
-        "四大生活圈比較：學區、通勤、機能怎麼取捨",
-        "看屋陪同、實價登錄比對、議價策略",
-        "貸款送件到交屋，全程有人可以問",
-      ],
-      cta: "聊聊我的預算能買哪一區 →",
-    },
-    {
-      title: "換屋規劃",
-      lead: "先買後賣還是先賣後買，數字先算清楚再決定。",
-      items: [
-        "舊屋合理售價評估（社區行情＋實價登錄比對）",
-        "房地合一稅、重購退稅試算，抓出稅務時程",
-        "資金缺口與過渡期方案盤點",
-        "新屋條件排序：坪數、格局、學區的取捨",
-        "兩案時程銜接，避免空窗期或雙重負擔",
-      ],
-      cta: "請澄果幫我評估換屋時機 →",
-    },
-  ];
   return (
-    <section id="services" className="max-w-6xl mx-auto px-6 py-10">
-      <Eyebrow code="CG·03">澄果能幫你</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">首購也好，換屋也好</h2>
-      <p className="text-ink/60 mb-8 text-sm">買房不是一次決定，是一連串小決定。我們把每一步都陪你走過。</p>
-      <div className="grid md:grid-cols-2 gap-6">
-        {cards.map((c,i) => (
-          <div key={i} className="bg-orange/5 rounded-3xl p-8 border border-orange/10 flex flex-col">
-            <h3 className="font-heading font-bold text-xl mb-2">{c.title}</h3>
-            <p className="text-ink/70 text-sm leading-relaxed mb-5">{c.lead}</p>
-            <ul className="space-y-2 text-sm text-ink/70 leading-relaxed mb-6 flex-1">
-              {c.items.map((t, j) => (
-                <li key={j} className="flex gap-2">
-                  <span className="text-orange shrink-0">・</span>
+    <section id="services" className="max-w-6xl mx-auto px-6 py-20">
+      <SectionHead
+        label="Services"
+        title="買房不是一次決定，是一連串小決定"
+        note="首購與換屋的關卡不同，我們把各自會遇到的事情列出來，你可以先看哪一段最需要人幫忙。"
+      />
+      <div className="grid md:grid-cols-2 gap-px bg-line border border-line rounded-sm overflow-hidden">
+        {SERVICES.map((s, i) => (
+          <div key={i} className="bg-surface p-9 flex flex-col">
+            <div className="font-mono text-[11px] tracking-[0.18em] text-inkFaint uppercase">{s.kicker}</div>
+            <h3 className="display text-xl mt-2 mb-3">{s.title}</h3>
+            <p className="text-[14px] text-inkSoft leading-relaxed mb-7">{s.lead}</p>
+            <ul className="space-y-3 text-[14px] text-ink/80 leading-relaxed mb-8 flex-1">
+              {s.items.map((t, j) => (
+                <li key={j} className="flex gap-3 pb-3 border-b border-line last:border-0">
+                  <span className="font-mono text-[11px] text-orangeDeep pt-1 shrink-0">
+                    {String(j + 1).padStart(2, "0")}
+                  </span>
                   <span>{t}</span>
                 </li>
               ))}
             </ul>
             <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
-              className="font-mono text-sm text-orangeDark hover:underline">{c.cta}</a>
+              className="font-mono text-[13px] text-orangeDeep hover:underline">
+              {s.cta} →
+            </a>
           </div>
         ))}
       </div>
@@ -367,81 +446,68 @@ function ServicesSection() {
   );
 }
 
-/* ---------- 知識文章（首購/換屋導向） ---------- */
+/* ================= 知識文章 ================= */
 const ARTICLES = [
-  {
-    tag: "首購知識",
-    title: "新青安 3.0 上路：額度提高了，但多了三道門檻",
-    desc: "額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，還改成一生限貸一次。先看自己過不過得了門檻。",
-  },
-  {
-    tag: "首購知識",
-    title: "自備款要準備多少？四大生活圈總價帶實算",
-    desc: "用近半年實價登錄均價，換算 25～35 坪三房在各區的總價與自備款區間，先知道要存多久。",
-  },
-  {
-    tag: "換屋稅務",
-    title: "重購退稅：順序錯了就退不到",
-    desc: "先買後賣、先賣後買在稅上是兩件事，時間差幾個月結果差很多。買賣前先把時程表排出來。",
-  },
-  {
-    tag: "換屋規劃",
-    title: "先買後賣 vs 先賣後買，資金壓力差在哪",
-    desc: "兩條路線各自的現金流缺口、過渡期成本與風險，用一張表比較給你看。",
-  },
-  {
-    tag: "生活圈情報",
-    title: "美術館特區 vs 農十六：同樣家庭客，差在哪？",
-    desc: "價差近 10 萬/坪，差的不只是位置。從學區、綠地、屋齡到停車條件逐項比較。",
-  },
-  {
-    tag: "生活圈情報",
-    title: "中都重劃區值得等嗎？從實價登錄看變化",
-    desc: "四區裡總價門檻最低的一區，愛河與濕地公園是加分題。看看近兩年成交結構怎麼走。",
-  },
+  { tag: "首購", title: "新青安 3.0 上路：額度提高了，但多了三道門檻",
+    desc: "額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，並改為一生限貸一次。先確認自己過不過得了門檻。" },
+  { tag: "首購", title: "自備款要準備多少？四區總價帶實算",
+    desc: "用近半年實價登錄均價，換算 25–35 坪三房在各區的總價與自備款區間，先知道要存多久。" },
+  { tag: "稅務", title: "重購退稅：順序錯了就退不到",
+    desc: "先買後賣、先賣後買在稅上是兩件事，時間差幾個月結果差很多。買賣前先把時程表排出來。" },
+  { tag: "換屋", title: "先買後賣 vs 先賣後買，資金壓力差在哪",
+    desc: "兩條路線各自的現金流缺口、過渡期成本與風險，用一張表比較給你看。" },
+  { tag: "生活圈", title: "美術館特區 vs 農十六：同樣家庭客，差在哪？",
+    desc: "價差近十萬一坪，差的不只是位置。從學區、綠地、屋齡到停車條件逐項比較。" },
+  { tag: "生活圈", title: "中都重劃區值得等嗎？從實價登錄看變化",
+    desc: "四區裡總價門檻最低的一區，愛河與濕地公園是加分題。看看近兩年成交結構怎麼走。" },
 ];
 
 function ArticlesSection() {
   return (
-    <section id="knowledge" className="max-w-6xl mx-auto px-6 py-10">
-      <Eyebrow code="CG·04">知識文章</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">買房前，先把該懂的事搞懂</h2>
-      <p className="text-ink/60 mb-8 text-sm">首購與換屋最常卡住的幾個問題，我們寫成好讀的整理。</p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ARTICLES.map((a,i) => (
-          <div key={i} className="block bg-white rounded-2xl p-6 border border-ink/5 hover:border-orange/40 transition">
-            <span className="font-mono text-xs text-sage">{a.tag}</span>
-            <h3 className="font-heading font-bold mt-2 mb-2 leading-snug">{a.title}</h3>
-            <p className="text-sm text-ink/60 leading-relaxed">{a.desc}</p>
-            <span className="inline-block mt-4 text-xs font-mono text-ink/35">內文撰寫中</span>
-          </div>
-        ))}
+    <section id="knowledge" className="bg-surface border-y border-line">
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <SectionHead
+          label="Notes"
+          title="買房前，先把該懂的事搞懂"
+          note="首購與換屋最常卡住的幾個問題，我們整理成好讀的說明。"
+        />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
+          {ARTICLES.map((a, i) => (
+            <article key={i} className="border-t-2 border-ink pt-5">
+              <div className="font-mono text-[11px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
+              <h3 className="text-[16px] font-bold leading-snug mb-3 tracking-tight">{a.title}</h3>
+              <p className="text-[13px] text-inkSoft leading-[1.85]">{a.desc}</p>
+              <div className="font-mono text-[11px] text-inkFaint mt-5">內文撰寫中</div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-/* ---------- 試算工具 ---------- */
+/* ================= 試算工具 ================= */
 const TOOLS = [
-  { code: "T-01", title: "學區地圖查詢", desc: "輸入門牌，查對應的學區國中小。" },
-  { code: "T-02", title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。" },
-  { code: "T-03", title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。" },
-  { code: "T-04", title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。" },
+  { title: "學區地圖查詢", desc: "輸入門牌，查對應的學區國中小。" },
+  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。" },
+  { title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。" },
+  { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。" },
 ];
 
 function ToolsSection() {
   return (
-    <section id="tools" className="max-w-6xl mx-auto px-6 py-10">
-      <Eyebrow code="CG·05">免費工具</Eyebrow>
-      <h2 className="font-heading font-900 text-2xl md:text-3xl mb-2">先算清楚，再做決定</h2>
-      <p className="text-ink/60 text-sm mb-8">首購／換屋族群最常用的 4 個試算工具（其餘工具規劃中）</p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {TOOLS.map(t => (
-          <div key={t.code} className="bg-peach/60 rounded-2xl p-6 hover:bg-peach transition">
-            <span className="font-mono text-xs text-orangeDark">{t.code}</span>
-            <h3 className="font-heading font-bold mt-2 mb-2">{t.title}</h3>
-            <p className="text-sm text-ink/60 leading-relaxed mb-4">{t.desc}</p>
-            <span className="text-xs font-mono text-orangeDark">開始試算 →</span>
+    <section id="tools" className="max-w-6xl mx-auto px-6 py-20">
+      <SectionHead
+        label="Tools"
+        title="先算清楚，再做決定"
+        note="不需要留資料就能用。首購與換屋最常用到的四個試算，陸續上線中。"
+      />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-sm overflow-hidden">
+        {TOOLS.map((t, i) => (
+          <div key={i} className="bg-surface p-7 hover:bg-tint transition">
+            <h3 className="text-[15px] font-bold mb-2 tracking-tight">{t.title}</h3>
+            <p className="text-[13px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
+            <span className="font-mono text-[11px] text-inkFaint">即將上線</span>
           </div>
         ))}
       </div>
@@ -449,54 +515,95 @@ function ToolsSection() {
   );
 }
 
-/* ---------- 聯絡／Footer ---------- */
-function ContactFooter() {
+/* ================= 賀成交 ================= */
+const DEALS = [
+  { img: "assets/deal-01.jpg", area: "美術館特區", caption: "白天鵝　高樓層景觀三房平車" },
+  { img: "assets/deal-02.jpg", area: "成交實績", caption: "輕屋齡面公園雙車墅" },
+  { img: "assets/deal-03.jpg", area: "美術館特區", caption: "白天鵝　美裝平車" },
+];
+
+function DealsSection() {
   return (
-    <footer id="contact" className="bg-ink text-cream/80 mt-16">
-      <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-10">
-        <div>
-          <h2 className="font-heading font-900 text-2xl text-white mb-3">聊聊你的第一個家</h2>
-          <p className="text-sm leading-relaxed mb-6">
-            美術館・農十六・瑞豐巨蛋・中都，澄果團隊在地陪你找家、算清楚每一筆費用。
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <CTAButton href={BRAND.officialSite}>線上諮詢</CTAButton>
-            <CTAButton primary={false} href={BRAND.phoneHref}>致電 {BRAND.phone}</CTAButton>
-          </div>
-          <div className="flex gap-4 mt-6 text-sm">
-            <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange">Facebook</a>
-            <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-orange">Instagram</a>
-          </div>
-        </div>
-        <div className="text-sm font-mono space-y-2 md:text-right">
-          <div>{BRAND.teamName}</div>
-          <div className="text-cream/50">{BRAND.legalName}</div>
-          <div>地址：{BRAND.address}</div>
-          <div>電話：<a href={BRAND.phoneHref} className="hover:text-orange">{BRAND.phone}</a></div>
+    <section id="deals" className="bg-surface border-t border-line">
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <SectionHead
+          label="Closed"
+          title="賀成交"
+          note="感謝每一組信任澄果團隊的屋主與買方。"
+        />
+        <div className="grid md:grid-cols-3 gap-6">
+          {DEALS.map((d, i) => (
+            <figure key={i}>
+              <img src={d.img} alt={`${d.area} ${d.caption} 成交`}
+                className="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
+              <figcaption className="mt-4">
+                <div className="font-mono text-[11px] tracking-wider text-inkFaint">{d.area}</div>
+                <div className="text-[14px] text-ink mt-1">{d.caption}</div>
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </div>
-      <div className="text-center text-xs py-4 border-t border-white/10 font-mono">
-        © {BRAND.teamName} All rights reserved.
+    </section>
+  );
+}
+
+/* ================= Footer ================= */
+function Footer() {
+  return (
+    <footer id="contact" className="bg-ink text-white/70">
+      <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
+        <div className="md:col-span-7">
+          <h2 className="display text-2xl text-white">先聊聊，不用急著決定</h2>
+          <p className="mt-4 text-sm leading-[1.9] max-w-md">
+            不論是想知道自己的預算能買哪一區，或是手上房子現在值多少，
+            都可以先問。我們會用實際成交資料回答你。
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href={BRAND.officialSite} external>線上諮詢</Button>
+            <Button href={BRAND.phoneHref} variant="ghostDark">致電 {BRAND.phone}</Button>
+          </div>
+          <div className="flex gap-6 mt-8 font-mono text-[12px]">
+            <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Facebook</a>
+            <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Instagram</a>
+            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">官方網站</a>
+          </div>
+        </div>
+
+        <div className="md:col-span-5 md:text-right font-mono text-[12px] leading-[2] text-white/60">
+          <div className="text-white">{BRAND.teamName}</div>
+          <div>{BRAND.legalName}</div>
+          <div>{BRAND.address}</div>
+          <div><a href={BRAND.phoneHref} className="hover:text-orange transition">{BRAND.phone}</a></div>
+        </div>
+      </div>
+      <div className="border-t border-white/10">
+        <div className="max-w-6xl mx-auto px-6 py-5 font-mono text-[11px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+          <span>© {new Date().getFullYear()} {BRAND.legalName}</span>
+          <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
+        </div>
       </div>
     </footer>
   );
 }
 
+/* ================= App ================= */
 function App() {
+  const { data, error } = useMarketData();
   return (
-    <div>
+    <>
       <Header />
-      <Hero />
-      <CitrusDivider />
-      <AreasSection />
-      <CitrusDivider />
-      <AboutSection />
-      <ServicesSection />
-      <CitrusDivider />
-      <ArticlesSection />
-      <ToolsSection />
-      <ContactFooter />
-    </div>
+      <main>
+        <Hero market={data} />
+        <AreasSection market={data} error={error} />
+        <AboutSection />
+        <ServicesSection />
+        <ArticlesSection />
+        <ToolsSection />
+        <DealsSection />
+      </main>
+      <Footer />
+    </>
   );
 }
 
