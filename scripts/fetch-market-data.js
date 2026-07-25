@@ -1,10 +1,13 @@
 /**
- * 澄果團隊｜四大生活圈行情自動更新腳本
+ * 澄果團隊｜四大生活圈行情自動更新腳本（v2）
  * ------------------------------------------------
  * 資料來源：內政部不動產交易實價查詢服務網（plvr.land.moi.gov.tw）
  * 官方資料本身「每月 1、11、21 日」批次公告，不是逐日更新。
- * 本腳本設計為「每日執行、有新一期資料才會變動結果」，
- * 而不是假裝每天都有新成交數字。
+ * 本腳本設計為「每日執行、有新一期資料才會變動結果」。
+ *
+ * v2 變更：
+ * - 「本期均價」改成合併最近兩季（約近6個月）資料計算，避免單季樣本數太少
+ * - 「走勢」改成比較「再往前兩季」（約6個月前的區間）
  *
  * 執行方式： node scripts/fetch-market-data.js
  * 由 .github/workflows/update-market-data.yml 每日排程呼叫。
@@ -27,10 +30,9 @@ const SEASON_ZIP_URL = (season) =>
 
 const M2_TO_PING = 0.3025; // 平方公尺 轉 坪
 
-/* ---------- 工具：計算「N 季前」的季別代碼（民國年+S+季） ---------- */
+/* ---------- 工具：計算「N 個月前」對應的季別代碼（民國年+S+季） ---------- */
 function seasonCodeMonthsAgo(monthsAgo) {
   const now = new Date();
-  const totalMonths = now.getFullYear() - 1911 * 0; // placeholder, 下面重算
   let rocYear = now.getFullYear() - 1911;
   let quarter = Math.ceil((now.getMonth() + 1) / 3);
   let quartersBack = Math.round(monthsAgo / 3);
@@ -48,9 +50,14 @@ function downloadAndExtract(url, label) {
   const extractDir = path.join(TMP, label);
   mkdirSync(extractDir, { recursive: true });
   console.log(`[下載] ${label}: ${url}`);
-  execSync(`curl -L -f -s -o "${zipPath}" "${url}"`, { stdio: "inherit" });
-  execSync(`unzip -o -q "${zipPath}" -d "${extractDir}"`);
-  return extractDir;
+  try {
+    execSync(`curl -L -f -s -o "${zipPath}" "${url}"`, { stdio: "inherit" });
+    execSync(`unzip -o -q "${zipPath}" -d "${extractDir}"`);
+    return extractDir;
+  } catch (e) {
+    console.warn(`[警告] ${label} 下載或解壓失敗，這段資料先跳過：`, e.message);
+    return null;
+  }
 }
 
 /* ---------- 簡易 CSV 解析（處理雙引號內含逗號的欄位） ---------- */
@@ -81,6 +88,7 @@ function parseCSV(text) {
 
 /* ---------- 讀取某個解壓目錄下，所有「不動產買賣_a」主檔 ---------- */
 function readAllMainCsv(extractDir) {
+  if (!extractDir) return [];
   const files = readdirSync(extractDir).filter(f => /_lvr_land_a\.csv$/i.test(f));
   let records = [];
   for (const file of files) {
@@ -97,7 +105,7 @@ function readAllMainCsv(extractDir) {
   return records;
 }
 
-/* ---------- 依生活圈設定篩選 + 計算平均單價（元/坪） ---------- */
+/* ---------- 依生活圈設定篩選 + 計算平均單價（萬元/坪） ---------- */
 function computeAreaAverage(records, area) {
   const matched = records.filter(r => {
     const district = r["鄉鎮市區"] || "";
@@ -124,22 +132,29 @@ async function main() {
   if (existsSync(TMP)) rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
 
-  // 1. 本期資料
+  // 近6個月窗口：本期 + 上一季
   const currentDir = downloadAndExtract(CURRENT_ZIP_URL, "current");
-  const currentRecords = readAllMainCsv(currentDir);
+  const prevSeasonDir = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(3)), "prev1");
+  const recentRecords = [
+    ...readAllMainCsv(currentDir),
+    ...readAllMainCsv(prevSeasonDir),
+  ];
 
-  // 2. 半年前資料（用來算走勢），抓不到就略過走勢計算
+  // 6個月前窗口（拿來算走勢）：往前兩季 + 往前三季
   let trendRecords = [];
   try {
-    const pastSeason = seasonCodeMonthsAgo(6);
-    const pastDir = downloadAndExtract(SEASON_ZIP_URL(pastSeason), "past");
-    trendRecords = readAllMainCsv(pastDir);
+    const trendDir1 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(6)), "trend1");
+    const trendDir2 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(9)), "trend2");
+    trendRecords = [
+      ...readAllMainCsv(trendDir1),
+      ...readAllMainCsv(trendDir2),
+    ];
   } catch (e) {
-    console.warn("[警告] 半年前資料下載失敗，本次先不計算走勢：", e.message);
+    console.warn("[警告] 走勢比較資料下載失敗，本次先不計算走勢：", e.message);
   }
 
   const areas = AREAS_CONFIG.areas.map(area => {
-    const current = computeAreaAverage(currentRecords, area);
+    const current = computeAreaAverage(recentRecords, area);
     const past = trendRecords.length ? computeAreaAverage(trendRecords, area) : { avgPricePerPing: null };
 
     let trendPct = null;
@@ -159,7 +174,7 @@ async function main() {
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價為近兩季（約6個月）合併計算，走勢為與前兩季（約6個月前）比較。",
     areas,
   };
 
