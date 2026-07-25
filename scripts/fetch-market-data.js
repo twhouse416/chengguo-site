@@ -118,13 +118,22 @@ function computeAreaAverage(records, area) {
     return unitPrice > 0;
   });
 
-  if (matched.length === 0) return { sampleSize: 0, avgPricePerPing: null };
+  if (matched.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
 
-  const pricesPerPing = matched.map(r => parseFloat(r["單價元平方公尺"]) / M2_TO_PING);
+  const pricesPerPing = matched
+    .map(r => parseFloat(r["單價元平方公尺"]) / M2_TO_PING)
+    .sort((a, b) => a - b);
   const avg = pricesPerPing.reduce((a, b) => a + b, 0) / pricesPerPing.length;
+
+  // 取 25%～75% 百分位當作「常見成交價格帶」，避免極端值拉走整體印象
+  const pct = (p) => pricesPerPing[Math.min(pricesPerPing.length - 1, Math.floor(pricesPerPing.length * p))];
+  const toWan = (v) => Math.round(v / 10000);
+
   return {
     sampleSize: matched.length,
     avgPricePerPing: Math.round(avg / 1000) / 10, // 換算成「萬元/坪」，取一位小數
+    bandLow: toWan(pct(0.25)),
+    bandHigh: toWan(pct(0.75)),
   };
 }
 
@@ -166,15 +175,17 @@ async function main() {
       code: area.code,
       name: area.name,
       avgPricePerPing: current.avgPricePerPing,
+      bandLow: current.bandLow,
+      bandHigh: current.bandHigh,
       sampleSize: current.sampleSize,
       lowSample: current.sampleSize < 5,
-      trendPct,
+      trendPct, // 保留供內部參考，網站不直接顯示漲跌幅
     };
   });
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價為近兩季（約6個月）合併計算，走勢為與前兩季（約6個月前）比較。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價與價格帶為近兩季（約6個月）成交合併計算，價格帶取25%～75%百分位。",
     areas,
   };
 
