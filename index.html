@@ -488,10 +488,10 @@ function ArticlesSection() {
 
 /* ================= 試算工具 ================= */
 const TOOLS = [
-  { title: "學區地圖查詢", desc: "輸入門牌，查對應的學區國中小。" },
-  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。" },
-  { title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。" },
-  { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。" },
+  { title: "學區查詢", desc: "選行政區與里別，查出對應的國小學區。", href: "tools/school-zone/index.html" },
+  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。", href: null },
+  { title: "新青安 3.0 試算", desc: "先看資格過不過，再算前幾年月付多少。", href: null },
+  { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: null },
 ];
 
 function ToolsSection() {
@@ -500,16 +500,23 @@ function ToolsSection() {
       <SectionHead
         label="Tools"
         title="先算清楚，再做決定"
-        note="不需要留資料就能用。首購與換屋最常用到的四個試算，陸續上線中。"
+        note="不需要留資料就能用。首購與換屋最常用到的四個工具，陸續上線中。"
       />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-sm overflow-hidden">
-        {TOOLS.map((t, i) => (
-          <div key={i} className="bg-surface p-7 hover:bg-tint transition">
-            <h3 className="text-[17px] font-bold mb-2 tracking-tight">{t.title}</h3>
-            <p className="text-[15px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
-            <span className="font-mono text-[12px] text-inkFaint">即將上線</span>
-          </div>
-        ))}
+        {TOOLS.map((t, i) => {
+          const inner = (
+            <>
+              <h3 className="text-[17px] font-bold mb-2 tracking-tight">{t.title}</h3>
+              <p className="text-[15px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
+              <span className={`font-mono text-[12px] ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
+                {t.href ? "開始查詢 →" : "即將上線"}
+              </span>
+            </>
+          );
+          return t.href
+            ? <a key={i} href={t.href} className="block bg-surface p-7 hover:bg-tint transition">{inner}</a>
+            : <div key={i} className="bg-surface p-7">{inner}</div>;
+        })}
       </div>
     </section>
   );
