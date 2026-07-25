@@ -1,38 +1,38 @@
 {
-  "updatedAt": "2026-07-25T04:57:14.195Z",
-  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）",
+  "updatedAt": "2026-07-25T05:04:44.815Z",
+  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價為近兩季（約6個月）合併計算，走勢為與前兩季（約6個月前）比較。",
   "areas": [
     {
       "code": "01",
       "name": "美術館特區",
-      "avgPricePerPing": 48,
-      "sampleSize": 3,
-      "lowSample": true,
-      "trendPct": 24
+      "avgPricePerPing": 38,
+      "sampleSize": 98,
+      "lowSample": false,
+      "trendPct": -11.2
     },
     {
       "code": "02",
       "name": "農十六特區",
-      "avgPricePerPing": 23.1,
-      "sampleSize": 3,
-      "lowSample": true,
-      "trendPct": -22.7
+      "avgPricePerPing": 30.9,
+      "sampleSize": 20,
+      "lowSample": false,
+      "trendPct": -3.1
     },
     {
       "code": "03",
       "name": "瑞豐・巨蛋",
-      "avgPricePerPing": 27.7,
-      "sampleSize": 3,
-      "lowSample": true,
-      "trendPct": -12.1
+      "avgPricePerPing": 27.8,
+      "sampleSize": 31,
+      "lowSample": false,
+      "trendPct": -10.3
     },
     {
       "code": "04",
       "name": "中都重劃區",
-      "avgPricePerPing": 17,
-      "sampleSize": 1,
-      "lowSample": true,
-      "trendPct": -42
+      "avgPricePerPing": 21.3,
+      "sampleSize": 23,
+      "lowSample": false,
+      "trendPct": -20.8
     }
   ]
 }
