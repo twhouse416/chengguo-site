@@ -116,7 +116,7 @@ function computeAreaAverage(records, area) {
   const avg = pricesPerPing.reduce((a, b) => a + b, 0) / pricesPerPing.length;
   return {
     sampleSize: matched.length,
-    avgPricePerPing: Math.round(avg / 1000 * 10) / 10, // 換算成「萬元/坪」，取一位小數
+    avgPricePerPing: Math.round(avg / 1000) / 10, // 換算成「萬元/坪」，取一位小數
   };
 }
 
