@@ -16,7 +16,8 @@ chengguo-site/
 │  ├─ mortgage/                   房貸試算
 │  ├─ qingan/                     新青安 3.0 試算
 │  └─ property-tax/               房地合一稅試算
-├─ assets/                        圖片
+├─ assets/
+│  └─ articles/                  文章用圖（後台上傳會放這裡）
 ├─ config/areas.json              四大生活圈路名設定
 ├─ data/
 │  ├─ market-data.json            行情資料（每日自動更新）
@@ -51,6 +52,16 @@ chengguo-site/
 - Permissions → Repository permissions → Contents → Read and write
 
 權杖只存在瀏覽器分頁，關掉就清除。不要在公用電腦使用。
+
+### 加圖片
+
+文章可以有封面圖，內文也可以插圖。
+
+**有設定權杖**：在後台直接按「選擇圖片」，會自動壓縮（寬 1600px）並上傳到 `assets/articles/`。
+
+**沒有權杖**：先自己把圖片放到 GitHub 的 `assets/articles/` 資料夾，再到後台的路徑欄位填 `assets/articles/檔名.jpg`。
+
+記得填「替代文字」，這是給看不到圖片的人和搜尋引擎看的。
 
 ### 排程顯示
 

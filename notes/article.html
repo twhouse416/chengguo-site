@@ -139,6 +139,19 @@ function Block({ block }) {
         </blockquote>
       );
 
+    case "image":
+      return (
+        <figure className="my-9">
+          <img src={`../${block.src}`} alt={block.alt || ""} loading="lazy"
+            className="w-full rounded-sm border border-line" />
+          {block.caption && (
+            <figcaption className="mt-3 text-[14px] text-inkFaint leading-relaxed">
+              {block.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+
     default:
       return null;
   }
@@ -208,6 +221,11 @@ function App() {
               <h1 className="display text-[28px] md:text-[34px]">{article.title}</h1>
               <p className="mt-5 text-[17px] text-inkSoft leading-[1.95]">{article.summary}</p>
 
+              {article.cover && (
+                <img src={`../${article.cover}`} alt={article.coverAlt || article.title} loading="eager"
+                  className="w-full aspect-[3/2] object-cover rounded-sm border border-line mt-8" />
+              )}
+
               {article.reviewBy && today >= article.reviewBy && (
                 <div className="mt-7 bg-tint border-l-2 border-orange px-6 py-5">
                   <p className="text-[16px] leading-[1.95] text-orangeDeep">
@@ -241,11 +259,17 @@ function App() {
                 <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>
                 <div className="space-y-6">
                   {others.map(a => (
-                    <a key={a.slug} href={`article.html?slug=${a.slug}`} className="block group">
-                      <div className="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">{a.tag}</div>
-                      <h3 className="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">
-                        {a.title}
-                      </h3>
+                    <a key={a.slug} href={`article.html?slug=${a.slug}`} className="flex gap-4 group items-start">
+                      {a.cover && (
+                        <img src={`../${a.cover}`} alt="" loading="lazy"
+                          className="w-24 aspect-[3/2] object-cover rounded-sm border border-line shrink-0" />
+                      )}
+                      <div>
+                        <div className="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">{a.tag}</div>
+                        <h3 className="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">
+                          {a.title}
+                        </h3>
+                      </div>
                     </a>
                   ))}
                 </div>

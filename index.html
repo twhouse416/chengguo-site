@@ -523,6 +523,12 @@ function ArticlesSection() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
               {articles.map(a => (
                 <article key={a.slug} className="border-t-2 border-ink pt-5">
+                  {a.cover && (
+                    <a href={`notes/article.html?slug=${a.slug}`} className="block mb-4">
+                      <img src={a.cover} alt={a.coverAlt || a.title} loading="lazy"
+                        className="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
+                    </a>
+                  )}
                   <div className="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
                   <h3 className="text-[17px] font-bold leading-snug mb-3 tracking-tight">
                     <a href={`notes/article.html?slug=${a.slug}`} className="hover:text-orangeDeep transition">

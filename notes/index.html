@@ -141,6 +141,12 @@ function App() {
             <div className="mt-10 grid md:grid-cols-2 gap-x-8 gap-y-10">
               {list.map(a => (
                 <article key={a.slug} className="border-t-2 border-ink pt-5">
+                  {a.cover && (
+                    <a href={`article.html?slug=${a.slug}`} className="block mb-4">
+                      <img src={`../${a.cover}`} alt={a.coverAlt || a.title} loading="lazy"
+                        className="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
+                    </a>
+                  )}
                   <div className="flex items-center gap-3 mb-3 font-mono text-[12px]">
                     <span className="text-orangeDeep tracking-wider">{a.tag}</span>
                     <span className="text-inkFaint">{fmtDate(a.date)}</span>
