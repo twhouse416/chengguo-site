@@ -154,7 +154,7 @@ function Header() {
     ["#areas", "生活圈行情"],
     ["#about", "關於團隊"],
     ["#services", "服務內容"],
-    ["#knowledge", "知識文章"],
+    ["notes/index.html", "知識文章"],
     ["#tools", "試算工具"],
     ["#deals", "近期成交"],
   ];
@@ -489,22 +489,16 @@ function ServicesSection() {
 }
 
 /* ================= 知識文章 ================= */
-const ARTICLES = [
-  { tag: "首購", title: "新青安 3.0 上路：額度提高了，但多了三道門檻",
-    desc: "額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，並改為一生限貸一次。先確認自己過不過得了門檻。" },
-  { tag: "首購", title: "自備款要準備多少？四區總價帶實算",
-    desc: "用近半年實價登錄均價，換算 25–35 坪三房在各區的總價與自備款區間，先知道要存多久。" },
-  { tag: "稅務", title: "重購退稅：順序錯了就退不到",
-    desc: "先買後賣、先賣後買在稅上是兩件事，時間差幾個月結果差很多。買賣前先把時程表排出來。" },
-  { tag: "換屋", title: "先買後賣 vs 先賣後買，資金壓力差在哪",
-    desc: "兩條路線各自的現金流缺口、過渡期成本與風險，用一張表比較給你看。" },
-  { tag: "生活圈", title: "美術館特區 vs 農十六：同樣家庭客，差在哪？",
-    desc: "價差近十萬一坪，差的不只是位置。從學區、綠地、屋齡到停車條件逐項比較。" },
-  { tag: "生活圈", title: "中都重劃區值得等嗎？從實價登錄看變化",
-    desc: "四區裡總價門檻最低的一區，愛河與濕地公園是加分題。看看近兩年成交結構怎麼走。" },
-];
-
 function ArticlesSection() {
+  const [articles, setArticles] = useState(null);
+
+  useEffect(() => {
+    fetch("./data/articles.json")
+      .then(r => r.json())
+      .then(d => setArticles((d.articles || []).filter(a => !a.draft).slice(0, 6)))
+      .catch(() => setArticles([]));
+  }, []);
+
   return (
     <section id="knowledge" className="bg-surface border-y border-line">
       <div className="max-w-6xl mx-auto px-6 py-20">
@@ -513,16 +507,41 @@ function ArticlesSection() {
           title="買房前，先把該懂的事搞懂"
           note="首購與換屋最常卡住的幾個問題，我們整理成好讀的說明。"
         />
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
-          {ARTICLES.map((a, i) => (
-            <article key={i} className="border-t-2 border-ink pt-5">
-              <div className="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
-              <h3 className="text-[17px] font-bold leading-snug mb-3 tracking-tight">{a.title}</h3>
-              <p className="text-[15px] text-inkSoft leading-[1.85]">{a.desc}</p>
-              <div className="font-mono text-[12px] text-inkFaint mt-5">內文撰寫中</div>
-            </article>
-          ))}
-        </div>
+
+        {articles === null && (
+          <p className="font-mono text-[13px] text-inkFaint">讀取中…</p>
+        )}
+
+        {articles && articles.length === 0 && (
+          <p className="text-[16px] text-inkSoft leading-[1.9]">
+            文章正在準備中，近期陸續發布。有想先了解的問題，歡迎直接來電。
+          </p>
+        )}
+
+        {articles && articles.length > 0 && (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
+              {articles.map(a => (
+                <article key={a.slug} className="border-t-2 border-ink pt-5">
+                  <div className="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
+                  <h3 className="text-[17px] font-bold leading-snug mb-3 tracking-tight">
+                    <a href={`notes/article.html?slug=${a.slug}`} className="hover:text-orangeDeep transition">
+                      {a.title}
+                    </a>
+                  </h3>
+                  <p className="text-[15px] text-inkSoft leading-[1.85]">{a.summary}</p>
+                  <a href={`notes/article.html?slug=${a.slug}`}
+                    className="inline-block font-mono text-[12px] text-orangeDeep mt-5 hover:underline">
+                    閱讀全文 →
+                  </a>
+                </article>
+              ))}
+            </div>
+            <div className="mt-12">
+              <Button href="notes/index.html" variant="outline">看所有文章</Button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
