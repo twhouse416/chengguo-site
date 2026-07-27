@@ -134,8 +134,7 @@ function Header() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-5">
-          <a href={BRAND.phoneHref} className="font-mono text-[15px] text-ink hover:text-orangeDeep">{BRAND.phone}</a>
-          <Button href={BRAND.officialSite} external>線上諮詢</Button>
+          <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
         </div>
 
         <button className="lg:hidden w-9 h-9 flex items-center justify-center border border-line rounded-sm"
@@ -149,8 +148,7 @@ function Header() {
           {nav.map(([href, label]) => (
             <a key={href} href={href} className="text-[16px] text-inkSoft py-1" onClick={() => setOpen(false)}>{label}</a>
           ))}
-          <a href={BRAND.phoneHref} className="font-mono text-[15px] text-ink">{BRAND.phone}</a>
-          <Button href={BRAND.officialSite} external>線上諮詢</Button>
+          <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
         </div>
       )}
     </header>
@@ -189,7 +187,7 @@ function Hero({ market }) {
             我們把內政部實價登錄整理成看得懂的價格帶，讓首購與換屋家庭在談價之前，先知道行情落在哪裡。
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Button href={BRAND.officialSite} external>線上諮詢</Button>
+            <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
             <Button href="#areas" variant="outline">查看四區行情</Button>
           </div>
         </div>
@@ -373,7 +371,7 @@ function AboutSection() {
           </details>
 
           <div className="mt-9">
-            <Button href={BRAND.officialSite} external>線上諮詢澄果團隊</Button>
+            <Button href={BRAND.phoneHref}>來電諮詢澄果團隊</Button>
           </div>
         </div>
       </div>
@@ -435,7 +433,7 @@ function ServicesSection() {
                 </li>
               ))}
             </ul>
-            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
+            <a href={BRAND.phoneHref}
               className="font-mono text-[15px] text-orangeDeep hover:underline">
               {s.cta} →
             </a>
@@ -567,8 +565,8 @@ function Footer() {
             都可以先問。我們會用實際成交資料回答你。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button href={BRAND.officialSite} external>線上諮詢</Button>
-            <Button href={BRAND.phoneHref} variant="ghostDark">致電 {BRAND.phone}</Button>
+            <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
+            <Button href={BRAND.officialSite} variant="ghostDark" external>官方網站</Button>
           </div>
           <div className="flex gap-6 mt-8 font-mono text-[13px]">
             <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Facebook</a>
