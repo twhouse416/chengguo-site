@@ -105,6 +105,48 @@ function Button({ children, href, variant = "solid", external = false }) {
   );
 }
 
+/* ---- 社群 icon ---- */
+function IconFacebook({ className = "" }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/>
+    </svg>
+  );
+}
+
+function IconInstagram({ className = "" }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/* 社群按鈕組：variant light 用於淺底，dark 用於深底 */
+function SocialLinks({ variant = "light", size = "md" }) {
+  const box = size === "sm" ? "w-9 h-9" : "w-10 h-10";
+  const icon = size === "sm" ? "w-[17px] h-[17px]" : "w-[19px] h-[19px]";
+  const styles = variant === "dark"
+    ? "border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10"
+    : "border-line text-inkSoft hover:text-orangeDeep hover:border-orange";
+  const cls = `${box} flex items-center justify-center border rounded-sm transition ${styles}`;
+  return (
+    <div className="flex items-center gap-2">
+      <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer"
+        aria-label="澄果團隊 Facebook" title="Facebook" className={cls}>
+        <IconFacebook className={icon} />
+      </a>
+      <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer"
+        aria-label="澄果團隊 Instagram" title="Instagram" className={cls}>
+        <IconInstagram className={icon} />
+      </a>
+    </div>
+  );
+}
+
 /* ================= Header ================= */
 function Header() {
   const [open, setOpen] = useState(false);
@@ -133,7 +175,8 @@ function Header() {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-5">
+        <div className="hidden lg:flex items-center gap-4">
+          <SocialLinks variant="light" size="sm" />
           <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
         </div>
 
@@ -149,6 +192,7 @@ function Header() {
             <a key={href} href={href} className="text-[16px] text-inkSoft py-1" onClick={() => setOpen(false)}>{label}</a>
           ))}
           <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
+          <div className="pt-1"><SocialLinks variant="light" /></div>
         </div>
       )}
     </header>
@@ -568,10 +612,8 @@ function Footer() {
             <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
             <Button href={BRAND.officialSite} variant="ghostDark" external>官方網站</Button>
           </div>
-          <div className="flex gap-6 mt-8 font-mono text-[13px]">
-            <a href={BRAND.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Facebook</a>
-            <a href={BRAND.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">Instagram</a>
-            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer" className="hover:text-orange transition">官方網站</a>
+          <div className="mt-8">
+            <SocialLinks variant="dark" />
           </div>
         </div>
 
