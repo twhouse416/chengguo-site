@@ -242,13 +242,13 @@ function App() {
             把你在看的物件地址給我們，澄果團隊直接幫你查清楚。
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-              線上諮詢
-            </a>
             <a href={BRAND.phoneHref}
+              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+              來電諮詢 {BRAND.phone}
+            </a>
+            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
-              致電 {BRAND.phone}
+              官方網站
             </a>
           </div>
         </section>
