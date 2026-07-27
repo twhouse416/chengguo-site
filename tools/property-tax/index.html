@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="../../assets/logo-icon.png" />
+<title>房地合一稅試算｜台灣房屋 澄果團隊</title>
+<meta name="description" content="房地合一稅2.0試算。輸入買賣價格與持有期間，算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅。" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+          paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+          orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3',
+          pass:'#2F6B4F', fail:'#A8341F',
+        },
+        fontFamily: {
+          sans: ['"Noto Sans TC"','sans-serif'],
+          mono: ['"IBM Plex Mono"','monospace'],
+        },
+        borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+      }
+    }
+  }
+</script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
+  ::selection { background:#FD7305; color:#fff; }
+  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
+  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  input[type=checkbox] { accent-color:#FD7305; width:18px; height:18px; }
+</style>
+</head>
+<body class="font-sans text-ink">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const BRAND = {
+  officialSite: "https://store.twhg.com.tw/TE80",
+  phone: "07-9766977",
+  phoneHref: "tel:0797669977",
+};
+
+/* 房地合一稅 2.0 稅率級距（境內居住者個人） */
+const BRACKETS = [
+  { key: "u2",   label: "2 年以內",        rate: 45 },
+  { key: "2to5", label: "超過 2 年未逾 5 年", rate: 35 },
+  { key: "5to10",label: "超過 5 年未逾 10 年",rate: 20 },
+  { key: "o10",  label: "超過 10 年",       rate: 15 },
+];
+
+const SELF_USE_EXEMPT = 400; // 自住免稅額（萬元）
+const SELF_USE_RATE = 10;    // 自住超額部分稅率
+
+const fmtW = n => (Math.round(n * 100) / 100).toLocaleString("zh-TW");
+
+function Field({ label, hint, children }) {
+  return (
+    <label className="block">
+      <span className="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">{label}</span>
+      {children}
+      {hint && <span className="block text-[13px] text-inkFaint mt-1.5 leading-relaxed">{hint}</span>}
+    </label>
+  );
+}
+
+function NumInput({ value, onChange, suffix, step = 1, min = 0 }) {
+  return (
+    <div className="flex items-center border border-line rounded-sm bg-surface focus-within:border-orange">
+      <input type="number" inputMode="decimal" step={step} min={min}
+        className="w-full px-4 py-3 text-[17px] font-mono bg-transparent outline-none"
+        value={value}
+        onChange={e => onChange(e.target.value === "" ? "" : Number(e.target.value))} />
+      {suffix && <span className="px-4 text-[14px] text-inkFaint shrink-0">{suffix}</span>}
+    </div>
+  );
+}
+
+function Row({ label, value, strong, note }) {
+  return (
+    <div className="flex items-baseline justify-between py-3 border-b border-line last:border-0 gap-4">
+      <div>
+        <span className={`text-[15px] ${strong ? "text-ink font-medium" : "text-inkSoft"}`}>{label}</span>
+        {note && <span className="block text-[13px] text-inkFaint mt-0.5 leading-relaxed">{note}</span>}
+      </div>
+      <span className={`font-mono shrink-0 ${strong ? "text-[19px] font-semibold" : "text-[17px]"}`}>{value}</span>
+    </div>
+  );
+}
+
+function App() {
+  const [sell, setSell] = useState(1500);
+  const [buy, setBuy] = useState(1000);
+  const [fee, setFee] = useState(50);
+  const [landGain, setLandGain] = useState(30);
+  const [holding, setHolding] = useState("2to5");
+
+  const [selfUse, setSelfUse] = useState(false);
+  const [repurchase, setRepurchase] = useState(false);
+  const [newPrice, setNewPrice] = useState(1200);
+
+  const bracket = BRACKETS.find(b => b.key === holding);
+
+  const r = useMemo(() => {
+    const income = sell - buy - fee - landGain;   // 課稅所得
+    if (income <= 0) {
+      return { income, taxable: 0, rate: 0, tax: 0, refund: 0, final: 0, loss: true };
+    }
+    let taxable, rate, tax;
+    if (selfUse) {
+      taxable = Math.max(0, income - SELF_USE_EXEMPT);
+      rate = SELF_USE_RATE;
+      tax = taxable * rate / 100;
+    } else {
+      taxable = income;
+      rate = bracket.rate;
+      tax = taxable * rate / 100;
+    }
+    const ratio = repurchase && sell > 0 ? Math.min(1, newPrice / sell) : 0;
+    const refund = tax * ratio;
+    return { income, taxable, rate, tax, refund, ratio, final: tax - refund, loss: false };
+  }, [sell, buy, fee, landGain, holding, selfUse, repurchase, newPrice, bracket]);
+
+  return (
+    <div>
+      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+        <div className="max-w-4xl mx-auto px-6 h-[68px] flex items-center justify-between">
+          <a href="../../index.html" className="flex items-center gap-3">
+            <img src="../../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
+            <span className="leading-tight">
+              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
+            </span>
+          </a>
+          <a href="../../index.html#tools" className="text-[15px] text-inkSoft hover:text-ink">← 回工具列表</a>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-14">
+        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 04</div>
+        <h1 className="display text-[30px] md:text-[36px]">房地合一稅試算</h1>
+        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
+          賣房前先抓出稅負。輸入買賣價格、必要費用與持有期間，
+          再依情況勾選自住優惠或換屋重購退稅，看看最後要繳多少。
+        </p>
+        <div className="mt-5 bg-tint border border-orange/30 rounded-sm px-5 py-4 text-[15px] text-orangeDeep leading-[1.8]">
+          本工具僅供初步估算。實際稅額涉及取得方式、土地漲價總數額、費用認列與各項優惠的適用認定，
+          個案差異大，請以國稅局核定為準，或洽專業地政士、會計師。
+        </div>
+        <div className="mt-6 h-px bg-line" />
+
+        <div className="mt-10 grid lg:grid-cols-5 gap-8">
+          {/* 輸入 */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-surface border border-line rounded-sm p-7 space-y-6">
+              <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">基本資料</div>
+
+              <Field label="賣出成交總價">
+                <NumInput value={sell} onChange={setSell} suffix="萬" step={10} />
+              </Field>
+
+              <Field label="當初取得成本" hint="買入總價，含契稅、代書費等取得時支出">
+                <NumInput value={buy} onChange={setBuy} suffix="萬" step={10} />
+              </Field>
+
+              <Field label="必要費用" hint="仲介費、廣告費、清潔搬運費、印花稅、代書費、規費等，須有憑證">
+                <NumInput value={fee} onChange={setFee} suffix="萬" step={1} />
+              </Field>
+
+              <Field label="土地漲價總數額" hint="土地增值稅單上的金額，可自所得中減除">
+                <NumInput value={landGain} onChange={setLandGain} suffix="萬" step={1} />
+              </Field>
+
+              <Field label="持有期間">
+                <select className="w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface"
+                  value={holding} onChange={e => setHolding(e.target.value)} disabled={selfUse}>
+                  {BRACKETS.map(b => <option key={b.key} value={b.key}>{b.label}（{b.rate}%）</option>)}
+                </select>
+              </Field>
+            </div>
+
+            <div className="bg-surface border border-line rounded-sm p-7 space-y-5">
+              <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">優惠適用</div>
+
+              <label className="flex gap-3 items-start cursor-pointer">
+                <input type="checkbox" checked={selfUse} onChange={e => setSelfUse(e.target.checked)} className="mt-0.5" />
+                <span>
+                  <span className="block text-[15px] leading-snug">符合自住房地優惠</span>
+                  <span className="block text-[13px] text-inkFaint mt-1 leading-relaxed">
+                    本人、配偶或未成年子女設籍、持有並居住連續滿 6 年，期間無出租或營業使用，
+                    且前 6 年內未曾使用過此優惠。
+                  </span>
+                </span>
+              </label>
+
+              <label className="flex gap-3 items-start cursor-pointer">
+                <input type="checkbox" checked={repurchase} onChange={e => setRepurchase(e.target.checked)} className="mt-0.5" />
+                <span>
+                  <span className="block text-[15px] leading-snug">申請重購退稅</span>
+                  <span className="block text-[13px] text-inkFaint mt-1 leading-relaxed">
+                    先買後賣或先賣後買皆可，兩案移轉登記間隔須在 2 年內，新舊屋都須符合自住規定。
+                  </span>
+                </span>
+              </label>
+
+              {repurchase && (
+                <Field label="重購房屋總價" hint="新屋價格大於等於舊屋售價可全額退稅，否則按比例退還">
+                  <NumInput value={newPrice} onChange={setNewPrice} suffix="萬" step={10} />
+                </Field>
+              )}
+            </div>
+          </div>
+
+          {/* 結果 */}
+          <div className="lg:col-span-3 space-y-6">
+            {r.loss ? (
+              <div className="bg-surface border border-line rounded-sm p-7">
+                <div className="display text-[22px] mb-3">本次交易無應納稅額</div>
+                <p className="text-[15px] text-inkSoft leading-[1.9]">
+                  課稅所得為 {fmtW(r.income)} 萬元，未產生所得，因此不需繳納房地合一稅。
+                </p>
+                <p className="text-[15px] text-orangeDeep leading-[1.9] mt-4 pt-4 border-t border-line">
+                  即使賠錢賣，仍須在所有權移轉登記日次日起 30 日內完成申報。
+                  未申報會被處 3,000 元至 3 萬元罰鍰。
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-surface border border-line rounded-sm p-7">
+                  <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-1">
+                    {r.refund > 0 ? "重購退稅後實際負擔" : "應納稅額"}
+                  </div>
+                  <div className="font-mono text-[40px] font-semibold text-orangeDeep leading-none">
+                    {fmtW(r.final)}
+                    <span className="text-[15px] font-normal text-inkSoft ml-2">萬元</span>
+                  </div>
+                  <div className="font-mono text-[13px] text-inkSoft mt-2">
+                    適用稅率 {r.rate}%
+                    {selfUse && "・自住優惠"}
+                  </div>
+                </div>
+
+                <div className="bg-surface border border-line rounded-sm p-7">
+                  <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">計算過程</div>
+                  <Row label="賣出成交總價" value={`${fmtW(sell)} 萬`} />
+                  <Row label="減：取得成本" value={`− ${fmtW(buy)} 萬`} />
+                  <Row label="減：必要費用" value={`− ${fmtW(fee)} 萬`} />
+                  <Row label="減：土地漲價總數額" value={`− ${fmtW(landGain)} 萬`} />
+                  <Row label="課稅所得" value={`${fmtW(r.income)} 萬`} strong />
+
+                  {selfUse && (
+                    <Row label="減：自住免稅額" value={`− ${fmtW(Math.min(r.income, SELF_USE_EXEMPT))} 萬`}
+                      note="自住房地優惠，課稅所得 400 萬元以下免稅" />
+                  )}
+
+                  <Row label="課稅基礎" value={`${fmtW(r.taxable)} 萬`} />
+                  <Row label={`乘：適用稅率 ${r.rate}%`} value={`${fmtW(r.tax)} 萬`} strong
+                    note={selfUse ? "超過免稅額部分適用 10% 優惠稅率" : `持有${bracket.label}`} />
+
+                  {r.refund > 0 && (
+                    <>
+                      <Row label="減：重購退稅"
+                        value={`− ${fmtW(r.refund)} 萬`}
+                        note={`退還比例 ${(r.ratio * 100).toFixed(1)}%（重購 ${fmtW(newPrice)} 萬 ÷ 出售 ${fmtW(sell)} 萬）`} />
+                      <Row label="實際負擔" value={`${fmtW(r.final)} 萬`} strong />
+                    </>
+                  )}
+                </div>
+
+                {/* 情境比較 */}
+                {!selfUse && (
+                  <div className="bg-surface border border-line rounded-sm p-7">
+                    <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-1">
+                      不同持有期間比較
+                    </div>
+                    <p className="text-[14px] text-inkSoft leading-[1.8] mb-5">
+                      同樣的獲利，多持有一段時間，稅負差距可能很大。
+                    </p>
+                    <table className="w-full text-[15px]">
+                      <thead>
+                        <tr className="font-mono text-[12px] tracking-wider text-inkFaint border-b border-line">
+                          <th className="text-left pb-2 font-normal">持有期間</th>
+                          <th className="text-right pb-2 font-normal">稅率</th>
+                          <th className="text-right pb-2 font-normal">應納稅額</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {BRACKETS.map(b => (
+                          <tr key={b.key}
+                            className={`border-b border-line last:border-0 ${b.key === holding ? "bg-tint" : ""}`}>
+                            <td className="py-3">{b.label}</td>
+                            <td className="py-3 text-right font-mono text-inkSoft">{b.rate}%</td>
+                            <td className="py-3 text-right font-mono">{fmtW(r.income * b.rate / 100)} 萬</td>
+                          </tr>
+                        ))}
+                        <tr className="border-t-2 border-ink">
+                          <td className="py-3">符合自住優惠</td>
+                          <td className="py-3 text-right font-mono text-inkSoft">10%</td>
+                          <td className="py-3 text-right font-mono text-pass">
+                            {fmtW(Math.max(0, r.income - SELF_USE_EXEMPT) * SELF_USE_RATE / 100)} 萬
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {repurchase && (
+                  <div className="bg-surface border border-orange/30 rounded-sm p-7">
+                    <div className="text-[15px] font-medium mb-2">重購退稅的閉鎖期</div>
+                    <p className="text-[15px] text-inkSoft leading-[1.9]">
+                      申請重購退稅後，新屋在 5 年內不得改作出租、營業等其他用途，也不得再移轉。
+                      違反時國稅局會追繳已退還的稅款。換屋前請把這 5 年一起考慮進去。
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* 說明 */}
+        <section className="mt-14 border-t border-line pt-8">
+          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
+          <ul className="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
+            <li>・ 適用範圍：105 年 1 月 1 日以後取得的房地，於 110 年 7 月 1 日以後交易者，適用房地合一稅 2.0。</li>
+            <li>・ 稅率級距（境內居住者個人）：持有 2 年以內 45%、超過 2 年未逾 5 年 35%、超過 5 年未逾 10 年 20%、超過 10 年 15%。</li>
+            <li>・ 自住優惠須同時符合：本人、配偶或未成年子女設有戶籍、持有並居住連續滿 6 年；交易前 6 年內無出租或供營業使用；且前 6 年內未曾適用過本優惠。</li>
+            <li>・ 因調職、非自願離職等財政部公告的非自願性因素而在 5 年內交易者，可維持 20% 稅率，本工具未納入此情形。</li>
+            <li>・ 繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利會被放大，實際稅負可能遠高於預期。</li>
+            <li>・ 無論賺賠，都須於所有權移轉登記日次日起 30 日內申報。預售屋則自簽約日次日起算。</li>
+            <li>・ 本工具不會蒐集或傳送你輸入的任何資料，全部在瀏覽器本機計算。</li>
+          </ul>
+          <a href="https://www.etax.nat.gov.tw/" target="_blank" rel="noopener noreferrer"
+            className="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">
+            財政部稅務入口網 →
+          </a>
+        </section>
+
+        <section className="mt-12 bg-ink text-white/75 rounded-sm p-8">
+          <h2 className="display text-[20px] text-white">賣之前，先把稅算進去</h2>
+          <p className="mt-3 text-[16px] leading-[1.9] max-w-xl">
+            差幾個月成交，稅率可能就跨一個級距；換屋的順序也會影響能不能退稅。
+            把你的持有時間與換屋計畫告訴我們，澄果團隊幫你把時程和數字一起排出來。
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+              線上諮詢
+            </a>
+            <a href={BRAND.phoneHref}
+              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
+              致電 {BRAND.phone}
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-line">
+        <div className="max-w-4xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
+          <a href="../../index.html" className="hover:text-orangeDeep">回首頁</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
