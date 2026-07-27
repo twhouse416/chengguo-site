@@ -78,14 +78,25 @@ function RichText({ text }) {
 function Block({ block }) {
   switch (block.type) {
     case "h":
-      return <h2 className="display text-[22px] mt-12 mb-5 pt-6 border-t border-line">{block.text}</h2>;
+      return <h2 className="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">{block.text}</h2>;
 
-    case "p":
-      return <p className="text-[17px] leading-[2] text-inkSoft mb-5"><RichText text={block.text} /></p>;
+    case "p": {
+      /* 貼進來的長文若含換行，自動拆成多段，避免全部擠在一起 */
+      const paras = String(block.text || "").split(/\n\s*\n|\n/).map(t => t.trim()).filter(Boolean);
+      return (
+        <div className="mb-8">
+          {paras.map((t, i) => (
+            <p key={i} className="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">
+              <RichText text={t} />
+            </p>
+          ))}
+        </div>
+      );
+    }
 
     case "list":
       return (
-        <ul className="mb-6 space-y-3">
+        <ul className="mb-9 space-y-4">
           {block.items.map((it, i) => (
             <li key={i} className="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
               <span className="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">
@@ -99,7 +110,7 @@ function Block({ block }) {
 
     case "table":
       return (
-        <div className="mb-7 overflow-x-auto">
+        <div className="mb-10 overflow-x-auto">
           <table className="w-full text-[16px] border border-line bg-surface">
             <thead>
               <tr className="border-b border-line bg-paper">
@@ -127,23 +138,23 @@ function Block({ block }) {
 
     case "note":
       return (
-        <div className="mb-7 bg-tint border-l-2 border-orange px-6 py-5">
+        <div className="mb-9 bg-tint border-l-2 border-orange px-6 py-5">
           <p className="text-[16px] leading-[1.95] text-orangeDeep"><RichText text={block.text} /></p>
         </div>
       );
 
     case "quote":
       return (
-        <blockquote className="my-10 py-6 border-y-2 border-ink">
+        <blockquote className="my-14 py-7 border-y-2 border-ink">
           <p className="display text-[20px] md:text-[22px] leading-[1.6]">{block.text}</p>
         </blockquote>
       );
 
     case "image":
       return (
-        <figure className="my-9">
+        <figure className="my-12">
           <img src={`../${block.src}`} alt={block.alt || ""} loading="lazy"
-            className="w-full rounded-sm border border-line" />
+            className="w-full h-auto rounded-sm border border-line bg-surface" />
           {block.caption && (
             <figcaption className="mt-3 text-[14px] text-inkFaint leading-relaxed">
               {block.caption}
@@ -223,7 +234,7 @@ function App() {
 
               {article.cover && (
                 <img src={`../${article.cover}`} alt={article.coverAlt || article.title} loading="eager"
-                  className="w-full aspect-[3/2] object-cover rounded-sm border border-line mt-8" />
+                  className="w-full h-auto rounded-sm border border-line bg-surface mt-8" />
               )}
 
               {article.reviewBy && today >= article.reviewBy && (
@@ -262,7 +273,7 @@ function App() {
                     <a key={a.slug} href={`article.html?slug=${a.slug}`} className="flex gap-4 group items-start">
                       {a.cover && (
                         <img src={`../${a.cover}`} alt="" loading="lazy"
-                          className="w-24 aspect-[3/2] object-cover rounded-sm border border-line shrink-0" />
+                          className="w-24 aspect-[3/2] object-contain bg-paper rounded-sm border border-line shrink-0" />
                       )}
                       <div>
                         <div className="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">{a.tag}</div>
