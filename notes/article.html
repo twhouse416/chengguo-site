@@ -42,7 +42,106 @@ const { useState, useEffect } = React;
 const BRAND = {
   phone: "07-9766977",
   phoneHref: "tel:0797669977",
+  teamName: "台灣房屋 澄果團隊",
+  legalName: "澄果資產有限公司",
+  address: "804 高雄市鼓山區青海路416號",
+  site: "https://twhouse416.github.io/chengguo-site",
+  officialSite: "https://store.twhg.com.tw/TE80",
+  facebook: "https://www.facebook.com/TWhouseo8",
+  instagram: "https://www.instagram.com/twhouse_o8",
 };
+
+/* ---- SEO：動態寫入 title / meta / OG / JSON-LD ---- */
+function setMeta(attr, key, content) {
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+  el.setAttribute("content", content);
+}
+
+function setLink(rel, href) {
+  let el = document.head.querySelector(`link[rel="${rel}"]`);
+  if (!el) { el = document.createElement("link"); el.setAttribute("rel", rel); document.head.appendChild(el); }
+  el.setAttribute("href", href);
+}
+
+function injectJsonLd(id, obj) {
+  let el = document.getElementById(id);
+  if (!el) { el = document.createElement("script"); el.id = id; el.type = "application/ld+json"; document.head.appendChild(el); }
+  el.textContent = JSON.stringify(obj);
+}
+
+function applySeo(a) {
+  const url = `${BRAND.site}/notes/article.html?slug=${a.slug}`;
+  const img = a.cover ? `${BRAND.site}/${a.cover}` : `${BRAND.site}/assets/logo-full.png`;
+  const title = `${a.title}｜${BRAND.teamName}`;
+
+  document.title = title;
+  setMeta("name", "description", a.summary);
+  if (a.keywords?.length) setMeta("name", "keywords", a.keywords.join("、"));
+  setLink("canonical", url);
+
+  setMeta("property", "og:type", "article");
+  setMeta("property", "og:title", a.title);
+  setMeta("property", "og:description", a.summary);
+  setMeta("property", "og:url", url);
+  setMeta("property", "og:image", img);
+  setMeta("property", "og:site_name", BRAND.teamName);
+  setMeta("property", "og:locale", "zh_TW");
+  setMeta("name", "twitter:card", "summary_large_image");
+  setMeta("name", "twitter:title", a.title);
+  setMeta("name", "twitter:description", a.summary);
+  setMeta("name", "twitter:image", img);
+
+  /* 文章結構化資料 */
+  injectJsonLd("ld-article", {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: a.title,
+    description: a.summary,
+    image: [img],
+    datePublished: a.date,
+    dateModified: a.updated || a.date,
+    inLanguage: "zh-TW",
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    author: {
+      "@type": "Organization",
+      name: BRAND.teamName,
+      url: BRAND.officialSite,
+      address: { "@type": "PostalAddress", streetAddress: BRAND.address, addressLocality: "高雄市", addressCountry: "TW" },
+      telephone: BRAND.phone,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: BRAND.legalName,
+      logo: { "@type": "ImageObject", url: `${BRAND.site}/assets/logo-full.png` },
+    },
+    ...(a.keywords?.length ? { keywords: a.keywords.join(", ") } : {}),
+  });
+
+  /* 麵包屑 */
+  injectJsonLd("ld-crumb", {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: `${BRAND.site}/` },
+      { "@type": "ListItem", position: 2, name: "知識文章", item: `${BRAND.site}/notes/` },
+      { "@type": "ListItem", position: 3, name: a.title, item: url },
+    ],
+  });
+
+  /* FAQ 結構化資料：AI 與 Google 精選摘要最容易引用的格式 */
+  if (a.faq?.length) {
+    injectJsonLd("ld-faq", {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: a.faq.map(f => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    });
+  }
+}
 
 /* 依 showFrom / showUntil 判斷這個區塊今天該不該顯示 */
 function isVisible(block, today) {
@@ -185,7 +284,7 @@ function App() {
   const others = (data?.articles ?? []).filter(a => !a.draft && a.slug !== slug).slice(0, 3);
 
   useEffect(() => {
-    if (article) document.title = `${article.title}｜台灣房屋 澄果團隊`;
+    if (article) applySeo(article);
   }, [article]);
 
   return (
@@ -252,6 +351,61 @@ function App() {
                   .map((b, i) => <Block key={i} block={b} />)}
               </div>
             </article>
+
+            {/* 常見問題：GEO 關鍵區塊 */}
+            {article.faq?.length > 0 && (
+              <section className="mt-16 pt-10 border-t-2 border-ink">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+                <h2 className="display text-[23px] mb-8">常見問題</h2>
+                <div className="space-y-6">
+                  {article.faq.map((f, i) => (
+                    <div key={i} className="border-l-2 border-line pl-6">
+                      <h3 className="text-[17px] font-bold leading-snug mb-3">{f.q}</h3>
+                      <p className="text-[16px] leading-[1.95] text-inkSoft">{f.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 資料來源 */}
+            {article.sources?.length > 0 && (
+              <section className="mt-14 pt-8 border-t border-line">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Sources</div>
+                <ul className="space-y-2">
+                  {article.sources.map((sc, i) => (
+                    <li key={i} className="text-[15px] text-inkSoft leading-relaxed">
+                      <a href={sc.url} target="_blank" rel="noopener noreferrer nofollow"
+                        className="hover:text-orangeDeep underline decoration-line underline-offset-4">
+                        {sc.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[14px] text-inkFaint leading-relaxed mt-4">
+                  本文內容依上述公開資料整理，並結合澄果團隊在地實務經驗。法規與行情可能變動，正式決策請以主管機關公告為準。
+                </p>
+              </section>
+            )}
+
+            {/* 作者資歷：E-E-A-T 訊號 */}
+            <section className="mt-14 pt-8 border-t border-line">
+              <div className="flex flex-wrap gap-6 items-start">
+                <img src="../assets/logo-icon.png" alt="" className="w-14 h-14 object-contain shrink-0" />
+                <div className="flex-1 min-w-[240px]">
+                  <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-1">關於作者</div>
+                  <h2 className="text-[18px] font-bold tracking-tight mb-3">{BRAND.teamName}</h2>
+                  <p className="text-[15px] text-inkSoft leading-[1.9]">
+                    深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區
+                    10 年以上，累計服務件數超過 150 件，歷年獲台灣房屋評鑑優質與團隊績效獎項共 15 項。
+                    提供區域房價分析、市場趨勢、社區條件比較，以及首購購屋建議與換屋規劃。
+                  </p>
+                  <p className="font-mono text-[13px] text-inkFaint leading-[1.9] mt-3">
+                    {BRAND.address}｜<a href={BRAND.phoneHref} className="hover:text-orangeDeep">{BRAND.phone}</a>
+                  </p>
+                </div>
+              </div>
+            </section>
 
             <section className="mt-14 bg-ink text-white/75 rounded-sm p-8">
               <h2 className="display text-[20px] text-white">有問題，直接問比較快</h2>

@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="../assets/logo-icon.png" />
 <title>知識文章｜台灣房屋 澄果團隊</title>
-<meta name="description" content="首購與換屋最常卡住的問題整理：新青安3.0、自備款、房地合一稅、重購退稅，以及高雄四大生活圈的在地觀察。" />
+<meta name="description" content="高雄買房知識文章：新青安3.0門檻、自備款試算、房地合一稅與重購退稅、換屋順序規劃，以及美術館特區、農十六、瑞豐巨蛋、中都重劃區的在地比較。" />
+<meta name="keywords" content="高雄買房知識,新青安3.0,房地合一稅,重購退稅,換屋規劃,美術館特區,農十六,中都重劃區" />
+<link rel="canonical" href="https://twhouse416.github.io/chengguo-site/notes/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="台灣房屋 澄果團隊" />
+<meta property="og:title" content="知識文章｜台灣房屋 澄果團隊" />
+<meta property="og:description" content="首購與換屋最常卡住的問題整理，以及高雄四大生活圈的在地觀察。" />
+<meta property="og:url" content="https://twhouse416.github.io/chengguo-site/notes/" />
+<meta property="og:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+<meta property="og:locale" content="zh_TW" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,6 +84,24 @@ function App() {
   );
 
   const list = tag === "全部" ? published : published.filter(a => a.tag === tag);
+
+  /* 文章清單結構化資料，協助搜尋引擎理解站內文章 */
+  useEffect(() => {
+    if (!published.length) return;
+    const site = "https://twhouse416.github.io/chengguo-site";
+    let el = document.getElementById("ld-list");
+    if (!el) { el = document.createElement("script"); el.id = "ld-list"; el.type = "application/ld+json"; document.head.appendChild(el); }
+    el.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: published.map((a, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${site}/notes/article.html?slug=${a.slug}`,
+        name: a.title,
+      })),
+    });
+  }, [published]);
 
   return (
     <div>

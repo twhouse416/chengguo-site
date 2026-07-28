@@ -98,6 +98,28 @@ chengguo-site/
 每個區塊都可以設「起始日／結束日」，用來做時間到自動換內容。
 例如政策上路前後要講不同的話，就寫兩段，一段設結束日、一段設起始日為同一天。
 
+## SEO / GEO
+
+網站已做的搜尋最佳化：
+
+- 每篇文章動態產生獨立的 title、description、Open Graph（分享到 LINE、FB 會顯示正確標題與縮圖）
+- 結構化資料：首頁為 RealEstateAgent（含服務區域）、文章為 Article ＋ BreadcrumbList ＋ FAQPage
+- `sitemap.xml` 每次文章更新時自動重新產生
+- `robots.txt` 已排除後台頁面
+
+寫文章時建議填的三個欄位（在後台編輯畫面下方「搜尋最佳化」區）：
+
+| 欄位 | 為什麼重要 |
+|---|---|
+| 關鍵字 | 用大家實際會搜尋的說法，例如「美術館特區房價」而不是「本區行情」 |
+| 常見問題 | AI 與 Google 精選摘要最容易引用問答格式。回答要寫成可獨立閱讀的完整句子 |
+| 資料來源 | 標示官方出處，提升可信度，也是 AI 判斷內容可信與否的依據 |
+
+### 提交給 Google
+
+網站上線後建議到 Google Search Console 提交 sitemap：
+`https://twhouse416.github.io/chengguo-site/sitemap.xml`
+
 ## 行情資料
 
 每天台灣時間早上 7:00 自動抓取內政部實價登錄，計算四大生活圈的均價與價格帶。

@@ -210,6 +210,7 @@ function newArticle() {
     slug: "", tag: "首購", title: "", summary: "",
     date: d, updated: d, reviewBy: addMonths(d, 6),
     readMinutes: 5, draft: true,
+    keywords: [], faq: [], sources: [],
     blocks: [{ type: "p", text: "" }],
   };
 }
@@ -625,10 +626,38 @@ function App() {
 
   const importFile = e => {
     const f = e.target.files?.[0]; if (!f) return;
+    e.target.value = "";
     const r = new FileReader();
     r.onload = () => {
-      try { const d = JSON.parse(r.result); if (!Array.isArray(d.articles)) throw 0; setData(d); flash("pass", "已載入檔案"); }
-      catch { flash("fail", "這個檔案格式不對"); }
+      let d;
+      try { d = JSON.parse(r.result); if (!Array.isArray(d.articles)) throw 0; }
+      catch { flash("fail", "這個檔案格式不對"); return; }
+
+      const incoming = d.articles;
+      const existing = data?.articles || [];
+      const sameSlugs = incoming.filter(a => existing.some(x => x.slug === a.slug)).length;
+      const newOnes = incoming.length - sameSlugs;
+
+      const merge = confirm(
+        `檔案裡有 ${incoming.length} 篇文章。\n` +
+        `其中 ${sameSlugs} 篇與現有文章同名、${newOnes} 篇是新的。\n\n` +
+        `按「確定」＝合併（同名者以檔案內容更新，其餘現有文章保留不動）\n` +
+        `按「取消」＝改用取代全部（現有文章會全部被檔案內容取代）`
+      );
+
+      saveBackup(data, "匯入檔案前");
+      setBackups(loadBackups());
+
+      if (merge) {
+        const map = new Map(existing.map(a => [a.slug, a]));
+        incoming.forEach(a => map.set(a.slug, a));
+        setData({ ...data, articles: [...map.values()] });
+        flash("pass", `已合併：更新 ${sameSlugs} 篇、新增 ${newOnes} 篇。記得按發布或下載才會生效。`);
+      } else {
+        if (!confirm("確定要用檔案內容取代目前全部文章嗎？")) { flash("fail", "已取消"); return; }
+        setData(d);
+        flash("pass", "已取代全部文章。記得按發布或下載才會生效。");
+      }
     };
     r.readAsText(f);
   };
@@ -1051,6 +1080,81 @@ function App() {
                   </div>
                 </div>
               </details>
+
+              {/* SEO / GEO 欄位 */}
+              <div className="mt-8 bg-surface border border-line rounded-sm p-6 space-y-6">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">
+                  搜尋最佳化
+                </div>
+
+                <div>
+                  <Label hint="用頓號或逗號分隔。想被搜尋到的字詞，例如：美術館特區、高雄買房、學區">關鍵字</Label>
+                  <input className={inputCls}
+                    value={(draftArticle.keywords || []).join("、")}
+                    placeholder="美術館特區、農十六、高雄買房"
+                    onChange={e => setDraft({
+                      ...draftArticle,
+                      keywords: e.target.value.split(/[、,，]/).map(t => t.trim()).filter(Boolean),
+                    })} />
+                </div>
+
+                <div>
+                  <Label hint="AI 與 Google 特別容易引用問答格式，建議每篇 3 題以上">常見問題</Label>
+                  <div className="space-y-4">
+                    {(draftArticle.faq || []).map((f, i) => (
+                      <div key={i} className="border border-line rounded-sm p-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-[12px] text-inkFaint">Q{i + 1}</span>
+                          <Btn size="sm" variant="danger"
+                            onClick={() => setDraft({ ...draftArticle, faq: draftArticle.faq.filter((_, j) => j !== i) })}>
+                            刪除
+                          </Btn>
+                        </div>
+                        <input className={inputCls} value={f.q} placeholder="問題（用大家實際會搜尋的說法）"
+                          onChange={e => {
+                            const faq = [...draftArticle.faq]; faq[i] = { ...f, q: e.target.value };
+                            setDraft({ ...draftArticle, faq });
+                          }} />
+                        <textarea rows={3} className={inputCls} value={f.a} placeholder="回答（寫成可以獨立閱讀的完整句子，AI 才好引用）"
+                          onChange={e => {
+                            const faq = [...draftArticle.faq]; faq[i] = { ...f, a: e.target.value };
+                            setDraft({ ...draftArticle, faq });
+                          }} />
+                      </div>
+                    ))}
+                    <Btn size="sm" variant="outline"
+                      onClick={() => setDraft({ ...draftArticle, faq: [...(draftArticle.faq || []), { q: "", a: "" }] })}>
+                      ＋ 新增問題
+                    </Btn>
+                  </div>
+                </div>
+
+                <div>
+                  <Label hint="標示官方或可查證的出處，提升可信度">資料來源</Label>
+                  <div className="space-y-2">
+                    {(draftArticle.sources || []).map((sc, i) => (
+                      <div key={i} className="flex gap-2">
+                        <input className={inputCls} value={sc.name} placeholder="來源名稱"
+                          onChange={e => {
+                            const sources = [...draftArticle.sources]; sources[i] = { ...sc, name: e.target.value };
+                            setDraft({ ...draftArticle, sources });
+                          }} />
+                        <input className={inputCls} value={sc.url} placeholder="https://"
+                          onChange={e => {
+                            const sources = [...draftArticle.sources]; sources[i] = { ...sc, url: e.target.value };
+                            setDraft({ ...draftArticle, sources });
+                          }} />
+                        <Btn size="sm" variant="outline"
+                          onClick={() => setDraft({ ...draftArticle, sources: draftArticle.sources.filter((_, j) => j !== i) })}>✕</Btn>
+                      </div>
+                    ))}
+                    <Btn size="sm" variant="outline"
+                      onClick={() => setDraft({ ...draftArticle, sources: [...(draftArticle.sources || []), { name: "", url: "" }] })}>
+                      ＋ 新增來源
+                    </Btn>
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-8 flex gap-3">
                 <Btn onClick={saveToList}>完成，回到列表</Btn>
