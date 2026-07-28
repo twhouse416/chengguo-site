@@ -297,8 +297,7 @@ function HeroMedia() {
   );
 }
 
-function Hero({ market }) {
-  const top = market?.areas?.find(a => a.code === "01");
+function Hero() {
   return (
     <section id="top" className="border-b border-line">
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-16 grid lg:grid-cols-12 gap-12 items-center">
@@ -321,20 +320,7 @@ function Hero({ market }) {
         </div>
 
         <div className="lg:col-span-6">
-          <figure className="relative">
-            <HeroMedia />
-            <figcaption className="absolute bottom-0 left-0 bg-surface border-t border-r border-line px-5 py-4">
-              <div className="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・大樓</div>
-              <div className="font-mono text-[26px] font-semibold text-ink leading-none mt-1">
-                {top?.avgPricePerPing ?? "—"}<span className="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span>
-              </div>
-              {top?.bandLow && (
-                <div className="font-mono text-[12px] text-inkSoft mt-1.5">
-                  成交帶 {top.bandLow}–{top.bandHigh} 萬
-                </div>
-              )}
-            </figcaption>
-          </figure>
+          <HeroMedia />
         </div>
       </div>
     </section>
@@ -870,7 +856,7 @@ function App() {
     <>
       <Header />
       <main>
-        <Hero market={data} />
+        <Hero />
         <AreasSection market={data} error={error} />
         <AboutSection />
         <ServicesSection />
