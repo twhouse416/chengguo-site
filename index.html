@@ -560,11 +560,114 @@ function ArticlesSection() {
 }
 
 /* ================= 試算工具 ================= */
+/* ---- 工具插圖（自繪 SVG，無版權問題） ---- */
+const strokeInk = "#16191D";
+const strokeFaint = "#C9C6C0";
+const accent = "#FD7305";
+
+/* 學區查詢：街廓地圖 + 定位標記 + 校舍 */
+function IllusSchool() {
+  return (
+    <svg viewBox="0 0 220 130" fill="none" className="w-full h-full">
+      <rect x="1" y="1" width="218" height="128" stroke={strokeFaint} strokeWidth="1" />
+      {/* 街道網格 */}
+      <path d="M0 44 H220 M0 88 H220 M56 0 V130 M112 0 V130 M168 0 V130"
+        stroke={strokeFaint} strokeWidth="1" />
+      {/* 學區範圍 */}
+      <path d="M56 44 H168 V88 H56 Z" fill={accent} fillOpacity="0.08" stroke={accent}
+        strokeWidth="1.5" strokeDasharray="5 4" />
+      {/* 校舍 */}
+      <g stroke={strokeInk} strokeWidth="1.5" strokeLinejoin="round">
+        <path d="M92 74 V58 L104 50 L116 58 V74 Z" fill="#fff" />
+        <path d="M100 74 V64 H108 V74" />
+        <path d="M104 50 V44" />
+        <path d="M104 44 H112 V48 H104" fill={accent} stroke="none" />
+      </g>
+      {/* 定位標記 */}
+      <g transform="translate(150,26)">
+        <path d="M0 18 C0 18 -8 8 -8 2 A8 8 0 1 1 8 2 C8 8 0 18 0 18 Z"
+          fill={accent} />
+        <circle cx="0" cy="2" r="3" fill="#fff" />
+      </g>
+    </svg>
+  );
+}
+
+/* 房貸試算：本息比例柱狀 + 月付水平線 */
+function IllusMortgage() {
+  const bars = [
+    { x: 24,  h: 34 }, { x: 62, h: 52 }, { x: 100, h: 70 },
+    { x: 138, h: 88 }, { x: 176, h: 104 },
+  ];
+  return (
+    <svg viewBox="0 0 220 130" fill="none" className="w-full h-full">
+      <path d="M12 118 H208" stroke={strokeFaint} strokeWidth="1" />
+      {bars.map((b, i) => (
+        <g key={i}>
+          {/* 利息 */}
+          <rect x={b.x - 12} y={118 - b.h} width="24" height={b.h * 0.42}
+            fill={accent} fillOpacity="0.85" />
+          {/* 本金 */}
+          <rect x={b.x - 12} y={118 - b.h + b.h * 0.42} width="24" height={b.h * 0.58}
+            fill={strokeInk} fillOpacity="0.12" stroke={strokeInk} strokeWidth="1" strokeOpacity="0.3" />
+        </g>
+      ))}
+      {/* 月付基準線 */}
+      <path d="M12 62 H208" stroke={strokeInk} strokeWidth="1.5" strokeDasharray="4 4" />
+      <circle cx="208" cy="62" r="3" fill={strokeInk} />
+    </svg>
+  );
+}
+
+/* 新青安 3.0：3+3 利率階梯 */
+function IllusQingan() {
+  return (
+    <svg viewBox="0 0 220 130" fill="none" className="w-full h-full">
+      <path d="M14 116 H206" stroke={strokeFaint} strokeWidth="1" />
+      <path d="M14 116 V16" stroke={strokeFaint} strokeWidth="1" />
+      {/* 補貼期（低利率） */}
+      <rect x="20" y="88" width="66" height="28" fill={accent} fillOpacity="0.14" />
+      <path d="M20 88 H86" stroke={accent} strokeWidth="2.5" />
+      {/* 逐年退場階梯 */}
+      <path d="M86 88 V76 H116 V64 H146 V52 H176 V40 H206"
+        stroke={strokeInk} strokeWidth="2" strokeLinejoin="round" />
+      {/* 階梯轉折點 */}
+      {[[86,76],[116,64],[146,52],[176,40]].map(([x,y],i) => (
+        <circle key={i} cx={x} cy={y} r="3" fill="#fff" stroke={strokeInk} strokeWidth="1.5" />
+      ))}
+      <circle cx="20" cy="88" r="3.5" fill={accent} />
+    </svg>
+  );
+}
+
+/* 房地合一稅：房屋 + 持有期間刻度 + 稅率標記 */
+function IllusTax() {
+  return (
+    <svg viewBox="0 0 220 130" fill="none" className="w-full h-full">
+      {/* 房屋 */}
+      <g stroke={strokeInk} strokeWidth="1.5" strokeLinejoin="round">
+        <path d="M30 82 V54 L54 36 L78 54 V82 Z" fill="#fff" />
+        <path d="M46 82 V66 H62 V82" />
+      </g>
+      {/* 稅率遞減刻度 */}
+      <path d="M104 40 H200 M104 62 H200 M104 84 H200" stroke={strokeFaint} strokeWidth="1" />
+      <rect x="104" y="34" width="76" height="12" fill={accent} fillOpacity="0.9" />
+      <rect x="104" y="56" width="54" height="12" fill={accent} fillOpacity="0.55" />
+      <rect x="104" y="78" width="30" height="12" fill={accent} fillOpacity="0.28" />
+      {/* 持有期間箭頭 */}
+      <path d="M104 106 H200" stroke={strokeInk} strokeWidth="1.5" />
+      <path d="M194 101 L200 106 L194 111" stroke={strokeInk} strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="54" cy="100" r="3.5" fill={accent} />
+    </svg>
+  );
+}
+
 const TOOLS = [
-  { title: "學區查詢", desc: "選行政區與里別，查出對應的國小學區。", href: "tools/school-zone/index.html" },
-  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。", href: "tools/mortgage/index.html" },
-  { title: "新青安 3.0 試算", desc: "先看資格過不過，再算補貼退場後月付怎麼變。", href: "tools/qingan/index.html" },
-  { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: "tools/property-tax/index.html" },
+  { title: "學區查詢", desc: "選行政區與里別，查出對應的國小學區。", href: "tools/school-zone/index.html", Illus: IllusSchool },
+  { title: "房貸試算", desc: "總價、成數、年限一改，月付金馬上跟著跑。", href: "tools/mortgage/index.html", Illus: IllusMortgage },
+  { title: "新青安 3.0 試算", desc: "先看資格過不過，再算補貼退場後月付怎麼變。", href: "tools/qingan/index.html", Illus: IllusQingan },
+  { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: "tools/property-tax/index.html", Illus: IllusTax },
 ];
 
 function ToolsSection() {
@@ -577,6 +680,7 @@ function ToolsSection() {
       />
       <div className="grid sm:grid-cols-2 gap-6">
         {TOOLS.map((t, i) => {
+          const Illus = t.Illus;
           const inner = (
             <>
               <div className="font-mono text-[12px] tracking-[0.18em] text-inkFaint">
@@ -584,7 +688,14 @@ function ToolsSection() {
               </div>
               <h3 className="text-[22px] font-bold mt-3 mb-3 tracking-tight">{t.title}</h3>
               <p className="text-[16px] text-inkSoft leading-[1.9]">{t.desc}</p>
-              <span className={`font-mono text-[13px] mt-auto pt-6 ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
+
+              {Illus && (
+                <div className="flex-1 min-h-[130px] flex items-center justify-center py-6">
+                  <div className="w-full max-w-[260px]"><Illus /></div>
+                </div>
+              )}
+
+              <span className={`font-mono text-[13px] ${Illus ? "" : "mt-auto pt-6"} ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
                 {t.href ? "開始使用 →" : "即將上線"}
               </span>
             </>
