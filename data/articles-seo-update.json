@@ -120,7 +120,9 @@
           "name": "內政部不動產交易實價查詢服務網",
           "url": "https://lvr.land.moi.gov.tw/"
         }
-      ]
+      ],
+      "cover": "assets/articles/cover-down-payment.svg",
+      "coverAlt": "買房要準備的不只頭期款：自備款、仲介費、代書費、裝潢費用組成示意"
     },
     {
       "slug": "repurchase-tax-refund-order",
@@ -273,7 +275,9 @@
           "name": "財政部稅務入口網",
           "url": "https://www.etax.nat.gov.tw/"
         }
-      ]
+      ],
+      "cover": "assets/articles/cover-repurchase-tax.svg",
+      "coverAlt": "重購退稅時間軸：新舊屋移轉登記須在2年內，退稅後另有5年閉鎖期"
     },
     {
       "slug": "buy-first-or-sell-first",
@@ -392,7 +396,9 @@
           "name": "財政部稅務入口網",
           "url": "https://www.etax.nat.gov.tw/"
         }
-      ]
+      ],
+      "cover": "assets/articles/cover-trade-up.svg",
+      "coverAlt": "先買後賣與先賣後買的資金壓力與居住彈性比較"
     },
     {
       "slug": "art-museum-vs-nong16",
