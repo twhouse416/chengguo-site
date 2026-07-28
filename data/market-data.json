@@ -1,10 +1,46 @@
 {
-  "updatedAt": null,
-  "sourceNote": "尚未執行過自動抓取，以下為示意資料，待 GitHub Actions 首次執行後會自動覆蓋",
+  "updatedAt": "2026-07-28T01:16:11.045Z",
+  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價與價格帶為近兩季（約6個月）成交合併計算，價格帶取25%～75%百分位。",
   "areas": [
-    { "code": "01", "name": "美術館特區", "avgPricePerPing": 27.6, "sampleSize": 0, "lowSample": true, "trendPct": null },
-    { "code": "02", "name": "農十六特區", "avgPricePerPing": 25.2, "sampleSize": 0, "lowSample": true, "trendPct": null },
-    { "code": "03", "name": "瑞豐・巨蛋", "avgPricePerPing": 23.9, "sampleSize": 0, "lowSample": true, "trendPct": null },
-    { "code": "04", "name": "中都重劃區", "avgPricePerPing": 24.8, "sampleSize": 0, "lowSample": true, "trendPct": null }
+    {
+      "code": "01",
+      "name": "美術館特區",
+      "avgPricePerPing": 38,
+      "bandLow": 32,
+      "bandHigh": 42,
+      "sampleSize": 98,
+      "lowSample": false,
+      "trendPct": -11.2
+    },
+    {
+      "code": "02",
+      "name": "農十六特區",
+      "avgPricePerPing": 30.9,
+      "bandLow": 25,
+      "bandHigh": 36,
+      "sampleSize": 20,
+      "lowSample": false,
+      "trendPct": -3.1
+    },
+    {
+      "code": "03",
+      "name": "瑞豐・巨蛋",
+      "avgPricePerPing": 27.8,
+      "bandLow": 23,
+      "bandHigh": 33,
+      "sampleSize": 31,
+      "lowSample": false,
+      "trendPct": -10.3
+    },
+    {
+      "code": "04",
+      "name": "中都重劃區",
+      "avgPricePerPing": 21.3,
+      "bandLow": 17,
+      "bandHigh": 22,
+      "sampleSize": 23,
+      "lowSample": false,
+      "trendPct": -20.8
+    }
   ]
 }
