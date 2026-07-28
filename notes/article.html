@@ -175,7 +175,7 @@ function App() {
   const today = todayStr();
 
   useEffect(() => {
-    fetch("../data/articles.json")
+    fetch(`../data/articles.json?t=${Date.now()}`)
       .then(r => r.json())
       .then(setData)
       .catch(() => setError(true));

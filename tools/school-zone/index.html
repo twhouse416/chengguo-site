@@ -88,7 +88,7 @@ function App() {
   const [village, setVillage] = useState("");
 
   useEffect(() => {
-    fetch("../../data/school-zones.json")
+    fetch(`../../data/school-zones.json?t=${Date.now()}`)
       .then(r => r.json())
       .then(setData)
       .catch(() => setError(true));

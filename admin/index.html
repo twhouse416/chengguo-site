@@ -166,6 +166,35 @@ function parseLongText(raw) {
   return blocks.length ? blocks : [{ type: "p", text: raw }];
 }
 
+/* ---- 自動備份：發布或下載前先存一份到瀏覽器，最多保留 10 份 ---- */
+const BACKUP_KEY = "cg_article_backups";
+
+function loadBackups() {
+  try { return JSON.parse(localStorage.getItem(BACKUP_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveBackup(data, note) {
+  try {
+    const list = loadBackups();
+    list.unshift({
+      at: new Date().toISOString(),
+      note,
+      count: (data.articles || []).length,
+      published: (data.articles || []).filter(a => !a.draft).length,
+      json: JSON.stringify(data),
+    });
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(list.slice(0, 10)));
+    return true;
+  } catch { return false; }
+}
+
+function fmtStamp(iso) {
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
 function emptyBlock(type) {
   switch (type) {
     case "table": return { type, head: ["項目", "說明"], rows: [["", ""]] };
@@ -500,14 +529,21 @@ function App() {
   const [repo, setRepo] = useState("twhouse416/chengguo-site");
   const [busy, setBusy] = useState(false);
   const [bulkText, setBulkText] = useState("");
+  const [backups, setBackups] = useState([]);
+  const [showBackups, setShowBackups] = useState(false);
   const fileRef = useRef(null);
 
   useEffect(() => {
-    fetch("../data/articles.json")
+    fetch(`../data/articles.json?t=${Date.now()}`, { cache: "no-store" })
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(setData)
+      .then(d => {
+        setData(d);
+        saveBackup(d, "開啟後台時的線上版本");
+        setBackups(loadBackups());
+      })
       .catch(e => setLoadErr(String(e)));
     setToken(sessionStorage.getItem("cg_token") || "");
+    setBackups(loadBackups());
   }, []);
 
   const flash = (type, text) => { setMsg({ type, text }); setTimeout(() => setMsg(null), 6000); };
@@ -548,6 +584,8 @@ function App() {
   const jsonText = () => JSON.stringify(data, null, 2) + "\n";
 
   const download = () => {
+    saveBackup(data, "下載前");
+    setBackups(loadBackups());
     const blob = new Blob([jsonText()], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -601,6 +639,8 @@ function App() {
 
   const publish = async () => {
     if (!token.trim()) { flash("fail", "請先填入 GitHub 權杖"); return; }
+    saveBackup(data, "發布前");
+    setBackups(loadBackups());
     setBusy(true);
     try {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${DATA_PATH}`;
@@ -657,6 +697,9 @@ function App() {
             <Btn variant="outline" size="sm" onClick={() => fileRef.current.click()}>載入檔案</Btn>
             <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={importFile} />
             <Btn variant="outline" size="sm" onClick={download}>下載</Btn>
+            <Btn variant="outline" size="sm" onClick={() => { setBackups(loadBackups()); setShowBackups(!showBackups); }}>
+              備份紀錄
+            </Btn>
             <Btn variant="dark" size="sm" onClick={() => setShowPublish(!showPublish)}>發布設定</Btn>
           </div>
         </div>
@@ -667,6 +710,54 @@ function App() {
           </div>
         )}
       </header>
+
+      {showBackups && (
+        <div className="bg-surface border-b border-line">
+          <div className="max-w-6xl mx-auto px-6 py-7">
+            <h2 className="display text-[19px] mb-2">備份紀錄</h2>
+            <p className="text-[15px] text-inkSoft leading-[1.9] mb-5 max-w-3xl">
+              每次開啟後台、發布或下載前，都會自動存一份到這台電腦的瀏覽器，最多保留 10 份。
+              萬一資料被覆蓋，可以在這裡還原。
+            </p>
+
+            {backups.length === 0 ? (
+              <p className="text-[15px] text-inkFaint">還沒有備份紀錄。</p>
+            ) : (
+              <div className="border border-line rounded-sm overflow-hidden max-w-3xl">
+                {backups.map((b, i) => (
+                  <div key={i} className="bg-paper border-b border-line last:border-0 px-5 py-4 flex flex-wrap items-center gap-4">
+                    <div className="flex-1 min-w-[200px]">
+                      <div className="font-mono text-[13px] text-ink">{fmtStamp(b.at)}</div>
+                      <div className="text-[13px] text-inkFaint mt-0.5">
+                        {b.note}・{b.count} 篇（{b.published} 篇已發布）
+                      </div>
+                    </div>
+                    <Btn size="sm" variant="outline"
+                      onClick={() => {
+                        if (!confirm(`確定要還原到 ${fmtStamp(b.at)} 的版本？\n目前編輯中的內容會被取代。`)) return;
+                        try {
+                          const d = JSON.parse(b.json);
+                          saveBackup(data, "還原前");
+                          setData(d);
+                          setDraft(null); setIdx(null);
+                          setBackups(loadBackups());
+                          flash("pass", "已還原到瀏覽器裡的版本。確認內容正確後，記得按「發布」或「下載」才會更新網站。");
+                        } catch { flash("fail", "這份備份損毀，無法還原"); }
+                      }}>
+                      還原
+                    </Btn>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-[13px] text-inkFaint leading-relaxed mt-5 max-w-3xl">
+              備份只存在這台電腦的這個瀏覽器，換電腦或清除瀏覽資料就會消失。
+              重要版本建議另外按「下載」保存檔案。
+            </p>
+          </div>
+        </div>
+      )}
 
       {showPublish && (
         <div className="bg-surface border-b border-line">

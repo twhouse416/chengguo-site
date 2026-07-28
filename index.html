@@ -204,7 +204,7 @@ function useMarketData() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   useEffect(() => {
-    fetch("./data/market-data.json")
+    fetch(`./data/market-data.json?t=${Date.now()}`)
       .then(r => r.json())
       .then(setData)
       .catch(() => setError(true));
@@ -499,7 +499,7 @@ function ArticlesSection() {
   const [articles, setArticles] = useState(null);
 
   useEffect(() => {
-    fetch("./data/articles.json")
+    fetch(`./data/articles.json?t=${Date.now()}`)
       .then(r => r.json())
       .then(d => setArticles((d.articles || []).filter(a => !a.draft).slice(0, 6)))
       .catch(() => setArticles([]));
