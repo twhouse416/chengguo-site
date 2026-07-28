@@ -306,26 +306,32 @@ function AreasSection({ market, error }) {
         note="近六個月大樓實際成交的每坪均價與常見價格帶（取 25%–75% 百分位）。數字用來抓範圍，實際行情會因屋齡、樓層、格局與座向而有落差。"
       />
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+      <div className="grid sm:grid-cols-2 gap-6">
         {areas.map(a => {
           const meta = AREA_META[a.code] || {};
           return (
-            <article key={a.code}>
-              <img src={meta.img} alt={a.name} className="w-full aspect-[3/2] object-cover rounded-sm mb-4" />
-              <div className="font-mono text-[12px] tracking-wider text-inkFaint">{meta.district}</div>
-              <h3 className="text-lg font-bold mt-1 mb-2 tracking-tight">{a.name}</h3>
-              <p className="text-[15px] text-inkSoft leading-[1.85] mb-4 min-h-[72px]">{meta.desc}</p>
+            <article key={a.code}
+              className="sm:aspect-square flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
+              <img src={meta.img} alt={a.name}
+                className="w-full h-[45%] min-h-[180px] object-cover shrink-0" />
+              <div className="flex flex-col flex-1 min-h-0 p-6">
+                <div className="font-mono text-[12px] tracking-wider text-inkFaint">{meta.district}</div>
+                <h3 className="text-xl font-bold mt-1 mb-2.5 tracking-tight">{a.name}</h3>
+                <p className="text-[15px] text-inkSoft leading-[1.85]">{meta.desc}</p>
 
-              <div className="font-mono text-[28px] font-semibold text-ink leading-none">
-                {a.avgPricePerPing ?? "—"}
-                <span className="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span>
+                <div className="mt-auto pt-5">
+                  <div className="font-mono text-[30px] font-semibold text-ink leading-none">
+                    {a.avgPricePerPing ?? "—"}
+                    <span className="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span>
+                  </div>
+
+                  <PriceBand area={a} domain={domain} />
+
+                  {a.lowSample && (
+                    <p className="font-mono text-[12px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>
+                  )}
+                </div>
               </div>
-
-              <PriceBand area={a} domain={domain} />
-
-              {a.lowSample && (
-                <p className="font-mono text-[12px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>
-              )}
             </article>
           );
         })}
@@ -569,20 +575,24 @@ function ToolsSection() {
         title="先算清楚，再做決定"
         note="不需要留資料就能用。首購與換屋最常用到的四個工具，陸續上線中。"
       />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-sm overflow-hidden">
+      <div className="grid sm:grid-cols-2 gap-6">
         {TOOLS.map((t, i) => {
           const inner = (
             <>
-              <h3 className="text-[17px] font-bold mb-2 tracking-tight">{t.title}</h3>
-              <p className="text-[15px] text-inkSoft leading-[1.8] mb-6">{t.desc}</p>
-              <span className={`font-mono text-[12px] ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
+              <div className="font-mono text-[12px] tracking-[0.18em] text-inkFaint">
+                {String(i + 1).padStart(2, "0")}
+              </div>
+              <h3 className="text-[22px] font-bold mt-3 mb-3 tracking-tight">{t.title}</h3>
+              <p className="text-[16px] text-inkSoft leading-[1.9]">{t.desc}</p>
+              <span className={`font-mono text-[13px] mt-auto pt-6 ${t.href ? "text-orangeDeep" : "text-inkFaint"}`}>
                 {t.href ? "開始使用 →" : "即將上線"}
               </span>
             </>
           );
+          const cls = "sm:aspect-square flex flex-col border border-line rounded-sm bg-surface p-8";
           return t.href
-            ? <a key={i} href={t.href} className="block bg-surface p-7 hover:bg-tint transition">{inner}</a>
-            : <div key={i} className="bg-surface p-7">{inner}</div>;
+            ? <a key={i} href={t.href} className={`${cls} hover:bg-tint hover:border-orange transition`}>{inner}</a>
+            : <div key={i} className={cls}>{inner}</div>;
         })}
       </div>
     </section>

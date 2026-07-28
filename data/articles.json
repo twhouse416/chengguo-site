@@ -9,7 +9,7 @@
       "summary": "額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，並改為一生限貸一次。先確認自己過不過得了門檻。",
       "date": "2026-07-27",
       "readMinutes": 5,
-      "draft": false,
+      "draft": true,
       "blocks": [
         {
           "type": "p",
@@ -164,8 +164,7 @@
         }
       ],
       "reviewBy": "2026-11-01",
-      "updated": "2026-07-27",
-      "cover": "assets/articles/20260727-新青安3-d7rw.jpg"
+      "updated": "2026-07-27"
     },
     {
       "slug": "down-payment-four-districts",
