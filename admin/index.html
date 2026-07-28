@@ -530,20 +530,44 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [bulkText, setBulkText] = useState("");
   const [backups, setBackups] = useState([]);
+  const [baseSha, setBaseSha] = useState(null);   // 載入時線上版本的識別碼
   const [showBackups, setShowBackups] = useState(false);
   const fileRef = useRef(null);
 
+  /* 載入資料：有權杖時直接從 GitHub API 取（可拿到版本識別碼 sha，且一定是最新的） */
+  const loadData = async (tk, rp) => {
+    if (tk && rp) {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${rp}/contents/${DATA_PATH}`, {
+          headers: { Authorization: `Bearer ${tk}`, Accept: "application/vnd.github+json" },
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const j = await res.json();
+          const raw = decodeURIComponent(escape(atob(j.content.replace(/\n/g, ""))));
+          const d = JSON.parse(raw);
+          setData(d); setBaseSha(j.sha);
+          saveBackup(d, "開啟後台時的線上版本");
+          setBackups(loadBackups());
+          return;
+        }
+      } catch { /* 失敗就退回一般讀取 */ }
+    }
+    try {
+      const r = await fetch(`../data/articles.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      setData(d); setBaseSha(null);
+      saveBackup(d, "開啟後台時的線上版本");
+      setBackups(loadBackups());
+    } catch (e) { setLoadErr(String(e)); }
+  };
+
   useEffect(() => {
-    fetch(`../data/articles.json?t=${Date.now()}`, { cache: "no-store" })
-      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(d => {
-        setData(d);
-        saveBackup(d, "開啟後台時的線上版本");
-        setBackups(loadBackups());
-      })
-      .catch(e => setLoadErr(String(e)));
-    setToken(sessionStorage.getItem("cg_token") || "");
+    const tk = sessionStorage.getItem("cg_token") || "";
+    setToken(tk);
     setBackups(loadBackups());
+    loadData(tk, repo.trim());
   }, []);
 
   const flash = (type, text) => { setMsg({ type, text }); setTimeout(() => setMsg(null), 6000); };
@@ -646,9 +670,31 @@ function App() {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${DATA_PATH}`;
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
 
-      const getRes = await fetch(api, { headers });
+      const getRes = await fetch(api, { headers, cache: "no-store" });
       if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）。請確認權杖權限與儲存庫名稱。`);
       const cur = await getRes.json();
+
+      /* 防呆：線上版本若比後台載入時更新，代表中間有人改過，先問過再覆蓋 */
+      if (baseSha && cur.sha !== baseSha) {
+        let onlineInfo = "";
+        try {
+          const raw = decodeURIComponent(escape(atob(cur.content.replace(/\n/g, ""))));
+          const od = JSON.parse(raw);
+          const total = (od.articles || []).length;
+          const pub = (od.articles || []).filter(a => !a.draft).length;
+          onlineInfo = `\n\n線上目前：${total} 篇，其中 ${pub} 篇已發布`;
+        } catch {}
+        const mineTotal = data.articles.length;
+        const minePub = data.articles.filter(a => !a.draft).length;
+        const ok = confirm(
+          "偵測到線上的文章資料在你開啟後台之後被改過。" +
+          "\n若繼續發布，線上的變更會被你目前的內容取代。" +
+          onlineInfo +
+          `\n你要發布的：${mineTotal} 篇，其中 ${minePub} 篇已發布` +
+          "\n\n確定要覆蓋嗎？（建議先取消，重新整理後台載入最新版本）"
+        );
+        if (!ok) { setBusy(false); flash("fail", "已取消發布。請重新整理後台（Ctrl+F5）載入最新版本。"); return; }
+      }
 
       const putRes = await fetch(api, {
         method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
@@ -662,6 +708,8 @@ function App() {
         const err = await putRes.json().catch(() => ({}));
         throw new Error(`發布失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
       }
+      const putJson = await putRes.json().catch(() => null);
+      if (putJson?.content?.sha) setBaseSha(putJson.content.sha);
       sessionStorage.setItem("cg_token", token.trim());
       flash("pass", "發布成功！網站約 1–2 分鐘後更新。");
     } catch (e) {
@@ -789,6 +837,14 @@ function App() {
             <div className="mt-5 flex flex-wrap gap-3">
               <Btn onClick={publish} disabled={busy}>{busy ? "發布中…" : "發布到網站"}</Btn>
               <Btn variant="outline" onClick={copyJson}>複製 JSON</Btn>
+              <Btn variant="outline" onClick={async () => {
+                if (!token.trim()) { flash("fail", "請先填入權杖"); return; }
+                await loadData(token.trim(), repo.trim());
+                setDraft(null); setIdx(null);
+                flash("pass", "已重新載入線上最新版本");
+              }}>
+                重新載入線上版本
+              </Btn>
               <Btn variant="outline" onClick={() => { sessionStorage.removeItem("cg_token"); setToken(""); flash("pass","已清除權杖"); }}>
                 清除權杖
               </Btn>
