@@ -1,0 +1,33 @@
+name: 自動更新 sitemap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/articles.json"
+      - "scripts/build-sitemap.js"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 產生 sitemap.xml
+        run: node scripts/build-sitemap.js
+
+      - name: 有變動就提交
+        run: |
+          git config user.name "chengguo-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add sitemap.xml
+          git diff --cached --quiet && echo "sitemap 無變動" || git commit -m "更新 sitemap $(date +'%Y-%m-%d')"
+          git push
