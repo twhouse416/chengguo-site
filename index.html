@@ -199,6 +199,7 @@ function Header() {
     ["#about", "關於團隊"],
     ["#services", "服務內容"],
     ["notes/index.html", "知識文章"],
+    ["videos/index.html", "影片"],
     ["#tools", "試算工具"],
     ["#deals", "近期成交"],
   ];
@@ -257,6 +258,45 @@ function useMarketData() {
 }
 
 /* ================= Hero ================= */
+function HeroMedia() {
+  const [v, setV] = useState(undefined);   // undefined=讀取中, null=沒有影片
+
+  useEffect(() => {
+    fetch(`./data/videos.json?t=${Date.now()}`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d.videos || []).filter(x => !x.hidden);
+        /* 優先用指定的首頁影片，沒指定就用最新一支 */
+        const pick = d.heroVideoId
+          ? list.find(x => x.videoId === d.heroVideoId)
+          : list[0];
+        setV(pick || null);
+      })
+      .catch(() => setV(null));
+  }, []);
+
+  /* 還沒有影片時，維持原本的空拍照 */
+  if (!v) {
+    return <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍"
+      className="w-full aspect-[3/2] object-cover rounded-sm" />;
+  }
+
+  return (
+    <div className="relative w-full aspect-[3/2] rounded-sm overflow-hidden bg-ink">
+      <iframe
+        className="absolute inset-0 w-full h-full"
+        src={`https://www.youtube-nocookie.com/embed/${v.videoId}?autoplay=1&mute=1&loop=1&playlist=${v.videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1`}
+        title={v.titleShown || v.title}
+        loading="lazy"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        referrerPolicy="strict-origin-when-cross-origin" />
+      {/* 擋住 iframe 的點擊，避免誤觸 YouTube 介面；想看完整影片走下方連結 */}
+      <a href="videos/index.html" aria-label="前往影片專區"
+        className="absolute inset-0 block" />
+    </div>
+  );
+}
+
 function Hero({ market }) {
   const top = market?.areas?.find(a => a.code === "01");
   return (
@@ -282,8 +322,7 @@ function Hero({ market }) {
 
         <div className="lg:col-span-6">
           <figure className="relative">
-            <img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍"
-              className="w-full aspect-[3/2] object-cover rounded-sm" />
+            <HeroMedia />
             <figcaption className="absolute bottom-0 left-0 bg-surface border-t border-r border-line px-5 py-4">
               <div className="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・大樓</div>
               <div className="font-mono text-[26px] font-semibold text-ink leading-none mt-1">

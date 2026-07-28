@@ -21,6 +21,7 @@ const today = new Date().toISOString().slice(0, 10);
 const staticPages = [
   { loc: `${SITE}/`,                            priority: "1.0", freq: "daily"   },
   { loc: `${SITE}/notes/`,                      priority: "0.8", freq: "weekly"  },
+  { loc: `${SITE}/videos/`,                     priority: "0.8", freq: "weekly"  },
   { loc: `${SITE}/tools/school-zone/`,          priority: "0.7", freq: "monthly" },
   { loc: `${SITE}/tools/mortgage/`,             priority: "0.7", freq: "monthly" },
   { loc: `${SITE}/tools/qingan/`,               priority: "0.7", freq: "monthly" },

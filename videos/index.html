@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="../assets/logo-icon.png" />
+<title>影片專區｜台灣房屋 澄果團隊</title>
+<meta name="description" content="澄果團隊影片專區：高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區的社區開箱、生活圈導覽與購屋知識分享。" />
+<meta name="keywords" content="高雄社區開箱,美術館特區影片,農十六社區,高雄房仲影片,澄果團隊" />
+<link rel="canonical" href="https://twhouse416.github.io/chengguo-site/videos/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="台灣房屋 澄果團隊" />
+<meta property="og:title" content="影片專區｜台灣房屋 澄果團隊" />
+<meta property="og:description" content="社區開箱、生活圈導覽與購屋知識分享。" />
+<meta property="og:url" content="https://twhouse416.github.io/chengguo-site/videos/" />
+<meta property="og:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+<meta property="og:locale" content="zh_TW" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+        paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+        orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
+      fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
+      borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+    }}
+  }
+</script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
+  ::selection { background:#FD7305; color:#fff; }
+  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
+  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+</style>
+</head>
+<body class="font-sans text-ink">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const BRAND = {
+  phone: "07-9766977",
+  phoneHref: "tel:0797669977",
+  site: "https://twhouse416.github.io/chengguo-site",
+};
+
+function fmtDate(d) {
+  if (!d) return "";
+  return d.replaceAll("-", ".");
+}
+
+/* 播放器：點了才載入 iframe，避免一次載入多個影片拖慢頁面 */
+function Player({ video, onClose }) {
+  useEffect(() => {
+    const esc = e => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", esc);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", esc); document.body.style.overflow = ""; };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-ink/90 flex items-center justify-center p-4 md:p-10"
+      onClick={onClose} role="dialog" aria-modal="true">
+      <div className="w-full max-w-4xl" onClick={e => e.stopPropagation()}>
+        <div className="aspect-video bg-black rounded-sm overflow-hidden">
+          <iframe className="w-full h-full"
+            src={`https://www.youtube-nocookie.com/embed/${video.videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+            title={video.titleShown || video.title}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin" />
+        </div>
+        <div className="flex flex-wrap items-start justify-between gap-4 mt-5">
+          <div className="flex-1 min-w-[240px]">
+            <h2 className="text-[19px] font-bold text-white leading-snug">
+              {video.titleShown || video.title}
+            </h2>
+            <p className="font-mono text-[13px] text-white/50 mt-2">{fmtDate(video.published)}</p>
+          </div>
+          <div className="flex gap-3">
+            <a href={`https://www.youtube.com/watch?v=${video.videoId}`}
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center px-5 py-2.5 text-[14px] rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
+              在 YouTube 開啟
+            </a>
+            <button onClick={onClose}
+              className="inline-flex items-center px-5 py-2.5 text-[14px] rounded-sm bg-white text-ink hover:bg-orange hover:text-white transition">
+              關閉
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+  const [cat, setCat] = useState("全部");
+  const [playing, setPlaying] = useState(null);
+
+  useEffect(() => {
+    fetch(`../data/videos.json?t=${Date.now()}`)
+      .then(r => r.json())
+      .then(setData)
+      .catch(() => setError(true));
+  }, []);
+
+  const visible = useMemo(
+    () => (data?.videos || []).filter(v => !v.hidden),
+    [data]
+  );
+
+  const cats = useMemo(() => {
+    const used = [...new Set(visible.map(v => v.category).filter(Boolean))];
+    return ["全部", ...used];
+  }, [visible]);
+
+  const list = cat === "全部" ? visible : visible.filter(v => v.category === cat);
+
+  /* 影片清單結構化資料 */
+  useEffect(() => {
+    if (!visible.length) return;
+    let el = document.getElementById("ld-videos");
+    if (!el) { el = document.createElement("script"); el.id = "ld-videos"; el.type = "application/ld+json"; document.head.appendChild(el); }
+    el.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: visible.slice(0, 30).map((v, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: {
+          "@type": "VideoObject",
+          name: v.titleShown || v.title,
+          description: v.descShown || v.desc || (v.titleShown || v.title),
+          thumbnailUrl: v.thumb,
+          uploadDate: v.published,
+          embedUrl: `https://www.youtube.com/embed/${v.videoId}`,
+          url: `https://www.youtube.com/watch?v=${v.videoId}`,
+        },
+      })),
+    });
+  }, [visible]);
+
+  return (
+    <div>
+      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+        <div className="max-w-6xl mx-auto px-6 h-[68px] flex items-center justify-between gap-4">
+          <a href="../index.html" className="flex items-center gap-3">
+            <img src="../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
+            <span className="leading-tight">
+              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
+            </span>
+          </a>
+          <a href={BRAND.phoneHref}
+            className="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+            來電諮詢 {BRAND.phone}
+          </a>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-6 py-14">
+        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Videos</div>
+        <h1 className="display text-[30px] md:text-[36px]">影片專區</h1>
+        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
+          社區開箱、生活圈導覽與購屋知識分享。
+          影片同步自澄果團隊的 YouTube 頻道，新片上架後這裡也會自動更新。
+        </p>
+        <div className="mt-6 h-px bg-line" />
+
+        {error && <p className="mt-10 text-[16px] text-orangeDeep">影片資料讀取失敗，請重新整理頁面。</p>}
+        {!error && !data && <p className="mt-10 font-mono text-[13px] text-inkFaint">讀取中…</p>}
+
+        {data && visible.length === 0 && (
+          <div className="mt-10 border border-line rounded-sm bg-surface p-8">
+            <p className="text-[16px] text-inkSoft leading-[1.9]">
+              影片同步中，稍後會顯示在這裡。也可以先到我們的 YouTube 頻道觀看。
+            </p>
+            {data.channelUrl && (
+              <a href={data.channelUrl} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+                前往 YouTube 頻道
+              </a>
+            )}
+          </div>
+        )}
+
+        {visible.length > 0 && (
+          <>
+            {cats.length > 1 && (
+              <div className="flex flex-wrap gap-2 mt-8">
+                {cats.map(c => (
+                  <button key={c} onClick={() => setCat(c)}
+                    className={`px-4 py-2 text-[14px] rounded-sm border transition ${
+                      cat === c ? "bg-ink text-white border-ink"
+                                : "bg-surface text-inkSoft border-line hover:border-ink"}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+              {list.map(v => (
+                <article key={v.videoId}>
+                  <button onClick={() => setPlaying(v)}
+                    className="group block w-full text-left"
+                    aria-label={`播放 ${v.titleShown || v.title}`}>
+                    <div className="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
+                      <img src={v.thumb} alt="" loading="lazy"
+                        className="w-full h-full object-cover group-hover:opacity-90 transition" />
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <span className="w-14 h-14 rounded-full bg-orange/95 flex items-center justify-center
+                                         group-hover:scale-110 transition">
+                          <svg viewBox="0 0 24 24" className="w-6 h-6 ml-0.5" fill="#fff">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 mt-4 font-mono text-[12px]">
+                      {v.category && <span className="text-orangeDeep tracking-wider">{v.category}</span>}
+                      <span className="text-inkFaint">{fmtDate(v.published)}</span>
+                    </div>
+                    <h2 className="text-[17px] font-bold leading-snug mt-1.5 tracking-tight group-hover:text-orangeDeep transition">
+                      {v.titleShown || v.title}
+                    </h2>
+                    {(v.descShown || v.desc) && (
+                      <p className="text-[14px] text-inkSoft leading-[1.85] mt-2 line-clamp-2">
+                        {v.descShown || v.desc}
+                      </p>
+                    )}
+                  </button>
+                </article>
+              ))}
+            </div>
+
+            {data.channelUrl && (
+              <div className="mt-14 pt-8 border-t border-line">
+                <a href={data.channelUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-ink/25 text-ink hover:bg-ink hover:text-white transition">
+                  到 YouTube 看更多
+                </a>
+              </div>
+            )}
+          </>
+        )}
+
+        <section className="mt-14 bg-ink text-white/75 rounded-sm p-8">
+          <h2 className="display text-[20px] text-white">想看某個社區的實際屋況？</h2>
+          <p className="mt-3 text-[16px] leading-[1.9] max-w-xl">
+            影片拍不完，但我們手上有更多物件。
+            告訴我們你在看哪一區、什麼樣的坪數格局，直接帶你去現場。
+          </p>
+          <a href={BRAND.phoneHref}
+            className="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+            來電諮詢 {BRAND.phone}
+          </a>
+        </section>
+      </main>
+
+      <footer className="border-t border-line">
+        <div className="max-w-6xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
+          <a href="../index.html" className="hover:text-orangeDeep">回首頁</a>
+        </div>
+      </footer>
+
+      {playing && <Player video={playing} onClose={() => setPlaying(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

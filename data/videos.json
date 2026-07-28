@@ -1,0 +1,11 @@
+{
+  "_說明": "影片資料檔。videos 陣列由 GitHub Actions 每 6 小時從 YouTube 頻道 RSS 自動更新，請勿手動編輯。要調整標題、分類或隱藏某支影片，請在後台修改，設定會存在 overrides 裡，自動更新時不會被蓋掉。",
+  "channelId": "UCrqD_LHzrYm4sLQXc0Cvwiw",
+  "channelUrl": "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
+  "channelName": "台灣房屋 - 澄果團隊",
+  "categories": ["社區開箱", "生活圈導覽", "知識分享", "團隊日常"],
+  "heroVideoId": "",
+  "overrides": {},
+  "videos": [],
+  "updatedAt": null
+}

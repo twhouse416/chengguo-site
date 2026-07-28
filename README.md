@@ -10,6 +10,7 @@
 |---|---|---|
 | `data/market-data.json` | GitHub Actions 每天自動更新 | 行情變回示意假資料，要到 Actions 手動重跑 |
 | `data/articles.json` | 你在後台編輯 | 已發布的文章全變回草稿，內容遺失 |
+| `data/videos.json` | Actions 每 6 小時同步 YouTube ＋ 你在後台調整 | 影片清單清空、顯示設定遺失 |
 
 批次上傳檔案時，**若清單中出現這兩個，請取消勾選不要上傳**。
 
@@ -119,6 +120,22 @@ chengguo-site/
 
 網站上線後建議到 Google Search Console 提交 sitemap：
 `https://twhouse416.github.io/chengguo-site/sitemap.xml`
+
+## 影片
+
+影片清單每 6 小時自動同步自 YouTube 頻道（`UCrqD_LHzrYm4sLQXc0Cvwiw`），
+你在 YouTube 上傳新片後，網站會自動出現，不用做任何事。
+
+到後台的「影片」分頁可以調整：
+
+- **網站顯示標題**——YouTube 上的標題通常較口語，網站上可以改成更好搜尋的寫法
+- **分類**——社區開箱、生活圈導覽、知識分享、團隊日常
+- **隱藏**——不想放在網站上的影片可以勾選隱藏
+- **首頁主視覺影片**——留空會自動用最新一支
+
+這些調整存在 `overrides` 裡，自動同步時不會被覆蓋。改完記得按「儲存設定」。
+
+要立刻同步一次：Actions →「同步 YouTube 影片」→ Run workflow。
 
 ## 行情資料
 
