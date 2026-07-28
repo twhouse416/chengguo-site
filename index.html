@@ -311,10 +311,10 @@ function AreasSection({ market, error }) {
           const meta = AREA_META[a.code] || {};
           return (
             <article key={a.code}
-              className="sm:aspect-square flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
+              className="flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
               <img src={meta.img} alt={a.name}
-                className="w-full h-[45%] min-h-[180px] object-cover shrink-0" />
-              <div className="flex flex-col flex-1 min-h-0 p-6">
+                className="w-full aspect-[3/2] object-cover shrink-0" />
+              <div className="flex flex-col flex-1 p-7">
                 <div className="font-mono text-[12px] tracking-wider text-inkFaint">{meta.district}</div>
                 <h3 className="text-xl font-bold mt-1 mb-2.5 tracking-tight">{a.name}</h3>
                 <p className="text-[15px] text-inkSoft leading-[1.85]">{meta.desc}</p>
