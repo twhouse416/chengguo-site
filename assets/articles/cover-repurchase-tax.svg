@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <!-- 標題 -->
+  <text x="120" y="140" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="900"
+        fill="#16191D" letter-spacing="-1">兩案之間，只有兩年</text>
+  <text x="120" y="188" font-family="'IBM Plex Mono',monospace" font-size="24"
+        fill="#B85400" letter-spacing="4">REPURCHASE TAX REFUND</text>
+
+  <!-- 時間軸 -->
+  <path d="M180 470 H1020" stroke="#16191D" stroke-width="2.5"/>
+  <path d="M1006 458 L1020 470 L1006 482" stroke="#16191D" stroke-width="2.5"
+        fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 2年區間標示 -->
+  <g>
+    <rect x="260" y="440" width="560" height="60" fill="#FD7305" fill-opacity="0.12"/>
+    <path d="M260 440 V500 M820 440 V500" stroke="#FD7305" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <text x="540" y="418" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700"
+          fill="#B85400" text-anchor="middle">2 年以內</text>
+  </g>
+
+  <!-- 舊屋（賣出） -->
+  <g transform="translate(200,300)">
+    <g stroke="#16191D" stroke-width="2.5" fill="none" stroke-linejoin="round">
+      <path d="M0 110 V52 L52 12 L104 52 V110 Z" fill="#FFFFFF"/>
+      <path d="M36 110 V76 H68 V110"/>
+    </g>
+    <circle cx="52" cy="170" r="9" fill="#16191D"/>
+    <text x="52" y="222" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#16191D" text-anchor="middle">賣舊屋</text>
+    <text x="52" y="256" font-family="'IBM Plex Mono',monospace" font-size="20"
+          fill="#737A83" text-anchor="middle">繳稅</text>
+  </g>
+
+  <!-- 新屋（買進） -->
+  <g transform="translate(768,300)">
+    <g stroke="#16191D" stroke-width="2.5" fill="none" stroke-linejoin="round">
+      <path d="M0 110 V52 L52 12 L104 52 V110 Z" fill="#FFFFFF"/>
+      <path d="M36 110 V76 H68 V110"/>
+      <circle cx="52" cy="46" r="7" fill="#FD7305" stroke="none"/>
+    </g>
+    <circle cx="52" cy="170" r="9" fill="#FD7305"/>
+    <text x="52" y="222" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#16191D" text-anchor="middle">買新屋</text>
+    <text x="52" y="256" font-family="'IBM Plex Mono',monospace" font-size="20"
+          fill="#B85400" text-anchor="middle">退稅</text>
+  </g>
+
+  <!-- 退稅箭頭（由新屋回流） -->
+  <path d="M820 340 C880 250 400 250 300 320" stroke="#FD7305" stroke-width="2.5"
+        fill="none" stroke-dasharray="8 6"/>
+  <path d="M312 306 L298 322 L316 330" stroke="#FD7305" stroke-width="2.5"
+        fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 5年閉鎖期提示 -->
+  <g transform="translate(820,560)">
+    <rect x="0" y="0" width="260" height="86" fill="#FCEFE3" stroke="#FD7305" stroke-width="2"/>
+    <text x="24" y="38" font-family="'Noto Sans TC',sans-serif" font-size="24" font-weight="700"
+          fill="#B85400">再 5 年閉鎖期</text>
+    <text x="24" y="68" font-family="'Noto Sans TC',sans-serif" font-size="19"
+          fill="#B85400">不得出租、營業或再移轉</text>
+  </g>
+
+  <text x="120" y="730" font-family="'IBM Plex Mono',monospace" font-size="20"
+        fill="#737A83" letter-spacing="2">台灣房屋 澄果團隊</text>
+</svg>

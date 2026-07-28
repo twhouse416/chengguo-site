@@ -171,7 +171,7 @@ function App() {
                   {a.cover && (
                     <a href={`article.html?slug=${a.slug}`} className="block mb-4">
                       <img src={`../${a.cover}`} alt={a.coverAlt || a.title} loading="lazy"
-                        className="w-full aspect-[3/2] object-contain bg-paper rounded-sm border border-line" />
+                        className="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" />
                     </a>
                   )}
                   <div className="flex items-center gap-3 mb-3 font-mono text-[12px]">

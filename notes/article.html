@@ -427,7 +427,7 @@ function App() {
                     <a key={a.slug} href={`article.html?slug=${a.slug}`} className="flex gap-4 group items-start">
                       {a.cover && (
                         <img src={`../${a.cover}`} alt="" loading="lazy"
-                          className="w-24 aspect-[3/2] object-contain bg-paper rounded-sm border border-line shrink-0" />
+                          className="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />
                       )}
                       <div>
                         <div className="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">{a.tag}</div>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <!-- 標題 -->
+  <text x="120" y="140" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="900"
+        fill="#16191D" letter-spacing="-1">先買，還是先賣？</text>
+  <text x="120" y="188" font-family="'IBM Plex Mono',monospace" font-size="24"
+        fill="#B85400" letter-spacing="4">TRADE UP PLANNING</text>
+
+  <!-- 中央分隔線 -->
+  <path d="M600 260 V690" stroke="#DEDCD7" stroke-width="2"/>
+
+  <!-- 左：先買後賣 -->
+  <g>
+    <text x="180" y="300" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700"
+          fill="#16191D">先買後賣</text>
+
+    <!-- 順序方塊 -->
+    <rect x="180" y="336" width="150" height="64" fill="#FD7305"/>
+    <text x="255" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#FFFFFF" text-anchor="middle">買新屋</text>
+    <path d="M348 368 H392" stroke="#C9C6C0" stroke-width="2.5"/>
+    <path d="M380 358 L392 368 L380 378" stroke="#C9C6C0" stroke-width="2.5"
+          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="404" y="336" width="150" height="64" fill="#FFFFFF" stroke="#16191D" stroke-width="2"/>
+    <text x="479" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#16191D" text-anchor="middle">賣舊屋</text>
+
+    <!-- 壓力指示 -->
+    <text x="180" y="466" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">資金壓力</text>
+    <rect x="180" y="484" width="374" height="14" fill="#DEDCD7"/>
+    <rect x="180" y="484" width="300" height="14" fill="#FD7305"/>
+
+    <text x="180" y="556" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">居住彈性</text>
+    <rect x="180" y="574" width="374" height="14" fill="#DEDCD7"/>
+    <rect x="180" y="574" width="330" height="14" fill="#16191D" fill-opacity="0.75"/>
+
+    <text x="180" y="650" font-family="'Noto Sans TC',sans-serif" font-size="21" fill="#474D55">
+      不必急著搬，但可能同時揹兩筆貸款
+    </text>
+  </g>
+
+  <!-- 右：先賣後買 -->
+  <g>
+    <text x="660" y="300" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700"
+          fill="#16191D">先賣後買</text>
+
+    <rect x="660" y="336" width="150" height="64" fill="#FFFFFF" stroke="#16191D" stroke-width="2"/>
+    <text x="735" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#16191D" text-anchor="middle">賣舊屋</text>
+    <path d="M828 368 H872" stroke="#C9C6C0" stroke-width="2.5"/>
+    <path d="M860 358 L872 368 L860 378" stroke="#C9C6C0" stroke-width="2.5"
+          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="884" y="336" width="150" height="64" fill="#FD7305"/>
+    <text x="959" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
+          fill="#FFFFFF" text-anchor="middle">買新屋</text>
+
+    <text x="660" y="466" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">資金壓力</text>
+    <rect x="660" y="484" width="374" height="14" fill="#DEDCD7"/>
+    <rect x="660" y="484" width="140" height="14" fill="#FD7305"/>
+
+    <text x="660" y="556" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">居住彈性</text>
+    <rect x="660" y="574" width="374" height="14" fill="#DEDCD7"/>
+    <rect x="660" y="574" width="150" height="14" fill="#16191D" fill-opacity="0.75"/>
+
+    <text x="660" y="650" font-family="'Noto Sans TC',sans-serif" font-size="21" fill="#474D55">
+      手上有現金，但可能需要短期過渡
+    </text>
+  </g>
+
+  <text x="120" y="730" font-family="'IBM Plex Mono',monospace" font-size="20"
+        fill="#737A83" letter-spacing="2">台灣房屋 澄果團隊</text>
+</svg>
