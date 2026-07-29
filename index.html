@@ -168,6 +168,23 @@ const BRAND = {
   instagram: "https://www.instagram.com/twhouse_o8",
 };
 
+/* ================= 共用資料 ================= */
+/* 買方需求：Header、Footer、區塊共用同一份，只抓一次 */
+let buyersPromise = null;
+function useBuyers() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    if (!buyersPromise) {
+      buyersPromise = fetch(`./data/buyers.json?t=${Date.now()}`)
+        .then(r => r.json())
+        .catch(() => ({ buyers: [] }));
+    }
+    buyersPromise.then(setData);
+  }, []);
+  const list = (data?.buyers || []).filter(b => !b.hidden);
+  return { data, list, ready: data !== null };
+}
+
 /* ================= 共用元件 ================= */
 
 function SectionHead({ label, title, note }) {
@@ -242,12 +259,15 @@ function SocialLinks({ variant = "light", size = "md" }) {
 /* ================= Header ================= */
 function Header() {
   const [open, setOpen] = useState(false);
-  /* 主導覽保持精簡；關於團隊、近期成交、常見問題放在頁尾 */
+  /* 沒有買方需求時，導覽列不顯示該項目（區塊本身也不會渲染） */
+  const hasBuyers = useBuyers().list.length > 0;
+
+  /* 主導覽保持精簡；關於團隊、近期成交放在頁尾 */
   const nav = [
     ["#services", "服務項目"],
     ["#areas", "生活圈行情"],
     ["#tools", "試算工具"],
-    ["#buyers", "買方需求"],
+    ...(hasBuyers ? [["#buyers", "買方需求"]] : []),
     ["#faq", "常見問題"],
     ["notes/index.html", "知識文章"],
     ["videos/index.html", "影片"],
@@ -1013,17 +1033,8 @@ function DealsSection() {
 
 /* ================= 買方需求牆 ================= */
 function BuyersSection() {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetch(`./data/buyers.json?t=${Date.now()}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => setData({ buyers: [] }));
-  }, []);
-
-  const list = (data?.buyers || []).filter(b => !b.hidden);
-  if (!data || list.length === 0) return null;   // 沒有需求時整區不顯示
+  const { data, list, ready } = useBuyers();
+  if (!ready || list.length === 0) return null;   // 沒有需求時整區不顯示
 
   return (
     <section id="buyers" className="bg-surface border-y border-line">
@@ -1166,6 +1177,8 @@ function FaqSection() {
 
 /* ================= Footer ================= */
 function Footer() {
+  const hasBuyers = useBuyers().list.length > 0;
+
   return (
     <footer id="contact" className="bg-ink text-white/70">
       <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
@@ -1182,7 +1195,9 @@ function Footer() {
           <nav aria-label="頁尾導覽" className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
             {[["#services","服務項目"],["#areas","生活圈行情"],["#about","關於團隊"],
               ["#tools","試算工具"],["notes/index.html","知識文章"],["videos/index.html","影片"],
-              ["#deals","近期成交"],["#buyers","買方需求"],["#faq","常見問題"]].map(([href,label]) => (
+              ["#deals","近期成交"],
+              ...(hasBuyers ? [["#buyers","買方需求"]] : []),
+              ["#faq","常見問題"]].map(([href,label]) => (
               <a key={label} href={href} className="hover:text-orange transition">{label}</a>
             ))}
           </nav>
