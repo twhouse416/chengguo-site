@@ -99,6 +99,20 @@ chengguo-site/
 每個區塊都可以設「起始日／結束日」，用來做時間到自動換內容。
 例如政策上路前後要講不同的話，就寫兩段，一段設結束日、一段設起始日為同一天。
 
+## 文章靜態頁
+
+每次 `data/articles.json` 有變動，GitHub Actions 會自動為每篇「已發布」的文章
+產生一個真正的 HTML 檔案（`notes/<slug>.html`），內容直接寫在 HTML 裡。
+
+**為什麼要這樣做**：Google 雖然會執行 JavaScript，但索引優先度較低；
+ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
+內容若靠 JS 載入，它們看到的會是空白頁。
+
+你不需要做任何事——在後台發布文章後，約 1–2 分鐘靜態頁就會自動產生。
+文章改回草稿時，對應的靜態頁也會自動刪除。
+
+舊網址 `notes/article.html?slug=xxx` 仍可使用，會自動轉到新網址。
+
 ## SEO / GEO
 
 網站已做的搜尋最佳化：

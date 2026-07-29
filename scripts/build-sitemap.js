@@ -35,7 +35,7 @@ try {
   articlePages = (data.articles || [])
     .filter(a => !a.draft)
     .map(a => ({
-      loc: `${SITE}/notes/article.html?slug=${a.slug}`,
+      loc: `${SITE}/notes/${a.slug}.html`,
       lastmod: a.updated || a.date,
       priority: "0.9",
       freq: "monthly",

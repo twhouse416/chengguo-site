@@ -97,7 +97,7 @@ function App() {
       itemListElement: published.map((a, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `${site}/notes/article.html?slug=${a.slug}`,
+        url: `${site}/notes/${a.slug}.html`,
         name: a.title,
       })),
     });
@@ -169,7 +169,7 @@ function App() {
               {list.map(a => (
                 <article key={a.slug} className="border-t-2 border-ink pt-5">
                   {a.cover && (
-                    <a href={`article.html?slug=${a.slug}`} className="block mb-4">
+                    <a href={`${a.slug}.html`} className="block mb-4">
                       <img src={`../${a.cover}`} alt={a.coverAlt || a.title} loading="lazy"
                         className="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" />
                     </a>
@@ -180,12 +180,12 @@ function App() {
                     {a.readMinutes && <span className="text-inkFaint">約 {a.readMinutes} 分鐘</span>}
                   </div>
                   <h2 className="text-[19px] font-bold leading-snug mb-3 tracking-tight">
-                    <a href={`article.html?slug=${a.slug}`} className="hover:text-orangeDeep transition">
+                    <a href={`${a.slug}.html`} className="hover:text-orangeDeep transition">
                       {a.title}
                     </a>
                   </h2>
                   <p className="text-[15px] text-inkSoft leading-[1.9]">{a.summary}</p>
-                  <a href={`article.html?slug=${a.slug}`}
+                  <a href={`${a.slug}.html`}
                     className="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">
                     閱讀全文 →
                   </a>

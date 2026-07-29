@@ -741,19 +741,19 @@ function ArticlesSection() {
               {articles.map(a => (
                 <article key={a.slug} className="border-t-2 border-ink pt-5">
                   {a.cover && (
-                    <a href={`notes/article.html?slug=${a.slug}`} className="block mb-4">
+                    <a href={`notes/${a.slug}.html`} className="block mb-4">
                       <img src={a.cover} alt={a.coverAlt || a.title} loading="lazy"
                         className="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" />
                     </a>
                   )}
                   <div className="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">{a.tag}</div>
                   <h3 className="text-[17px] font-bold leading-snug mb-3 tracking-tight">
-                    <a href={`notes/article.html?slug=${a.slug}`} className="hover:text-orangeDeep transition">
+                    <a href={`notes/${a.slug}.html`} className="hover:text-orangeDeep transition">
                       {a.title}
                     </a>
                   </h3>
                   <p className="text-[15px] text-inkSoft leading-[1.85]">{a.summary}</p>
-                  <a href={`notes/article.html?slug=${a.slug}`}
+                  <a href={`notes/${a.slug}.html`}
                     className="inline-block font-mono text-[12px] text-orangeDeep mt-5 hover:underline">
                     閱讀全文 →
                   </a>
