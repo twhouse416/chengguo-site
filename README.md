@@ -11,6 +11,7 @@
 | `data/market-data.json` | GitHub Actions 每天自動更新 | 行情變回示意假資料，要到 Actions 手動重跑 |
 | `data/articles.json` | 你在後台編輯 | 已發布的文章全變回草稿，內容遺失 |
 | `data/videos.json` | Actions 每 6 小時同步 YouTube ＋ 你在後台調整 | 影片清單清空、顯示設定遺失 |
+| `data/buyers.json` | 你在後台編輯 | 買方需求全部消失 |
 
 批次上傳檔案時，**若清單中出現這兩個，請取消勾選不要上傳**。
 
@@ -134,6 +135,16 @@ ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
 
 網站上線後建議到 Google Search Console 提交 sitemap：
 `https://twhouse416.github.io/chengguo-site/sitemap.xml`
+
+## 買方需求牆
+
+在後台的「買方需求」分頁新增，顯示在首頁（賀成交下方）。
+用途是讓屋主知道「有人正在找我這種房子」，是開發賣方委託的入口。
+
+每筆包含：想找的區域、坪數、預算、需求重點。沒有任何需求時，首頁不會顯示這個區塊。
+
+**刊登前務必確認**：內容必須匿名化，不要出現姓名、電話、職業、公司、指定社區名稱，
+或任何可辨識特定人的描述。依個人資料保護法，刊登買方需求前應先取得買方同意。
 
 ## 影片
 

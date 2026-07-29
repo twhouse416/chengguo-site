@@ -247,6 +247,8 @@ function Header() {
     ["#services", "服務項目"],
     ["#areas", "生活圈行情"],
     ["#tools", "試算工具"],
+    ["#buyers", "買方需求"],
+    ["#faq", "常見問題"],
     ["notes/index.html", "知識文章"],
     ["videos/index.html", "影片"],
   ];
@@ -261,7 +263,7 @@ function Header() {
           </span>
         </a>
 
-        <nav className="hidden xl:flex items-center gap-6 text-[15px] text-inkSoft whitespace-nowrap">
+        <nav className="hidden xl:flex items-center gap-5 text-[15px] text-inkSoft whitespace-nowrap">
           {nav.map(([href, label]) => (
             <a key={href} href={href} className="hover:text-ink transition">{label}</a>
           ))}
@@ -283,7 +285,7 @@ function Header() {
 
       {open && (
         <div className="xl:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
-          {[...nav, ["#about", "關於團隊"], ["#deals", "近期成交"], ["#faq", "常見問題"]].map(([href, label]) => (
+          {[...nav, ["#about", "關於團隊"], ["#deals", "近期成交"]].map(([href, label]) => (
             <a key={label} href={href} className="text-[16px] text-inkSoft py-1" onClick={() => setOpen(false)}>{label}</a>
           ))}
           <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
@@ -1009,6 +1011,87 @@ function DealsSection() {
   );
 }
 
+/* ================= 買方需求牆 ================= */
+function BuyersSection() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch(`./data/buyers.json?t=${Date.now()}`)
+      .then(r => r.json())
+      .then(setData)
+      .catch(() => setData({ buyers: [] }));
+  }, []);
+
+  const list = (data?.buyers || []).filter(b => !b.hidden);
+  if (!data || list.length === 0) return null;   // 沒有需求時整區不顯示
+
+  return (
+    <section id="buyers" className="bg-surface border-y border-line">
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <SectionHead
+          label="Buyers"
+          title="這些買方，正在找你的房子"
+          note={data.intro}
+        />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {list.map((b, i) => (
+            <article key={b.id || i}
+              className="border border-line rounded-sm bg-paper p-7 flex flex-col">
+              <div className="flex items-baseline justify-between gap-3 mb-4">
+                <span className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {b.updated && (
+                  <span className="font-mono text-[12px] text-inkFaint">{b.updated}</span>
+                )}
+              </div>
+
+              <h3 className="text-[19px] font-bold tracking-tight leading-snug mb-5">
+                {b.area}
+              </h3>
+
+              <dl className="space-y-3 mb-5">
+                <div className="flex gap-4 pb-3 border-b border-line">
+                  <dt className="font-mono text-[12px] text-inkFaint w-12 shrink-0 pt-1">坪數</dt>
+                  <dd className="text-[15px] text-ink">{b.size}</dd>
+                </div>
+                <div className="flex gap-4 pb-3 border-b border-line">
+                  <dt className="font-mono text-[12px] text-inkFaint w-12 shrink-0 pt-1">預算</dt>
+                  <dd className="font-mono text-[17px] font-semibold text-ink">{b.budget}</dd>
+                </div>
+              </dl>
+
+              {b.notes?.length > 0 && (
+                <ul className="space-y-2 mb-6 flex-1">
+                  {b.notes.map((n, j) => (
+                    <li key={j} className="flex gap-2.5 text-[15px] text-inkSoft leading-[1.8]">
+                      <span className="text-orange shrink-0">・</span>
+                      <span>{n}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <a href={BRAND.phoneHref}
+                className="font-mono text-[14px] text-orangeDeep hover:underline mt-auto">
+                我的房子符合，來電洽詢 →
+              </a>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-wrap items-center gap-6">
+          <Button href={BRAND.phoneHref}>免費估價 {BRAND.phone}</Button>
+          <p className="text-[15px] text-inkSoft leading-[1.9]">
+            沒有完全符合的也沒關係，買方條件通常有調整空間。先估價，再決定要不要賣。
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ================= 常見問題：AEO 核心區塊 ================= */
 const FAQS = [
   ["高雄美術館特區的房仲該怎麼挑？",
@@ -1099,7 +1182,7 @@ function Footer() {
           <nav aria-label="頁尾導覽" className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
             {[["#services","服務項目"],["#areas","生活圈行情"],["#about","關於團隊"],
               ["#tools","試算工具"],["notes/index.html","知識文章"],["videos/index.html","影片"],
-              ["#deals","近期成交"],["#faq","常見問題"]].map(([href,label]) => (
+              ["#deals","近期成交"],["#buyers","買方需求"],["#faq","常見問題"]].map(([href,label]) => (
               <a key={label} href={href} className="hover:text-orange transition">{label}</a>
             ))}
           </nav>
@@ -1142,6 +1225,7 @@ function App() {
         <ArticlesSection />
         <ToolsSection />
         <DealsSection />
+        <BuyersSection />
         <FaqSection />
       </main>
       <Footer />
