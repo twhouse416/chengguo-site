@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="assets/logo-icon.png" />
 <title>台灣房屋 澄果團隊｜美術館房地產顧問，為您解決家的大小事</title>
-<meta name="description" content="美術館房地產顧問。台灣房屋澄果團隊深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋與三民中都重劃區十年以上，服務超過150件。提供實價登錄行情、學區查詢、房貸與新青安3.0試算。" />
-<meta name="keywords" content="高雄房仲,美術館特區,農十六特區,瑞豐巨蛋,中都重劃區,高雄買房,鼓山區房仲,高雄實價登錄,台灣房屋澄果團隊" />
+<meta name="description" content="高雄美術館特區、農十六房仲。台灣房屋澄果團隊深耕十年以上，截至115年7月約58%成交來自兩大商圈。提供免費房屋估價、成交行情分析、售屋策略規劃、房地合一稅概算，以及首購與換屋購屋建議。" />
+<meta name="keywords" content="高雄美術館房仲,農十六房仲,高雄房仲推薦,免費房屋估價,美術館特區房價,農十六房價,高雄房屋出售,售屋流程,房地合一稅,瑞豐巨蛋,中都重劃區,台灣房屋澄果團隊" />
 <link rel="canonical" href="https://twhouse416.github.io/chengguo-site/" />
 
 <meta property="og:type" content="website" />
@@ -47,7 +47,55 @@
     "https://www.instagram.com/twhouse_o8"
   ],
   "description": "深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區10年以上，累計服務件數超過150件。提供區域房價分析、市場趨勢、首購購屋建議與換屋規劃。",
-  "knowsLanguage": "zh-TW"
+  "knowsLanguage": "zh-TW",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "服務項目",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "免費房屋估價",
+        "description": "依同社區近期成交案例、樓層面向、屋況與車位條件提供售價區間，不收費且無須先簽委託。" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "成交行情分析",
+        "description": "以內政部實價登錄資料分析區域與社區成交行情。" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "售屋策略規劃",
+        "description": "訂價、開價空間、上架時機與帶看安排的客製化規劃。" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "稅費概算",
+        "description": "房地合一稅、土地增值稅與重購退稅概算。" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "首購購屋規劃",
+        "description": "總價帶評估、新青安貸款試算、看屋陪同與議價策略。" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "換屋規劃",
+        "description": "舊屋估價、稅務時程、資金缺口與兩案時程銜接規劃。" } }
+    ]
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "台灣房屋 澄果團隊",
+  "url": "https://twhouse416.github.io/chengguo-site/",
+  "inLanguage": "zh-TW",
+  "publisher": {
+    "@type": "Organization",
+    "name": "澄果資產有限公司",
+    "url": "https://twhouse416.github.io/chengguo-site/",
+    "logo": "https://twhouse416.github.io/chengguo-site/assets/logo-full.png",
+    "telephone": "+886-7-9766977",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "鼓山區青海路416號",
+      "addressLocality": "高雄市",
+      "postalCode": "804",
+      "addressCountry": "TW"
+    },
+    "sameAs": [
+      "https://store.twhg.com.tw/TE80",
+      "https://www.facebook.com/TWhouseo8",
+      "https://www.instagram.com/twhouse_o8",
+      "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A"
+    ]
+  }
 }
 </script>
 
@@ -195,6 +243,7 @@ function SocialLinks({ variant = "light", size = "md" }) {
 function Header() {
   const [open, setOpen] = useState(false);
   const nav = [
+    ["#services", "服務項目"],
     ["#areas", "生活圈行情"],
     ["#about", "關於團隊"],
     ["#services", "服務內容"],
@@ -202,6 +251,7 @@ function Header() {
     ["videos/index.html", "影片"],
     ["#tools", "試算工具"],
     ["#deals", "近期成交"],
+    ["#faq", "常見問題"],
   ];
   return (
     <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
@@ -310,17 +360,79 @@ function Hero() {
             為您解決家的大小事
           </h1>
           <p className="mt-7 text-[17px] text-inkSoft leading-[2] max-w-xl">
-            澄果團隊深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區十年以上。
-            我們把內政部實價登錄整理成看得懂的價格帶，讓首購與換屋家庭在談價之前，先知道行情落在哪裡。
+            深耕高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區十年以上。
+            提供房屋出售規劃、免費房屋估價、成交行情分析與首購換屋建議，
+            用內政部實價登錄的實際成交數字，協助買賣雙方在談價之前先掌握市場。
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
-            <Button href="#areas" variant="outline">查看四區行情</Button>
+            <Button href="#services" variant="outline">我要賣房 / 我要買房</Button>
           </div>
         </div>
 
         <div className="lg:col-span-6">
           <HeroMedia />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================= 快速摘要：AI 與訪客一眼看懂 ================= */
+const HIGHLIGHTS = [
+  "深耕高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區",
+  "截至 115 年 7 月，約 58% 成交業績來自美術館特區與農十六",
+  "免費房屋估價與成交行情分析",
+  "房地合一稅、土地增值稅概算",
+  "客製化售屋策略規劃",
+  "首購預算評估與換屋時程規劃",
+];
+
+const FACTS_MAIN = [
+  ["58", "%", "成交集中美術館、農十六", "截至 115 年 7 月"],
+  ["10", "年以上", "深耕四大生活圈", ""],
+  ["150", "件以上", "累計服務件數", ""],
+  ["15", "項", "歷年評鑑與競賽獲獎", ""],
+];
+
+function SummarySection() {
+  return (
+    <section id="summary" className="bg-surface border-b border-line">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-5">
+            <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Why Us</div>
+            <h2 className="display text-2xl md:text-[28px]">為什麼屋主與買方選擇澄果團隊</h2>
+            <p className="mt-5 text-[16px] text-inkSoft leading-[1.95]">
+              我們長期專注於高雄美術館特區與農十六商圈，不追求服務全高雄，
+              而是把一個商圈做深、做精。累積下來的在地成交經驗，
+              讓我們熟悉各社區行情、買方需求與市場變化。
+            </p>
+          </div>
+
+          <div className="lg:col-span-7">
+            <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-3">
+              {HIGHLIGHTS.map((h, i) => (
+                <li key={i} className="flex gap-3 text-[15px] text-ink leading-[1.85] py-2 border-b border-line">
+                  <span className="text-orange shrink-0 font-bold">✓</span>
+                  <span>{h}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* 數據 */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-14 pt-10 border-t border-line">
+          {FACTS_MAIN.map(([n, unit, label, note], i) => (
+            <div key={i}>
+              <div className="font-mono text-[38px] font-semibold leading-none text-ink">
+                {n}<span className="text-[15px] font-normal text-inkSoft ml-1">{unit}</span>
+              </div>
+              <div className="text-[14px] text-inkSoft mt-3 leading-snug">{label}</div>
+              {note && <div className="font-mono text-[12px] text-inkFaint mt-1">{note}</div>}
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -438,12 +550,6 @@ const AWARDS = [
   "113年度評鑑優質",
 ];
 
-const FACTS = [
-  ["10", "年以上", "深耕四大生活圈"],
-  ["150", "件以上", "累計服務件數"],
-  ["15", "項", "歷年評鑑與競賽獲獎"],
-];
-
 function AboutSection() {
   return (
     <section id="about" className="bg-surface border-y border-line">
@@ -457,17 +563,6 @@ function AboutSection() {
           <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">About</div>
           <h2 className="display text-2xl md:text-[28px]">在同一片生活圈裡，待得夠久</h2>
           <div className="mt-6 h-px bg-line" />
-
-          <div className="grid grid-cols-3 gap-6 mt-8">
-            {FACTS.map(([n, unit, label], i) => (
-              <div key={i}>
-                <div className="font-mono text-[30px] font-semibold leading-none">
-                  {n}<span className="text-[13px] font-normal text-inkSoft ml-1">{unit}</span>
-                </div>
-                <div className="text-[13px] text-inkSoft mt-2 leading-snug">{label}</div>
-              </div>
-            ))}
-          </div>
 
           <p className="mt-8 text-[17px] text-inkSoft leading-[1.9]">
             澄果團隊長期深耕鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區。
@@ -501,8 +596,21 @@ function AboutSection() {
 /* ================= 服務內容 ================= */
 const SERVICES = [
   {
+    kicker: "Sell",
+    title: "我要賣房",
+    lead: "先知道值多少，再決定賣不賣。估價不收費，也不必馬上委託。",
+    items: [
+      "免費房屋估價：同社區近期成交比對，不只給一個數字",
+      "成交行情分析：樓層、面向、車位、屋況如何影響價格",
+      "房地合一稅、土地增值稅概算，先算清楚淨到手金額",
+      "客製化售屋策略：訂價、開價空間、上架時機與帶看安排",
+      "換屋屋主的兩案時程銜接規劃",
+    ],
+    cta: "請澄果幫我估價",
+  },
+  {
     kicker: "First Home",
-    title: "首購",
+    title: "我要買房（首購）",
     lead: "第一次買房，我們把每個步驟拆開講清楚。",
     items: [
       "依收入與自備款，先抓出合理的總價帶",
@@ -515,7 +623,7 @@ const SERVICES = [
   },
   {
     kicker: "Trade Up",
-    title: "換屋",
+    title: "我要換屋",
     lead: "先買後賣還是先賣後買，數字先算清楚再決定。",
     items: [
       "舊屋合理售價評估（社區行情＋實價登錄比對）",
@@ -533,12 +641,12 @@ function ServicesSection() {
     <section id="services" className="max-w-6xl mx-auto px-6 py-20">
       <SectionHead
         label="Services"
-        title="買房不是一次決定，是一連串小決定"
-        note="首購與換屋的關卡不同，我們把各自會遇到的事情列出來，你可以先看哪一段最需要人幫忙。"
+        title="賣房、首購、換屋，各有各的關卡"
+        note="不論你現在站在哪一個位置，我們把會遇到的事情列出來，你可以先看哪一段最需要人幫忙。"
       />
-      <div className="grid md:grid-cols-2 gap-px bg-line border border-line rounded-sm overflow-hidden">
+      <div className="grid md:grid-cols-3 gap-px bg-line border border-line rounded-sm overflow-hidden">
         {SERVICES.map((s, i) => (
-          <div key={i} className="bg-surface p-9 flex flex-col">
+          <div key={i} className="bg-surface p-8 flex flex-col">
             <div className="font-mono text-[12px] tracking-[0.18em] text-inkFaint uppercase">{s.kicker}</div>
             <h3 className="display text-xl mt-2 mb-3">{s.title}</h3>
             <p className="text-[15px] text-inkSoft leading-relaxed mb-7">{s.lead}</p>
@@ -558,6 +666,40 @@ function ServicesSection() {
             </a>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* ================= 實務經驗：Google E-E-A-T 的 Experience ================= */
+function ExperienceSection() {
+  return (
+    <section id="experience" className="bg-surface border-y border-line">
+      <div className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-5">
+          <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Experience</div>
+          <h2 className="display text-2xl md:text-[28px]">我們如何協助屋主規劃售屋</h2>
+          <div className="mt-6 h-px bg-line" />
+        </div>
+        <div className="lg:col-span-7 space-y-6">
+          <p className="text-[17px] text-inkSoft leading-[2]">
+            多年來服務美術館特區與農十六商圈，我們發現即使是同一個社區，
+            不同樓層、面向、屋況、車位配置與當下的市場供需，
+            都可能讓成交價出現明顯落差。
+          </p>
+          <p className="text-[17px] text-inkSoft leading-[2]">
+            因此我們不會直接套用區域平均行情來估價。
+            實際做法是先比對同社區、條件相近的近期成交案例，
+            再參考目前的帶看反應與買方需求結構，給出更貼近市場的售價區間與策略建議。
+          </p>
+          <p className="text-[17px] text-inkSoft leading-[2]">
+            同樣的邏輯也用在買方身上。我們會把你要看的物件放回它所在的社區行情裡比較，
+            讓你知道這個開價是偏高、合理，還是有議價空間——而不是憑感覺出價。
+          </p>
+          <div className="pt-4">
+            <Button href={BRAND.phoneHref}>來電諮詢 {BRAND.phone}</Button>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -812,6 +954,78 @@ function DealsSection() {
   );
 }
 
+/* ================= 常見問題：AEO 核心區塊 ================= */
+const FAQS = [
+  ["高雄美術館特區的房仲該怎麼挑？",
+   "建議看三件事：是不是真的長期在這個商圈成交、能不能提出同社區的實際成交比對、以及願不願意誠實說明物件的缺點。澄果團隊深耕高雄美術館特區與農十六特區十年以上，截至 115 年 7 月，約 58% 的成交業績來自這兩大商圈。"],
+  ["農十六特區適合現在賣房嗎？",
+   "要看你的持有時間、稅務條件與資金規劃，沒有一體適用的答案。持有未滿 2 年的房地合一稅率是 45%，超過 10 年則降到 15%；若設籍居住連續滿 6 年，還有課稅所得 400 萬元以下免稅的自住優惠。建議先做稅費概算，再決定時機。"],
+  ["房屋估價需要收費嗎？",
+   "澄果團隊的房屋估價完全免費，也不需要先簽委託。我們會依同社區近期成交案例、樓層面向、屋況與車位條件提供售價區間，並說明判斷依據。"],
+  ["房屋出售的流程有哪些？",
+   "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
+  ["高雄美術館特區的房價怎麼看？",
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近半年的每坪均價與常見成交價格帶，可以先抓範圍。"],
+  ["農十六和美術館特區差在哪裡？",
+   "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
+  ["房地合一稅怎麼算？",
+   "課稅所得 =（成交價 − 取得成本 − 必要費用 − 土地漲價總數額），再依持有期間套用稅率：2 年以內 45%、超過 2 年未逾 5 年 35%、超過 5 年未逾 10 年 20%、超過 10 年 15%。符合自住條件者，課稅所得 400 萬元以下免稅、超過部分課 10%。本站有房地合一稅試算工具可以先估算。"],
+  ["換屋可以申請重購退稅嗎？",
+   "可以。新舊房地的移轉登記日間隔須在 2 年以內，先買後賣或先賣後買都適用，新舊屋也都須符合自住規定。新屋價格大於或等於舊屋售價可全額退還，較低則按比例退還。要注意退稅後新屋有 5 年閉鎖期，不得出租、營業或再移轉。"],
+  ["房子大概多久可以成交？",
+   "受訂價、屋況、社區去化速度與當下市場氣氛影響，差異相當大。訂價是否貼近市場通常是最關鍵的因素——開價偏離行情太多，前期帶看量就會明顯不足。我們會在委託前先說明合理的時間預期。"],
+  ["新青安 3.0 的條件是什麼？",
+   "自 2026 年 8 月 1 日起實施。額度依家庭狀況分級：一般首購 1,000 萬、申請日前 2 年內結婚 1,200 萬、育有未成年子女 1,500 萬。新增三道門檻：申貸年齡未滿 50 歲且年齡加年限不超過 80、本人年所得不超過 200 萬、房屋總價上限（高雄為 2,000 萬）。並改為一生限貸一次。"],
+];
+
+function FaqSection() {
+  const [open, setOpen] = useState(0);
+
+  useEffect(() => {
+    let el = document.getElementById("ld-home-faq");
+    if (!el) { el = document.createElement("script"); el.id = "ld-home-faq"; el.type = "application/ld+json"; document.head.appendChild(el); }
+    el.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQS.map(([q, a]) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    });
+  }, []);
+
+  return (
+    <section id="faq" className="max-w-6xl mx-auto px-6 py-20">
+      <SectionHead
+        label="FAQ"
+        title="常見問題"
+        note="買方與屋主最常問的十個問題。找不到答案的，直接來電問我們最快。"
+      />
+      <div className="border-t border-line">
+        {FAQS.map(([q, a], i) => (
+          <div key={i} className="border-b border-line">
+            <button
+              onClick={() => setOpen(open === i ? -1 : i)}
+              aria-expanded={open === i}
+              className="w-full flex items-start justify-between gap-6 py-6 text-left group">
+              <h3 className="text-[17px] md:text-[18px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">
+                {q}
+              </h3>
+              <span className={`font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform ${open === i ? "rotate-45" : ""}`}>
+                ＋
+              </span>
+            </button>
+            {open === i && (
+              <p className="text-[16px] text-inkSoft leading-[2] pb-7 pr-12 max-w-4xl">{a}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ================= Footer ================= */
 function Footer() {
   return (
@@ -857,12 +1071,15 @@ function App() {
       <Header />
       <main>
         <Hero />
-        <AreasSection market={data} error={error} />
-        <AboutSection />
+        <SummarySection />
         <ServicesSection />
+        <AreasSection market={data} error={error} />
+        <ExperienceSection />
+        <AboutSection />
         <ArticlesSection />
         <ToolsSection />
         <DealsSection />
+        <FaqSection />
       </main>
       <Footer />
     </>
