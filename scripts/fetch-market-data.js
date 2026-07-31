@@ -170,15 +170,28 @@ function computeAreaAverage(records, area) {
 }
 
 /* ---------- 讀取預售屋買賣（_b 檔），新建案的交易多在這裡 ---------- */
+let presaleHeaderLogged = false;
+
 function readAllPresaleCsv(extractDir) {
   if (!extractDir) return [];
   const files = readdirSync(extractDir).filter(f => /_lvr_land_b\.csv$/i.test(f));
+  if (!files.length && !presaleHeaderLogged) {
+    console.log("[預售] 這個壓縮檔裡沒有 _lvr_land_b.csv（預售屋買賣）");
+    presaleHeaderLogged = true;
+  }
   let records = [];
   for (const file of files) {
     const raw = readFileSync(path.join(extractDir, file), "utf-8");
     const rows = parseCSV(raw);
     if (rows.length < 3) continue;
     const header = rows[0];
+
+    if (!presaleHeaderLogged) {
+      console.log(`[預售] ${file} 的欄位（共 ${header.length} 個）：`);
+      console.log(`       ${header.map(h => h.trim()).join(" / ")}`);
+      presaleHeaderLogged = true;
+    }
+
     rows.slice(2).forEach(r => {
       const rec = {};
       header.forEach((h, idx) => { rec[h.trim()] = r[idx]; });
@@ -260,15 +273,26 @@ function collectCommunityDeals(records) {
     console.log(`[社區] ${c.name}：${deals.length} 筆成交`);
 
     /* 抓不到時列出同路段的門牌樣本，方便判斷關鍵字要怎麼調 */
-    if (deals.length === 0 && keys.length) {
+    if (deals.length === 0) {
       /* 從所有關鍵字裡取出不重複的路名，每條路各列樣本 */
       /* 預售屋：列出同行政區的建案名稱，方便找出正確寫法 */
-      const projectSample = [...new Set(records
-        .filter(r => (r["鄉鎮市區"] || "").includes(c.district || "") && (r["建案名稱"] || "").trim())
-        .map(r => r["建案名稱"].trim()))].sort();
-      if (projectSample.length) {
-        console.log(`  ↳ ${c.district} 的預售建案名稱共 ${projectSample.length} 個：`);
-        projectSample.slice(0, 60).forEach(n => console.log(`       ${n}`));
+      const allProjects = [...new Set(records
+        .filter(r => (r["建案名稱"] || "").trim())
+        .map(r => `${(r["鄉鎮市區"] || "").trim()}｜${r["建案名稱"].trim()}`))].sort();
+
+      const inDistrict = allProjects.filter(n => n.startsWith(c.district || ""));
+      console.log(`  ↳ 全部資料中含「建案名稱」的紀錄共 ${allProjects.length} 種`);
+
+      if (inDistrict.length) {
+        console.log(`  ↳ ${c.district} 的預售建案名稱共 ${inDistrict.length} 個：`);
+        inDistrict.slice(0, 80).forEach(n => console.log(`       ${n}`));
+      } else if (allProjects.length) {
+        console.log(`  ↳ ${c.district} 沒有預售建案紀錄。以下列出前 40 個當參考（確認欄位有讀到）：`);
+        allProjects.slice(0, 40).forEach(n => console.log(`       ${n}`));
+      } else {
+        console.log(`  ↳ 完全沒有讀到「建案名稱」欄位。可能原因：`);
+        console.log(`       1. 下載的 zip 裡沒有預售屋檔案（_lvr_land_b.csv）`);
+        console.log(`       2. 預售屋檔案的欄位名稱不是「建案名稱」`);
       }
 
       const roads = [...new Set(normKeys.map(k => k.replace(/[0-9]+.*$/, "")).filter(Boolean))];
@@ -335,7 +359,8 @@ async function main() {
     ...readAllMainCsv(trendDir1),     ...readAllPresaleCsv(trendDir1),
     ...readAllMainCsv(trendDir2),     ...readAllPresaleCsv(trendDir2),
   ];
-  console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（含預售屋，近四季）`);
+  const presaleCount = communityRecords.filter(r => r.__presale).length;
+  console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（成屋 ${communityRecords.length - presaleCount} 筆、預售 ${presaleCount} 筆，近四季）`);
 
   /* ---------- 保護機制 ----------
      下載失敗時 recentRecords 會是空的，若照常寫入會把網站上正確的行情清成空白。
