@@ -45,6 +45,8 @@
 </script>
 <style>
   html { scroll-behavior: smooth; }
+  /* 錨點跳轉時預留 sticky header 的高度，避免標題被蓋住 */
+  section[id], article[id] { scroll-margin-top: 84px; }
   body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
