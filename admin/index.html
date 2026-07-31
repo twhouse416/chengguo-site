@@ -58,6 +58,7 @@ const IMG_DIR = "assets/articles";
 const DATA_PATH = "data/articles.json";
 const VIDEO_PATH = "data/videos.json";
 const BUYER_PATH = "data/buyers.json";
+const COMMUNITY_PATH = "data/communities.json";
 
 /* ---------- 工具 ---------- */
 const todayStr = () => new Date().toISOString().slice(0, 10);
@@ -540,6 +541,12 @@ function App() {
   const [vBusy, setVBusy] = useState(false);
   const [bdata, setBdata] = useState(null);
   const [bBusy, setBBusy] = useState(false);
+  const [cdata, setCdata] = useState(null);
+  const [cBusy, setCBusy] = useState(false);
+  const [cIdx, setCIdx] = useState(null);          // 正在編輯第幾個社區
+  const [cDraft, setCDraft] = useState(null);      // 編輯中的社區
+  const [cDeals, setCDeals] = useState(null);      // 成交筆數（唯讀，供參考）
+  const cFileRef = useRef(null);
   const [showBackups, setShowBackups] = useState(false);
   const fileRef = useRef(null);
 
@@ -615,6 +622,34 @@ function App() {
     } catch {}
   };
 
+  const loadCommunities = async (tk, rp) => {
+    if (tk && rp) {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${rp}/contents/${COMMUNITY_PATH}`, {
+          headers: { Authorization: `Bearer ${tk}`, Accept: "application/vnd.github+json" },
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const j = await res.json();
+          setCdata(JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g, ""))))));
+          return;
+        }
+      } catch {}
+    }
+    try {
+      const r = await fetch(`../data/communities.json?t=${Date.now()}`, { cache: "no-store" });
+      if (r.ok) setCdata(await r.json());
+    } catch {}
+  };
+
+  /* 成交筆數只是顯示參考，讀不到也不影響編輯 */
+  const loadCommunityDeals = async () => {
+    try {
+      const r = await fetch(`../data/community-deals.json?t=${Date.now()}`, { cache: "no-store" });
+      if (r.ok) { const j = await r.json(); setCDeals(j.deals || {}); }
+    } catch { setCDeals({}); }
+  };
+
   useEffect(() => {
     const tk = sessionStorage.getItem("cg_token") || "";
     setToken(tk);
@@ -622,6 +657,8 @@ function App() {
     loadData(tk, repo.trim());
     loadVideos(tk, repo.trim());
     loadBuyers(tk, repo.trim());
+    loadCommunities(tk, repo.trim());
+    loadCommunityDeals();
   }, []);
 
   const flash = (type, text) => { setMsg({ type, text }); setTimeout(() => setMsg(null), 6000); };
@@ -741,6 +778,62 @@ function App() {
     }
     flash("pass", `圖片已上傳（${w}×${h}，${Math.round(blob.size/1024)} KB）`);
     return path;
+  };
+
+  const publishCommunities = async () => {
+    if (!token.trim()) { flash("fail", "要儲存需要先填入 GitHub 權杖"); return; }
+    setCBusy(true);
+    try {
+      const api = `https://api.github.com/repos/${repo.trim()}/contents/${COMMUNITY_PATH}`;
+      const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
+      const getRes = await fetch(api, { headers, cache: "no-store" });
+      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      const cur = await getRes.json();
+      const body = JSON.stringify(cdata, null, 2) + "\n";
+      const putRes = await fetch(api, {
+        method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: `更新社區資料 ${todayStr()}`, content: toBase64(body), sha: cur.sha }),
+      });
+      if (!putRes.ok) {
+        const err = await putRes.json().catch(() => ({}));
+        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
+      }
+      flash("pass", "社區資料已儲存。網站會自動重新建置，約 1–2 分鐘後更新。");
+    } catch (e) { flash("fail", e.message || String(e)); }
+    finally { setCBusy(false); }
+  };
+
+  const newCommunity = () => ({
+    slug: "", name: "", aliases: [], district: "鼓山區", area: "美術館特區", areaCode: "01",
+    address: "", addressKeywords: [], projectNames: [], draft: true, summary: "",
+    specs: [["建設公司", ""], ["總戶數", ""], ["樓層規劃", ""], ["坪數範圍", ""],
+            ["格局", ""], ["公設比", ""], ["車位", ""], ["基地面積", ""]],
+    highlights: [], considerations: [],
+    school: { primary: "", junior: "", note: "" },
+    faq: [],
+  });
+
+  /* 匯入社區檔：同 slug 更新、其餘保留 */
+  const importCommunities = e => {
+    const f = e.target.files?.[0]; if (!f) return;
+    e.target.value = "";
+    const r = new FileReader();
+    r.onload = () => {
+      let d;
+      try { d = JSON.parse(r.result); if (!Array.isArray(d.communities)) throw 0; }
+      catch { flash("fail", "檔案格式不對，需要含 communities 陣列的 JSON"); return; }
+
+      const existing = cdata?.communities || [];
+      const map = new Map(existing.map(c => [c.slug, c]));
+      let updated = 0, added = 0;
+      d.communities.forEach(c => {
+        if (map.has(c.slug)) updated++; else added++;
+        map.set(c.slug, c);
+      });
+      setCdata({ ...(cdata || {}), ...d, communities: [...map.values()] });
+      flash("pass", `已合併：更新 ${updated} 個、新增 ${added} 個。記得按「儲存並發布」。`);
+    };
+    r.readAsText(f);
   };
 
   const publishBuyers = async () => {
@@ -894,7 +987,7 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-1 mr-auto ml-8">
-            {[["articles","文章"],["videos","影片"],["buyers","買方需求"]].map(([k,label]) => (
+            {[["articles","文章"],["videos","影片"],["buyers","買方需求"],["communities","社區"]].map(([k,label]) => (
               <button key={k} onClick={() => setTab(k)}
                 className={`px-4 py-2 text-[14px] rounded-sm transition ${
                   tab===k ? "bg-ink text-white" : "text-inkSoft hover:text-ink"}`}>
@@ -1136,6 +1229,326 @@ function App() {
             )}
           </>
         )}
+
+        {/* ============ 社區分頁：列表 ============ */}
+        {tab === "communities" && cDraft === null && (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div>
+                <h1 className="display text-[26px]">社區</h1>
+                <p className="text-[15px] text-inkSoft mt-2">
+                  每個社區一個獨立頁面，包含規格、實價登錄成交紀錄、學區與常見問題。
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Btn variant="outline" size="sm" onClick={() => cFileRef.current.click()}>載入檔案</Btn>
+                <input ref={cFileRef} type="file" accept=".json" className="hidden" onChange={importCommunities} />
+                <Btn variant="outline" size="sm" onClick={() => { loadCommunities(token.trim(), repo.trim()); loadCommunityDeals(); }}>
+                  重新載入
+                </Btn>
+                <Btn onClick={() => { setCDraft(newCommunity()); setCIdx(-1); }}>＋ 新增社區</Btn>
+              </div>
+            </div>
+
+            {!cdata && <p className="font-mono text-[13px] text-inkFaint">讀取中…</p>}
+
+            {cdata && (
+              <>
+                <div className="border border-line rounded-sm overflow-hidden">
+                  {(cdata.communities || []).map((c, i) => {
+                    const n = cDeals?.[c.slug]?.length ?? null;
+                    return (
+                      <div key={c.slug + i} className="bg-surface border-b border-line last:border-0 p-5 flex flex-wrap items-center gap-4">
+                        <div className="flex-1 min-w-[240px]">
+                          <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+                            <span className="font-mono text-[12px] text-orangeDeep tracking-wider">{c.area}・{c.district}</span>
+                            {c.draft
+                              ? <span className="font-mono text-[11px] text-inkFaint border border-line rounded-sm px-2 py-0.5">草稿</span>
+                              : <span className="font-mono text-[11px] text-pass border border-pass/40 rounded-sm px-2 py-0.5">已發布</span>}
+                            {n !== null && (
+                              <span className={`font-mono text-[11px] rounded-sm px-2 py-0.5 border ${
+                                n > 0 ? "text-ink border-line" : "text-orangeDeep border-orange/40"}`}>
+                                成交 {n} 筆
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[16px] font-bold tracking-tight">{c.name || "（未命名）"}</div>
+                          <div className="font-mono text-[12px] text-inkFaint mt-1">{c.address}</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Btn size="sm" variant="outline"
+                            onClick={() => {
+                              const list = [...cdata.communities];
+                              list[i] = { ...c, draft: !c.draft };
+                              setCdata({ ...cdata, communities: list });
+                            }}>
+                            {c.draft ? "設為發布" : "收回草稿"}
+                          </Btn>
+                          <Btn size="sm" variant="outline"
+                            onClick={() => { setCDraft(JSON.parse(JSON.stringify(c))); setCIdx(i); }}>編輯</Btn>
+                          <Btn size="sm" variant="danger"
+                            onClick={() => {
+                              if (!confirm(`確定刪除「${c.name}」？頁面也會一併移除。`)) return;
+                              setCdata({ ...cdata, communities: cdata.communities.filter((_, j) => j !== i) });
+                            }}>刪除</Btn>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(cdata.communities || []).length === 0 && (
+                    <div className="bg-surface p-8 text-[15px] text-inkSoft">還沒有社區，按右上角新增第一個。</div>
+                  )}
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Btn onClick={publishCommunities} disabled={cBusy}>{cBusy ? "儲存中…" : "儲存並發布"}</Btn>
+                </div>
+
+                <div className="mt-8 bg-surface border border-line rounded-sm p-6">
+                  <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">成交紀錄怎麼來的</h2>
+                  <p className="text-[15px] text-inkSoft leading-[1.9]">
+                    成交紀錄由系統每天自動從內政部實價登錄擷取，不需要手動輸入。
+                    比對方式有兩種：<strong className="text-ink">門牌關鍵字</strong>（成屋）與
+                    <strong className="text-ink">建案名稱</strong>（預售屋），符合任一即納入。
+                    新增社區後若顯示「成交 0 筆」，多半是這個社區的交易發生在一年以前——
+                    到 GitHub 的 Actions 執行一次「回補社區歷史成交」就能補上。
+                  </p>
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {/* ============ 社區分頁：編輯 ============ */}
+        {tab === "communities" && cDraft && (() => {
+          const set = patch => setCDraft({ ...cDraft, ...patch });
+          const setList = (field, list) => set({ [field]: list });
+          const saveCommunity = () => {
+            if (!cDraft.name.trim()) { flash("fail", "社區名稱不能空白"); return; }
+            const c = { ...cDraft };
+            if (!c.slug.trim()) {
+              flash("fail", "請填網址代號（英文，例如 meishu-baitiane）"); return;
+            }
+            const list = [...(cdata.communities || [])];
+            if (cIdx === -1) {
+              if (list.some(x => x.slug === c.slug)) { flash("fail", "這個網址代號已經有人用了"); return; }
+              list.push(c);
+            } else list[cIdx] = c;
+            setCdata({ ...cdata, communities: list });
+            setCDraft(null); setCIdx(null);
+            flash("pass", "已更新，記得按「儲存並發布」才會生效。");
+          };
+
+          return (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="display text-[22px]">{cIdx === -1 ? "新增社區" : `編輯：${cDraft.name}`}</h1>
+                <div className="flex gap-2">
+                  <Btn size="sm" variant="outline" onClick={() => { setCDraft(null); setCIdx(null); }}>取消</Btn>
+                  <Btn size="sm" onClick={saveCommunity}>完成</Btn>
+                </div>
+              </div>
+
+              {/* 基本資料 */}
+              <div className="bg-surface border border-line rounded-sm p-6 space-y-5">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">基本資料</div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>社區名稱</Label>
+                    <input className={inputCls} value={cDraft.name}
+                      onChange={e => set({ name: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label hint="英文小寫與連字號，例如 meishu-baitiane。設定後不要再改，會影響網址">網址代號</Label>
+                    <input className={inputCls} value={cDraft.slug}
+                      onChange={e => set({ slug: e.target.value.trim() })} />
+                  </div>
+                  <div>
+                    <Label>行政區</Label>
+                    <select className={inputCls} value={cDraft.district}
+                      onChange={e => set({ district: e.target.value })}>
+                      {["鼓山區", "左營區", "三民區", "苓雅區", "新興區", "前金區", "楠梓區"].map(x => <option key={x}>{x}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <Label>生活圈</Label>
+                    <select className={inputCls} value={cDraft.area}
+                      onChange={e => {
+                        const map = { "美術館特區": "01", "農十六特區": "02", "瑞豐巨蛋": "03", "中都重劃區": "04" };
+                        set({ area: e.target.value, areaCode: map[e.target.value] || "" });
+                      }}>
+                      {["美術館特區", "農十六特區", "瑞豐巨蛋", "中都重劃區", "其他"].map(x => <option key={x}>{x}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>地址</Label>
+                  <input className={inputCls} value={cDraft.address}
+                    placeholder="高雄市鼓山區美術東四路690-698號"
+                    onChange={e => set({ address: e.target.value })} />
+                </div>
+
+                <div>
+                  <Label hint="列表與頁面開頭顯示，一兩句話講出這個社區的特色">簡介</Label>
+                  <textarea rows={2} className={inputCls} value={cDraft.summary}
+                    onChange={e => set({ summary: e.target.value })} />
+                </div>
+
+                <div>
+                  <Label>狀態</Label>
+                  <select className={inputCls} value={cDraft.draft ? "draft" : "published"}
+                    onChange={e => set({ draft: e.target.value === "draft" })}>
+                    <option value="draft">草稿（網站看不到）</option>
+                    <option value="published">發布</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* 成交比對 */}
+              <div className="bg-surface border border-line rounded-sm p-6 space-y-5 mt-6">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">成交紀錄比對</div>
+                <div className="bg-tint border-l-2 border-orange px-5 py-4">
+                  <p className="text-[14px] text-orangeDeep leading-[1.9]">
+                    系統靠這裡的設定，從實價登錄找出屬於這個社區的成交。
+                    <strong>成屋</strong>用門牌比對、<strong>預售屋</strong>用建案名稱比對，兩者符合任一即納入。
+                    預售案還沒編門牌時，只填建案名稱即可。
+                  </p>
+                </div>
+
+                <div>
+                  <Label hint="一行一個。門牌要寫完整，例如 美術東四路690號。有多個門牌就每個都列一行">門牌關鍵字</Label>
+                  <textarea rows={4} className={inputCls}
+                    value={(cDraft.addressKeywords || []).join("\n")}
+                    placeholder={"美術東四路690號\n美術東四路691號\n美術東四路692號"}
+                    onChange={e => setList("addressKeywords",
+                      e.target.value.split("\n").map(t => t.trim()).filter(Boolean))} />
+                  <p className="text-[13px] text-inkFaint mt-2 leading-relaxed">
+                    實價登錄的門牌可能寫成「690號」或「690之1號」，建議兩種都列。
+                    半形全形不用管，系統會自動處理。
+                  </p>
+                </div>
+
+                <div>
+                  <Label hint="一行一個。建案名稱在實價登錄上的寫法不一定統一，把可能的寫法都列出來">建案名稱</Label>
+                  <textarea rows={3} className={inputCls}
+                    value={(cDraft.projectNames || []).join("\n")}
+                    placeholder={"美術1号院\n美術1號院\n美術一号院"}
+                    onChange={e => setList("projectNames",
+                      e.target.value.split("\n").map(t => t.trim()).filter(Boolean))} />
+                </div>
+              </div>
+
+              {/* 規格 */}
+              <div className="bg-surface border border-line rounded-sm p-6 mt-6">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">社區規格</div>
+                <div className="space-y-2">
+                  {(cDraft.specs || []).map(([k, v], i) => (
+                    <div key={i} className="flex gap-2">
+                      <input className={inputCls + " max-w-[180px]"} value={k} placeholder="項目"
+                        onChange={e => {
+                          const specs = cDraft.specs.map(x => [...x]); specs[i][0] = e.target.value;
+                          setList("specs", specs);
+                        }} />
+                      <input className={inputCls} value={v} placeholder="內容"
+                        onChange={e => {
+                          const specs = cDraft.specs.map(x => [...x]); specs[i][1] = e.target.value;
+                          setList("specs", specs);
+                        }} />
+                      <Btn size="sm" variant="outline"
+                        onClick={() => setList("specs", cDraft.specs.filter((_, j) => j !== i))}>✕</Btn>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3">
+                  <Btn size="sm" variant="outline"
+                    onClick={() => setList("specs", [...(cDraft.specs || []), ["", ""]])}>＋ 新增一項</Btn>
+                </div>
+                <p className="text-[13px] text-inkFaint mt-3 leading-relaxed">
+                  數字會被客戶拿來對照，建議交叉比對多個來源後再填。不確定的欄位刪掉，不要用推測的。
+                </p>
+              </div>
+
+              {/* 優勢與考量 */}
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                {[["highlights", "條件優勢", "步行可達美術館園區"],
+                  ["considerations", "要納入考量的地方", "總戶數近 800 戶，出入人流較多"]].map(([field, label, ph]) => (
+                  <div key={field} className="bg-surface border border-line rounded-sm p-6">
+                    <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">{label}</div>
+                    <textarea rows={6} className={inputCls}
+                      value={(cDraft[field] || []).join("\n")}
+                      placeholder={`一行一項\n${ph}`}
+                      onChange={e => setList(field, e.target.value.split("\n").map(t => t.trim()).filter(Boolean))} />
+                  </div>
+                ))}
+              </div>
+              <p className="text-[14px] text-inkFaint leading-relaxed mt-3">
+                只寫優點的社區介紹沒人信。誠實寫出要考量的地方，反而更能建立信任。
+              </p>
+
+              {/* 學區 */}
+              <div className="bg-surface border border-line rounded-sm p-6 mt-6 space-y-4">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">學區</div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label>國小</Label>
+                    <input className={inputCls} value={cDraft.school?.primary || ""}
+                      onChange={e => set({ school: { ...cDraft.school, primary: e.target.value } })} />
+                  </div>
+                  <div>
+                    <Label>國中</Label>
+                    <input className={inputCls} value={cDraft.school?.junior || ""}
+                      onChange={e => set({ school: { ...cDraft.school, junior: e.target.value } })} />
+                  </div>
+                </div>
+                <div>
+                  <Label hint="總量管制、跨里等要提醒的事">補充說明</Label>
+                  <textarea rows={3} className={inputCls} value={cDraft.school?.note || ""}
+                    onChange={e => set({ school: { ...cDraft.school, note: e.target.value } })} />
+                </div>
+              </div>
+
+              {/* FAQ */}
+              <div className="bg-surface border border-line rounded-sm p-6 mt-6">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">常見問題</div>
+                <p className="text-[14px] text-inkSoft leading-[1.9] mb-5">
+                  用大家實際會搜尋的說法當問題，回答寫成可以獨立閱讀的完整句子，AI 才好引用。
+                </p>
+                <div className="space-y-4">
+                  {(cDraft.faq || []).map(([q, a], i) => (
+                    <div key={i} className="border border-line rounded-sm p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[12px] text-inkFaint">Q{i + 1}</span>
+                        <Btn size="sm" variant="danger"
+                          onClick={() => setList("faq", cDraft.faq.filter((_, j) => j !== i))}>刪除</Btn>
+                      </div>
+                      <input className={inputCls} value={q} placeholder="例如：美術1号院的學區是哪裡？"
+                        onChange={e => {
+                          const faq = cDraft.faq.map(x => [...x]); faq[i][0] = e.target.value;
+                          setList("faq", faq);
+                        }} />
+                      <textarea rows={3} className={inputCls} value={a} placeholder="完整的回答"
+                        onChange={e => {
+                          const faq = cDraft.faq.map(x => [...x]); faq[i][1] = e.target.value;
+                          setList("faq", faq);
+                        }} />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <Btn size="sm" variant="outline"
+                    onClick={() => setList("faq", [...(cDraft.faq || []), ["", ""]])}>＋ 新增問題</Btn>
+                </div>
+              </div>
+
+              <div className="mt-8 flex gap-3">
+                <Btn onClick={saveCommunity}>完成，回到列表</Btn>
+                <Btn variant="outline" onClick={() => { setCDraft(null); setCIdx(null); }}>取消不儲存</Btn>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ============ 買方需求分頁 ============ */}
         {tab === "buyers" && (

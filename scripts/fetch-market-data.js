@@ -269,7 +269,7 @@ function collectCommunityDeals(records) {
 
     /* 新到舊 */
     deals.sort((a, b) => b.date.localeCompare(a.date));
-    result[c.slug] = deals.slice(0, 60);
+    result[c.slug] = deals;
     console.log(`[社區] ${c.name}：${deals.length} 筆成交`);
 
     /* 抓不到時列出同路段的門牌樣本，方便判斷關鍵字要怎麼調 */
@@ -311,6 +311,16 @@ function collectCommunityDeals(records) {
   });
 
   return { updatedAt: new Date().toISOString(), deals: result };
+}
+
+/* 合併兩批成交紀錄，去重後依日期新到舊排序 */
+export function mergeDeals(oldList, newList) {
+  const key = d => `${d.date}|${d.floor}|${d.ping}|${d.totalPrice}|${d.project || ""}`;
+  const map = new Map();
+  [...oldList, ...newList].forEach(d => { if (d?.date) map.set(key(d), d); });
+  return [...map.values()]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 300);   // 每個社區最多保留 300 筆
 }
 
 /* 民國年月日（如 1140312）轉西元 YYYY-MM-DD */
@@ -409,17 +419,19 @@ async function main() {
   /* 社區成交紀錄：用同一份下載資料，不重複抓 */
   const community = collectCommunityDeals(communityRecords);
   if (community) {
-    /* 若某個社區這次抓不到、但先前有資料，沿用舊的，避免因單次下載不全而清空 */
+    /* 與既有紀錄合併，而不是覆蓋。
+       這樣一次性回補的歷史資料會被保留，每日更新只是往上疊加新成交。 */
     let previous = null;
     try { previous = JSON.parse(readFileSync(COMMUNITY_OUTPUT, "utf-8")); } catch {}
+
     if (previous?.deals) {
-      Object.keys(previous.deals).forEach(slug => {
-        const now = community.deals[slug] || [];
-        const before = previous.deals[slug] || [];
-        if (now.length === 0 && before.length > 0) {
-          community.deals[slug] = before;
-          console.log(`[保留] ${slug}：這次沒抓到，沿用先前的 ${before.length} 筆紀錄`);
-        }
+      const allSlugs = new Set([...Object.keys(previous.deals), ...Object.keys(community.deals)]);
+      allSlugs.forEach(slug => {
+        const merged = mergeDeals(previous.deals[slug] || [], community.deals[slug] || []);
+        const added = merged.length - (previous.deals[slug] || []).length;
+        community.deals[slug] = merged;
+        if (added > 0) console.log(`[社區] ${slug}：新增 ${added} 筆，累計 ${merged.length} 筆`);
+        else console.log(`[社區] ${slug}：無新增，維持 ${merged.length} 筆`);
       });
     }
     writeFileSync(COMMUNITY_OUTPUT, JSON.stringify(community, null, 2) + "\n", "utf-8");

@@ -37,6 +37,15 @@ function dealsTable(deals) {
   const prices = deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
   const low = prices[0], high = prices[prices.length - 1];
 
+  /* 資料多時只列最近 40 筆，其餘收在展開區塊裡，避免頁面過長 */
+  const SHOW = 40;
+  const shown = deals.slice(0, SHOW);
+  const rest = deals.slice(SHOW);
+  const presale = deals.filter(d => d.kind === "預售").length;
+  const span = deals.length
+    ? `${fmtDate(deals[deals.length - 1].date)}－${fmtDate(deals[0].date)}`
+    : "";
+
   return `<div class="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-2">
     <div>
       <span class="font-mono text-[12px] text-inkFaint">成交筆數</span>
@@ -47,6 +56,12 @@ function dealsTable(deals) {
       <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">${low}–${high}</span>
       <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
     </div>
+    ${presale ? `<div>
+      <span class="font-mono text-[12px] text-inkFaint">其中預售</span>
+      <span class="font-mono text-[20px] font-semibold text-ink ml-2">${presale}</span>
+      <span class="font-mono text-[13px] text-inkSoft ml-1">筆</span>
+    </div>` : ""}
+    ${span ? `<div class="font-mono text-[12px] text-inkFaint">期間 ${span}</div>` : ""}
   </div>
 
   <div class="overflow-x-auto border border-line rounded-sm bg-surface">
@@ -63,7 +78,7 @@ function dealsTable(deals) {
         </tr>
       </thead>
       <tbody>
-        ${deals.map(d => `<tr class="border-b border-line last:border-0">
+        ${shown.map(d => `<tr class="border-b border-line last:border-0">
           <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
           <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
@@ -75,6 +90,39 @@ function dealsTable(deals) {
       </tbody>
     </table>
   </div>
+
+  ${rest.length ? `<details class="mt-4 group">
+    <summary class="font-mono text-[13px] text-orangeDeep inline-flex items-center gap-2 select-none">
+      展開其餘 ${rest.length} 筆較早的成交
+      <span class="transition group-open:rotate-180 text-[10px]">▼</span>
+    </summary>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface mt-3">
+      <table class="w-full text-[15px] min-w-[640px]">
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th class="text-left font-normal py-3 px-4">成交日期</th>
+            <th class="text-left font-normal py-3 px-4">類型</th>
+            <th class="text-left font-normal py-3 px-4">樓層</th>
+            <th class="text-left font-normal py-3 px-4">格局</th>
+            <th class="text-right font-normal py-3 px-4">坪數</th>
+            <th class="text-right font-normal py-3 px-4">單價</th>
+            <th class="text-right font-normal py-3 px-4">總價</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rest.map(d => `<tr class="border-b border-line last:border-0">
+            <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
+            <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
+            <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
+            <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+  </details>` : ""}
 
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
     單價單位為萬元／坪，總價單位為萬元。含車位的交易，單價會被車位價格拉低，
