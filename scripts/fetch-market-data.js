@@ -56,19 +56,39 @@ function seasonCodeMonthsAgo(monthsAgo) {
 }
 
 /* ---------- 下載並解壓 ---------- */
-function downloadAndExtract(url, label) {
+function sleep(sec) {
+  /* 同步等待，避免對內政部的伺服器造成連續請求 */
+  execSync(`sleep ${sec}`);
+}
+
+function downloadAndExtract(url, label, retries = 3) {
   const zipPath = path.join(TMP, `${label}.zip`);
   const extractDir = path.join(TMP, label);
   mkdirSync(extractDir, { recursive: true });
-  console.log(`[下載] ${label}: ${url}`);
-  try {
-    execSync(`curl -L -f -s -o "${zipPath}" "${url}"`, { stdio: "inherit" });
-    execSync(`unzip -o -q "${zipPath}" -d "${extractDir}"`);
-    return extractDir;
-  } catch (e) {
-    console.warn(`[警告] ${label} 下載或解壓失敗，這段資料先跳過：`, e.message);
-    return null;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    console.log(`[下載] ${label}${attempt > 1 ? `（第 ${attempt} 次嘗試）` : ""}: ${url}`);
+    try {
+      /* 加上 User-Agent 與逾時，並在重試之間等待，降低被視為異常流量的機會 */
+      execSync(
+        `curl -L -f -s --connect-timeout 30 --max-time 300 ` +
+        `-A "Mozilla/5.0 (compatible; chengguo-site/1.0)" ` +
+        `-o "${zipPath}" "${url}"`,
+        { stdio: "inherit" }
+      );
+      execSync(`unzip -o -q "${zipPath}" -d "${extractDir}"`);
+      return extractDir;
+    } catch (e) {
+      console.warn(`[警告] ${label} 第 ${attempt} 次下載失敗：${e.message}`);
+      if (attempt < retries) {
+        const wait = attempt * 20;
+        console.log(`       ${wait} 秒後重試…`);
+        sleep(wait);
+      }
+    }
   }
+  console.warn(`[警告] ${label} 重試 ${retries} 次仍失敗，這段資料先跳過`);
+  return null;
 }
 
 /* ---------- 簡易 CSV 解析（處理雙引號內含逗號的欄位） ---------- */
@@ -317,6 +337,19 @@ async function main() {
   ];
   console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（含預售屋，近四季）`);
 
+  /* ---------- 保護機制 ----------
+     下載失敗時 recentRecords 會是空的，若照常寫入會把網站上正確的行情清成空白。
+     資料量明顯不足時直接中止，保留既有資料，等下次排程再試。 */
+  const MIN_RECORDS = 5000;   // 全台一期實價登錄通常有數萬筆，低於此值視為下載不完整
+  if (recentRecords.length < MIN_RECORDS) {
+    console.error(
+      `[中止] 只讀到 ${recentRecords.length} 筆資料（預期至少 ${MIN_RECORDS} 筆），` +
+      `研判下載不完整或內政部暫時無法連線。`
+    );
+    console.error("[中止] 未寫入任何檔案，網站上的現有資料保持不變。稍後再執行一次即可。");
+    process.exit(1);
+  }
+
   const areas = AREAS_CONFIG.areas.map(area => {
     const current = computeAreaAverage(recentRecords, area);
     const past = trendRecords.length ? computeAreaAverage(trendRecords, area) : { avgPricePerPing: null };
@@ -351,6 +384,19 @@ async function main() {
   /* 社區成交紀錄：用同一份下載資料，不重複抓 */
   const community = collectCommunityDeals(communityRecords);
   if (community) {
+    /* 若某個社區這次抓不到、但先前有資料，沿用舊的，避免因單次下載不全而清空 */
+    let previous = null;
+    try { previous = JSON.parse(readFileSync(COMMUNITY_OUTPUT, "utf-8")); } catch {}
+    if (previous?.deals) {
+      Object.keys(previous.deals).forEach(slug => {
+        const now = community.deals[slug] || [];
+        const before = previous.deals[slug] || [];
+        if (now.length === 0 && before.length > 0) {
+          community.deals[slug] = before;
+          console.log(`[保留] ${slug}：這次沒抓到，沿用先前的 ${before.length} 筆紀錄`);
+        }
+      });
+    }
     writeFileSync(COMMUNITY_OUTPUT, JSON.stringify(community, null, 2) + "\n", "utf-8");
     console.log("[完成] 已寫入", COMMUNITY_OUTPUT);
   }
