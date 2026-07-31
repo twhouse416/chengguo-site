@@ -1,52 +1,197 @@
+<!--
+  ⚠️ 這個檔案由 scripts/build-site.js 自動產生，請勿直接編輯。
+  要修改內容請改 scripts/ 底下的樣板，或在後台編輯 data/ 裡的資料。
+  直接改這個檔案，下次自動建置時會被覆蓋。
+-->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="../../assets/logo-icon.png" />
-<title>房地合一稅試算｜台灣房屋 澄果團隊</title>
-<meta name="description" content="房地合一稅2.0試算。輸入買賣價格與持有期間，算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅。" />
+<title>房地合一稅試算｜稅率級距、自住優惠與重購退稅</title>
+<meta name="description" content="房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。" />
+<meta name="keywords" content="房地合一稅,房地合一稅試算,自住優惠400萬,重購退稅,土地漲價總數額,賣房稅費,高雄賣房" />
+<link rel="canonical" href="https://twhouse416.github.io/chengguo-site/tools/property-tax/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="台灣房屋 澄果團隊" />
+<meta property="og:title" content="房地合一稅試算｜稅率級距、自住優惠與重購退稅" />
+<meta property="og:description" content="房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。" />
+<meta property="og:url" content="https://twhouse416.github.io/chengguo-site/tools/property-tax/" />
+<meta property="og:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+<meta property="og:locale" content="zh_TW" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="房地合一稅試算｜稅率級距、自住優惠與重購退稅" />
+<meta name="twitter:description" content="房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。" />
+<meta name="twitter:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"房地合一稅試算","url":"https://twhouse416.github.io/chengguo-site/tools/property-tax/","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"zh-TW","description":"房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。","offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"},"provider":{"@type":"RealEstateAgent","name":"台灣房屋 澄果團隊","telephone":"+886-7-9766977","address":{"@type":"PostalAddress","streetAddress":"鼓山區青海路416號","addressLocality":"高雄市","postalCode":"804","addressCountry":"TW"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://twhouse416.github.io/chengguo-site/"},{"@type":"ListItem","position":2,"name":"試算工具","item":"https://twhouse416.github.io/chengguo-site/#tools"},{"@type":"ListItem","position":3,"name":"房地合一稅試算","item":"https://twhouse416.github.io/chengguo-site/tools/property-tax/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"房地合一稅怎麼算？","acceptedAnswer":{"@type":"Answer","text":"課稅所得 =（成交價 − 取得成本 − 必要費用 − 土地漲價總數額），再依持有期間套用稅率：2年以內45%、超過2年未逾5年35%、超過5年未逾10年20%、超過10年15%。符合自住條件者，課稅所得400萬元以下免稅、超過部分課10%。"}},{"@type":"Question","name":"自住優惠的條件是什麼？","acceptedAnswer":{"@type":"Answer","text":"須同時符合三項：本人、配偶或未成年子女設有戶籍、持有並居住連續滿6年；交易前6年內沒有出租或供營業使用；本人與配偶及未成年子女在交易前6年內未曾用過這項優惠。要注意如果房子只有未成年子女設籍，但出售時子女已滿18歲，就不符合自住條件。"}},{"@type":"Question","name":"賠錢賣房還要申報嗎？","acceptedAnswer":{"@type":"Answer","text":"要。無論賺賠，都必須在所有權移轉登記日次日起30日內完成申報，未申報會被處3,000元至3萬元罰鍰。預售屋則自簽約日次日起算。"}},{"@type":"Question","name":"繼承的房子賣掉稅會很重嗎？","acceptedAnswer":{"@type":"Answer","text":"可能會。繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利因此被放大，實際稅負常常高於屋主預期。建議出售前先做完整試算。"}},{"@type":"Question","name":"什麼是重購退稅？","acceptedAnswer":{"@type":"Answer","text":"賣掉舊屋繳了房地合一稅之後，在期限內買了新屋自住，可以按比例把稅退回來。新舊屋移轉登記日間隔須在2年以內，先買後賣或先賣後買都適用。新屋價格大於或等於舊屋售價可全額退還，較低則按比例退還。要注意退稅後新屋有5年閉鎖期，不得出租、營業或再移轉。"}},{"@type":"Question","name":"持有多久賣比較划算？","acceptedAnswer":{"@type":"Answer","text":"單就稅率來看，持有愈久稅率愈低。以課稅所得420萬元為例：2年內要繳189萬、超過10年只要63萬；若符合自住滿6年的優惠，更只要2萬元。但實際決策還要考慮市場行情與你的資金規劃，不能只看稅。"}}]}</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
-          paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
-          orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3',
-          pass:'#2F6B4F', fail:'#A8341F',
-        },
-        fontFamily: {
-          sans: ['"Noto Sans TC"','sans-serif'],
-          mono: ['"IBM Plex Mono"','monospace'],
-        },
-        borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
-      }
-    }
-  }
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
+    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
+    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+  }}}
 </script>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 <style>
+  html { scroll-behavior: smooth; }
   body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
-  input[type=checkbox] { accent-color:#FD7305; width:18px; height:18px; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .faq-plus { transform: rotate(45deg); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
 </style>
 </head>
 <body class="font-sans text-ink">
-<div id="root"></div>
+<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+  <div class="max-w-3xl mx-auto px-6 h-[68px] flex items-center justify-between">
+    <a href="../../index.html" class="flex items-center gap-3 shrink-0 mr-6">
+      <img src="../../assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
+      <span class="leading-tight">
+        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+        <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
+      </span>
+    </a>
+    
+    <div class="hidden sm:flex items-center gap-4 shrink-0">
+      
+      <a href="tel:0797669977" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 07-9766977</a>
+    </div>
+    
+  </div>
+  
+</header>
+<main class="max-w-4xl mx-auto px-6 py-14">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span>
+    <a href="../../index.html#tools" class="hover:text-orangeDeep">試算工具</a><span class="mx-2">/</span>
+    <span>房地合一稅試算</span>
+  </nav>
 
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 04</div>
+  <h1 class="display text-[30px] md:text-[36px]">房地合一稅試算</h1>
+  <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">賣房前先抓出稅負。輸入買賣價格、必要費用與持有期間，再依情況勾選自住優惠或換屋重購退稅，看看最後要繳多少。</p>
+  <div class="mt-5 bg-tint border border-orange/30 rounded-sm px-5 py-4 text-[15px] text-orangeDeep leading-[1.8]">本工具僅供初步估算。實際稅額涉及取得方式、土地漲價總數額、費用認列與各項優惠的適用認定，個案差異大，請以國稅局核定為準，或洽專業地政士、會計師。</div>
+  <div class="mt-6 h-px bg-line"></div>
+
+  <!-- 計算器：互動元件，由 React 掛載 -->
+  <div id="calc" class="mt-8">
+    <p class="font-mono text-[13px] text-inkFaint">載入試算工具中…</p>
+    <noscript>
+      <p class="text-[15px] text-inkSoft leading-[1.9]">
+        試算功能需要開啟 JavaScript 才能使用。你也可以直接來電
+        <a href="tel:0797669977" class="text-orangeDeep underline">07-9766977</a>，我們幫你算。
+      </p>
+    </noscript>
+  </div>
+
+  <section class="mt-14 border-t border-line pt-8">
+    <h2 class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
+    <ul class="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
+      <li>・ 適用範圍：105 年 1 月 1 日以後取得的房地，於 110 年 7 月 1 日以後交易者，適用房地合一稅 2.0。</li>
+      <li>・ 稅率級距（境內居住者個人）：持有 2 年以內 45%、超過 2 年未逾 5 年 35%、超過 5 年未逾 10 年 20%、超過 10 年 15%。</li>
+      <li>・ 自住優惠須同時符合：本人、配偶或未成年子女設有戶籍、持有並居住連續滿 6 年；交易前 6 年內無出租或供營業使用；且前 6 年內未曾適用過本優惠。</li>
+      <li>・ 因調職、非自願離職等財政部公告的非自願性因素而在 5 年內交易者，可維持 20% 稅率，本工具未納入此情形。</li>
+      <li>・ 繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利會被放大，實際稅負可能遠高於預期。</li>
+      <li>・ 無論賺賠，都須於所有權移轉登記日次日起 30 日內申報。預售屋則自簽約日次日起算。</li>
+      <li>・ 本工具不會蒐集或傳送你輸入的任何資料，全部在瀏覽器本機計算。</li>
+    </ul>
+    <a href="https://www.etax.nat.gov.tw/" target="_blank" rel="noopener noreferrer"
+      class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">財政部稅務入口網 →</a>
+  </section>
+
+  <section class="mt-14 pt-10 border-t-2 border-ink">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <h2 class="display text-[23px] mb-8">常見問題</h2>
+    <div class="border-t border-line">
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">房地合一稅怎麼算？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">課稅所得 =（成交價 − 取得成本 − 必要費用 − 土地漲價總數額），再依持有期間套用稅率：2年以內45%、超過2年未逾5年35%、超過5年未逾10年20%、超過10年15%。符合自住條件者，課稅所得400萬元以下免稅、超過部分課10%。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">自住優惠的條件是什麼？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">須同時符合三項：本人、配偶或未成年子女設有戶籍、持有並居住連續滿6年；交易前6年內沒有出租或供營業使用；本人與配偶及未成年子女在交易前6年內未曾用過這項優惠。要注意如果房子只有未成年子女設籍，但出售時子女已滿18歲，就不符合自住條件。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">賠錢賣房還要申報嗎？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">要。無論賺賠，都必須在所有權移轉登記日次日起30日內完成申報，未申報會被處3,000元至3萬元罰鍰。預售屋則自簽約日次日起算。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">繼承的房子賣掉稅會很重嗎？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">可能會。繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利因此被放大，實際稅負常常高於屋主預期。建議出售前先做完整試算。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">什麼是重購退稅？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">賣掉舊屋繳了房地合一稅之後，在期限內買了新屋自住，可以按比例把稅退回來。新舊屋移轉登記日間隔須在2年以內，先買後賣或先賣後買都適用。新屋價格大於或等於舊屋售價可全額退還，較低則按比例退還。要注意退稅後新屋有5年閉鎖期，不得出租、營業或再移轉。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">持有多久賣比較划算？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">單就稅率來看，持有愈久稅率愈低。以課稅所得420萬元為例：2年內要繳189萬、超過10年只要63萬；若符合自住滿6年的優惠，更只要2萬元。但實際決策還要考慮市場行情與你的資金規劃，不能只看稅。</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="mt-12 bg-ink text-white/75 rounded-sm p-8">
+    <h2 class="display text-[20px] text-white">賣之前，先把稅算進去</h2>
+    <p class="mt-3 text-[16px] leading-[1.9] max-w-xl">差幾個月成交，稅率可能就跨一個級距；換屋的順序也會影響能不能退稅。把你的持有時間與換屋計畫告訴我們，澄果團隊幫你把時程和數字一起排出來。</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="tel:0797669977" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+      <a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">官方網站</a>
+    </div>
+  </section>
+
+  <nav class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">其他工具</div>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <a href="../school-zone/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">學區查詢</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+      <a href="../mortgage/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">房貸試算</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+      <a href="../qingan/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">新青安 3.0 試算</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+    </div>
+  </nav>
+</main>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
+
 const { useState, useMemo } = React;
 
 const BRAND = {
@@ -102,7 +247,8 @@ function Row({ label, value, strong, note }) {
   );
 }
 
-function App() {
+function Calculator() {
+
   const [sell, setSell] = useState(1500);
   const [buy, setBuy] = useState(1000);
   const [fee, setFee] = useState(50);
@@ -134,36 +280,9 @@ function App() {
     const refund = tax * ratio;
     return { income, taxable, rate, tax, refund, ratio, final: tax - refund, loss: false };
   }, [sell, buy, fee, landGain, holding, selfUse, repurchase, newPrice, bracket]);
-
   return (
-    <div>
-      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
-        <div className="max-w-4xl mx-auto px-6 h-[68px] flex items-center justify-between">
-          <a href="../../index.html" className="flex items-center gap-3">
-            <img src="../../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
-            <span className="leading-tight">
-              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
-              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
-            </span>
-          </a>
-          <a href="../../index.html#tools" className="text-[15px] text-inkSoft hover:text-ink">← 回工具列表</a>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-6 py-14">
-        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 04</div>
-        <h1 className="display text-[30px] md:text-[36px]">房地合一稅試算</h1>
-        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
-          賣房前先抓出稅負。輸入買賣價格、必要費用與持有期間，
-          再依情況勾選自住優惠或換屋重購退稅，看看最後要繳多少。
-        </p>
-        <div className="mt-5 bg-tint border border-orange/30 rounded-sm px-5 py-4 text-[15px] text-orangeDeep leading-[1.8]">
-          本工具僅供初步估算。實際稅額涉及取得方式、土地漲價總數額、費用認列與各項優惠的適用認定，
-          個案差異大，請以國稅局核定為準，或洽專業地政士、會計師。
-        </div>
-        <div className="mt-6 h-px bg-line" />
-
-        <div className="mt-10 grid lg:grid-cols-5 gap-8">
+    <>
+<div className="mt-10 grid lg:grid-cols-5 gap-8">
           {/* 輸入 */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-surface border border-line rounded-sm p-7 space-y-6">
@@ -332,55 +451,18 @@ function App() {
             )}
           </div>
         </div>
-
-        {/* 說明 */}
-        <section className="mt-14 border-t border-line pt-8">
-          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
-          <ul className="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
-            <li>・ 適用範圍：105 年 1 月 1 日以後取得的房地，於 110 年 7 月 1 日以後交易者，適用房地合一稅 2.0。</li>
-            <li>・ 稅率級距（境內居住者個人）：持有 2 年以內 45%、超過 2 年未逾 5 年 35%、超過 5 年未逾 10 年 20%、超過 10 年 15%。</li>
-            <li>・ 自住優惠須同時符合：本人、配偶或未成年子女設有戶籍、持有並居住連續滿 6 年；交易前 6 年內無出租或供營業使用；且前 6 年內未曾適用過本優惠。</li>
-            <li>・ 因調職、非自願離職等財政部公告的非自願性因素而在 5 年內交易者，可維持 20% 稅率，本工具未納入此情形。</li>
-            <li>・ 繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利會被放大，實際稅負可能遠高於預期。</li>
-            <li>・ 無論賺賠，都須於所有權移轉登記日次日起 30 日內申報。預售屋則自簽約日次日起算。</li>
-            <li>・ 本工具不會蒐集或傳送你輸入的任何資料，全部在瀏覽器本機計算。</li>
-          </ul>
-          <a href="https://www.etax.nat.gov.tw/" target="_blank" rel="noopener noreferrer"
-            className="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">
-            財政部稅務入口網 →
-          </a>
-        </section>
-
-        <section className="mt-12 bg-ink text-white/75 rounded-sm p-8">
-          <h2 className="display text-[20px] text-white">賣之前，先把稅算進去</h2>
-          <p className="mt-3 text-[16px] leading-[1.9] max-w-xl">
-            差幾個月成交，稅率可能就跨一個級距；換屋的順序也會影響能不能退稅。
-            把你的持有時間與換屋計畫告訴我們，澄果團隊幫你把時程和數字一起排出來。
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href={BRAND.phoneHref}
-              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-              來電諮詢 {BRAND.phone}
-            </a>
-            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
-              官方網站
-            </a>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-line">
-        <div className="max-w-4xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
-          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
-          <a href="../../index.html" className="hover:text-orangeDeep">回首頁</a>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("calc")).render(<Calculator />);
+
 </script>
+<footer class="border-t border-line">
+  <div class="max-w-3xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+    <span>© 2026 澄果資產有限公司</span>
+    <a href="../../index.html" class="hover:text-orangeDeep">回首頁</a>
+  </div>
+</footer>
 </body>
 </html>

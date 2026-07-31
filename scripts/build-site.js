@@ -9,6 +9,7 @@
  *   notes/index.html      文章列表
  *   notes/<slug>.html     各篇文章
  *   videos/index.html     影片專區
+ *   tools/<name>/         四個試算工具
  *   sitemap.xml           網站地圖
  *
  * 資料來源：data/ 底下的 JSON（由後台或 GitHub Actions 維護）
@@ -25,6 +26,7 @@ import { SITE } from "./lib/layout.js";
 import { buildHome } from "./build-home.js";
 import { buildNotesIndex, buildVideosIndex } from "./build-pages.js";
 import { buildArticles } from "./build-articles.js";
+import { buildTools } from "./build-tools.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -97,6 +99,9 @@ function main() {
   writeFileSync(path.join(ROOT, "videos/index.html"),
     buildVideosIndex({ videos, hasBuyers }), "utf-8");
   console.log("[產生] videos/index.html");
+
+  /* 試算工具 */
+  buildTools(hasBuyers);
 
   /* 網站地圖 */
   buildSitemap(articles);

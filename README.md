@@ -6,7 +6,7 @@
 
 ## ⚠️ 這些檔案是自動產生的，不要直接編輯
 
-`index.html`、`notes/*.html`、`videos/index.html`、`sitemap.xml`
+`index.html`、`notes/*.html`、`videos/index.html`、`tools/*/index.html`、`sitemap.xml`
 都由 `scripts/build-site.js` 自動產生，直接改會在下次建置時被覆蓋。
 
 **要改文案請改這裡：**
@@ -16,6 +16,8 @@
 | 首頁文案、FAQ、服務項目、數據 | `scripts/build-home.js` |
 | 文章列表頁、影片頁的文案 | `scripts/build-pages.js` |
 | 文章內頁版型 | `scripts/build-articles.js` |
+| 試算工具頁的說明、FAQ、CTA | `scripts/build-tools.js` |
+| 試算工具的計算邏輯 | `scripts/tools/<名稱>.calc.js` |
 | 選單、頁尾、品牌資訊 | `scripts/lib/layout.js` |
 | 文章、影片、買方需求的**內容** | 後台 `/admin/` |
 

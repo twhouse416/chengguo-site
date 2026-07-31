@@ -1,51 +1,189 @@
+<!--
+  ⚠️ 這個檔案由 scripts/build-site.js 自動產生，請勿直接編輯。
+  要修改內容請改 scripts/ 底下的樣板，或在後台編輯 data/ 裡的資料。
+  直接改這個檔案，下次自動建置時會被覆蓋。
+-->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="../../assets/logo-icon.png" />
-<title>學區查詢｜台灣房屋 澄果團隊</title>
-<meta name="description" content="查詢高雄鼓山區、左營區、三民區各里對應的國民小學學區，資料依高雄市115學年度國民小學學區劃分一覽表。" />
+<title>高雄學區查詢｜鼓山、左營、三民區國小學區對照</title>
+<meta name="description" content="查詢高雄市鼓山區、左營區、三民區各里對應的國民小學學區，資料依高雄市115學年度國民小學學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。" />
+<meta name="keywords" content="高雄學區查詢,美術館特區學區,農十六學區,鼓山區國小學區,左營區學區,三民區學區,高雄總量管制學校" />
+<link rel="canonical" href="https://twhouse416.github.io/chengguo-site/tools/school-zone/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="台灣房屋 澄果團隊" />
+<meta property="og:title" content="高雄學區查詢｜鼓山、左營、三民區國小學區對照" />
+<meta property="og:description" content="查詢高雄市鼓山區、左營區、三民區各里對應的國民小學學區，資料依高雄市115學年度國民小學學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。" />
+<meta property="og:url" content="https://twhouse416.github.io/chengguo-site/tools/school-zone/" />
+<meta property="og:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+<meta property="og:locale" content="zh_TW" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="高雄學區查詢｜鼓山、左營、三民區國小學區對照" />
+<meta name="twitter:description" content="查詢高雄市鼓山區、左營區、三民區各里對應的國民小學學區，資料依高雄市115學年度國民小學學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。" />
+<meta name="twitter:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"高雄學區查詢","url":"https://twhouse416.github.io/chengguo-site/tools/school-zone/","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"zh-TW","description":"查詢高雄市鼓山區、左營區、三民區各里對應的國民小學學區，資料依高雄市115學年度國民小學學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。","offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"},"provider":{"@type":"RealEstateAgent","name":"台灣房屋 澄果團隊","telephone":"+886-7-9766977","address":{"@type":"PostalAddress","streetAddress":"鼓山區青海路416號","addressLocality":"高雄市","postalCode":"804","addressCountry":"TW"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://twhouse416.github.io/chengguo-site/"},{"@type":"ListItem","position":2,"name":"試算工具","item":"https://twhouse416.github.io/chengguo-site/#tools"},{"@type":"ListItem","position":3,"name":"高雄學區查詢","item":"https://twhouse416.github.io/chengguo-site/tools/school-zone/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"高雄的國小學區怎麼查？","acceptedAnswer":{"@type":"Answer","text":"高雄市的國小學區以「里」甚至「鄰」劃分，同一個里可能分屬不同學校。可以在本頁選擇行政區與里別查出對應學校，並對照官方原文確認自己所在的鄰別。不確定時建議直接向學校或區公所確認。"}},{"@type":"Question","name":"什麼是總量管制學校？對買房有什麼影響？","acceptedAnswer":{"@type":"Answer","text":"總量管制學校因為容量已接近上限，名額有限。即使戶籍設在學區內，仍可能需要抽籤或改分發到鄰近學校。鼓山區有數所學校列於名單中，購屋前務必先向學校確認當學年度的實際狀況。"}},{"@type":"Question","name":"自由學區是什麼意思？","acceptedAnswer":{"@type":"Answer","text":"自由學區指的是某個里或某幾個鄰被劃分為可在兩所學校之間自行選擇。官方原文會標示「與○○國小自由學區」，本頁保留原文供對照。"}},{"@type":"Question","name":"美術館特區和農十六的學區一樣嗎？","acceptedAnswer":{"@type":"Answer","text":"不一樣，而且兩區內部也不是單一學區。兩區都在鼓山區，但依所在的里與鄰分屬不同學校。建議直接用本頁查詢你要看的物件所在里別。"}},{"@type":"Question","name":"設籍多久才能入學？","acceptedAnswer":{"@type":"Answer","text":"各校與各學年度的規定可能不同，部分熱門學校會要求一定的設籍期間。這部分不在本工具的資料範圍內，請直接向該校查詢。"}}]}</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
-          paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
-          orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3',
-        },
-        fontFamily: {
-          sans: ['"Noto Sans TC"','sans-serif'],
-          mono: ['"IBM Plex Mono"','monospace'],
-        },
-        borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
-      }
-    }
-  }
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
+    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
+    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+  }}}
 </script>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 <style>
+  html { scroll-behavior: smooth; }
   body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
-  mark { background:#FCEFE3; color:#B85400; padding:0 2px; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .faq-plus { transform: rotate(45deg); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
 </style>
 </head>
 <body class="font-sans text-ink">
-<div id="root"></div>
+<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+  <div class="max-w-3xl mx-auto px-6 h-[68px] flex items-center justify-between">
+    <a href="../../index.html" class="flex items-center gap-3 shrink-0 mr-6">
+      <img src="../../assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
+      <span class="leading-tight">
+        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+        <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
+      </span>
+    </a>
+    
+    <div class="hidden sm:flex items-center gap-4 shrink-0">
+      
+      <a href="tel:0797669977" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 07-9766977</a>
+    </div>
+    
+  </div>
+  
+</header>
+<main class="max-w-4xl mx-auto px-6 py-14">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span>
+    <a href="../../index.html#tools" class="hover:text-orangeDeep">試算工具</a><span class="mx-2">/</span>
+    <span>高雄學區查詢</span>
+  </nav>
 
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 01</div>
+  <h1 class="display text-[30px] md:text-[36px]">高雄學區查詢</h1>
+  <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">選擇行政區與里別，查出對應的國民小學學區。目前收錄澄果團隊主力生活圈所在的鼓山區、左營區、三民區。</p>
+  
+  <div class="mt-6 h-px bg-line"></div>
+
+  <!-- 計算器：互動元件，由 React 掛載 -->
+  <div id="calc" class="mt-8">
+    <p class="font-mono text-[13px] text-inkFaint">載入試算工具中…</p>
+    <noscript>
+      <p class="text-[15px] text-inkSoft leading-[1.9]">
+        試算功能需要開啟 JavaScript 才能使用。你也可以直接來電
+        <a href="tel:0797669977" class="text-orangeDeep underline">07-9766977</a>，我們幫你算。
+      </p>
+    </noscript>
+  </div>
+
+  <section class="mt-14 border-t border-line pt-8">
+    <h2 class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
+    <ul class="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
+      <li>・ 資料依據高雄市115學年度國民小學學區劃分一覽表，逐字轉錄，未經改寫。</li>
+      <li>・ 學區以「里」與「鄰」劃分，同一個里可能分屬不同學校。本工具只能查到里，鄰別請自行對照原文。</li>
+      <li>・ 「自由學區」表示該範圍可在兩所學校之間選擇。</li>
+      <li>・ 「總量管制學校」名額有限，即使設籍在學區內仍可能需要抽籤或改分發，務必先向學校確認。</li>
+      <li>・ 目前僅收錄國民小學，且僅涵蓋鼓山區、左營區、三民區。國中學區與其他行政區尚未上線。</li>
+      <li>・ 學區每學年可能調整，本頁資料僅供參考，正式依據請以教育局及各校公告為準。</li>
+    </ul>
+    <a href="https://orgws.kcg.gov.tw/001/KcgOrgUploadFiles/225/relfile/0/10486/82b13979-92d5-4bb2-ad6d-9746c86ac3e0.pdf" target="_blank" rel="noopener noreferrer"
+      class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">查看官方原始文件（PDF） →</a>
+  </section>
+
+  <section class="mt-14 pt-10 border-t-2 border-ink">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <h2 class="display text-[23px] mb-8">常見問題</h2>
+    <div class="border-t border-line">
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">高雄的國小學區怎麼查？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">高雄市的國小學區以「里」甚至「鄰」劃分，同一個里可能分屬不同學校。可以在本頁選擇行政區與里別查出對應學校，並對照官方原文確認自己所在的鄰別。不確定時建議直接向學校或區公所確認。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">什麼是總量管制學校？對買房有什麼影響？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">總量管制學校因為容量已接近上限，名額有限。即使戶籍設在學區內，仍可能需要抽籤或改分發到鄰近學校。鼓山區有數所學校列於名單中，購屋前務必先向學校確認當學年度的實際狀況。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">自由學區是什麼意思？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">自由學區指的是某個里或某幾個鄰被劃分為可在兩所學校之間自行選擇。官方原文會標示「與○○國小自由學區」，本頁保留原文供對照。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">美術館特區和農十六的學區一樣嗎？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">不一樣，而且兩區內部也不是單一學區。兩區都在鼓山區，但依所在的里與鄰分屬不同學校。建議直接用本頁查詢你要看的物件所在里別。</p>
+      </details>
+      <details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">設籍多久才能入學？</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">各校與各學年度的規定可能不同，部分熱門學校會要求一定的設籍期間。這部分不在本工具的資料範圍內，請直接向該校查詢。</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="mt-12 bg-ink text-white/75 rounded-sm p-8">
+    <h2 class="display text-[20px] text-white">想知道某個社區實際讀哪間學校？</h2>
+    <p class="mt-3 text-[16px] leading-[1.9] max-w-xl">學區牽涉到鄰別與設籍時間，社區跨鄰的狀況也不少。把你在看的物件地址給我們，澄果團隊直接幫你查清楚。</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="tel:0797669977" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+      <a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">官方網站</a>
+    </div>
+  </section>
+
+  <nav class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">其他工具</div>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <a href="../mortgage/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">房貸試算</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+      <a href="../qingan/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">新青安 3.0 試算</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+      <a href="../property-tax/index.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+          <span class="text-[16px] font-bold tracking-tight">房地合一稅試算</span>
+          <span class="block font-mono text-[12px] text-orangeDeep mt-1">開始使用 →</span></a>
+    </div>
+  </nav>
+</main>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
+
 const { useState, useEffect, useMemo } = React;
 
 const BRAND = {
@@ -81,7 +219,8 @@ function Highlight({ text, term }) {
   );
 }
 
-function App() {
+function Calculator() {
+
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [district, setDistrict] = useState("");
@@ -114,33 +253,9 @@ function App() {
       e => e.zoneDistrict === district && e.zone.includes(village)
     );
   }, [data, district, village]);
-
   return (
-    <div>
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
-        <div className="max-w-4xl mx-auto px-6 h-[68px] flex items-center justify-between">
-          <a href="../../index.html" className="flex items-center gap-3">
-            <img src="../../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
-            <span className="leading-tight">
-              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
-              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
-            </span>
-          </a>
-          <a href="../../index.html#tools" className="text-[15px] text-inkSoft hover:text-ink">← 回工具列表</a>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-6 py-14">
-        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Tool 01</div>
-        <h1 className="display text-[30px] md:text-[36px]">學區查詢</h1>
-        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
-          選擇行政區與里別，查出對應的國民小學學區。
-          目前收錄澄果團隊主力生活圈所在的鼓山區、左營區、三民區。
-        </p>
-        <div className="mt-6 h-px bg-line" />
-
-        {/* 查詢區 */}
+    <>
+{/* 查詢區 */}
         <div className="mt-8 bg-surface border border-line rounded-sm p-7">
           <div className="grid sm:grid-cols-2 gap-6">
             <label className="block">
@@ -214,57 +329,18 @@ function App() {
             )}
           </section>
         )}
-
-        {/* 使用說明與免責 */}
-        <section className="mt-14 border-t border-line pt-8">
-          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Notes</h2>
-          <ul className="space-y-3 text-[15px] text-inkSoft leading-[1.9]">
-            <li>・ 資料依據{data ? `${data.sourceName}` : "高雄市國民小學學區劃分一覽表"}，逐字轉錄，未經改寫。</li>
-            <li>・ 學區以「里」與「鄰」劃分，同一個里可能分屬不同學校。本工具只能查到里，鄰別請自行對照原文。</li>
-            <li>・「自由學區」表示該範圍可在兩所學校之間選擇。</li>
-            <li>・「總量管制學校」名額有限，即使設籍在學區內仍可能需要抽籤或改分發，務必先向學校確認。</li>
-            <li>・ 目前僅收錄國民小學，且僅涵蓋鼓山區、左營區、三民區。國中學區與其他行政區尚未上線。</li>
-            <li>・ 學區每學年可能調整，本頁資料僅供參考，正式依據請以教育局及各校公告為準。</li>
-          </ul>
-          {data && (
-            <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">
-              查看官方原始文件（PDF）→
-            </a>
-          )}
-        </section>
-
-        {/* CTA */}
-        <section className="mt-12 bg-ink text-white/75 rounded-sm p-8">
-          <h2 className="display text-[20px] text-white">想知道某個社區實際讀哪間學校？</h2>
-          <p className="mt-3 text-[16px] leading-[1.9] max-w-xl">
-            學區牽涉到鄰別與設籍時間，社區跨鄰的狀況也不少。
-            把你在看的物件地址給我們，澄果團隊直接幫你查清楚。
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href={BRAND.phoneHref}
-              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-              來電諮詢 {BRAND.phone}
-            </a>
-            <a href={BRAND.officialSite} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
-              官方網站
-            </a>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-line">
-        <div className="max-w-4xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
-          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
-          <a href="../../index.html" className="hover:text-orangeDeep">回首頁</a>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("calc")).render(<Calculator />);
+
 </script>
+<footer class="border-t border-line">
+  <div class="max-w-3xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+    <span>© 2026 澄果資產有限公司</span>
+    <a href="../../index.html" class="hover:text-orangeDeep">回首頁</a>
+  </div>
+</footer>
 </body>
 </html>
