@@ -1,6 +1,211 @@
 {
-  "updatedAt": "2026-07-31T05:40:04.966Z",
+  "updatedAt": "2026-07-31T05:48:18.117Z",
   "deals": {
-    "meishu-baitiane": []
+    "meishu-baitiane": [
+      {
+        "date": "2026-05-06",
+        "floor": "九層",
+        "totalFloor": "二十四層",
+        "ping": 29.62,
+        "unitPrice": 38.4,
+        "totalPrice": 1138,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2026-04-25",
+        "floor": "十五層",
+        "totalFloor": "二十四層",
+        "ping": 29.35,
+        "unitPrice": 38.5,
+        "totalPrice": 1130,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2026-04-17",
+        "floor": "十七層",
+        "totalFloor": "二十四層",
+        "ping": 27.24,
+        "unitPrice": 44.8,
+        "totalPrice": 1220,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2026-01-20",
+        "floor": "二十三層",
+        "totalFloor": "二十四層",
+        "ping": 39.18,
+        "unitPrice": 31.3,
+        "totalPrice": 1225,
+        "layout": "2房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-12-28",
+        "floor": "二層",
+        "totalFloor": "二十四層",
+        "ping": 38.28,
+        "unitPrice": 40.5,
+        "totalPrice": 1550,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-12-12",
+        "floor": "六層",
+        "totalFloor": "二十四層",
+        "ping": 29.61,
+        "unitPrice": 38.5,
+        "totalPrice": 1072,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": "停車位編號B4-288"
+      },
+      {
+        "date": "2025-11-07",
+        "floor": "十一層",
+        "totalFloor": "二十四層",
+        "ping": 49.47,
+        "unitPrice": 41.4,
+        "totalPrice": 2050,
+        "layout": "2房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-10-28",
+        "floor": "七層",
+        "totalFloor": "二十四層",
+        "ping": 45.31,
+        "unitPrice": 35.7,
+        "totalPrice": 1618,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-10-24",
+        "floor": "十六層",
+        "totalFloor": "二十四層",
+        "ping": 38.28,
+        "unitPrice": 35.5,
+        "totalPrice": 1360,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-10-11",
+        "floor": "二十層",
+        "totalFloor": "二十四層",
+        "ping": 37.89,
+        "unitPrice": 40.6,
+        "totalPrice": 1538,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-10-11",
+        "floor": "十四層",
+        "totalFloor": "二十四層",
+        "ping": 29.61,
+        "unitPrice": 39.2,
+        "totalPrice": 1160,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-09-28",
+        "floor": "十四層",
+        "totalFloor": "二十四層",
+        "ping": 29.35,
+        "unitPrice": 32.4,
+        "totalPrice": 950,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-09-25",
+        "floor": "十層",
+        "totalFloor": "二十四層",
+        "ping": 37.92,
+        "unitPrice": 39,
+        "totalPrice": 1480,
+        "layout": "2房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-09-17",
+        "floor": "十九層",
+        "totalFloor": "二十四層",
+        "ping": 46.05,
+        "unitPrice": 38,
+        "totalPrice": 1750,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-08-31",
+        "floor": "十層",
+        "totalFloor": "二十四層",
+        "ping": 27.24,
+        "unitPrice": 42,
+        "totalPrice": 1145,
+        "layout": "2房2廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-08-10",
+        "floor": "二層",
+        "totalFloor": "二十四層",
+        "ping": 50.17,
+        "unitPrice": 38.3,
+        "totalPrice": 1920,
+        "layout": "2房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": ""
+      },
+      {
+        "date": "2025-05-23",
+        "floor": "二十一層",
+        "totalFloor": "二十四層",
+        "ping": 28.37,
+        "unitPrice": 47.2,
+        "totalPrice": 1340,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "note": "含傢俱設備費；"
+      }
+    ]
   }
 }
