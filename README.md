@@ -17,6 +17,8 @@
 | 文章列表頁、影片頁的文案 | `scripts/build-pages.js` |
 | 文章內頁版型 | `scripts/build-articles.js` |
 | 試算工具頁的說明、FAQ、CTA | `scripts/build-tools.js` |
+| 社區頁版型 | `scripts/build-communities.js` |
+| 社區資料（名稱、規格、FAQ） | `data/communities.json` |
 | 試算工具的計算邏輯 | `scripts/tools/<名稱>.calc.js` |
 | 選單、頁尾、品牌資訊 | `scripts/lib/layout.js` |
 | 文章、影片、買方需求的**內容** | 後台 `/admin/` |
@@ -179,6 +181,25 @@ ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
 
 **刊登前務必確認**：內容必須匿名化，不要出現姓名、電話、職業、公司、指定社區名稱，
 或任何可辨識特定人的描述。依個人資料保護法，刊登買方需求前應先取得買方同意。
+
+## 社區頁面
+
+每個社區一個獨立頁面，包含社區基本資料、實價登錄成交紀錄、學區與 FAQ。
+
+**新增社區**：編輯 `data/communities.json`，加一個物件。必填欄位：
+
+| 欄位 | 說明 |
+|---|---|
+| `slug` | 網址代號，用英文，例如 `meishu-baitiane` |
+| `name` | 社區名稱 |
+| `district` | 行政區，例如 鼓山區 |
+| `addressKeywords` | **最重要**。用來從實價登錄篩出這個社區的成交紀錄，要填得夠精確（路名＋門牌號），避免抓到隔壁社區 |
+| `draft` | `true` 時不會產生頁面 |
+
+成交紀錄由每日行情更新時一併擷取，寫入 `data/community-deals.json`，不需手動維護。
+
+**成交紀錄逐筆列出、不做平均**：單一社區半年成交常常只有個位數，算平均容易失真。
+逐筆列出樓層、坪數、單價，讓人自己找條件相近的比對，反而更有參考價值。
 
 ## 影片
 

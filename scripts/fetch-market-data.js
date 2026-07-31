@@ -23,6 +23,8 @@ const ROOT = path.resolve(__dirname, "..");
 const TMP = path.join(ROOT, ".tmp-lvr");
 const AREAS_CONFIG = JSON.parse(readFileSync(path.join(ROOT, "config/areas.json"), "utf-8"));
 const OUTPUT_PATH = path.join(ROOT, "data/market-data.json");
+const COMMUNITY_CONFIG = path.join(ROOT, "data/communities.json");
+const COMMUNITY_OUTPUT = path.join(ROOT, "data/community-deals.json");
 
 const CURRENT_ZIP_URL = "https://plvr.land.moi.gov.tw/Download?type=zip&fileName=lvr_landcsv.zip";
 const SEASON_ZIP_URL = (season) =>
@@ -137,6 +139,70 @@ function computeAreaAverage(records, area) {
   };
 }
 
+/* ---------- 依社區地址關鍵字，抓出每一筆成交紀錄 ---------- */
+function collectCommunityDeals(records) {
+  let config;
+  try {
+    config = JSON.parse(readFileSync(COMMUNITY_CONFIG, "utf-8"));
+  } catch {
+    console.warn("[提示] 沒有 data/communities.json，略過社區成交紀錄");
+    return null;
+  }
+
+  const result = {};
+  (config.communities || []).forEach(c => {
+    const keys = c.addressKeywords || [];
+    if (!keys.length) { result[c.slug] = []; return; }
+
+    const matched = records.filter(r => {
+      const district = r["鄉鎮市區"] || "";
+      const address = r["土地位置建物門牌"] || "";
+      if (c.district && !district.includes(c.district)) return false;
+      if (!keys.some(k => address.includes(k))) return false;
+      return parseFloat(r["單價元平方公尺"]) > 0;
+    });
+
+    const deals = matched.map(r => {
+      const unitM2 = parseFloat(r["單價元平方公尺"]);
+      const areaM2 = parseFloat(r["建物移轉總面積平方公尺"]) || 0;
+      const rooms = r["建物現況格局-房"] || "";
+      const halls = r["建物現況格局-廳"] || "";
+      const baths = r["建物現況格局-衛"] || "";
+      return {
+        date: rocToDate(r["交易年月日"]),
+        floor: (r["移轉層次"] || "").trim(),
+        totalFloor: (r["總樓層數"] || "").trim(),
+        ping: Math.round(areaM2 * PING_PER_M2 * 100) / 100,
+        unitPrice: Math.round(unitM2 / M2_TO_PING / 1000) / 10,   // 萬元/坪
+        totalPrice: Math.round((parseFloat(r["總價元"]) || 0) / 10000),  // 萬元
+        layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
+        parking: (r["車位類別"] || "").trim(),
+        note: (r["備註"] || "").trim().slice(0, 40),
+      };
+    }).filter(d => d.date && d.unitPrice > 0);
+
+    /* 新到舊，最多保留 40 筆 */
+    deals.sort((a, b) => b.date.localeCompare(a.date));
+    result[c.slug] = deals.slice(0, 40);
+    console.log(`[社區] ${c.name}：${deals.length} 筆成交`);
+  });
+
+  return { updatedAt: new Date().toISOString(), deals: result };
+}
+
+/* 民國年月日（如 1140312）轉西元 YYYY-MM-DD */
+function rocToDate(v) {
+  const s = String(v || "").trim();
+  if (s.length < 6) return "";
+  const y = parseInt(s.slice(0, s.length - 4), 10) + 1911;
+  const m = s.slice(-4, -2);
+  const d = s.slice(-2);
+  if (!y || m === "00" || d === "00") return "";
+  return `${y}-${m}-${d}`;
+}
+
+const PING_PER_M2 = 0.3025;
+
 async function main() {
   if (existsSync(TMP)) rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
@@ -192,6 +258,13 @@ async function main() {
   mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2), "utf-8");
   console.log("[完成] 已寫入", OUTPUT_PATH);
+
+  /* 社區成交紀錄：用同一份下載資料，不重複抓 */
+  const community = collectCommunityDeals(recentRecords);
+  if (community) {
+    writeFileSync(COMMUNITY_OUTPUT, JSON.stringify(community, null, 2) + "\n", "utf-8");
+    console.log("[完成] 已寫入", COMMUNITY_OUTPUT);
+  }
 
   rmSync(TMP, { recursive: true, force: true });
 }

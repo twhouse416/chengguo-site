@@ -27,6 +27,7 @@ import { buildHome } from "./build-home.js";
 import { buildNotesIndex, buildVideosIndex } from "./build-pages.js";
 import { buildArticles } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
+import { buildCommunities } from "./build-communities.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -40,7 +41,7 @@ function readJson(rel, fallback) {
   }
 }
 
-function buildSitemap(articles) {
+function buildSitemap(articles, communities = []) {
   const today = new Date().toISOString().slice(0, 10);
   const pages = [
     { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
@@ -50,6 +51,11 @@ function buildSitemap(articles) {
     { loc: `${SITE}/tools/mortgage/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/qingan/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/property-tax/`, priority: "0.7", freq: "monthly" },
+    ...(communities.length ? [{ loc: `${SITE}/communities/`, priority: "0.8", freq: "weekly" }] : []),
+    ...communities.map(c => ({
+      loc: `${SITE}/communities/${c.slug}.html`,
+      priority: "0.9", freq: "weekly",
+    })),
     ...articles.map(a => ({
       loc: `${SITE}/notes/${a.slug}.html`,
       lastmod: a.updated || a.date,
@@ -103,8 +109,11 @@ function main() {
   /* 試算工具 */
   buildTools(hasBuyers);
 
+  /* 社區頁 */
+  const communities = buildCommunities(hasBuyers);
+
   /* 網站地圖 */
-  buildSitemap(articles);
+  buildSitemap(articles, communities);
 
   console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、買方需求 ${hasBuyers ? "有" : "無"}`);
 }

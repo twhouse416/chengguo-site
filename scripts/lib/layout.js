@@ -132,6 +132,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
   const nav = [
     [`${home}#services`, "服務項目"],
     [`${home}#areas`, "生活圈行情"],
+    [`${up}communities/index.html`, "社區行情"],
     [`${home}#tools`, "試算工具"],
     ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
     [`${home}#faq`, "常見問題"],
