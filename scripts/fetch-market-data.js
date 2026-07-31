@@ -139,6 +139,26 @@ function computeAreaAverage(records, area) {
   };
 }
 
+/* ---------- 讀取預售屋買賣（_b 檔），新建案的交易多在這裡 ---------- */
+function readAllPresaleCsv(extractDir) {
+  if (!extractDir) return [];
+  const files = readdirSync(extractDir).filter(f => /_lvr_land_b\.csv$/i.test(f));
+  let records = [];
+  for (const file of files) {
+    const raw = readFileSync(path.join(extractDir, file), "utf-8");
+    const rows = parseCSV(raw);
+    if (rows.length < 3) continue;
+    const header = rows[0];
+    rows.slice(2).forEach(r => {
+      const rec = {};
+      header.forEach((h, idx) => { rec[h.trim()] = r[idx]; });
+      rec.__presale = true;
+      records.push(rec);
+    });
+  }
+  return records;
+}
+
 /* ---------- 依社區地址關鍵字，抓出每一筆成交紀錄 ---------- */
 function collectCommunityDeals(records) {
   let config;
@@ -177,14 +197,26 @@ function collectCommunityDeals(records) {
         totalPrice: Math.round((parseFloat(r["總價元"]) || 0) / 10000),  // 萬元
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
+        kind: r.__presale ? "預售" : "成屋",
         note: (r["備註"] || "").trim().slice(0, 40),
       };
     }).filter(d => d.date && d.unitPrice > 0);
 
     /* 新到舊，最多保留 40 筆 */
     deals.sort((a, b) => b.date.localeCompare(a.date));
-    result[c.slug] = deals.slice(0, 40);
+    result[c.slug] = deals.slice(0, 60);
     console.log(`[社區] ${c.name}：${deals.length} 筆成交`);
+
+    /* 抓不到時列出同路段的門牌樣本，方便判斷關鍵字要怎麼調 */
+    if (deals.length === 0 && keys.length) {
+      const road = keys[0].replace(/[0-9０-９]+.*$/, "");
+      const sample = [...new Set(records
+        .filter(r => (r["土地位置建物門牌"] || "").includes(road))
+        .map(r => r["土地位置建物門牌"]))].slice(0, 12);
+      console.log(`  ↳ 沒抓到。實價登錄上「${road}」的門牌樣本：`);
+      sample.forEach(a => console.log(`     ${a}`));
+      if (!sample.length) console.log(`     （近四季完全沒有「${road}」的交易紀錄）`);
+    }
   });
 
   return { updatedAt: new Date().toISOString(), deals: result };
@@ -260,7 +292,7 @@ async function main() {
   console.log("[完成] 已寫入", OUTPUT_PATH);
 
   /* 社區成交紀錄：用同一份下載資料，不重複抓 */
-  const community = collectCommunityDeals(recentRecords);
+  const community = collectCommunityDeals(communityRecords);
   if (community) {
     writeFileSync(COMMUNITY_OUTPUT, JSON.stringify(community, null, 2) + "\n", "utf-8");
     console.log("[完成] 已寫入", COMMUNITY_OUTPUT);

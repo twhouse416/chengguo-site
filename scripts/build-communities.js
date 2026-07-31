@@ -54,6 +54,7 @@ function dealsTable(deals) {
       <thead>
         <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
           <th class="text-left font-normal py-3 px-4">成交日期</th>
+          <th class="text-left font-normal py-3 px-4">類型</th>
           <th class="text-left font-normal py-3 px-4">樓層</th>
           <th class="text-left font-normal py-3 px-4">格局</th>
           <th class="text-right font-normal py-3 px-4">坪數</th>
@@ -64,6 +65,7 @@ function dealsTable(deals) {
       <tbody>
         ${deals.map(d => `<tr class="border-b border-line last:border-0">
           <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
+          <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
           <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
@@ -76,7 +78,8 @@ function dealsTable(deals) {
 
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
     單價單位為萬元／坪，總價單位為萬元。含車位的交易，單價會被車位價格拉低，
-    比對時請留意坪數與格局是否相近。資料來源為內政部不動產交易實價查詢服務網。
+    比對時請留意坪數與格局是否相近。標示「預售」者為預售屋買賣，交屋時間與成屋不同。
+    資料來源為內政部不動產交易實價查詢服務網，涵蓋近四季公告的交易。
   </p>`;
 }
 
