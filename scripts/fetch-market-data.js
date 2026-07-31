@@ -193,7 +193,7 @@ function collectCommunityDeals(records) {
         floor: (r["移轉層次"] || "").trim(),
         totalFloor: (r["總樓層數"] || "").trim(),
         ping: Math.round(areaM2 * PING_PER_M2 * 100) / 100,
-        unitPrice: Math.round(unitM2 / M2_TO_PING / 1000) / 10,   // 萬元/坪
+        unitPrice: Math.round((unitM2 / M2_TO_PING) / 1000) / 10,   // 萬元/坪
         totalPrice: Math.round((parseFloat(r["總價元"]) || 0) / 10000),  // 萬元
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
@@ -202,7 +202,18 @@ function collectCommunityDeals(records) {
       };
     }).filter(d => d.date && d.unitPrice > 0);
 
-    /* 新到舊，最多保留 40 筆 */
+    /* 去重：不同批次資料若有重疊，同一筆交易可能出現兩次 */
+    const seen = new Set();
+    const unique = deals.filter(d => {
+      const key = `${d.date}|${d.floor}|${d.ping}|${d.totalPrice}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    deals.length = 0;
+    deals.push(...unique);
+
+    /* 新到舊 */
     deals.sort((a, b) => b.date.localeCompare(a.date));
     result[c.slug] = deals.slice(0, 60);
     console.log(`[社區] ${c.name}：${deals.length} 筆成交`);
@@ -249,9 +260,10 @@ async function main() {
 
   // 6個月前窗口（拿來算走勢）：往前兩季 + 往前三季
   let trendRecords = [];
+  let trendDir1 = null, trendDir2 = null;
   try {
-    const trendDir1 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(6)), "trend1");
-    const trendDir2 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(9)), "trend2");
+    trendDir1 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(6)), "trend1");
+    trendDir2 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(9)), "trend2");
     trendRecords = [
       ...readAllMainCsv(trendDir1),
       ...readAllMainCsv(trendDir2),
@@ -259,6 +271,15 @@ async function main() {
   } catch (e) {
     console.warn("[警告] 走勢比較資料下載失敗，本次先不計算走勢：", e.message);
   }
+
+  // 社區成交：時間窗拉到近四季，且含預售屋（新建案的交易多在預售檔）
+  const communityRecords = [
+    ...readAllMainCsv(currentDir),    ...readAllPresaleCsv(currentDir),
+    ...readAllMainCsv(prevSeasonDir), ...readAllPresaleCsv(prevSeasonDir),
+    ...readAllMainCsv(trendDir1),     ...readAllPresaleCsv(trendDir1),
+    ...readAllMainCsv(trendDir2),     ...readAllPresaleCsv(trendDir2),
+  ];
+  console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（含預售屋，近四季）`);
 
   const areas = AREAS_CONFIG.areas.map(area => {
     const current = computeAreaAverage(recentRecords, area);
