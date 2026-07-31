@@ -136,6 +136,13 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
     [`${up}notes/index.html`, "知識文章"],
     [`${up}videos/index.html`, "影片"],
   ];
+  /* 看物件單獨拉出來，用外連樣式強調 */
+  const listingLink = `<a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 text-[15px] font-medium text-orangeDeep hover:text-orange whitespace-nowrap">
+      看在售物件
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5" aria-hidden="true">
+        <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>`;
   const width = compact ? "max-w-3xl" : "max-w-6xl";
 
   return `<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
@@ -149,6 +156,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
     </a>
     ${compact ? "" : `<nav class="hidden xl:flex items-center gap-5 text-[15px] text-inkSoft whitespace-nowrap">
       ${nav.map(([h, l]) => `<a href="${h}" class="hover:text-ink transition">${l}</a>`).join("\n      ")}
+      ${listingLink}
     </nav>`}
     <div class="hidden ${compact ? "sm" : "xl"}:flex items-center gap-4 shrink-0">
       ${compact ? "" : socialLinks("light", "sm")}
@@ -162,6 +170,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
   ${compact ? "" : `<div id="mobileMenu" hidden class="xl:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
     ${[...nav, [`${home}#about`, "關於團隊"], [`${home}#deals`, "近期成交"]]
       .map(([h, l]) => `<a href="${h}" class="text-[16px] text-inkSoft py-1">${l}</a>`).join("\n    ")}
+    <div class="py-1">${listingLink}</div>
     <a href="${BRAND.phoneHref}" class="inline-flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 ${BRAND.phone}</a>
     <div class="pt-1">${socialLinks("light")}</div>
   </div>`}
@@ -185,7 +194,10 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
     return `<footer class="border-t border-line">
   <div class="${width} mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
     <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
-    <a href="${up}index.html" class="hover:text-orangeDeep">回首頁</a>
+    <span class="flex flex-wrap gap-x-6 gap-y-2">
+      <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:text-orange">看在售物件 ↗</a>
+      <a href="${up}index.html" class="hover:text-orangeDeep">回首頁</a>
+    </span>
   </div>
 </footer>
 </body>
@@ -201,7 +213,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
-        <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">官方網站</a>
+        <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">看在售物件 ↗</a>
       </div>
       <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
         ${links.map(([h, l]) => `<a href="${h}" class="hover:text-orange transition">${l}</a>`).join("\n        ")}
