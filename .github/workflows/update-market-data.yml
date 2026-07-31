@@ -24,10 +24,13 @@ jobs:
       - name: 執行抓取與計算
         run: node scripts/fetch-market-data.js
 
+      - name: 重新建置全站
+        run: node scripts/build-site.js
+
       - name: 若資料有變動，提交回儲存庫
         run: |
           git config user.name "chengguo-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/market-data.json
+          git add data/market-data.json data/community-deals.json index.html notes videos tools communities sitemap.xml
           git diff --cached --quiet && echo "沒有變動，略過提交" || git commit -m "更新行情資料 $(date +'%Y-%m-%d')"
           git push
