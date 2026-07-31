@@ -182,15 +182,23 @@ function collectCommunityDeals(records) {
   const result = {};
   (config.communities || []).forEach(c => {
     const keys = c.addressKeywords || [];
-    if (!keys.length) { result[c.slug] = []; return; }
+    if (!keys.length && !(c.projectNames || []).length) { result[c.slug] = []; return; }
 
     const normKeys = keys.map(normalize);
+    /* 預售屋尚未編門牌時，改用「建案名稱」比對。預售屋資料（_b 檔）有這個欄位。 */
+    const normProjects = (c.projectNames || []).map(normalize);
+
     const matched = records.filter(r => {
       const district = r["鄉鎮市區"] || "";
-      const address = normalize(r["土地位置建物門牌"]);
       if (c.district && !district.includes(c.district)) return false;
-      if (!normKeys.some(k => address.includes(k))) return false;
-      return parseFloat(r["單價元平方公尺"]) > 0;
+      if (!(parseFloat(r["單價元平方公尺"]) > 0)) return false;
+
+      const address = normalize(r["土地位置建物門牌"]);
+      const project = normalize(r["建案名稱"] || "");
+
+      const byAddress = normKeys.length > 0 && normKeys.some(k => address.includes(k));
+      const byProject = normProjects.length > 0 && normProjects.some(k => project.includes(k));
+      return byAddress || byProject;
     });
 
     const deals = matched.map(r => {
@@ -209,6 +217,8 @@ function collectCommunityDeals(records) {
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
         kind: r.__presale ? "預售" : "成屋",
+        project: (r["建案名稱"] || "").trim(),
+        unit: (r["棟及號"] || "").trim(),
         note: (r["備註"] || "").trim().slice(0, 40),
       };
     }).filter(d => d.date && d.unitPrice > 0);
@@ -231,13 +241,28 @@ function collectCommunityDeals(records) {
 
     /* 抓不到時列出同路段的門牌樣本，方便判斷關鍵字要怎麼調 */
     if (deals.length === 0 && keys.length) {
-      const road = normalize(keys[0]).replace(/[0-9]+.*$/, "");
-      const sample = [...new Set(records
-        .filter(r => normalize(r["土地位置建物門牌"]).includes(road))
-        .map(r => r["土地位置建物門牌"]))].slice(0, 12);
-      console.log(`  ↳ 沒抓到。實價登錄上「${road}」的門牌樣本：`);
-      sample.forEach(a => console.log(`     ${a}`));
-      if (!sample.length) console.log(`     （近四季完全沒有「${road}」的交易紀錄）`);
+      /* 從所有關鍵字裡取出不重複的路名，每條路各列樣本 */
+      /* 預售屋：列出同行政區的建案名稱，方便找出正確寫法 */
+      const projectSample = [...new Set(records
+        .filter(r => (r["鄉鎮市區"] || "").includes(c.district || "") && (r["建案名稱"] || "").trim())
+        .map(r => r["建案名稱"].trim()))].sort();
+      if (projectSample.length) {
+        console.log(`  ↳ ${c.district} 的預售建案名稱共 ${projectSample.length} 個：`);
+        projectSample.slice(0, 60).forEach(n => console.log(`       ${n}`));
+      }
+
+      const roads = [...new Set(normKeys.map(k => k.replace(/[0-9]+.*$/, "")).filter(Boolean))];
+      if (roads.length) console.log(`  ↳ 以下列出實價登錄上這幾條路的實際門牌，供調整關鍵字：`);
+      roads.forEach(road => {
+        const sample = [...new Set(records
+          .filter(r => normalize(r["土地位置建物門牌"]).includes(road))
+          .map(r => r["土地位置建物門牌"]))]
+          .sort()
+          .slice(0, 25);
+        console.log(`     【${road}】共 ${sample.length} 種門牌（最多列 25 筆）`);
+        sample.forEach(a => console.log(`       ${a}`));
+        if (!sample.length) console.log(`       （近四季沒有這條路的交易紀錄）`);
+      });
     }
   });
 

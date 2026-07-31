@@ -66,7 +66,7 @@ function dealsTable(deals) {
         ${deals.map(d => `<tr class="border-b border-line last:border-0">
           <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
           <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
-          <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}</td>
+          <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
           <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
           <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}</td>
