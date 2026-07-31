@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-31T05:48:18.117Z",
+  "updatedAt": "2026-07-31T09:09:15.958Z",
   "deals": {
     "meishu-baitiane": [
       {
@@ -12,6 +12,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -24,6 +26,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -36,6 +40,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -48,6 +54,8 @@
         "layout": "2房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -60,6 +68,8 @@
         "layout": "3房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -72,6 +82,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": "停車位編號B4-288"
       },
       {
@@ -84,6 +96,8 @@
         "layout": "2房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -96,6 +110,8 @@
         "layout": "3房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -108,6 +124,8 @@
         "layout": "3房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -120,6 +138,8 @@
         "layout": "3房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -132,6 +152,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -144,6 +166,8 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -156,6 +180,8 @@
         "layout": "2房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -168,6 +194,8 @@
         "layout": "3房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -180,6 +208,8 @@
         "layout": "2房2廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -192,6 +222,8 @@
         "layout": "2房2廳2衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": ""
       },
       {
@@ -204,8 +236,11 @@
         "layout": "2房1廳1衛",
         "parking": "坡道平面",
         "kind": "成屋",
+        "project": "",
+        "unit": "",
         "note": "含傢俱設備費；"
       }
-    ]
+    ],
+    "meishu-1hao-yuan": []
   }
 }
