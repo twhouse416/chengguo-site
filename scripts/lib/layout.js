@@ -88,6 +88,8 @@ ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</scri
 </script>
 <style>
   html { scroll-behavior: smooth; }
+  /* 錨點跳轉時預留 sticky header 的高度，避免標題被蓋住 */
+  section[id], article[id] { scroll-margin-top: 84px; }
   body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
@@ -167,12 +169,18 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
       <span class="text-lg leading-none">☰</span>
     </button>`}
   </div>
-  ${compact ? "" : `<div id="mobileMenu" hidden class="xl:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
-    ${[...nav, [`${home}#about`, "關於團隊"], [`${home}#deals`, "近期成交"]]
-      .map(([h, l]) => `<a href="${h}" class="text-[16px] text-inkSoft py-1">${l}</a>`).join("\n    ")}
-    <div class="py-1">${listingLink}</div>
-    <a href="${BRAND.phoneHref}" class="inline-flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 ${BRAND.phone}</a>
-    <div class="pt-1">${socialLinks("light")}</div>
+  ${compact ? "" : `<div id="mobileMenu" hidden
+    class="xl:hidden bg-surface border-t border-line overflow-y-auto overscroll-contain"
+    style="max-height:calc(100vh - 68px)">
+    <div class="px-6 py-4">
+      <nav class="grid grid-cols-2 gap-x-4">
+        ${[...nav, [`${home}#about`, "關於團隊"], [`${home}#deals`, "近期成交"]]
+          .map(([h, l]) => `<a href="${h}" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">${l}</a>`).join("\n        ")}
+      </nav>
+      <div class="py-3">${listingLink}</div>
+      <a href="${BRAND.phoneHref}" class="flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 ${BRAND.phone}</a>
+      <div class="pt-4 pb-1">${socialLinks("light")}</div>
+    </div>
   </div>`}
 </header>`;
 }
@@ -241,10 +249,33 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
     var btn = document.getElementById("menuBtn");
     var menu = document.getElementById("mobileMenu");
     if (!btn || !menu) return;
-    btn.addEventListener("click", function () {
-      var open = menu.hasAttribute("hidden");
-      if (open) { menu.removeAttribute("hidden"); btn.setAttribute("aria-expanded", "true"); btn.firstElementChild.textContent = "✕"; }
-      else { menu.setAttribute("hidden", ""); btn.setAttribute("aria-expanded", "false"); btn.firstElementChild.textContent = "☰"; }
+
+    function setOpen(open) {
+      if (open) {
+        menu.removeAttribute("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        btn.firstElementChild.textContent = "✕";
+      } else {
+        menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", "false");
+        btn.firstElementChild.textContent = "☰";
+      }
+    }
+
+    btn.addEventListener("click", function () { setOpen(menu.hasAttribute("hidden")); });
+
+    /* 點選單項目後自動關閉，否則跳到區塊時畫面仍被選單蓋住 */
+    menu.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { setOpen(false); });
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !menu.hasAttribute("hidden")) setOpen(false);
+    });
+
+    /* 視窗放大到桌機寬度時，把選單收起來，避免殘留 */
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 1280 && !menu.hasAttribute("hidden")) setOpen(false);
     });
   })();
 </script>

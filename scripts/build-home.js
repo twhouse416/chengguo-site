@@ -281,63 +281,40 @@ function areasSection(market) {
 }
 
 function listingsSection() {
-  const areas = ["美術館特區", "農十六特區", "瑞豐巨蛋生活圈", "中都重劃區"];
   return `<section id="listings" class="bg-ink text-white/80">
   <div class="max-w-6xl mx-auto px-6 py-20">
-    <div class="grid lg:grid-cols-12 gap-12 items-center">
-      <div class="lg:col-span-7">
-        <div class="font-mono text-[12px] tracking-[0.18em] text-orange uppercase mb-4">Listings</div>
-        <h2 class="display text-[28px] md:text-[34px] text-white leading-tight">
-          在售物件，<br class="hidden sm:block" />都在台灣房屋官網
-        </h2>
-        <p class="mt-6 text-[17px] leading-[2] max-w-xl">
-          澄果團隊的所有委託案件都刊登在台灣房屋官方系統，
-          物件狀態即時同步——你看到的一定是還在市場上的房子，
-          不會點進來才發現已經成交。
-        </p>
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orange uppercase mb-4">Listings</div>
+    <h2 class="display text-[28px] md:text-[36px] text-white leading-tight">在售物件，都在台灣房屋官網</h2>
+    <p class="mt-6 text-[17px] leading-[2] max-w-3xl">
+      澄果團隊的所有委託案件都刊登在台灣房屋官方系統，物件狀態即時同步——
+      你看到的一定是還在市場上的房子，不會點進來才發現已經成交。
+    </p>
 
-        <ul class="mt-8 space-y-3 max-w-lg">
-          ${[
-            "完整照片、格局圖與物件明細",
-            "價格、坪數、屋齡、車位條件一次看清楚",
-            "可直接線上預約看屋，或來電由我們安排",
-          ].map(t => `<li class="flex gap-3 text-[16px] leading-[1.9] py-3 border-b border-white/10">
-            <span class="text-orange shrink-0 font-bold">✓</span><span>${esc(t)}</span></li>`).join("\n          ")}
-        </ul>
+    <ul class="mt-10 grid md:grid-cols-3 gap-x-8">
+      ${[
+        "完整照片、格局圖與物件明細",
+        "價格、坪數、屋齡、車位條件一次看清楚",
+        "可直接線上預約看屋，或來電由我們安排",
+      ].map(t => `<li class="flex gap-3 text-[16px] leading-[1.9] py-4 border-t border-white/15">
+        <span class="text-orange shrink-0 font-bold">✓</span><span>${esc(t)}</span></li>`).join("\n      ")}
+    </ul>
 
-        <div class="mt-9 flex flex-wrap gap-3">
-          <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-8 py-4 text-[16px] font-bold rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-            前往看在售物件
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true">
-              <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a href="${BRAND.phoneHref}"
-            class="inline-flex items-center px-8 py-4 text-[16px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
-            直接來電 ${BRAND.phone}
-          </a>
-        </div>
-
-        <p class="mt-6 font-mono text-[13px] text-white/45 leading-relaxed">
-          想找的條件在官網上沒看到？很多屋主的委託還在準備階段，來電告訴我們需求，我們幫你留意。
-        </p>
-      </div>
-
-      <div class="lg:col-span-5">
-        <div class="border border-white/15 rounded-sm p-8">
-          <div class="font-mono text-[12px] tracking-wider text-white/50 mb-5">主要委託區域</div>
-          <ul class="space-y-0">
-            ${areas.map((a, i) => `<li class="flex items-center justify-between gap-4 py-4 ${i < areas.length - 1 ? "border-b border-white/10" : ""}">
-              <span class="text-[17px] text-white font-medium tracking-tight">${esc(a)}</span>
-              <span class="font-mono text-[12px] text-orange">CG·${String(i + 1).padStart(2, "0")}</span>
-            </li>`).join("\n            ")}
-          </ul>
-          <p class="text-[14px] leading-[1.9] text-white/55 mt-6 pt-6 border-t border-white/10">
-            四區以外的委託我們同樣服務，只是這四個生活圈是我們最熟、成交最集中的地方。
-          </p>
-        </div>
-      </div>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-8 py-4 text-[16px] font-bold rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+        前往看在售物件
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true">
+          <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="${BRAND.phoneHref}"
+        class="inline-flex items-center px-8 py-4 text-[16px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
+        直接來電 ${BRAND.phone}
+      </a>
     </div>
+
+    <p class="mt-6 font-mono text-[13px] text-white/45 leading-relaxed">
+      想找的條件在官網上沒看到？很多屋主的委託還在準備階段，來電告訴我們需求，我們幫你留意。
+    </p>
   </div>
 </section>`;
 }
