@@ -32,6 +32,15 @@ const SEASON_ZIP_URL = (season) =>
 
 const M2_TO_PING = 0.3025; // 平方公尺 轉 坪
 
+/* 實價登錄的門牌使用全形數字（例如 美術東四路６９８號），
+   比對前統一轉成半形，否則關鍵字永遠對不上。 */
+function normalize(str) {
+  return String(str || "")
+    .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[Ａ-Ｚａ-ｚ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/\s+/g, "");
+}
+
 /* ---------- 工具：計算「N 個月前」對應的季別代碼（民國年+S+季） ---------- */
 function seasonCodeMonthsAgo(monthsAgo) {
   const now = new Date();
@@ -109,12 +118,13 @@ function readAllMainCsv(extractDir) {
 
 /* ---------- 依生活圈設定篩選 + 計算平均單價（萬元/坪） ---------- */
 function computeAreaAverage(records, area) {
+  const normKeywords = area.keywords.map(normalize);
   const matched = records.filter(r => {
     const district = r["鄉鎮市區"] || "";
-    const address = r["土地位置建物門牌"] || "";
+    const address = normalize(r["土地位置建物門牌"]);
     const type = r["建物型態"] || "";
     if (!district.includes(area.district)) return false;
-    if (!area.keywords.some(k => address.includes(k))) return false;
+    if (!normKeywords.some(k => address.includes(k))) return false;
     if (AREAS_CONFIG.propertyTypeFilter && !type.includes(AREAS_CONFIG.propertyTypeFilter)) return false;
     const unitPrice = parseFloat(r["單價元平方公尺"]);
     return unitPrice > 0;
@@ -174,11 +184,12 @@ function collectCommunityDeals(records) {
     const keys = c.addressKeywords || [];
     if (!keys.length) { result[c.slug] = []; return; }
 
+    const normKeys = keys.map(normalize);
     const matched = records.filter(r => {
       const district = r["鄉鎮市區"] || "";
-      const address = r["土地位置建物門牌"] || "";
+      const address = normalize(r["土地位置建物門牌"]);
       if (c.district && !district.includes(c.district)) return false;
-      if (!keys.some(k => address.includes(k))) return false;
+      if (!normKeys.some(k => address.includes(k))) return false;
       return parseFloat(r["單價元平方公尺"]) > 0;
     });
 
@@ -220,9 +231,9 @@ function collectCommunityDeals(records) {
 
     /* 抓不到時列出同路段的門牌樣本，方便判斷關鍵字要怎麼調 */
     if (deals.length === 0 && keys.length) {
-      const road = keys[0].replace(/[0-9０-９]+.*$/, "");
+      const road = normalize(keys[0]).replace(/[0-9]+.*$/, "");
       const sample = [...new Set(records
-        .filter(r => (r["土地位置建物門牌"] || "").includes(road))
+        .filter(r => normalize(r["土地位置建物門牌"]).includes(road))
         .map(r => r["土地位置建物門牌"]))].slice(0, 12);
       console.log(`  ↳ 沒抓到。實價登錄上「${road}」的門牌樣本：`);
       sample.forEach(a => console.log(`     ${a}`));
