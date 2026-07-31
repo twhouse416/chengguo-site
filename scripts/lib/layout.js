@@ -1,0 +1,251 @@
+/**
+ * 澄果團隊｜全站共用樣板
+ * ------------------------------------------------
+ * head、header、footer 等各頁共用的結構集中在這裡，
+ * 改一次全站生效。
+ */
+
+export const SITE = "https://twhouse416.github.io/chengguo-site";
+
+export const BRAND = {
+  teamName: "台灣房屋 澄果團隊",
+  legalName: "澄果資產有限公司",
+  address: "804 高雄市鼓山區青海路416號",
+  addressShort: "鼓山區青海路416號",
+  phone: "07-9766977",
+  phoneHref: "tel:0797669977",
+  officialSite: "https://store.twhg.com.tw/TE80",
+  facebook: "https://www.facebook.com/TWhouseo8",
+  instagram: "https://www.instagram.com/twhouse_o8",
+  youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
+};
+
+export const esc = s => String(s ?? "")
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+/* **粗體** → <strong> */
+export const rich = s => esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-ink">$1</strong>');
+
+export const fmtDate = d => String(d || "").replaceAll("-", ".");
+
+export const today = () => new Date().toISOString().slice(0, 10);
+
+/* 依 showFrom / showUntil 判斷建置當下要不要輸出 */
+export function visible(b) {
+  const t = today();
+  if (b.showFrom && t < b.showFrom) return false;
+  if (b.showUntil && t >= b.showUntil) return false;
+  return true;
+}
+
+export const AUTO_NOTE = `<!--
+  ⚠️ 這個檔案由 scripts/build-site.js 自動產生，請勿直接編輯。
+  要修改內容請改 scripts/ 底下的樣板，或在後台編輯 data/ 裡的資料。
+  直接改這個檔案，下次自動建置時會被覆蓋。
+-->`;
+
+/* ---------- head ---------- */
+export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [] }) {
+  const up = "../".repeat(depth);
+  return `${AUTO_NOTE}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="${up}assets/logo-icon.png" />
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}" />
+${keywords ? `<meta name="keywords" content="${esc(keywords)}" />` : ""}
+<link rel="canonical" href="${canonical}" />
+<meta property="og:type" content="${ogType}" />
+<meta property="og:site_name" content="${BRAND.teamName}" />
+<meta property="og:title" content="${esc(title)}" />
+<meta property="og:description" content="${esc(description)}" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:image" content="${ogImage}" />
+<meta property="og:locale" content="zh_TW" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${esc(title)}" />
+<meta name="twitter:description" content="${esc(description)}" />
+<meta name="twitter:image" content="${ogImage}" />
+${extra}
+${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
+    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
+    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+  }}}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
+  ::selection { background:#FD7305; color:#fff; }
+  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
+  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .faq-plus { transform: rotate(45deg); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body class="font-sans text-ink">`;
+}
+
+/* ---------- 社群 icon ---------- */
+export function socialLinks(variant = "light", size = "md") {
+  const box = size === "sm" ? "w-9 h-9" : "w-10 h-10";
+  const ic = size === "sm" ? "w-[17px] h-[17px]" : "w-[19px] h-[19px]";
+  const st = variant === "dark"
+    ? "border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10"
+    : "border-line text-inkSoft hover:text-orangeDeep hover:border-orange";
+  const cls = `${box} flex items-center justify-center border rounded-sm transition ${st}`;
+  return `<div class="flex items-center gap-2">
+    <a href="${BRAND.facebook}" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Facebook" title="Facebook" class="${cls}">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="${ic}"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+    </a>
+    <a href="${BRAND.instagram}" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Instagram" title="Instagram" class="${cls}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="${ic}">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" /></svg>
+    </a>
+  </div>`;
+}
+
+/* ---------- Header ----------
+   depth：0 = 根目錄，1 = notes/ videos/，2 = tools/xxx/
+   hasBuyers：沒有買方需求時不顯示該項目
+*/
+export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
+  const up = "../".repeat(depth);
+  const home = depth === 0 ? "" : `${up}index.html`;
+  const nav = [
+    [`${home}#services`, "服務項目"],
+    [`${home}#areas`, "生活圈行情"],
+    [`${home}#tools`, "試算工具"],
+    ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
+    [`${home}#faq`, "常見問題"],
+    [`${up}notes/index.html`, "知識文章"],
+    [`${up}videos/index.html`, "影片"],
+  ];
+  const width = compact ? "max-w-3xl" : "max-w-6xl";
+
+  return `<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+  <div class="${width} mx-auto px-6 h-[68px] flex items-center justify-between">
+    <a href="${depth === 0 ? "#top" : up + "index.html"}" class="flex items-center gap-3 shrink-0 mr-6">
+      <img src="${up}assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
+      <span class="leading-tight">
+        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+        <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
+      </span>
+    </a>
+    ${compact ? "" : `<nav class="hidden xl:flex items-center gap-5 text-[15px] text-inkSoft whitespace-nowrap">
+      ${nav.map(([h, l]) => `<a href="${h}" class="hover:text-ink transition">${l}</a>`).join("\n      ")}
+    </nav>`}
+    <div class="hidden ${compact ? "sm" : "xl"}:flex items-center gap-4 shrink-0">
+      ${compact ? "" : socialLinks("light", "sm")}
+      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 ${BRAND.phone}</a>
+    </div>
+    ${compact ? "" : `<button id="menuBtn" aria-label="開啟選單" aria-expanded="false"
+      class="xl:hidden w-9 h-9 flex items-center justify-center border border-line rounded-sm">
+      <span class="text-lg leading-none">☰</span>
+    </button>`}
+  </div>
+  ${compact ? "" : `<div id="mobileMenu" hidden class="xl:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
+    ${[...nav, [`${home}#about`, "關於團隊"], [`${home}#deals`, "近期成交"]]
+      .map(([h, l]) => `<a href="${h}" class="text-[16px] text-inkSoft py-1">${l}</a>`).join("\n    ")}
+    <a href="${BRAND.phoneHref}" class="inline-flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 ${BRAND.phone}</a>
+    <div class="pt-1">${socialLinks("light")}</div>
+  </div>`}
+</header>`;
+}
+
+/* ---------- Footer ---------- */
+export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
+  const up = "../".repeat(depth);
+  const home = depth === 0 ? "" : `${up}index.html`;
+  const width = compact ? "max-w-3xl" : "max-w-6xl";
+  const links = [
+    [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${home}#about`, "關於團隊"],
+    [`${home}#tools`, "試算工具"], [`${up}notes/index.html`, "知識文章"], [`${up}videos/index.html`, "影片"],
+    [`${home}#deals`, "近期成交"],
+    ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
+    [`${home}#faq`, "常見問題"],
+  ];
+
+  if (compact) {
+    return `<footer class="border-t border-line">
+  <div class="${width} mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
+    <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
+    <a href="${up}index.html" class="hover:text-orangeDeep">回首頁</a>
+  </div>
+</footer>
+</body>
+</html>`;
+  }
+
+  return `<footer id="contact" class="bg-ink text-white/75">
+  <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
+    <div class="md:col-span-7">
+      <h2 class="display text-2xl text-white">先聊聊，不用急著決定</h2>
+      <p class="mt-5 text-[16px] leading-[2] max-w-md">
+        不論是想知道自己的預算能買哪一區，或是手上房子現在值多少，都可以先問。我們會用實際成交資料回答你。
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+        <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">官方網站</a>
+      </div>
+      <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
+        ${links.map(([h, l]) => `<a href="${h}" class="hover:text-orange transition">${l}</a>`).join("\n        ")}
+      </nav>
+      <div class="mt-8">${socialLinks("dark")}</div>
+    </div>
+    <div class="md:col-span-5 md:text-right font-mono text-[13px] leading-[2] text-white/60">
+      <div class="text-white">${BRAND.teamName}</div>
+      <div>${BRAND.legalName}</div>
+      <div>${BRAND.address}</div>
+      <div><a href="${BRAND.phoneHref}" class="hover:text-orange transition">${BRAND.phone}</a></div>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+      <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
+      <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* 手機選單：純原生，不依賴框架 */
+  (function () {
+    var btn = document.getElementById("menuBtn");
+    var menu = document.getElementById("mobileMenu");
+    if (!btn || !menu) return;
+    btn.addEventListener("click", function () {
+      var open = menu.hasAttribute("hidden");
+      if (open) { menu.removeAttribute("hidden"); btn.setAttribute("aria-expanded", "true"); btn.firstElementChild.textContent = "✕"; }
+      else { menu.setAttribute("hidden", ""); btn.setAttribute("aria-expanded", "false"); btn.firstElementChild.textContent = "☰"; }
+    });
+  })();
+</script>
+</body>
+</html>`;
+}
+
+/* ---------- 區塊標題 ---------- */
+export function sectionHead(label, title, note) {
+  return `<div class="mb-10">
+    <div class="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">${esc(label)}</div>
+    <h2 class="display text-2xl md:text-[28px] text-ink">${esc(title)}</h2>
+    ${note ? `<p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-3xl">${esc(note)}</p>` : ""}
+    <div class="mt-6 h-px bg-line"></div>
+  </div>`;
+}

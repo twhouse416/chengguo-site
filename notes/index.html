@@ -1,3 +1,8 @@
+<!--
+  ⚠️ 這個檔案由 scripts/build-site.js 自動產生，請勿直接編輯。
+  要修改內容請改 scripts/ 底下的樣板，或在後台編輯 data/ 裡的資料。
+  直接改這個檔案，下次自動建置時會被覆蓋。
+-->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -11,202 +16,274 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="台灣房屋 澄果團隊" />
 <meta property="og:title" content="知識文章｜台灣房屋 澄果團隊" />
-<meta property="og:description" content="首購與換屋最常卡住的問題整理，以及高雄四大生活圈的在地觀察。" />
+<meta property="og:description" content="高雄買房知識文章：新青安3.0門檻、自備款試算、房地合一稅與重購退稅、換屋順序規劃，以及美術館特區、農十六、瑞豐巨蛋、中都重劃區的在地比較。" />
 <meta property="og:url" content="https://twhouse416.github.io/chengguo-site/notes/" />
 <meta property="og:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
 <meta property="og:locale" content="zh_TW" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="知識文章｜台灣房屋 澄果團隊" />
+<meta name="twitter:description" content="高雄買房知識文章：新青安3.0門檻、自備款試算、房地合一稅與重購退稅、換屋順序規劃，以及美術館特區、農十六、瑞豐巨蛋、中都重劃區的在地比較。" />
+<meta name="twitter:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"url":"https://twhouse416.github.io/chengguo-site/notes/down-payment-four-districts.html","name":"高雄買房自備款要準備多少？美術館、農十六、瑞豐、中都四區實算"},{"@type":"ListItem","position":2,"url":"https://twhouse416.github.io/chengguo-site/notes/repurchase-tax-refund-order.html","name":"重購退稅怎麼申請？換屋順序、2 年期限與 5 年閉鎖期一次看懂"},{"@type":"ListItem","position":3,"url":"https://twhouse416.github.io/chengguo-site/notes/buy-first-or-sell-first.html","name":"換屋該先買還是先賣？資金壓力與稅務時程的取捨"},{"@type":"ListItem","position":4,"url":"https://twhouse416.github.io/chengguo-site/notes/art-museum-vs-nong16.html","name":"高雄美術館特區 vs 農十六：生活品質與生活機能，怎麼選？"},{"@type":"ListItem","position":5,"url":"https://twhouse416.github.io/chengguo-site/notes/zhongdu-worth-waiting.html","name":"高雄中都重劃區值得買嗎？房價、生活機能與進場時機分析"}]}</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: { extend: {
-      colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
-        paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
-        orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
-      fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
-      borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
-    }}
-  }
+  tailwind.config = { theme: { extend: {
+    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
+      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
+      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
+    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
+    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
+  }}}
 </script>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 <style>
+  html { scroll-behavior: smooth; }
   body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .faq-plus { transform: rotate(45deg); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
 </style>
 </head>
 <body class="font-sans text-ink">
-<div id="root"></div>
-
-<script type="text/babel">
-const { useState, useEffect, useMemo } = React;
-
-const BRAND = {
-  phone: "07-9766977",
-  phoneHref: "tel:0797669977",
-  facebook: "https://www.facebook.com/TWhouseo8",
-  instagram: "https://www.instagram.com/twhouse_o8",
-};
-
-function fmtDate(d) {
-  const dt = new Date(d);
-  return `${dt.getFullYear()}.${String(dt.getMonth()+1).padStart(2,"0")}.${String(dt.getDate()).padStart(2,"0")}`;
-}
-
-function App() {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(false);
-  const [tag, setTag] = useState("全部");
-
-  useEffect(() => {
-    fetch(`../data/articles.json?t=${Date.now()}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => setError(true));
-  }, []);
-
-  const published = useMemo(
-    () => (data?.articles ?? []).filter(a => !a.draft),
-    [data]
-  );
-
-  const tags = useMemo(
-    () => ["全部", ...new Set(published.map(a => a.tag))],
-    [published]
-  );
-
-  const list = tag === "全部" ? published : published.filter(a => a.tag === tag);
-
-  /* 文章清單結構化資料，協助搜尋引擎理解站內文章 */
-  useEffect(() => {
-    if (!published.length) return;
-    const site = "https://twhouse416.github.io/chengguo-site";
-    let el = document.getElementById("ld-list");
-    if (!el) { el = document.createElement("script"); el.id = "ld-list"; el.type = "application/ld+json"; document.head.appendChild(el); }
-    el.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      itemListElement: published.map((a, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        url: `${site}/notes/${a.slug}.html`,
-        name: a.title,
-      })),
-    });
-  }, [published]);
-
-  return (
-    <div>
-      <header className="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
-        <div className="max-w-5xl mx-auto px-6 h-[68px] flex items-center justify-between">
-          <a href="../index.html" className="flex items-center gap-3">
-            <img src="../assets/logo-icon.png" alt="" className="w-9 h-9 object-contain" />
-            <span className="leading-tight">
-              <span className="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
-              <span className="block text-[17px] font-bold tracking-tight">澄果團隊</span>
-            </span>
-          </a>
-          <a href={BRAND.phoneHref}
-            className="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-            來電諮詢 {BRAND.phone}
-          </a>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-14">
-        <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Notes</div>
-        <h1 className="display text-[30px] md:text-[36px]">知識文章</h1>
-        <p className="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
-          首購與換屋最常卡住的幾個問題，我們整理成好讀的說明。
-          內容會隨法規與市場變動更新，發布日期標在每篇文章上。
-        </p>
-        <div className="mt-6 h-px bg-line" />
-
-        {error && (
-          <p className="mt-10 text-[16px] text-orangeDeep">文章資料讀取失敗，請重新整理頁面再試一次。</p>
-        )}
-        {!error && !data && (
-          <p className="mt-10 font-mono text-[13px] text-inkFaint">讀取中…</p>
-        )}
-
-        {data && published.length === 0 && (
-          <div className="mt-10 border border-line rounded-sm bg-surface p-8">
-            <p className="text-[16px] text-inkSoft leading-[1.9]">
-              文章正在準備中，近期陸續發布。
-              如果有想先了解的問題，歡迎直接來電，我們可以直接回答你。
-            </p>
-            <a href={BRAND.phoneHref}
-              className="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-              來電諮詢 {BRAND.phone}
-            </a>
-          </div>
-        )}
-
-        {published.length > 0 && (
-          <>
-            <div className="flex flex-wrap gap-2 mt-8">
-              {tags.map(t => (
-                <button key={t} onClick={() => setTag(t)}
-                  className={`px-4 py-2 text-[14px] rounded-sm border transition ${
-                    tag === t
-                      ? "bg-ink text-white border-ink"
-                      : "bg-surface text-inkSoft border-line hover:border-ink"
-                  }`}>
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-10 grid md:grid-cols-2 gap-x-8 gap-y-10">
-              {list.map(a => (
-                <article key={a.slug} className="border-t-2 border-ink pt-5">
-                  {a.cover && (
-                    <a href={`${a.slug}.html`} className="block mb-4">
-                      <img src={`../${a.cover}`} alt={a.coverAlt || a.title} loading="lazy"
-                        className="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" />
-                    </a>
-                  )}
-                  <div className="flex items-center gap-3 mb-3 font-mono text-[12px]">
-                    <span className="text-orangeDeep tracking-wider">{a.tag}</span>
-                    <span className="text-inkFaint">{fmtDate(a.date)}</span>
-                    {a.readMinutes && <span className="text-inkFaint">約 {a.readMinutes} 分鐘</span>}
-                  </div>
-                  <h2 className="text-[19px] font-bold leading-snug mb-3 tracking-tight">
-                    <a href={`${a.slug}.html`} className="hover:text-orangeDeep transition">
-                      {a.title}
-                    </a>
-                  </h2>
-                  <p className="text-[15px] text-inkSoft leading-[1.9]">{a.summary}</p>
-                  <a href={`${a.slug}.html`}
-                    className="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">
-                    閱讀全文 →
-                  </a>
-                </article>
-              ))}
-            </div>
-          </>
-        )}
-      </main>
-
-      <footer className="border-t border-line mt-10">
-        <div className="max-w-5xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
-          <span>© {new Date().getFullYear()} 澄果資產有限公司</span>
-          <a href="../index.html" className="hover:text-orangeDeep">回首頁</a>
-        </div>
-      </footer>
+<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+  <div class="max-w-6xl mx-auto px-6 h-[68px] flex items-center justify-between">
+    <a href="../index.html" class="flex items-center gap-3 shrink-0 mr-6">
+      <img src="../assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
+      <span class="leading-tight">
+        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+        <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
+      </span>
+    </a>
+    <nav class="hidden xl:flex items-center gap-5 text-[15px] text-inkSoft whitespace-nowrap">
+      <a href="../index.html#services" class="hover:text-ink transition">服務項目</a>
+      <a href="../index.html#areas" class="hover:text-ink transition">生活圈行情</a>
+      <a href="../index.html#tools" class="hover:text-ink transition">試算工具</a>
+      <a href="../index.html#buyers" class="hover:text-ink transition">買方需求</a>
+      <a href="../index.html#faq" class="hover:text-ink transition">常見問題</a>
+      <a href="../notes/index.html" class="hover:text-ink transition">知識文章</a>
+      <a href="../videos/index.html" class="hover:text-ink transition">影片</a>
+    </nav>
+    <div class="hidden xl:flex items-center gap-4 shrink-0">
+      <div class="flex items-center gap-2">
+    <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Facebook" title="Facebook" class="w-9 h-9 flex items-center justify-center border rounded-sm transition border-line text-inkSoft hover:text-orangeDeep hover:border-orange">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-[17px] h-[17px]"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Instagram" title="Instagram" class="w-9 h-9 flex items-center justify-center border rounded-sm transition border-line text-inkSoft hover:text-orangeDeep hover:border-orange">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-[17px] h-[17px]">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" /></svg>
+    </a>
+  </div>
+      <a href="tel:0797669977" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 07-9766977</a>
     </div>
-  );
-}
+    <button id="menuBtn" aria-label="開啟選單" aria-expanded="false"
+      class="xl:hidden w-9 h-9 flex items-center justify-center border border-line rounded-sm">
+      <span class="text-lg leading-none">☰</span>
+    </button>
+  </div>
+  <div id="mobileMenu" hidden class="xl:hidden px-6 py-4 flex flex-col gap-4 bg-surface border-t border-line">
+    <a href="../index.html#services" class="text-[16px] text-inkSoft py-1">服務項目</a>
+    <a href="../index.html#areas" class="text-[16px] text-inkSoft py-1">生活圈行情</a>
+    <a href="../index.html#tools" class="text-[16px] text-inkSoft py-1">試算工具</a>
+    <a href="../index.html#buyers" class="text-[16px] text-inkSoft py-1">買方需求</a>
+    <a href="../index.html#faq" class="text-[16px] text-inkSoft py-1">常見問題</a>
+    <a href="../notes/index.html" class="text-[16px] text-inkSoft py-1">知識文章</a>
+    <a href="../videos/index.html" class="text-[16px] text-inkSoft py-1">影片</a>
+    <a href="../index.html#about" class="text-[16px] text-inkSoft py-1">關於團隊</a>
+    <a href="../index.html#deals" class="text-[16px] text-inkSoft py-1">近期成交</a>
+    <a href="tel:0797669977" class="inline-flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 07-9766977</a>
+    <div class="pt-1"><div class="flex items-center gap-2">
+    <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Facebook" title="Facebook" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-line text-inkSoft hover:text-orangeDeep hover:border-orange">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-[19px] h-[19px]"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Instagram" title="Instagram" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-line text-inkSoft hover:text-orangeDeep hover:border-orange">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-[19px] h-[19px]">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" /></svg>
+    </a>
+  </div></div>
+  </div>
+</header>
+<main class="max-w-5xl mx-auto px-6 py-14">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span><span>知識文章</span>
+  </nav>
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Notes</div>
+  <h1 class="display text-[30px] md:text-[36px]">知識文章</h1>
+  <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
+    首購與換屋最常卡住的幾個問題，我們整理成好讀的說明。內容會隨法規與市場變動更新，發布日期標在每篇文章上。
+  </p>
+  <div class="mt-6 h-px bg-line"></div>
+
+  
+  <div class="flex flex-wrap gap-2 mt-8" id="tagFilter">
+    <button data-tag="全部" class="tag-btn px-4 py-2 text-[14px] rounded-sm border bg-ink text-white border-ink transition">全部</button>
+    <button data-tag="首購" class="tag-btn px-4 py-2 text-[14px] rounded-sm border bg-surface text-inkSoft border-line hover:border-ink transition">首購</button>
+    <button data-tag="稅務" class="tag-btn px-4 py-2 text-[14px] rounded-sm border bg-surface text-inkSoft border-line hover:border-ink transition">稅務</button>
+    <button data-tag="換屋" class="tag-btn px-4 py-2 text-[14px] rounded-sm border bg-surface text-inkSoft border-line hover:border-ink transition">換屋</button>
+    <button data-tag="生活圈" class="tag-btn px-4 py-2 text-[14px] rounded-sm border bg-surface text-inkSoft border-line hover:border-ink transition">生活圈</button>
+  </div>
+
+  <div class="mt-10 grid md:grid-cols-2 gap-x-8 gap-y-10" id="articleGrid">
+      <article class="border-t-2 border-ink pt-5" data-tag="首購">
+    <a href="down-payment-four-districts.html" class="block mb-4">
+      <img src="../assets/articles/cover-down-payment.svg" alt="買房要準備的不只頭期款：自備款、仲介費、代書費、裝潢費用組成示意" loading="lazy"
+        class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>
+    <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
+      <span class="text-orangeDeep tracking-wider">首購</span>
+      <time class="text-inkFaint" datetime="2026-07-27">2026.07.27</time>
+      <span class="text-inkFaint">約 6 分鐘</span>
+    </div>
+    <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
+      <a href="down-payment-four-districts.html" class="hover:text-orangeDeep transition">高雄買房自備款要準備多少？美術館、農十六、瑞豐、中都四區實算</a></h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9]">用內政部實價登錄近半年成交價，換算高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋與三民中都重劃區的三房總價與自備款區間，並列出頭期款之外常被忽略的費用。</p>
+    <a href="down-payment-four-districts.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+  </article>
+      <article class="border-t-2 border-ink pt-5" data-tag="稅務">
+    <a href="repurchase-tax-refund-order.html" class="block mb-4">
+      <img src="../assets/articles/cover-repurchase-tax.svg" alt="重購退稅時間軸：新舊屋移轉登記須在2年內，退稅後另有5年閉鎖期" loading="lazy"
+        class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>
+    <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
+      <span class="text-orangeDeep tracking-wider">稅務</span>
+      <time class="text-inkFaint" datetime="2026-07-27">2026.07.27</time>
+      <span class="text-inkFaint">約 5 分鐘</span>
+    </div>
+    <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
+      <a href="repurchase-tax-refund-order.html" class="hover:text-orangeDeep transition">重購退稅怎麼申請？換屋順序、2 年期限與 5 年閉鎖期一次看懂</a></h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9]">房地合一稅重購退稅的條件、退還比例計算方式、先買後賣與先賣後買的差別，以及最容易被忽略的 5 年閉鎖期限制。附自住滿 6 年優惠的比較。</p>
+    <a href="repurchase-tax-refund-order.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+  </article>
+      <article class="border-t-2 border-ink pt-5" data-tag="換屋">
+    <a href="buy-first-or-sell-first.html" class="block mb-4">
+      <img src="../assets/articles/cover-trade-up.svg" alt="先買後賣與先賣後買的資金壓力與居住彈性比較" loading="lazy"
+        class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>
+    <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
+      <span class="text-orangeDeep tracking-wider">換屋</span>
+      <time class="text-inkFaint" datetime="2026-07-27">2026.07.27</time>
+      <span class="text-inkFaint">約 5 分鐘</span>
+    </div>
+    <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
+      <a href="buy-first-or-sell-first.html" class="hover:text-orangeDeep transition">換屋該先買還是先賣？資金壓力與稅務時程的取捨</a></h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9]">先買後賣與先賣後買的現金流缺口、過渡期成本、議價立場差異，以及重購退稅 2 年與自住優惠 6 年這兩個關鍵時間限制怎麼影響決策。</p>
+    <a href="buy-first-or-sell-first.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+  </article>
+      <article class="border-t-2 border-ink pt-5" data-tag="生活圈">
+    <a href="art-museum-vs-nong16.html" class="block mb-4">
+      <img src="../assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍" loading="lazy"
+        class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>
+    <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
+      <span class="text-orangeDeep tracking-wider">生活圈</span>
+      <time class="text-inkFaint" datetime="2026-07-27">2026.07.27</time>
+      <span class="text-inkFaint">約 6 分鐘</span>
+    </div>
+    <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
+      <a href="art-museum-vs-nong16.html" class="hover:text-orangeDeep transition">高雄美術館特區 vs 農十六：生活品質與生活機能，怎麼選？</a></h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9]">同在鼓山區、同樣鎖定家庭客的兩大生活圈，每坪價差不小。美術館特區重生活品質、農十六重生活機能，從綠地環境、產品條件到學區劃分與總量管制逐項比較。</p>
+    <a href="art-museum-vs-nong16.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+  </article>
+      <article class="border-t-2 border-ink pt-5" data-tag="生活圈">
+    <a href="zhongdu-worth-waiting.html" class="block mb-4">
+      <img src="../assets/area-04-zhongdu.jpg" alt="中都重劃區空拍" loading="lazy"
+        class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>
+    <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
+      <span class="text-orangeDeep tracking-wider">生活圈</span>
+      <time class="text-inkFaint" datetime="2026-07-27">2026.07.27</time>
+      <span class="text-inkFaint">約 5 分鐘</span>
+    </div>
+    <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
+      <a href="zhongdu-worth-waiting.html" class="hover:text-orangeDeep transition">高雄中都重劃區值得買嗎？房價、生活機能與進場時機分析</a></h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9]">三民區中都重劃區緊鄰愛河與中都濕地公園，是四大生活圈中總價門檻相對親民、又能兼顧市區距離與重劃區條件的一區。從先天條件、機能現況到適合進場的族群，用實價登錄資料分析。</p>
+    <a href="zhongdu-worth-waiting.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+  </article>
+  </div>
+
+  <script>
+    /* 分類篩選：純原生，內容本身已在 HTML 裡，爬蟲讀得到 */
+    (function () {
+      var btns = document.querySelectorAll(".tag-btn");
+      var items = document.querySelectorAll("#articleGrid article");
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          var tag = b.dataset.tag;
+          btns.forEach(function (x) {
+            var on = x === b;
+            x.className = "tag-btn px-4 py-2 text-[14px] rounded-sm border transition " +
+              (on ? "bg-ink text-white border-ink" : "bg-surface text-inkSoft border-line hover:border-ink");
+          });
+          items.forEach(function (it) {
+            it.style.display = (tag === "全部" || it.dataset.tag === tag) ? "" : "none";
+          });
+        });
+      });
+    })();
+  </script>
+</main>
+<footer id="contact" class="bg-ink text-white/75">
+  <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
+    <div class="md:col-span-7">
+      <h2 class="display text-2xl text-white">先聊聊，不用急著決定</h2>
+      <p class="mt-5 text-[16px] leading-[2] max-w-md">
+        不論是想知道自己的預算能買哪一區，或是手上房子現在值多少，都可以先問。我們會用實際成交資料回答你。
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="tel:0797669977" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+        <a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">官方網站</a>
+      </div>
+      <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
+        <a href="../index.html#services" class="hover:text-orange transition">服務項目</a>
+        <a href="../index.html#areas" class="hover:text-orange transition">生活圈行情</a>
+        <a href="../index.html#about" class="hover:text-orange transition">關於團隊</a>
+        <a href="../index.html#tools" class="hover:text-orange transition">試算工具</a>
+        <a href="../notes/index.html" class="hover:text-orange transition">知識文章</a>
+        <a href="../videos/index.html" class="hover:text-orange transition">影片</a>
+        <a href="../index.html#deals" class="hover:text-orange transition">近期成交</a>
+        <a href="../index.html#buyers" class="hover:text-orange transition">買方需求</a>
+        <a href="../index.html#faq" class="hover:text-orange transition">常見問題</a>
+      </nav>
+      <div class="mt-8"><div class="flex items-center gap-2">
+    <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Facebook" title="Facebook" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-[19px] h-[19px]"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Instagram" title="Instagram" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-[19px] h-[19px]">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" /></svg>
+    </a>
+  </div></div>
+    </div>
+    <div class="md:col-span-5 md:text-right font-mono text-[13px] leading-[2] text-white/60">
+      <div class="text-white">台灣房屋 澄果團隊</div>
+      <div>澄果資產有限公司</div>
+      <div>804 高雄市鼓山區青海路416號</div>
+      <div><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></div>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+      <span>© 2026 澄果資產有限公司</span>
+      <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* 手機選單：純原生，不依賴框架 */
+  (function () {
+    var btn = document.getElementById("menuBtn");
+    var menu = document.getElementById("mobileMenu");
+    if (!btn || !menu) return;
+    btn.addEventListener("click", function () {
+      var open = menu.hasAttribute("hidden");
+      if (open) { menu.removeAttribute("hidden"); btn.setAttribute("aria-expanded", "true"); btn.firstElementChild.textContent = "✕"; }
+      else { menu.setAttribute("hidden", ""); btn.setAttribute("aria-expanded", "false"); btn.firstElementChild.textContent = "☰"; }
+    });
+  })();
 </script>
 </body>
 </html>

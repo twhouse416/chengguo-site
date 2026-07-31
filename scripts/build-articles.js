@@ -14,41 +14,15 @@
  * 由 .github/workflows/build-articles.yml 在 articles.json 變動時執行。
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer } from "./lib/layout.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const OUT_DIR = path.join(ROOT, "notes");
-const SITE = "https://twhouse416.github.io/chengguo-site";
-
-const BRAND = {
-  teamName: "台灣房屋 澄果團隊",
-  legalName: "澄果資產有限公司",
-  address: "804 高雄市鼓山區青海路416號",
-  phone: "07-9766977",
-  phoneHref: "tel:0797669977",
-  officialSite: "https://store.twhg.com.tw/TE80",
-};
-
-/* ---------- 安全處理 ---------- */
-const esc = s => String(s ?? "")
-  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-
-/* **粗體** 轉成 <strong> */
-const rich = s => esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-ink">$1</strong>');
-
-const fmtDate = d => String(d || "").replaceAll("-", ".");
-
-/* 依 showFrom / showUntil 判斷產生當下該不該輸出這個區塊 */
 const today = new Date().toISOString().slice(0, 10);
-function visible(b) {
-  if (b.showFrom && today < b.showFrom) return false;
-  if (b.showUntil && today >= b.showUntil) return false;
-  return true;
-}
 
 /* ---------- 區塊轉 HTML ---------- */
 function blockHtml(b) {
@@ -160,82 +134,29 @@ function jsonLd(a) {
     });
   }
 
-  return blocks
-    .map(b => `<script type="application/ld+json">${JSON.stringify(b)}</script>`)
-    .join("\n");
+  return blocks;   // 交給 head() 統一輸出
 }
 
 /* ---------- 整頁 HTML ---------- */
-function pageHtml(a, others) {
+function pageHtml(a, others, hasBuyers) {
   const url = `${SITE}/notes/${a.slug}.html`;
   const img = a.cover ? `${SITE}/${a.cover}` : `${SITE}/assets/area-01-artmuseum.jpg`;
   const stale = a.reviewBy && today >= a.reviewBy;
 
-  return `<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" type="image/png" href="../assets/logo-icon.png" />
-<title>${esc(a.title)}｜${BRAND.teamName}</title>
-<meta name="description" content="${esc(a.summary)}" />
-${a.keywords?.length ? `<meta name="keywords" content="${esc(a.keywords.join("、"))}" />` : ""}
-<link rel="canonical" href="${url}" />
-<meta property="og:type" content="article" />
-<meta property="og:site_name" content="${BRAND.teamName}" />
-<meta property="og:title" content="${esc(a.title)}" />
-<meta property="og:description" content="${esc(a.summary)}" />
-<meta property="og:url" content="${url}" />
-<meta property="og:image" content="${img}" />
-<meta property="og:locale" content="zh_TW" />
-<meta property="article:published_time" content="${a.date}" />
-<meta property="article:modified_time" content="${a.updated || a.date}" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="${esc(a.title)}" />
-<meta name="twitter:description" content="${esc(a.summary)}" />
-<meta name="twitter:image" content="${img}" />
-
-${jsonLd(a)}
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = { theme: { extend: {
-    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
-      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
-      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
-    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
-    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
-  }}}
-</script>
-<style>
-  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
-  ::selection { background:#FD7305; color:#fff; }
-  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
-  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
-</style>
-</head>
-<body class="font-sans text-ink">
-
-<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
-  <div class="max-w-3xl mx-auto px-6 h-[68px] flex items-center justify-between">
-    <a href="../index.html" class="flex items-center gap-3">
-      <img src="../assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
-      <span class="leading-tight">
-        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
-        <span class="block text-[17px] font-bold tracking-tight">澄果團隊</span>
-      </span>
-    </a>
-    <a href="index.html" class="text-[15px] text-inkSoft hover:text-ink">← 所有文章</a>
-  </div>
-</header>
-
-<main class="max-w-3xl mx-auto px-6 py-14">
+  return [
+    head({
+      title: `${a.title}｜${BRAND.teamName}`,
+      description: a.summary,
+      keywords: a.keywords?.length ? a.keywords.join("、") : "",
+      canonical: url, ogImage: img, ogType: "article", depth: 1,
+      extra: `<meta property="article:published_time" content="${a.date}" />
+<meta property="article:modified_time" content="${a.updated || a.date}" />`,
+      jsonLd: jsonLd(a),
+    }),
+    header({ depth: 1, hasBuyers, compact: true }),
+    `<main class="max-w-3xl mx-auto px-6 py-14">
   <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
-    <a href="../index.html" class="hover:text-orangeDeep">首頁</a>
-    <span class="mx-2">/</span>
+    <a href="../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span>
     <a href="index.html" class="hover:text-orangeDeep">知識文章</a>
   </nav>
 
@@ -245,18 +166,14 @@ ${jsonLd(a)}
       <time class="text-inkFaint" datetime="${a.date}">${fmtDate(a.date)}</time>
       ${a.readMinutes ? `<span class="text-inkFaint">約 ${a.readMinutes} 分鐘</span>` : ""}
     </div>
-
     <h1 class="display text-[28px] md:text-[34px]">${esc(a.title)}</h1>
     <p class="mt-5 text-[17px] text-inkSoft leading-[1.95]">${esc(a.summary)}</p>
-
     ${stale ? `<div class="mt-7 bg-tint border-l-2 border-orange px-6 py-5">
       <p class="text-[16px] leading-[1.95] text-orangeDeep">
         本文最後更新於 ${fmtDate(a.updated || a.date)}。房市與法規變動快，部分內容可能已不是最新狀況，建議來電向我們確認。
       </p></div>` : ""}
-
     ${a.cover ? `<img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}"
       class="w-full h-auto rounded-sm border border-line bg-surface mt-8" />` : ""}
-
     <div class="mt-10">
       ${(a.blocks || []).filter(visible).map(blockHtml).join("\n      ")}
     </div>
@@ -268,8 +185,7 @@ ${jsonLd(a)}
     <div class="space-y-6">
       ${a.faq.map(f => `<div class="border-l-2 border-line pl-6">
         <h3 class="text-[17px] font-bold leading-snug mb-3">${esc(f.q)}</h3>
-        <p class="text-[16px] leading-[1.95] text-inkSoft">${esc(f.a)}</p>
-      </div>`).join("\n      ")}
+        <p class="text-[16px] leading-[1.95] text-inkSoft">${esc(f.a)}</p></div>`).join("\n      ")}
     </div>
   </section>` : ""}
 
@@ -278,8 +194,7 @@ ${jsonLd(a)}
     <ul class="space-y-2">
       ${a.sources.map(sc => `<li class="text-[15px] text-inkSoft leading-relaxed">
         <a href="${esc(sc.url)}" target="_blank" rel="noopener noreferrer nofollow"
-          class="hover:text-orangeDeep underline decoration-line underline-offset-4">${esc(sc.name)}</a>
-      </li>`).join("\n      ")}
+          class="hover:text-orangeDeep underline decoration-line underline-offset-4">${esc(sc.name)}</a></li>`).join("\n      ")}
     </ul>
     <p class="text-[14px] text-inkFaint leading-relaxed mt-4">
       本文內容依上述公開資料整理，並結合澄果團隊在地實務經驗。法規與行情可能變動，正式決策請以主管機關公告為準。
@@ -310,10 +225,7 @@ ${jsonLd(a)}
     <p class="mt-3 text-[16px] leading-[1.9]">
       每個人的狀況都不一樣。把你的情形說給我們聽，澄果團隊會用實際成交資料和在地經驗回答你。
     </p>
-    <a href="${BRAND.phoneHref}"
-      class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-      來電諮詢 ${BRAND.phone}
-    </a>
+    <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
   </section>
 
   ${others.length ? `<section class="mt-14 pt-8 border-t border-line">
@@ -325,29 +237,17 @@ ${jsonLd(a)}
         <div>
           <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">${esc(o.tag)}</div>
           <h3 class="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">${esc(o.title)}</h3>
-        </div>
-      </a>`).join("\n      ")}
+        </div></a>`).join("\n      ")}
     </div>
   </section>` : ""}
-</main>
-
-<footer class="border-t border-line">
-  <div class="max-w-3xl mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
-    <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
-    <a href="../index.html" class="hover:text-orangeDeep">回首頁</a>
-  </div>
-</footer>
-
-</body>
-</html>
-`;
+</main>`,
+    footer({ depth: 1, hasBuyers, compact: true }),
+  ].join("\n");
 }
 
 /* ---------- 主流程 ---------- */
-function main() {
-  const data = JSON.parse(readFileSync(path.join(ROOT, "data/articles.json"), "utf-8"));
-  const published = (data.articles || []).filter(a => !a.draft);
-
+export function buildArticles({ articles, hasBuyers }) {
+  const published = articles;
   mkdirSync(OUT_DIR, { recursive: true });
 
   /* 先清掉舊的產生檔（避免文章改為草稿後靜態頁還留著） */
@@ -363,11 +263,8 @@ function main() {
 
   published.forEach(a => {
     const others = published.filter(o => o.slug !== a.slug).slice(0, 3);
-    writeFileSync(path.join(OUT_DIR, `${a.slug}.html`), pageHtml(a, others), "utf-8");
+    writeFileSync(path.join(OUT_DIR, `${a.slug}.html`), pageHtml(a, others, hasBuyers), "utf-8");
     console.log("[產生]", `notes/${a.slug}.html`);
   });
-
   console.log(`[完成] 共產生 ${published.length} 個靜態文章頁`);
 }
-
-main();
