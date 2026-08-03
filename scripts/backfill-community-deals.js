@@ -38,6 +38,20 @@ function normalize(str) {
     .replace(/\s+/g, "");
 }
 
+function inAddressRange(normAddr, ranges) {
+  if (!ranges?.length) return false;
+  for (const r of ranges) {
+    const road = normalize(r.road || "");
+    if (!road || !normAddr.includes(road)) continue;
+    const after = normAddr.split(road)[1] || "";
+    const m = after.match(/^(\d+)/);
+    if (!m) continue;
+    const no = parseInt(m[1], 10);
+    if (no >= (r.from ?? -Infinity) && no <= (r.to ?? Infinity)) return true;
+  }
+  return false;
+}
+
 function rocToDate(v) {
   const s = String(v || "").trim();
   if (s.length < 6) return "";
@@ -185,7 +199,8 @@ async function main() {
     communities.forEach(c => {
       const keys = (c.addressKeywords || []).map(normalize);
       const projects = (c.projectNames || []).map(normalize);
-      if (!keys.length && !projects.length) return;
+      const ranges = c.addressRanges || [];
+      if (!keys.length && !projects.length && !ranges.length) return;
 
       const matched = records.filter(r => {
         if (c.district && !(r["鄉鎮市區"] || "").includes(c.district)) return false;
@@ -195,6 +210,7 @@ async function main() {
         const addr = normalize(r["土地位置建物門牌"]);
         const proj = normalize(r["建案名稱"] || "");
         return (keys.length && keys.some(k => addr.includes(k)))
+            || inAddressRange(addr, ranges)
             || (projects.length && projects.some(k => proj.includes(k)));
       }).map(toDeal).filter(d => d.date && d.unitPrice > 0);
 

@@ -32,6 +32,26 @@ const SEASON_ZIP_URL = (season) =>
 
 const M2_TO_PING = 0.3025; // 平方公尺 轉 坪
 
+/* 判斷門牌是否落在指定路名的號碼範圍內。
+   成屋社區常有多個門牌（分棟或跨路），逐一列舉容易漏抓，用範圍比較保險。
+   例如 { road: "美術東四路", from: 289, to: 320 } */
+function inAddressRange(normAddr, ranges) {
+  if (!ranges?.length) return false;
+  for (const r of ranges) {
+    const road = normalize(r.road || "");
+    if (!road || !normAddr.includes(road)) continue;
+    /* 取路名後面緊接的號碼 */
+    const after = normAddr.split(road)[1] || "";
+    const m = after.match(/^(\d+)/);
+    if (!m) continue;
+    const no = parseInt(m[1], 10);
+    const from = r.from ?? -Infinity;
+    const to = r.to ?? Infinity;
+    if (no >= from && no <= to) return true;
+  }
+  return false;
+}
+
 /* 實價登錄的門牌使用全形數字（例如 美術東四路６９８號），
    比對前統一轉成半形，否則關鍵字永遠對不上。 */
 function normalize(str) {
@@ -215,7 +235,7 @@ function collectCommunityDeals(records) {
   const result = {};
   (config.communities || []).forEach(c => {
     const keys = c.addressKeywords || [];
-    if (!keys.length && !(c.projectNames || []).length) { result[c.slug] = []; return; }
+    if (!keys.length && !(c.projectNames || []).length && !(c.addressRanges || []).length) { result[c.slug] = []; return; }
 
     const normKeys = keys.map(normalize);
     /* 預售屋尚未編門牌時，改用「建案名稱」比對。預售屋資料（_b 檔）有這個欄位。 */
@@ -233,8 +253,9 @@ function collectCommunityDeals(records) {
       const project = normalize(r["建案名稱"] || "");
 
       const byAddress = normKeys.length > 0 && normKeys.some(k => address.includes(k));
+      const byRange = inAddressRange(address, c.addressRanges);
       const byProject = normProjects.length > 0 && normProjects.some(k => project.includes(k));
-      return byAddress || byProject;
+      return byAddress || byRange || byProject;
     });
 
     const deals = matched.map(r => {
@@ -298,8 +319,11 @@ function collectCommunityDeals(records) {
         console.log(`       2. 預售屋檔案的欄位名稱不是「建案名稱」`);
       }
 
-      const roads = [...new Set(normKeys.map(k => k.replace(/[0-9]+.*$/, "")).filter(Boolean))];
-      if (roads.length) console.log(`  ↳ 以下列出實價登錄上這幾條路的實際門牌，供調整關鍵字：`);
+      const roads = [...new Set([
+        ...normKeys.map(k => k.replace(/[0-9]+.*$/, "")),
+        ...(c.addressRanges || []).map(r => normalize(r.road || "")),
+      ].filter(Boolean))];
+      if (roads.length) console.log(`  ↳ 以下列出實價登錄上這幾條路的實際門牌，供調整範圍：`);
       roads.forEach(road => {
         const sample = [...new Set(records
           .filter(r => normalize(r["土地位置建物門牌"]).includes(road))

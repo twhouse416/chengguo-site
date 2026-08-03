@@ -805,7 +805,7 @@ function App() {
 
   const newCommunity = () => ({
     slug: "", name: "", aliases: [], district: "鼓山區", area: "美術館特區", areaCode: "01",
-    address: "", addressKeywords: [], projectNames: [], draft: true, summary: "",
+    address: "", addressKeywords: [], addressRanges: [], projectNames: [], draft: true, summary: "",
     specs: [["建設公司", ""], ["總戶數", ""], ["樓層規劃", ""], ["坪數範圍", ""],
             ["格局", ""], ["公設比", ""], ["車位", ""], ["基地面積", ""]],
     highlights: [], considerations: [],
@@ -1411,9 +1411,9 @@ function App() {
                 <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">成交紀錄比對</div>
                 <div className="bg-tint border-l-2 border-orange px-5 py-4">
                   <p className="text-[14px] text-orangeDeep leading-[1.9]">
-                    系統靠這裡的設定，從實價登錄找出屬於這個社區的成交。
-                    <strong>成屋</strong>用門牌比對、<strong>預售屋</strong>用建案名稱比對，兩者符合任一即納入。
-                    預售案還沒編門牌時，只填建案名稱即可。
+                    系統靠這裡的設定，從實價登錄找出屬於這個社區的成交。三種方式符合任一即納入：
+                    <strong>完整門牌</strong>、<strong>門牌號碼範圍</strong>（成屋多門牌時建議用這個）、
+                    <strong>建案名稱</strong>（預售屋）。預售案還沒編門牌時，只填建案名稱即可。
                   </p>
                 </div>
 
@@ -1427,6 +1427,44 @@ function App() {
                   <p className="text-[13px] text-inkFaint mt-2 leading-relaxed">
                     實價登錄的門牌可能寫成「690號」或「690之1號」，建議兩種都列。
                     半形全形不用管，系統會自動處理。
+                  </p>
+                </div>
+
+                <div>
+                  <Label hint="成屋社區常有多個門牌（分棟或跨路），用範圍比逐一列舉保險">門牌號碼範圍</Label>
+                  <div className="space-y-2">
+                    {(cDraft.addressRanges || []).map((r, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <input className={inputCls} value={r.road || ""} placeholder="路名，例如 美術東四路"
+                          onChange={e => {
+                            const list = cDraft.addressRanges.map(x => ({ ...x }));
+                            list[i].road = e.target.value; setList("addressRanges", list);
+                          }} />
+                        <input type="number" className={inputCls + " max-w-[110px]"} value={r.from ?? ""} placeholder="起"
+                          onChange={e => {
+                            const list = cDraft.addressRanges.map(x => ({ ...x }));
+                            list[i].from = e.target.value === "" ? undefined : Number(e.target.value);
+                            setList("addressRanges", list);
+                          }} />
+                        <span className="text-inkFaint">－</span>
+                        <input type="number" className={inputCls + " max-w-[110px]"} value={r.to ?? ""} placeholder="迄"
+                          onChange={e => {
+                            const list = cDraft.addressRanges.map(x => ({ ...x }));
+                            list[i].to = e.target.value === "" ? undefined : Number(e.target.value);
+                            setList("addressRanges", list);
+                          }} />
+                        <Btn size="sm" variant="outline"
+                          onClick={() => setList("addressRanges", cDraft.addressRanges.filter((_, j) => j !== i))}>✕</Btn>
+                      </div>
+                    ))}
+                    <Btn size="sm" variant="outline"
+                      onClick={() => setList("addressRanges", [...(cDraft.addressRanges || []), { road: "", from: undefined, to: undefined }])}>
+                      ＋ 新增範圍
+                    </Btn>
+                  </div>
+                  <p className="text-[13px] text-inkFaint mt-2 leading-relaxed">
+                    例如美術東四路 285－320。門牌橫跨兩條路的社區，可以加兩組。
+                    範圍抓太寬會誤抓隔壁社區，抓太窄會漏；先設一個大概的範圍，跑完看結果再收斂。
                   </p>
                 </div>
 
