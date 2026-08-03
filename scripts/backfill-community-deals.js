@@ -190,11 +190,22 @@ async function main() {
       const matched = records.filter(r => {
         if (c.district && !(r["鄉鎮市區"] || "").includes(c.district)) return false;
         if (!(parseFloat(r["單價元平方公尺"]) > 0)) return false;
+        /* 排除已解約的紀錄 */
+        if ((r["解約情形"] || "").trim()) return false;
         const addr = normalize(r["土地位置建物門牌"]);
         const proj = normalize(r["建案名稱"] || "");
         return (keys.length && keys.some(k => addr.includes(k)))
             || (projects.length && projects.some(k => proj.includes(k)));
       }).map(toDeal).filter(d => d.date && d.unitPrice > 0);
+
+      /* 統計這期有多少筆因為解約被排除，方便核對 */
+      const cancelled = records.filter(r => {
+        if (!(r["解約情形"] || "").trim()) return false;
+        if (c.district && !(r["鄉鎮市區"] || "").includes(c.district)) return false;
+        const proj = normalize(r["建案名稱"] || "");
+        return projects.length && projects.some(k => proj.includes(k));
+      }).length;
+      if (cancelled) console.log(`    ${c.name}：另有 ${cancelled} 筆已解約，未納入`);
 
       if (matched.length) {
         archive.deals[c.slug] = mergeDeals(archive.deals[c.slug] || [], matched);

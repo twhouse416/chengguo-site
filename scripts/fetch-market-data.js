@@ -226,6 +226,9 @@ function collectCommunityDeals(records) {
       if (c.district && !district.includes(c.district)) return false;
       if (!(parseFloat(r["單價元平方公尺"]) > 0)) return false;
 
+      /* 排除已解約的紀錄：那不是真實成交，價格不能拿來參考 */
+      if ((r["解約情形"] || "").trim()) return false;
+
       const address = normalize(r["土地位置建物門牌"]);
       const project = normalize(r["建案名稱"] || "");
 
