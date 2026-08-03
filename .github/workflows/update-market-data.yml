@@ -22,7 +22,16 @@ jobs:
           node-version: "22"
 
       - name: 執行抓取與計算
+        id: fetch
+        # 下載失敗時腳本會中止且不寫入任何檔案，
+        # 這裡標記為失敗但不中斷流程，後續步驟仍會用既有資料重新建置。
+        continue-on-error: true
         run: node scripts/fetch-market-data.js
+
+      - name: 抓取失敗時提示
+        if: steps.fetch.outcome == 'failure'
+        run: |
+          echo "::warning::實價登錄下載不完整，本次未更新行情資料。網站維持既有內容，稍後會由排程自動重試。"
 
       - name: 重新建置全站
         run: node scripts/build-site.js
@@ -32,5 +41,12 @@ jobs:
           git config user.name "chengguo-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/market-data.json data/community-deals.json index.html notes videos tools communities sitemap.xml
-          git diff --cached --quiet && echo "沒有變動，略過提交" || git commit -m "更新行情資料 $(date +'%Y-%m-%d')"
-          git push
+          git diff --cached --quiet && echo "沒有變動，略過提交" || git commit -m "更新行情與社區資料 $(date +'%Y-%m-%d %H:%M')"
+          # GitHub 偶爾會回 5xx，重試幾次避免整批工作白費
+          for i in 1 2 3 4 5; do
+            if git push; then echo "推送成功"; break; fi
+            if [ $i -eq 5 ]; then echo "::error::推送失敗 5 次"; exit 1; fi
+            echo "推送失敗，$((i*15)) 秒後重試（第 $i 次）"
+            sleep $((i*15))
+            git pull --rebase --autostash || true
+          done

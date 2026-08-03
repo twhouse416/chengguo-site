@@ -30,4 +30,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add index.html notes videos tools communities sitemap.xml
           git diff --cached --quiet && echo "無變動" || git commit -m "全站重新建置 $(date +'%Y-%m-%d %H:%M')"
-          git push
+          # GitHub 偶爾會回 5xx，重試幾次避免整批工作白費
+          for i in 1 2 3 4 5; do
+            if git push; then echo "推送成功"; break; fi
+            if [ $i -eq 5 ]; then echo "::error::推送失敗 5 次"; exit 1; fi
+            echo "推送失敗，$((i*15)) 秒後重試（第 $i 次）"
+            sleep $((i*15))
+            git pull --rebase --autostash || true
+          done

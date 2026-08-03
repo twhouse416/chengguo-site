@@ -28,6 +28,15 @@ jobs:
       - name: 回補社區歷史成交
         run: node scripts/backfill-community-deals.js ${{ inputs.periods }}
 
+      # 回補要跑十幾分鐘，先把結果存成可下載的檔案，
+      # 萬一後面推送失敗也不必整批重跑
+      - name: 保存回補結果
+        uses: actions/upload-artifact@v4
+        with:
+          name: community-deals
+          path: data/community-deals.json
+          retention-days: 7
+
       - name: 重新建置全站
         run: node scripts/build-site.js
 
@@ -37,4 +46,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add data/community-deals.json index.html notes videos tools communities sitemap.xml
           git diff --cached --quiet && echo "沒有變動" || git commit -m "回補社區歷史成交 $(date +'%Y-%m-%d %H:%M')"
-          git push
+          # GitHub 偶爾會回 5xx，重試幾次避免整批工作白費
+          for i in 1 2 3 4 5; do
+            if git push; then echo "推送成功"; break; fi
+            if [ $i -eq 5 ]; then echo "::error::推送失敗 5 次"; exit 1; fi
+            echo "推送失敗，$((i*15)) 秒後重試（第 $i 次）"
+            sleep $((i*15))
+            git pull --rebase --autostash || true
+          done
