@@ -1,0 +1,40 @@
+name: 回補社區歷史成交
+
+# 手動觸發專用。每日的行情更新只抓最近四季，
+# 較早的成交（例如已完銷的預售案）要用這支回補。
+on:
+  workflow_dispatch:
+    inputs:
+      periods:
+        description: "要回補幾期？（1 期 = 1 季，14 期約 3.5 年）"
+        required: true
+        default: "14"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 回補社區歷史成交
+        run: node scripts/backfill-community-deals.js ${{ inputs.periods }}
+
+      - name: 重新建置全站
+        run: node scripts/build-site.js
+
+      - name: 提交結果
+        run: |
+          git config user.name "chengguo-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/community-deals.json index.html notes videos tools communities sitemap.xml
+          git diff --cached --quiet && echo "沒有變動" || git commit -m "回補社區歷史成交 $(date +'%Y-%m-%d %H:%M')"
+          git push
