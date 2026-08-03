@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-03T09:31:44.224Z",
+  "updatedAt": "2026-08-03T11:01:00.068Z",
   "deals": {
     "meishu-baitiane": [
       {
@@ -6513,7 +6513,5 @@
         "note": "其他 陽台漏水維修費:200000元；"
       }
     ]
-  },
-  "backfilledAt": "2026-08-03T09:31:44.225Z",
-  "backfillPeriods": 13
+  }
 }
