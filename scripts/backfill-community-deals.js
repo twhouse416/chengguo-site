@@ -149,6 +149,7 @@ function toDeal(r) {
     kind: r.__presale ? "預售" : "成屋",
     project: (r["建案名稱"] || "").trim(),
     unit: (r["棟及號"] || "").trim(),
+    addr: (r["土地位置建物門牌"] || "").trim(),
     note: (r["備註"] || "").trim().slice(0, 40),
   };
 }
@@ -235,6 +236,23 @@ async function main() {
     if (i < periods - 1) execSync("sleep 5");
     console.log("");
   }
+
+  /* 列出每個社區實際比對到的門牌與建案名稱，方便確認範圍有沒有抓錯 */
+  console.log("");
+  console.log("=".repeat(50));
+  console.log("[核對] 各社區實際比對到的門牌／建案名稱：");
+  communities.forEach(c => {
+    const list = archive.deals[c.slug] || [];
+    if (!list.length) return;
+    const addrs = {};
+    list.forEach(d => {
+      const k = d.project ? `建案：${d.project}` : (d.addr || "（無門牌）");
+      addrs[k] = (addrs[k] || 0) + 1;
+    });
+    console.log(`  ${c.name}（${list.length} 筆）`);
+    Object.entries(addrs).sort((a, b) => b[1] - a[1]).slice(0, 20)
+      .forEach(([k, n]) => console.log(`     ${n} 筆　${k}`));
+  });
 
   archive.updatedAt = new Date().toISOString();
   archive.backfilledAt = new Date().toISOString();

@@ -274,6 +274,7 @@ function collectCommunityDeals(records) {
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
         kind: r.__presale ? "預售" : "成屋",
+        addr: (r["土地位置建物門牌"] || "").trim(),
         project: (r["建案名稱"] || "").trim(),
         unit: (r["棟及號"] || "").trim(),
         note: (r["備註"] || "").trim().slice(0, 40),

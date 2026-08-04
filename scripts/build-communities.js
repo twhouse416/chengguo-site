@@ -48,8 +48,9 @@ function dealsTable(deals) {
 
   return `<div class="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-2">
     <div>
-      <span class="font-mono text-[12px] text-inkFaint">成交筆數</span>
+      <span class="font-mono text-[12px] text-inkFaint">收錄筆數</span>
       <span class="font-mono text-[24px] font-semibold text-ink ml-2">${deals.length}</span>
+      ${deals.length >= 300 ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 300 筆）</span>` : ""}
     </div>
     <div>
       <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
