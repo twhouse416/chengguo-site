@@ -1453,6 +1453,16 @@ function App() {
                             list[i].to = e.target.value === "" ? undefined : Number(e.target.value);
                             setList("addressRanges", list);
                           }} />
+                        <select className={inputCls + " max-w-[110px]"} value={r.parity || ""}
+                          onChange={e => {
+                            const list = cDraft.addressRanges.map(x => ({ ...x }));
+                            list[i].parity = e.target.value || undefined;
+                            setList("addressRanges", list);
+                          }}>
+                          <option value="">不限</option>
+                          <option value="odd">單號</option>
+                          <option value="even">雙號</option>
+                        </select>
                         <Btn size="sm" variant="outline"
                           onClick={() => setList("addressRanges", cDraft.addressRanges.filter((_, j) => j !== i))}>✕</Btn>
                       </div>
@@ -1463,8 +1473,9 @@ function App() {
                     </Btn>
                   </div>
                   <p className="text-[13px] text-inkFaint mt-2 leading-relaxed">
-                    例如美術東四路 285－320。門牌橫跨兩條路的社區，可以加兩組。
-                    範圍抓太寬會誤抓隔壁社區，抓太窄會漏；先設一個大概的範圍，跑完看結果再收斂。
+                    例如美術東四路 430－458、雙號。門牌橫跨兩條路的社區可以加兩組。
+                    <strong>單雙號很重要</strong>——台灣門牌單雙號分列道路兩側，不指定會抓到對街的社區。
+                    巷弄門牌請把巷寫進路名，例如「美術南二路70巷」。
                   </p>
                 </div>
 

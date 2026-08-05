@@ -47,7 +47,12 @@ function inAddressRange(normAddr, ranges) {
     const m = after.match(/^(\d+)/);
     if (!m) continue;
     const no = parseInt(m[1], 10);
-    if (no >= (r.from ?? -Infinity) && no <= (r.to ?? Infinity)) return true;
+    if (no < (r.from ?? -Infinity) || no > (r.to ?? Infinity)) continue;
+    /* parity：odd 只取單號、even 只取雙號，不填則不限。
+       台灣門牌單雙號分列道路兩側，不區分會抓到對街的社區。 */
+    if (r.parity === "odd" && no % 2 === 0) continue;
+    if (r.parity === "even" && no % 2 === 1) continue;
+    return true;
   }
   return false;
 }
