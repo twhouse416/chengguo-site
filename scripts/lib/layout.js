@@ -5,7 +5,23 @@
  * 改一次全站生效。
  */
 
-export const SITE = "https://twhouse416.github.io/chengguo-site";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+/* 網站設定：由 data/site-config.json 提供。
+   這個檔案由使用者維護，不會被更新覆蓋，所以金鑰與網址設定一次就好。 */
+const __layoutDir = path.dirname(fileURLToPath(import.meta.url));
+let CONFIG = {};
+try {
+  CONFIG = JSON.parse(
+    readFileSync(path.resolve(__layoutDir, "../../data/site-config.json"), "utf-8")
+  );
+} catch {
+  console.warn("[提示] 讀不到 data/site-config.json，使用預設值");
+}
+
+export const SITE = (CONFIG.siteUrl || "https://twhouse416.github.io/chengguo-site").replace(/\/$/, "");
 
 export const BRAND = {
   teamName: "台灣房屋 澄果團隊",
@@ -18,9 +34,9 @@ export const BRAND = {
   facebook: "https://www.facebook.com/TWhouseo8",
   instagram: "https://www.instagram.com/twhouse_o8",
   youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
-  /* Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱即可免費取得，
-     金鑰貼在這裡就會生效。留空時表單會顯示「尚未啟用」提示。 */
-  formKey: "",
+  /* 以下兩項讀自 data/site-config.json，那個檔案不會被更新覆蓋 */
+  formKey: CONFIG.formKey || "",
+  lineUrl: CONFIG.lineUrl || "",
 };
 
 export const esc = s => String(s ?? "")
@@ -210,7 +226,8 @@ export function contactForm() {
       <p class="text-[15px] leading-[1.9] text-white/60">
         線上表單準備中。想詢問任何問題，歡迎直接來電
         <a href="${BRAND.phoneHref}" class="text-orange hover:underline">${BRAND.phone}</a>，
-        或透過 <a href="${BRAND.facebook}" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Facebook</a>
+        ${BRAND.lineUrl ? `或加 <a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">LINE</a>，` : "或透過 "}
+        <a href="${BRAND.facebook}" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Facebook</a>
         與 <a href="${BRAND.instagram}" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Instagram</a> 私訊我們。
       </p>
     </div>`;
@@ -373,6 +390,11 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+        ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>
+          LINE 諮詢
+        </a>` : ""}
         <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">看在售物件 ↗</a>
       </div>
       <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">

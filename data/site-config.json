@@ -1,0 +1,12 @@
+{
+  "_說明": "網站設定檔。這個檔案由你維護，不會被更新覆蓋。改完推上 GitHub 就會自動重新建置。",
+
+  "formKey": "",
+  "_formKey": "Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱免費取得，貼進上面的引號即可啟用頁尾聯絡表單。留空時表單會顯示「準備中」提示。",
+
+  "siteUrl": "https://twhouse416.github.io/chengguo-site",
+  "_siteUrl": "網站網址，結尾不要加斜線。之後換自訂網域時只要改這裡，全站的 canonical、sitemap、分享連結都會跟著換。",
+
+  "lineUrl": "",
+  "_lineUrl": "LINE 官方帳號連結，例如 https://lin.ee/xxxxx。填了之後頁尾會多一個綠色 LINE 按鈕。"
+}

@@ -34,6 +34,7 @@
 | `data/videos.json` | Actions 每 6 小時同步 YouTube ＋ 你在後台調整 | 影片清單清空、顯示設定遺失 |
 | `data/buyers.json` | 你在後台編輯 | 買方需求全部消失 |
 | `data/communities.json` | 你直接在 GitHub 編輯 | 社區規格與發布狀態被還原 |
+| `data/site-config.json` | 你直接在 GitHub 編輯 | 表單金鑰、網址、LINE 連結被清空 |
 | `data/community-deals.json` | Actions 自動擷取與回補 | 社區成交紀錄清空，要重跑回補 |
 
 批次上傳檔案時，**若清單中出現這兩個，請取消勾選不要上傳**。
@@ -184,6 +185,18 @@ ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
 **刊登前務必確認**：內容必須匿名化，不要出現姓名、電話、職業、公司、指定社區名稱，
 或任何可辨識特定人的描述。依個人資料保護法，刊登買方需求前應先取得買方同意。
 
+## 網站設定檔
+
+`data/site-config.json` 放三個常用設定，**這個檔案不會被更新覆蓋**：
+
+| 欄位 | 用途 |
+|---|---|
+| `formKey` | Web3Forms 金鑰，啟用頁尾聯絡表單 |
+| `siteUrl` | 網站網址。之後換自訂網域只要改這裡，全站的 canonical、sitemap、分享連結都會跟著換 |
+| `lineUrl` | LINE 官方帳號連結。填了之後頁尾會多一顆綠色 LINE 按鈕，沒填就不顯示 |
+
+改完推上 GitHub，Actions 會自動重新建置。
+
 ## 頁尾聯絡表單
 
 頁尾右側有讓客戶留下聯絡方式的表單，訊息會直接寄到你指定的信箱。
@@ -191,8 +204,10 @@ ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
 ### 啟用步驟
 
 1. 到 https://web3forms.com 輸入要收信的 Email，會拿到一組 Access Key
-2. 打開 `scripts/lib/layout.js`，找到 `formKey: ""`，把金鑰貼進引號裡
+2. 打開 **`data/site-config.json`**，把金鑰貼進 `formKey` 的引號裡
 3. 推上 GitHub，Actions 會自動重新建置
+
+**`data/site-config.json` 不會被更新覆蓋**，金鑰設定一次就好。
 
 **金鑰沒填之前**，表單位置會顯示「線上表單準備中，歡迎直接來電」，不會出現壞掉的表單。
 
