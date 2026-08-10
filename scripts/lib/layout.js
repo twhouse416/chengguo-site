@@ -20,7 +20,7 @@ export const BRAND = {
   youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
   /* Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱即可免費取得，
      金鑰貼在這裡就會生效。留空時表單會顯示「尚未啟用」提示。 */
-  formKey: "",
+  formKey: "1ed3ef7d-7db9-47d6-9648-134f82d63a7c",
 };
 
 export const esc = s => String(s ?? "")
