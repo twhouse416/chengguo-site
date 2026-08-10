@@ -1,7 +1,7 @@
 {
   "_說明": "網站設定檔。這個檔案由你維護，不會被更新覆蓋。改完推上 GitHub 就會自動重新建置。",
 
-  "formKey": "",
+  "formKey": "1ed3ef7d-7db9-47d6-9648-134f82d63a7c",
   "_formKey": "Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱免費取得，貼進上面的引號即可啟用頁尾聯絡表單。留空時表單會顯示「準備中」提示。",
 
   "siteUrl": "https://twhouse416.github.io/chengguo-site",
