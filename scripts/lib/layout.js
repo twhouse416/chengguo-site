@@ -20,7 +20,7 @@ export const BRAND = {
   youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
   /* Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱即可免費取得，
      金鑰貼在這裡就會生效。留空時表單會顯示「尚未啟用」提示。 */
-  formKey: "1ed3ef7d-7db9-47d6-9648-134f82d63a7c",
+  formKey: "",
 };
 
 export const esc = s => String(s ?? "")
@@ -241,9 +241,15 @@ export function contactForm() {
       </div>
     </div>
 
-    <div>
-      <label class="${LABEL_CLS}" for="cf-email">Email（選填）</label>
-      <input id="cf-email" name="Email" type="email" maxlength="80" class="${FIELD_CLS}" placeholder="要收書面資料再填" />
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="${LABEL_CLS}" for="cf-line">LINE ID（選填）</label>
+        <input id="cf-line" name="LINE ID" maxlength="40" class="${FIELD_CLS}" placeholder="習慣用 LINE 聯絡再填" />
+      </div>
+      <div>
+        <label class="${LABEL_CLS}" for="cf-email">Email（選填）</label>
+        <input id="cf-email" name="Email" type="email" maxlength="80" class="${FIELD_CLS}" placeholder="要收書面資料再填" />
+      </div>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-4">
@@ -297,14 +303,14 @@ export function contactForm() {
         </div>
         <div>
           <div class="font-bold text-ink mb-1">二、蒐集的個人資料類別</div>
-          <p>您於本表單主動提供的姓名或稱呼、聯絡電話、電子郵件位址，以及您所填寫的需求內容。</p>
+          <p>您於本表單主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址，以及您所填寫的需求內容。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">三、利用期間、地區、對象及方式</div>
           <p>期間：自您提供之日起，至您要求停止利用或本公司停止提供服務時止。<br />
              地區：中華民國境內。<br />
              對象：本公司及所屬經紀人員。非經您同意或法令規定，不會提供予第三人。<br />
-             方式：以電話、簡訊、電子郵件或通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
+             方式：以電話、簡訊、LINE、電子郵件或其他通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">四、您得行使的權利</div>
