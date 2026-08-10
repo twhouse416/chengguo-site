@@ -20,7 +20,7 @@ export const BRAND = {
   youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
   /* Web3Forms 存取金鑰。到 https://web3forms.com 輸入收件信箱即可免費取得，
      金鑰貼在這裡就會生效。留空時表單會顯示「尚未啟用」提示。 */
-  formKey: "1ed3ef7d-7db9-47d6-9648-134f82d63a7c",
+  formKey: "",
 };
 
 export const esc = s => String(s ?? "")
@@ -97,6 +97,9 @@ ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</scri
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  /* hidden 屬性預設是 display:none，但會被 Tailwind 的 flex/grid 等 display 類別蓋過。
+     加上這條確保 hidden 一定生效。 */
+  [hidden] { display: none !important; }
   details > summary { list-style: none; cursor: pointer; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] .faq-plus { transform: rotate(45deg); }
@@ -266,21 +269,16 @@ export function contactForm() {
         placeholder="例如：想知道美術館特區三房的行情，預算 1,500 萬左右"></textarea>
     </div>
 
-    <div class="pt-1">
-      <label class="flex gap-3 items-start cursor-pointer">
-        <input type="checkbox" id="cf-agree" required class="mt-1 accent-orange w-4 h-4 shrink-0" />
-        <span class="text-[13px] leading-[1.8] text-white/55">
-          我已閱讀並同意
-          <button type="button" id="cf-privacy-open" class="text-orange hover:underline">個資蒐集告知事項</button>
-          ，同意澄果團隊為提供不動產仲介服務與本人聯繫。
-        </span>
-      </label>
-    </div>
-
     <button type="submit" id="cf-submit"
       class="w-full inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition disabled:opacity-50">
       送出
     </button>
+
+    <p class="text-[13px] leading-[1.8] text-white/45">
+      送出前會顯示
+      <button type="button" id="cf-privacy-open" class="text-orange/80 hover:text-orange hover:underline">個資蒐集告知事項</button>
+      ，同意後才會送出。
+    </p>
 
     <p id="cf-status" class="text-[14px] leading-[1.8]" role="status" aria-live="polite"></p>
   </form>
@@ -321,11 +319,11 @@ export function contactForm() {
       <div class="mt-7 flex flex-wrap gap-3">
         <button type="button" id="cf-privacy-agree"
           class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
-          我已閱讀並同意
+          我已閱讀並同意，送出
         </button>
         <button type="button" id="cf-privacy-close"
           class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm border border-line text-ink hover:bg-paper transition">
-          關閉
+          再想一下
         </button>
       </div>
     </div>
@@ -406,16 +404,35 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
 
     var status = document.getElementById("cf-status");
     var submit = document.getElementById("cf-submit");
-    var agree = document.getElementById("cf-agree");
     var modal = document.getElementById("cf-privacy");
+    var agreed = false;          // 這次工作階段是否已同意告知事項
+    var pendingSubmit = false;   // 是否因為要看告知事項而暫停送出
 
-    /* 告知事項彈窗 */
-    function openModal() { modal.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
-    function closeModal() { modal.setAttribute("hidden", ""); document.body.style.overflow = ""; }
-    document.getElementById("cf-privacy-open").addEventListener("click", openModal);
-    document.getElementById("cf-privacy-close").addEventListener("click", closeModal);
+    function openModal(pending) {
+      pendingSubmit = !!pending;
+      modal.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      modal.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
+
+    /* 主動點連結查看：只是閱讀，不會觸發送出 */
+    document.getElementById("cf-privacy-open").addEventListener("click", function () {
+      openModal(false);
+    });
+    document.getElementById("cf-privacy-close").addEventListener("click", function () {
+      closeModal();
+      if (pendingSubmit) {
+        pendingSubmit = false;
+        say("需要同意告知事項才能送出。你也可以直接來電 ${BRAND.phone}。");
+      }
+    });
     document.getElementById("cf-privacy-agree").addEventListener("click", function () {
-      agree.checked = true; closeModal();
+      agreed = true;
+      closeModal();
+      if (pendingSubmit) { pendingSubmit = false; send(); }
     });
     modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
     document.addEventListener("keydown", function (e) {
@@ -425,6 +442,31 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
     function say(msg, ok) {
       status.textContent = msg;
       status.className = "text-[14px] leading-[1.8] " + (ok ? "text-orange" : "text-white/70");
+    }
+
+    function send() {
+      submit.disabled = true;
+      submit.textContent = "送出中…";
+      say("");
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || "送出失敗");
+          form.reset();
+          agreed = false;   /* 下一次送出仍需再次同意 */
+          say("已收到你的訊息，我們會盡快與你聯絡。急件請直接來電 ${BRAND.phone}。", true);
+          submit.textContent = "已送出";
+        })
+        .catch(function () {
+          say("送出時發生問題，請稍後再試，或直接來電 ${BRAND.phone}。");
+          submit.disabled = false;
+          submit.textContent = "送出";
+        });
     }
 
     form.addEventListener("submit", function (e) {
@@ -439,32 +481,10 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
       if (phone.replace(/[^0-9]/g, "").length < 8) {
         say("電話號碼看起來不完整，請再確認一次"); form.querySelector("#cf-phone").focus(); return;
       }
-      if (!agree.checked) { say("送出前請先閱讀並同意個資蒐集告知事項"); return; }
 
-      submit.disabled = true;
-      submit.textContent = "送出中…";
-      say("");
-
-      fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-          if (d.success) {
-            form.reset();
-            say("已收到你的訊息，我們會盡快與你聯絡。急件請直接來電 ${BRAND.phone}。", true);
-            submit.textContent = "已送出";
-          } else {
-            throw new Error(d.message || "送出失敗");
-          }
-        })
-        .catch(function () {
-          say("送出時發生問題，請稍後再試，或直接來電 ${BRAND.phone}。");
-          submit.disabled = false;
-          submit.textContent = "送出";
-        });
+      /* 資料填妥後才顯示告知事項，同意即接著送出 */
+      if (!agreed) { openModal(true); return; }
+      send();
     });
   })();
 
