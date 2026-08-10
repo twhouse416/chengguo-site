@@ -48,6 +48,9 @@
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  /* hidden 屬性預設是 display:none，但會被 Tailwind 的 flex/grid 等 display 類別蓋過。
+     加上這條確保 hidden 一定生效。 */
+  [hidden] { display: none !important; }
   details > summary { list-style: none; cursor: pointer; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] .faq-plus { transform: rotate(45deg); }
@@ -188,13 +191,28 @@
     </a>
   </div></div>
     </div>
-    <div class="md:col-span-5 md:text-right font-mono text-[13px] leading-[2] text-white/60">
-      <div class="text-white">台灣房屋 澄果團隊</div>
-      <div>澄果資產有限公司</div>
-      <div>804 高雄市鼓山區青海路416號</div>
-      <div><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></div>
+    <div class="md:col-span-5">
+      <div class="border border-white/15 rounded-sm p-7">
+      <h3 class="text-[18px] font-bold text-white mb-3">留下聯絡方式</h3>
+      <p class="text-[15px] leading-[1.9] text-white/60">
+        線上表單準備中。想詢問任何問題，歡迎直接來電
+        <a href="tel:0797669977" class="text-orange hover:underline">07-9766977</a>，
+        或透過 <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Facebook</a>
+        與 <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Instagram</a> 私訊我們。
+      </p>
+    </div>
     </div>
   </div>
+
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-6 font-mono text-[13px] text-white/55 flex flex-wrap gap-x-8 gap-y-1">
+      <span class="text-white/80">台灣房屋 澄果團隊</span>
+      <span>澄果資產有限公司</span>
+      <span>804 高雄市鼓山區青海路416號</span>
+      <span><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></span>
+    </div>
+  </div>
+
   <div class="border-t border-white/10">
     <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
       <span>© 2026 澄果資產有限公司</span>
@@ -204,6 +222,97 @@
 </footer>
 
 <script>
+  /* 聯絡表單：送到 Web3Forms，全程原生 JavaScript */
+  (function () {
+    var form = document.getElementById("contactForm");
+    if (!form) return;
+
+    var status = document.getElementById("cf-status");
+    var submit = document.getElementById("cf-submit");
+    var modal = document.getElementById("cf-privacy");
+    var agreed = false;          // 這次工作階段是否已同意告知事項
+    var pendingSubmit = false;   // 是否因為要看告知事項而暫停送出
+
+    function openModal(pending) {
+      pendingSubmit = !!pending;
+      modal.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      modal.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
+
+    /* 主動點連結查看：只是閱讀，不會觸發送出 */
+    document.getElementById("cf-privacy-open").addEventListener("click", function () {
+      openModal(false);
+    });
+    document.getElementById("cf-privacy-close").addEventListener("click", function () {
+      closeModal();
+      if (pendingSubmit) {
+        pendingSubmit = false;
+        say("需要同意告知事項才能送出。你也可以直接來電 07-9766977。");
+      }
+    });
+    document.getElementById("cf-privacy-agree").addEventListener("click", function () {
+      agreed = true;
+      closeModal();
+      if (pendingSubmit) { pendingSubmit = false; send(); }
+    });
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+    });
+
+    function say(msg, ok) {
+      status.textContent = msg;
+      status.className = "text-[14px] leading-[1.8] " + (ok ? "text-orange" : "text-white/70");
+    }
+
+    function send() {
+      submit.disabled = true;
+      submit.textContent = "送出中…";
+      say("");
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || "送出失敗");
+          form.reset();
+          agreed = false;   /* 下一次送出仍需再次同意 */
+          say("已收到你的訊息，我們會盡快與你聯絡。急件請直接來電 07-9766977。", true);
+          submit.textContent = "已送出";
+        })
+        .catch(function () {
+          say("送出時發生問題，請稍後再試，或直接來電 07-9766977。");
+          submit.disabled = false;
+          submit.textContent = "送出";
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var name = form.querySelector("#cf-name").value.trim();
+      var phone = form.querySelector("#cf-phone").value.trim();
+
+      if (!name) { say("請填寫稱呼"); form.querySelector("#cf-name").focus(); return; }
+      if (!phone) { say("請填寫聯絡電話"); form.querySelector("#cf-phone").focus(); return; }
+      /* 電話只做寬鬆檢查：市話、手機、含分機或連字號都放行 */
+      if (phone.replace(/[^0-9]/g, "").length < 8) {
+        say("電話號碼看起來不完整，請再確認一次"); form.querySelector("#cf-phone").focus(); return;
+      }
+
+      /* 資料填妥後才顯示告知事項，同意即接著送出 */
+      if (!agreed) { openModal(true); return; }
+      send();
+    });
+  })();
+
   /* 手機選單：純原生，不依賴框架 */
   (function () {
     var btn = document.getElementById("menuBtn");

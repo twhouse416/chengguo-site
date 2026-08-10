@@ -51,6 +51,9 @@
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  /* hidden 屬性預設是 display:none，但會被 Tailwind 的 flex/grid 等 display 類別蓋過。
+     加上這條確保 hidden 一定生效。 */
+  [hidden] { display: none !important; }
   details > summary { list-style: none; cursor: pointer; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] .faq-plus { transform: rotate(45deg); }
