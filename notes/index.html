@@ -310,15 +310,122 @@
     </div>
     <div class="md:col-span-5">
       <div class="border border-white/15 rounded-sm p-7">
-      <h3 class="text-[18px] font-bold text-white mb-3">留下聯絡方式</h3>
-      <p class="text-[15px] leading-[1.9] text-white/60">
-        線上表單準備中。想詢問任何問題，歡迎直接來電
-        <a href="tel:0797669977" class="text-orange hover:underline">07-9766977</a>，
-        或透過 
-        <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Facebook</a>
-        與 <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" class="text-orange hover:underline">Instagram</a> 私訊我們。
-      </p>
+  <h3 class="text-[18px] font-bold text-white">留下聯絡方式，我們回電給你</h3>
+  <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
+    不方便講電話也沒關係，填一下需求，我們會挑你方便的時段聯絡。
+  </p>
+
+  <form id="contactForm" class="mt-6 space-y-4" novalidate>
+    <input type="hidden" name="access_key" value="1ed3ef7d-7db9-47d6-9648-134f82d63a7c" />
+    <input type="hidden" name="subject" value="澄果團隊官網｜客戶諮詢" />
+    <input type="hidden" name="from_name" value="澄果團隊官網" />
+    <!-- 蜜罐欄位：機器人會填，真人看不到，用來擋垃圾訊息 -->
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-name">稱呼 <span class="text-orange">*</span></label>
+        <input id="cf-name" name="稱呼" required maxlength="30" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="王先生 / 陳小姐" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-phone">聯絡電話 <span class="text-orange">*</span></label>
+        <input id="cf-phone" name="聯絡電話" required type="tel" inputmode="tel" maxlength="20"
+          class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="09xx-xxx-xxx" />
+      </div>
     </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-line">LINE ID（選填）</label>
+        <input id="cf-line" name="LINE ID" maxlength="40" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="習慣用 LINE 聯絡再填" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-email">Email（選填）</label>
+        <input id="cf-email" name="Email" type="email" maxlength="80" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="要收書面資料再填" />
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-type">需求類型</label>
+        <select id="cf-type" name="需求類型" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="我要賣房" class="text-ink">我要賣房</option><option value="我要買房" class="text-ink">我要買房</option><option value="想先估價" class="text-ink">想先估價</option><option value="換屋規劃" class="text-ink">換屋規劃</option><option value="其他" class="text-ink">其他</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-time">方便聯絡的時段</label>
+        <select id="cf-time" name="方便聯絡時段" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="都可以" class="text-ink">都可以</option><option value="上午 9-12 點" class="text-ink">上午 9-12 點</option><option value="下午 1-6 點" class="text-ink">下午 1-6 點</option><option value="晚上 6-9 點" class="text-ink">晚上 6-9 點</option><option value="假日" class="text-ink">假日</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-msg">想詢問的內容</label>
+      <textarea id="cf-msg" name="詢問內容" rows="3" maxlength="500" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition"
+        placeholder="例如：想知道美術館特區三房的行情，預算 1,500 萬左右"></textarea>
+    </div>
+
+    <button type="submit" id="cf-submit"
+      class="w-full inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition disabled:opacity-50">
+      送出
+    </button>
+
+    <p class="text-[13px] leading-[1.8] text-white/45">
+      送出前會顯示
+      <button type="button" id="cf-privacy-open" class="text-orange/80 hover:text-orange hover:underline">個資蒐集告知事項</button>
+      ，同意後才會送出。
+    </p>
+
+    <p id="cf-status" class="text-[14px] leading-[1.8]" role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<!-- 個資告知事項 -->
+<div id="cf-privacy" hidden class="fixed inset-0 z-[110] bg-ink/90 flex items-center justify-center p-4 md:p-10">
+  <div class="bg-surface text-ink rounded-sm max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+    <div class="p-8">
+      <h3 class="display text-[20px] mb-5">個人資料蒐集、處理及利用告知事項</h3>
+      <div class="space-y-4 text-[15px] leading-[1.9] text-inkSoft">
+        <p>依《個人資料保護法》第 8 條規定，澄果資產有限公司（以下稱本公司）於蒐集您的個人資料前，謹告知下列事項：</p>
+        <div>
+          <div class="font-bold text-ink mb-1">一、蒐集目的</div>
+          <p>不動產仲介服務、客戶管理與服務、行銷業務聯繫，以及回覆您的諮詢需求。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">二、蒐集的個人資料類別</div>
+          <p>您於本表單主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址，以及您所填寫的需求內容。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">三、利用期間、地區、對象及方式</div>
+          <p>期間：自您提供之日起，至您要求停止利用或本公司停止提供服務時止。<br />
+             地區：中華民國境內。<br />
+             對象：本公司及所屬經紀人員。非經您同意或法令規定，不會提供予第三人。<br />
+             方式：以電話、簡訊、LINE、電子郵件或其他通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">四、您得行使的權利</div>
+          <p>依個資法第 3 條，您得向本公司請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用，或請求刪除您的個人資料。
+             請來電 <a href="tel:0797669977" class="text-orangeDeep hover:underline">07-9766977</a> 或親洽本公司辦理。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">五、不提供個人資料的影響</div>
+          <p>本表單為選擇性填寫。若不提供聯絡方式，本公司將無法與您聯繫或提供相關服務，但不影響您以電話等其他方式洽詢。</p>
+        </div>
+      </div>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <button type="button" id="cf-privacy-agree"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+          我已閱讀並同意，送出
+        </button>
+        <button type="button" id="cf-privacy-close"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm border border-line text-ink hover:bg-paper transition">
+          再想一下
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   </div>
 
