@@ -1,7 +1,37 @@
 {
-  "updatedAt": "2026-08-10T00:03:24.562Z",
+  "updatedAt": "2026-08-11T00:06:08.816Z",
   "deals": {
     "meishu-baitiane": [
+      {
+        "date": "2026-06-19",
+        "floor": "四層",
+        "totalFloor": "二十四層",
+        "ping": 29.61,
+        "unitPrice": 33.1,
+        "totalPrice": 980,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東四路６９６號四樓之６",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
+        "date": "2026-05-21",
+        "floor": "二十一層",
+        "totalFloor": "二十四層",
+        "ping": 29.09,
+        "unitPrice": 36.8,
+        "totalPrice": 1070,
+        "layout": "0房0廳0衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東四路６９２號二十一樓之６",
+        "project": "",
+        "unit": "",
+        "note": "本標的有一間衛浴。"
+      },
       {
         "date": "2026-05-06",
         "floor": "九層",
@@ -4470,36 +4500,6 @@
         "unit": "",
         "addr": "高雄市鼓山區美術東四路６９０號二十二樓之３",
         "note": "預售屋、或土地及建物分件登記案件；"
-      },
-      {
-        "date": "2022-01-13",
-        "floor": "十三層",
-        "totalFloor": "二十四層",
-        "ping": 46.05,
-        "unitPrice": 35.7,
-        "totalPrice": 1615,
-        "layout": "3房2廳2衛",
-        "parking": "坡道平面",
-        "kind": "成屋",
-        "project": "",
-        "unit": "",
-        "addr": "高雄市鼓山區美術東四路６９８號十三樓之７",
-        "note": "預售屋、或土地及建物分件登記案件；"
-      },
-      {
-        "date": "2022-01-12",
-        "floor": "十九層",
-        "totalFloor": "二十四層",
-        "ping": 46.19,
-        "unitPrice": 36.6,
-        "totalPrice": 1650,
-        "layout": "3房2廳2衛",
-        "parking": "坡道平面",
-        "kind": "成屋",
-        "project": "",
-        "unit": "",
-        "addr": "高雄市鼓山區美術東四路６９６號十九樓",
-        "note": "112.09.02簽訂房地預約買賣契約書更名讓渡，交易總價不變預售屋、或土地及建"
       }
     ],
     "meishu-1hao-yuan": [
@@ -5785,6 +5785,21 @@
         "note": ""
       },
       {
+        "date": "2026-03-22",
+        "floor": "八層",
+        "totalFloor": "十五層",
+        "ping": 26.01,
+        "unitPrice": 36.5,
+        "totalPrice": 950,
+        "layout": "2房2廳1衛",
+        "parking": "",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東四路２２２號八樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2025-11-29",
         "floor": "十層",
         "totalFloor": "十五層",
@@ -6855,6 +6870,21 @@
       }
     ],
     "milo": [
+      {
+        "date": "2026-05-11",
+        "floor": "七層",
+        "totalFloor": "十四層",
+        "ping": 24.61,
+        "unitPrice": 34.5,
+        "totalPrice": 850,
+        "layout": "2房2廳1衛",
+        "parking": "",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東八街１０２號七樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2025-11-21",
         "floor": "十四層",
