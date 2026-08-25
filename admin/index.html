@@ -128,45 +128,125 @@ function safeFileName(name) {
 
 /* 把貼進來的長文自動拆成區塊：
    【標題】或「一、」開頭 → 小標；短行且以冒號結尾 → 小標；其餘為段落 */
-function parseLongText(raw) {
+/* 貼上的長文通常夾雜平台介面文字，先清掉再解析 */
+const NOISE = [
+  /^發[佈布]時間[：:]/, /^更新時間[：:]/, /^閱讀時間[：:]/,
+  /^瀏覽(次數|人次)?[：:]?\s*\d/, /^分享$/, /^留言$/, /^收藏$/, /^追蹤$/,
+  /^複製連結$/, /^上一篇/, /^下一篇/, /^相關文章$/, /^延伸閱讀$/,
+  /^\d+\s*(則留言|人追蹤|次瀏覽)/, /^R\.?TUBE/i, /^Copyright/i, /^©/,
+];
+const isNoise = line => NOISE.some(re => re.test(line));
+
+/* 平台的按鈕文字常擠在同一行（例如「分享 留言 收藏」），先切開再濾 */
+const INLINE_NOISE = ["分享", "留言", "收藏", "追蹤", "按讚", "複製連結", "檢舉"];
+function stripInlineNoise(line) {
+  const parts = line.split(/[\s|｜·・]+/).filter(Boolean);
+  if (parts.length >= 2 && parts.every(t => INLINE_NOISE.includes(t))) return "";
+  return line;
+}
+
+/* 把貼上的長文拆成標題、摘要、內文區塊、FAQ、關鍵字 */
+function parseLongText(raw, opts = {}) {
   const lines = String(raw || "")
     .replace(/\r/g, "")
     .split(/\n+/)
     .map(l => l.trim())
-    .filter(Boolean);
+    .map(stripInlineNoise)
+    .filter(Boolean)
+    .filter(l => !isNoise(l));
+
+  /* 抽出 hashtag 當關鍵字，並從內文移除那幾行 */
+  const keywords = [];
+  const body = [];
+  lines.forEach(line => {
+    const tags = line.match(/#[\u4e00-\u9fff\w]{2,20}/g);
+    if (tags && tags.join("").length > line.length * 0.5) {
+      /* 整行幾乎都是 hashtag，視為標籤行 */
+      tags.forEach(t => { const k = t.slice(1); if (!keywords.includes(k)) keywords.push(k); });
+      return;
+    }
+    if (tags) tags.forEach(t => { const k = t.slice(1); if (!keywords.includes(k)) keywords.push(k); });
+    body.push(line.replace(/#[\u4e00-\u9fff\w]{2,20}/g, "").trim());
+  });
+  const clean = body.filter(Boolean);
+
+  /* 第一行若像標題（夠短、沒有句號結尾），拿來當標題 */
+  let title = "";
+  let startIdx = 0;
+  if (opts.detectTitle && clean.length) {
+    const first = clean[0];
+    if (first.length <= 45 && !/[。]$/.test(first)) {
+      title = first.replace(/^【(.+?)】$/, "$1");
+      startIdx = 1;
+    }
+  }
 
   const blocks = [];
+  const faq = [];
   let buffer = [];
+  let pendingQ = null;
 
   const flush = () => {
     if (buffer.length) { blocks.push({ type: "p", text: buffer.join("\n") }); buffer = []; }
   };
 
-  lines.forEach(line => {
+  for (let i = startIdx; i < clean.length; i++) {
+    const line = clean[i];
+
+    /* Q：問題 / A：回答 → 收進 FAQ */
+    const q = line.match(/^Q\s*[：:.\d]*\s*(.+)$/i);
+    const a = line.match(/^A\s*[：:.\d]*\s*(.+)$/i);
+    if (q && q[1].length > 4) { flush(); pendingQ = q[1].trim(); continue; }
+    if (a && pendingQ) { faq.push([pendingQ, a[1].trim()]); pendingQ = null; continue; }
+    if (pendingQ && !a) {
+      /* 問題的下一行就是答案（沒寫 A：） */
+      faq.push([pendingQ, line]); pendingQ = null; continue;
+    }
+
     const bracket = line.match(/^【(.+?)】\s*(.*)$/);
     const numbered = /^[一二三四五六七八九十]+[、.]/.test(line) && line.length < 30;
     const shortHead = line.length < 24 && /[:：]$/.test(line);
+    const markdownH = line.match(/^#{2,4}\s*(.+)$/);
 
     if (bracket) {
       flush();
       blocks.push({ type: "h", text: bracket[1].trim() });
       if (bracket[2]) buffer.push(bracket[2].trim());
+    } else if (markdownH) {
+      flush();
+      blocks.push({ type: "h", text: markdownH[1].trim() });
     } else if (numbered || shortHead) {
       flush();
       blocks.push({ type: "h", text: line.replace(/[:：]$/, "") });
-    } else if (/^[-・･•‧]\s*/.test(line)) {
-      // 條列項目：連續的收在一起
+    } else if (/^[-－・･•‧●◆▍✓✔]\s*/.test(line)) {
       const last = blocks[blocks.length - 1];
-      const item = line.replace(/^[-・･•‧]\s*/, "");
+      const item = line.replace(/^[-－・･•‧●◆▍✓✔]\s*/, "");
+      if (buffer.length) flush();
+      if (last && last.type === "list") last.items.push(item);
+      else blocks.push({ type: "list", items: [item] });
+    } else if (/^\d+[.、)]\s*/.test(line) && line.length < 60) {
+      const last = blocks[blocks.length - 1];
+      const item = line.replace(/^\d+[.、)]\s*/, "");
       if (buffer.length) flush();
       if (last && last.type === "list") last.items.push(item);
       else blocks.push({ type: "list", items: [item] });
     } else {
       buffer.push(line);
     }
-  });
+  }
   flush();
-  return blocks.length ? blocks : [{ type: "p", text: raw }];
+
+  /* 摘要：取第一個夠長的段落，前 90 字 */
+  const firstP = blocks.find(b => b.type === "p" && b.text.replace(/\n/g, "").length > 20);
+  const summary = firstP ? firstP.text.replace(/\n/g, "").slice(0, 90) : "";
+
+  return {
+    title,
+    summary,
+    keywords: keywords.slice(0, 10),
+    faq,
+    blocks: blocks.length ? blocks : [{ type: "p", text: raw }],
+  };
 }
 
 /* ---- 自動備份：發布或下載前先存一份到瀏覽器，最多保留 10 份 ---- */
@@ -1907,9 +1987,11 @@ function App() {
                 </summary>
                 <div className="px-5 pb-5">
                   <p className="text-[14px] text-inkSoft leading-[1.9] mb-3">
-                    從 Word、記事本或其他地方複製整篇文章貼進來，會依換行自動拆成段落。
-                    用【】框起來的、或以「一、」開頭的短行會變成小標，以「‧」開頭的會變成條列。
-                    拆完之後可以再逐一調整。
+                    從 R.TUBE、Word、記事本或其他地方複製整篇文章貼進來，會自動整理成：
+                    <strong className="text-ink">段落、小標、條列</strong>，並順便抓出
+                    <strong className="text-ink">標題、摘要、#關鍵字、Q&amp;A 問答</strong>。
+                    平台的介面文字（發佈時間、分享、留言等）會自動略過。
+                    已經填過的標題與摘要不會被覆蓋，拆完之後可以再逐一調整。
                   </p>
                   <textarea rows={8} className={inputCls} value={bulkText}
                     placeholder="把整篇文章貼在這裡…"
@@ -1918,21 +2000,45 @@ function App() {
                     <Btn size="sm"
                       onClick={() => {
                         if (!bulkText.trim()) { flash("fail", "請先貼上內容"); return; }
-                        const nb = parseLongText(bulkText);
-                        setDraft({ ...draftArticle, blocks: [...draftArticle.blocks, ...nb] });
+                        const r = parseLongText(bulkText, { detectTitle: !draftArticle.title.trim() });
+                        const patch = { ...draftArticle, blocks: [...draftArticle.blocks, ...r.blocks] };
+                        const got = [];
+                        if (r.title && !patch.title.trim()) { patch.title = r.title; got.push("標題"); }
+                        if (r.summary && !patch.summary.trim()) { patch.summary = r.summary; got.push("摘要"); }
+                        if (r.keywords.length) {
+                          const merged = [...new Set([...(patch.keywords || []), ...r.keywords])];
+                          patch.keywords = merged; got.push(`${r.keywords.length} 個關鍵字`);
+                        }
+                        if (r.faq.length) {
+                          patch.faq = [...(patch.faq || []), ...r.faq.map(([q, a]) => ({ q, a }))];
+                          got.push(`${r.faq.length} 題 FAQ`);
+                        }
+                        setDraft(patch);
                         setBulkText("");
-                        flash("pass", `已加入 ${nb.length} 個區塊`);
+                        flash("pass", `已加入 ${r.blocks.length} 個區塊` + (got.length ? `，並自動填入${got.join("、")}` : ""));
                       }}>
                       加到文章末尾
                     </Btn>
                     <Btn size="sm" variant="outline"
                       onClick={() => {
                         if (!bulkText.trim()) { flash("fail", "請先貼上內容"); return; }
-                        if (!confirm("這會取代目前所有內文區塊，確定嗎？")) return;
-                        const nb = parseLongText(bulkText);
-                        setDraft({ ...draftArticle, blocks: nb });
+                        if (!confirm("這會取代目前所有內文區塊，確定嗎？\n（標題、摘要、關鍵字若已填寫則會保留）")) return;
+                        const r = parseLongText(bulkText, { detectTitle: !draftArticle.title.trim() });
+                        const patch = { ...draftArticle, blocks: r.blocks };
+                        const got = [];
+                        if (r.title && !patch.title.trim()) { patch.title = r.title; got.push("標題"); }
+                        if (r.summary && !patch.summary.trim()) { patch.summary = r.summary; got.push("摘要"); }
+                        if (r.keywords.length) {
+                          patch.keywords = [...new Set([...(patch.keywords || []), ...r.keywords])];
+                          got.push(`${r.keywords.length} 個關鍵字`);
+                        }
+                        if (r.faq.length) {
+                          patch.faq = [...(patch.faq || []), ...r.faq.map(([q, a]) => ({ q, a }))];
+                          got.push(`${r.faq.length} 題 FAQ`);
+                        }
+                        setDraft(patch);
                         setBulkText("");
-                        flash("pass", `已取代為 ${nb.length} 個區塊`);
+                        flash("pass", `已取代為 ${r.blocks.length} 個區塊` + (got.length ? `，並自動填入${got.join("、")}` : ""));
                       }}>
                       取代全部內容
                     </Btn>
