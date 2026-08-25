@@ -1394,7 +1394,7 @@ function App() {
               <div>
                 <h1 className="display text-[26px]">賀成交</h1>
                 <p className="text-[15px] text-inkSoft mt-2">
-                  首頁顯示最新 3 筆，全部成交紀錄另有獨立頁面。新增的會排在最前面。
+                  首頁顯示最新 6 筆，全部成交紀錄另有獨立頁面。新增的會排在最前面。
                 </p>
               </div>
               <div className="flex gap-2">
@@ -1434,7 +1434,7 @@ function App() {
                         <div className="flex items-center justify-between mb-5">
                           <span className="font-mono text-[13px] text-orangeDeep">
                             {String(i + 1).padStart(2, "0")}
-                            {i < 3 && !d.hidden && <span className="text-inkFaint ml-2">顯示在首頁</span>}
+                            {i < 6 && !d.hidden && <span className="text-inkFaint ml-2">顯示在首頁</span>}
                           </span>
                           <div className="flex items-center gap-3">
                             <label className="flex gap-2 items-center cursor-pointer text-[14px] text-inkSoft">

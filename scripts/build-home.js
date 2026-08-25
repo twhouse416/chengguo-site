@@ -433,13 +433,13 @@ function dealsSection(dealsData) {
   const all = (dealsData?.deals || []).filter(d => !d.hidden && d.img);
   if (!all.length) return "";
 
-  const shown = all.slice(0, 3);
+  const shown = all.slice(0, 6);
   const more = all.length - shown.length;
 
   return `<section id="deals" class="bg-surface border-t border-line">
   <div class="max-w-6xl mx-auto px-6 py-20">
     ${sectionHead("Closed", "賀成交", dealsData.intro || "")}
-    <div class="grid md:grid-cols-3 gap-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
       ${shown.map(d => dealCard(d)).join("\n      ")}
     </div>
     ${more > 0 ? `<div class="mt-12">
@@ -457,7 +457,7 @@ export function dealCard(d, depth = 0) {
   const title = [d.community, d.caption].filter(Boolean).join("　");
   return `<figure>
     <img src="${up}${esc(d.img)}" alt="${esc(d.area)} ${esc(title)} 成交" loading="lazy"
-      class="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
+      class="w-full h-auto rounded-sm border border-line bg-paper" />
     <figcaption class="mt-4">
       <div class="font-mono text-[11px] tracking-wider text-inkFaint">
         ${esc(d.area)}${d.date ? `・${esc(d.date)}` : ""}

@@ -305,7 +305,7 @@ export function buildDealsIndex({ deals, hasBuyers }) {
   <section class="mt-12">
     <h2 class="display text-[20px] mb-1">${esc(area)}</h2>
     <p class="font-mono text-[13px] text-inkFaint mb-6">${byArea[area].length} 筆</p>
-    <div class="grid md:grid-cols-3 gap-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
       ${byArea[area].map(d => dealCard(d, 1)).join("\n      ")}
     </div>
   </section>`).join("")}
