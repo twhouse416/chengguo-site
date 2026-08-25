@@ -74,12 +74,6 @@ const TOOLS = [
   { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: "tools/property-tax/index.html", illus: "tax" },
 ];
 
-const DEALS = [
-  { img: "assets/deal-01.jpg", area: "美術館特區", caption: "白天鵝　高樓層景觀三房平車" },
-  { img: "assets/deal-02.jpg", area: "成交實績", caption: "輕屋齡面公園雙車墅" },
-  { img: "assets/deal-03.jpg", area: "美術館特區", caption: "白天鵝　美裝平車" },
-];
-
 export const FAQS = [
   ["高雄美術館特區的房仲該怎麼挑？",
    "建議看三件事：是不是真的長期在這個商圈成交、能不能提出同社區的實際成交比對、以及願不願意誠實說明物件的缺點。澄果團隊深耕高雄美術館特區與農十六特區十年以上，截至 115 年 7 月，約 58% 的成交業績來自這兩大商圈。"],
@@ -435,21 +429,42 @@ function toolsSection() {
 </section>`;
 }
 
-function dealsSection() {
+function dealsSection(dealsData) {
+  const all = (dealsData?.deals || []).filter(d => !d.hidden && d.img);
+  if (!all.length) return "";
+
+  const shown = all.slice(0, 3);
+  const more = all.length - shown.length;
+
   return `<section id="deals" class="bg-surface border-t border-line">
   <div class="max-w-6xl mx-auto px-6 py-20">
-    ${sectionHead("Closed", "賀成交", "感謝每一組信任澄果團隊的屋主與買方。")}
+    ${sectionHead("Closed", "賀成交", dealsData.intro || "")}
     <div class="grid md:grid-cols-3 gap-6">
-      ${DEALS.map(d => `<figure>
-        <img src="${d.img}" alt="${esc(d.area)} ${esc(d.caption)} 成交" loading="lazy"
-          class="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
-        <figcaption class="mt-4">
-          <div class="font-mono text-[11px] tracking-wider text-inkFaint">${esc(d.area)}</div>
-          <div class="text-[14px] text-ink mt-1">${esc(d.caption)}</div>
-        </figcaption></figure>`).join("\n      ")}
+      ${shown.map(d => dealCard(d)).join("\n      ")}
     </div>
+    ${more > 0 ? `<div class="mt-12">
+      <a href="deals/index.html" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-white transition">
+        看全部 ${all.length} 筆成交紀錄
+      </a>
+    </div>` : ""}
   </div>
 </section>`;
+}
+
+/* 單張成交卡片，首頁與賀成交列表共用 */
+export function dealCard(d, depth = 0) {
+  const up = "../".repeat(depth);
+  const title = [d.community, d.caption].filter(Boolean).join("　");
+  return `<figure>
+    <img src="${up}${esc(d.img)}" alt="${esc(d.area)} ${esc(title)} 成交" loading="lazy"
+      class="w-full aspect-[3/2] object-cover rounded-sm border border-line" />
+    <figcaption class="mt-4">
+      <div class="font-mono text-[11px] tracking-wider text-inkFaint">
+        ${esc(d.area)}${d.date ? `・${esc(d.date)}` : ""}
+      </div>
+      <div class="text-[14px] text-ink mt-1">${esc(title)}</div>
+    </figcaption>
+  </figure>`;
 }
 
 function buyersSection(buyersData) {
@@ -503,7 +518,7 @@ function faqSection() {
 }
 
 /* ================= 組裝 ================= */
-export function buildHome({ market, articles, buyers, videos }) {
+export function buildHome({ market, articles, buyers, videos, deals }) {
   const hasBuyers = (buyers?.buyers || []).some(b => !b.hidden);
   const visibleVideos = (videos?.videos || []).filter(v => !v.hidden);
   const heroVideo = videos?.heroVideoId
@@ -570,7 +585,7 @@ export function buildHome({ market, articles, buyers, videos }) {
     aboutSection(),
     articlesSection(articles),
     toolsSection(),
-    dealsSection(),
+    dealsSection(deals),
     buyersSection(buyers),
     faqSection(),
     "</main>",

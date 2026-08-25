@@ -59,6 +59,8 @@ const DATA_PATH = "data/articles.json";
 const VIDEO_PATH = "data/videos.json";
 const BUYER_PATH = "data/buyers.json";
 const COMMUNITY_PATH = "data/communities.json";
+const DEALS_PATH = "data/deals.json";
+const DEALS_IMG_DIR = "assets/deals";
 
 /* ---------- 工具 ---------- */
 const todayStr = () => new Date().toISOString().slice(0, 10);
@@ -627,6 +629,8 @@ function App() {
   const [cDraft, setCDraft] = useState(null);      // 編輯中的社區
   const [cDeals, setCDeals] = useState(null);      // 成交筆數（唯讀，供參考）
   const cFileRef = useRef(null);
+  const [ddata, setDdata] = useState(null);
+  const [dBusy, setDBusy] = useState(false);
   const [showBackups, setShowBackups] = useState(false);
   const fileRef = useRef(null);
 
@@ -739,6 +743,7 @@ function App() {
     loadBuyers(tk, repo.trim());
     loadCommunities(tk, repo.trim());
     loadCommunityDeals();
+    loadDeals(tk, repo.trim());
   }, []);
 
   const flash = (type, text) => { setMsg({ type, text }); setTimeout(() => setMsg(null), 6000); };
@@ -858,6 +863,78 @@ function App() {
     }
     flash("pass", `圖片已上傳（${w}×${h}，${Math.round(blob.size/1024)} KB）`);
     return path;
+  };
+
+  const loadDeals = async (tk, rp) => {
+    if (tk && rp) {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${rp}/contents/${DEALS_PATH}`, {
+          headers: { Authorization: `Bearer ${tk}`, Accept: "application/vnd.github+json" },
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const j = await res.json();
+          setDdata(JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g, ""))))));
+          return;
+        }
+      } catch {}
+    }
+    try {
+      const r = await fetch(`../data/deals.json?t=${Date.now()}`, { cache: "no-store" });
+      if (r.ok) setDdata(await r.json());
+    } catch {}
+  };
+
+  const publishDeals = async () => {
+    if (!token.trim()) { flash("fail", "要儲存需要先填入 GitHub 權杖"); return; }
+    setDBusy(true);
+    try {
+      const api = `https://api.github.com/repos/${repo.trim()}/contents/${DEALS_PATH}`;
+      const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
+      const getRes = await fetch(api, { headers, cache: "no-store" });
+      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      const cur = await getRes.json();
+      const putRes = await fetch(api, {
+        method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `更新賀成交 ${todayStr()}`,
+          content: toBase64(JSON.stringify(ddata, null, 2) + "\n"),
+          sha: cur.sha,
+        }),
+      });
+      if (!putRes.ok) {
+        const err = await putRes.json().catch(() => ({}));
+        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
+      }
+      flash("pass", "賀成交已儲存，網站約 1–2 分鐘後更新。");
+    } catch (e) { flash("fail", e.message || String(e)); }
+    finally { setDBusy(false); }
+  };
+
+  /* 上傳賀成交圖片到 assets/deals/ */
+  const uploadDealImage = async file => {
+    if (!token.trim()) {
+      throw new Error("上傳圖片需要先在「發布設定」填入 GitHub 權杖。");
+    }
+    const { blob, w, h } = await compressImage(file, 1400, 0.85);
+    const name = safeFileName(file.name);
+    const filePath = `${DEALS_IMG_DIR}/${name}`;
+    const content = await blobToBase64(blob);
+    const res = await fetch(`https://api.github.com/repos/${repo.trim()}/contents/${filePath}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token.trim()}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: `上傳賀成交圖片 ${name}`, content }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(`上傳失敗（${res.status}）${err.message ? "：" + err.message : ""}`);
+    }
+    flash("pass", `圖片已上傳（${w}×${h}，${Math.round(blob.size / 1024)} KB）`);
+    return filePath;
   };
 
   const publishCommunities = async () => {
@@ -1067,7 +1144,7 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-1 mr-auto ml-8">
-            {[["articles","文章"],["videos","影片"],["buyers","買方需求"],["communities","社區"]].map(([k,label]) => (
+            {[["articles","文章"],["videos","影片"],["deals","賀成交"],["buyers","買方需求"],["communities","社區"]].map(([k,label]) => (
               <button key={k} onClick={() => setTab(k)}
                 className={`px-4 py-2 text-[14px] rounded-sm transition ${
                   tab===k ? "bg-ink text-white" : "text-inkSoft hover:text-ink"}`}>
@@ -1304,6 +1381,121 @@ function App() {
                 </div>
                 <p className="text-[14px] text-inkFaint leading-relaxed mt-4">
                   這裡的修改要按「儲存設定」才會寫回網站。自動同步時不會覆蓋你的設定。
+                </p>
+              </>
+            )}
+          </>
+        )}
+
+        {/* ============ 賀成交分頁 ============ */}
+        {tab === "deals" && (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div>
+                <h1 className="display text-[26px]">賀成交</h1>
+                <p className="text-[15px] text-inkSoft mt-2">
+                  首頁顯示最新 3 筆，全部成交紀錄另有獨立頁面。新增的會排在最前面。
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Btn variant="outline" size="sm" onClick={() => loadDeals(token.trim(), repo.trim())}>重新載入</Btn>
+                <Btn onClick={publishDeals} disabled={dBusy}>{dBusy ? "儲存中…" : "儲存並發布"}</Btn>
+              </div>
+            </div>
+
+            {!ddata && <p className="font-mono text-[13px] text-inkFaint">讀取中…</p>}
+
+            {ddata && (
+              <>
+                <div className="bg-surface border border-line rounded-sm p-6 mb-6">
+                  <Label hint="顯示在賀成交區塊標題下方">開場說明</Label>
+                  <input className={inputCls} value={ddata.intro || ""}
+                    onChange={e => setDdata({ ...ddata, intro: e.target.value })} />
+                </div>
+
+                <Btn variant="outline"
+                  onClick={() => setDdata({
+                    ...ddata,
+                    deals: [{ id: `d-${Date.now()}`, img: "", area: "美術館特區", community: "", caption: "", hidden: false },
+                            ...(ddata.deals || [])],
+                  })}>
+                  ＋ 新增成交
+                </Btn>
+
+                <div className="space-y-4 mt-6">
+                  {(ddata.deals || []).map((d, i) => {
+                    const upd = patch => {
+                      const list = [...ddata.deals]; list[i] = { ...d, ...patch };
+                      setDdata({ ...ddata, deals: list });
+                    };
+                    return (
+                      <div key={d.id || i}
+                        className={`bg-surface border border-line rounded-sm p-6 ${d.hidden ? "opacity-60" : ""}`}>
+                        <div className="flex items-center justify-between mb-5">
+                          <span className="font-mono text-[13px] text-orangeDeep">
+                            {String(i + 1).padStart(2, "0")}
+                            {i < 3 && !d.hidden && <span className="text-inkFaint ml-2">顯示在首頁</span>}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            <label className="flex gap-2 items-center cursor-pointer text-[14px] text-inkSoft">
+                              <input type="checkbox" checked={!!d.hidden}
+                                onChange={e => upd({ hidden: e.target.checked })} />
+                              暫時隱藏
+                            </label>
+                            <Btn size="sm" variant="outline" disabled={i === 0}
+                              onClick={() => {
+                                const list = [...ddata.deals];
+                                [list[i - 1], list[i]] = [list[i], list[i - 1]];
+                                setDdata({ ...ddata, deals: list });
+                              }}>↑</Btn>
+                            <Btn size="sm" variant="danger"
+                              onClick={() => {
+                                if (!confirm("確定刪除這筆成交？")) return;
+                                setDdata({ ...ddata, deals: ddata.deals.filter((_, j) => j !== i) });
+                              }}>刪除</Btn>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <ImagePicker src={d.img} uploader={uploadDealImage} label="賀成交圖片"
+                            onPick={v => upd({ img: v })} />
+
+                          <div className="space-y-4">
+                            <div>
+                              <Label>區域</Label>
+                              <select className={inputCls} value={d.area || ""}
+                                onChange={e => upd({ area: e.target.value })}>
+                                {["美術館特區", "農十六特區", "瑞豐巨蛋", "中都重劃區", "其他區域"]
+                                  .map(a => <option key={a}>{a}</option>)}
+                              </select>
+                            </div>
+                            <div>
+                              <Label hint="沒有或不方便公開可留空">社區名稱</Label>
+                              <input className={inputCls} value={d.community || ""}
+                                placeholder="白天鵝" onChange={e => upd({ community: e.target.value })} />
+                            </div>
+                            <div>
+                              <Label hint="物件特色，例如：高樓層景觀三房平車">說明</Label>
+                              <input className={inputCls} value={d.caption || ""}
+                                placeholder="高樓層景觀三房平車" onChange={e => upd({ caption: e.target.value })} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(ddata.deals || []).length === 0 && (
+                    <div className="bg-surface border border-line rounded-sm p-8 text-[15px] text-inkSoft">
+                      還沒有成交紀錄，按上方「＋ 新增成交」開始。
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Btn onClick={publishDeals} disabled={dBusy}>{dBusy ? "儲存中…" : "儲存並發布"}</Btn>
+                </div>
+                <p className="text-[14px] text-inkFaint leading-relaxed mt-4">
+                  沒有任何成交紀錄時，首頁與獨立頁面都不會顯示。圖片會自動壓縮後上傳到 assets/deals/。
                 </p>
               </>
             )}

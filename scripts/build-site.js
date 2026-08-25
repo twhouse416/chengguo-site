@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 
 import { SITE } from "./lib/layout.js";
 import { buildHome } from "./build-home.js";
-import { buildNotesIndex, buildVideosIndex } from "./build-pages.js";
+import { buildNotesIndex, buildVideosIndex, buildDealsIndex } from "./build-pages.js";
 import { buildArticles } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
@@ -41,7 +41,7 @@ function readJson(rel, fallback) {
   }
 }
 
-function buildSitemap(articles, communities = []) {
+function buildSitemap(articles, communities = [], hasDeals = false) {
   const today = new Date().toISOString().slice(0, 10);
   const pages = [
     { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
@@ -51,6 +51,7 @@ function buildSitemap(articles, communities = []) {
     { loc: `${SITE}/tools/mortgage/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/qingan/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/property-tax/`, priority: "0.7", freq: "monthly" },
+    ...(hasDeals ? [{ loc: `${SITE}/deals/`, priority: "0.7", freq: "weekly" }] : []),
     ...(communities.length ? [{ loc: `${SITE}/communities/`, priority: "0.8", freq: "weekly" }] : []),
     ...communities.map(c => ({
       loc: `${SITE}/communities/${c.slug}.html`,
@@ -82,13 +83,14 @@ function main() {
   const articlesData = readJson("data/articles.json", { articles: [] });
   const buyers = readJson("data/buyers.json", { buyers: [] });
   const videos = readJson("data/videos.json", { videos: [] });
+  const deals = readJson("data/deals.json", { deals: [] });
 
   const articles = (articlesData.articles || []).filter(a => !a.draft);
   const hasBuyers = (buyers.buyers || []).some(b => !b.hidden);
 
   /* 首頁 */
   writeFileSync(path.join(ROOT, "index.html"),
-    buildHome({ market, articles, buyers, videos }), "utf-8");
+    buildHome({ market, articles, buyers, videos, deals }), "utf-8");
   console.log("[產生] index.html");
 
   /* 文章列表 */
@@ -106,6 +108,15 @@ function main() {
     buildVideosIndex({ videos, hasBuyers }), "utf-8");
   console.log("[產生] videos/index.html");
 
+  /* 賀成交 */
+  const dealCount = (deals.deals || []).filter(d => !d.hidden && d.img).length;
+  if (dealCount > 0) {
+    mkdirSync(path.join(ROOT, "deals"), { recursive: true });
+    writeFileSync(path.join(ROOT, "deals/index.html"),
+      buildDealsIndex({ deals, hasBuyers }), "utf-8");
+    console.log("[產生] deals/index.html");
+  }
+
   /* 試算工具 */
   buildTools(hasBuyers);
 
@@ -113,9 +124,9 @@ function main() {
   const communities = buildCommunities(hasBuyers);
 
   /* 網站地圖 */
-  buildSitemap(articles, communities);
+  buildSitemap(articles, communities, dealCount > 0);
 
-  console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、買方需求 ${hasBuyers ? "有" : "無"}`);
+  console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、賀成交 ${dealCount} 筆、買方需求 ${hasBuyers ? "有" : "無"}`);
 }
 
 main();

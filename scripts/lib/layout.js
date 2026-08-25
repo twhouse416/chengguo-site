@@ -197,7 +197,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
     style="max-height:calc(100vh - 68px)">
     <div class="px-6 py-4">
       <nav class="grid grid-cols-2 gap-x-4">
-        ${[...nav, [`${home}#about`, "關於團隊"], [`${home}#deals`, "近期成交"]]
+        ${[...nav, [`${home}#about`, "關於團隊"], [`${up}deals/index.html`, "近期成交"]]
           .map(([h, l]) => `<a href="${h}" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">${l}</a>`).join("\n        ")}
       </nav>
       <div class="py-3">${listingLink}</div>
@@ -362,7 +362,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
   const links = [
     [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${home}#about`, "關於團隊"],
     [`${home}#tools`, "試算工具"], [`${up}notes/index.html`, "知識文章"], [`${up}videos/index.html`, "影片"],
-    [`${home}#deals`, "近期成交"],
+    [`${up}deals/index.html`, "近期成交"],
     ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
     [`${home}#faq`, "常見問題"],
   ];

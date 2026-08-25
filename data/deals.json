@@ -1,0 +1,30 @@
+{
+  "_說明": "賀成交。在後台的「賀成交」分頁新增與編輯。圖片放在 assets/deals/ 資料夾。",
+  "intro": "感謝每一組信任澄果團隊的屋主與買方。",
+  "deals": [
+    {
+      "id": "d-001",
+      "img": "assets/deal-01.jpg",
+      "area": "美術館特區",
+      "community": "白天鵝",
+      "caption": "高樓層景觀三房平車",
+      "hidden": false
+    },
+    {
+      "id": "d-002",
+      "img": "assets/deal-02.jpg",
+      "area": "美術館特區",
+      "community": "",
+      "caption": "輕屋齡面公園雙車墅",
+      "hidden": false
+    },
+    {
+      "id": "d-003",
+      "img": "assets/deal-03.jpg",
+      "area": "美術館特區",
+      "community": "白天鵝",
+      "caption": "美裝平車",
+      "hidden": false
+    }
+  ]
+}

@@ -7,6 +7,7 @@
  */
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead } from "./lib/layout.js";
+import { dealCard } from "./build-home.js";
 
 /* ================= 文章列表 ================= */
 export function buildNotesIndex({ articles, hasBuyers }) {
@@ -254,6 +255,73 @@ export function buildVideosIndex({ videos, hasBuyers }) {
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   })();
 </script>`,
+    footer({ depth: 1, hasBuyers }),
+  ].join("\n");
+}
+
+
+/* ================= 賀成交列表 ================= */
+export function buildDealsIndex({ deals, hasBuyers }) {
+  const all = (deals?.deals || []).filter(d => !d.hidden && d.img);
+
+  /* 依區域分組，讓訪客一眼看出我們在哪些區域成交 */
+  const byArea = {};
+  all.forEach(d => { (byArea[d.area] || (byArea[d.area] = [])).push(d); });
+  const areas = Object.keys(byArea);
+
+  const jsonLd = [{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: `${SITE}/` },
+      { "@type": "ListItem", position: 2, name: "賀成交", item: `${SITE}/deals/` },
+    ],
+  }];
+
+  return [
+    head({
+      title: `賀成交｜澄果團隊成交實績｜${BRAND.teamName}`,
+      description: "澄果團隊在高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區的成交實績紀錄。感謝每一組信任我們的屋主與買方。",
+      keywords: "澄果團隊成交,高雄房仲實績,美術館特區成交,農十六成交",
+      canonical: `${SITE}/deals/`,
+      ogImage: all[0] ? `${SITE}/${all[0].img}` : `${SITE}/assets/area-01-artmuseum.jpg`,
+      depth: 1, jsonLd,
+    }),
+    header({ depth: 1, hasBuyers }),
+    `<main class="max-w-6xl mx-auto px-6 py-14">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span><span>賀成交</span>
+  </nav>
+
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Closed</div>
+  <h1 class="display text-[30px] md:text-[36px]">賀成交</h1>
+  <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">${esc(deals?.intro || "")}</p>
+  ${all.length ? `<p class="mt-3 font-mono text-[13px] text-inkFaint">共 ${all.length} 筆成交紀錄</p>` : ""}
+  <div class="mt-6 h-px bg-line"></div>
+
+  ${all.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
+    <p class="text-[16px] text-inkSoft leading-[1.9]">成交紀錄整理中，近期陸續更新。</p>
+  </div>` : areas.map(area => `
+  <section class="mt-12">
+    <h2 class="display text-[20px] mb-1">${esc(area)}</h2>
+    <p class="font-mono text-[13px] text-inkFaint mb-6">${byArea[area].length} 筆</p>
+    <div class="grid md:grid-cols-3 gap-6">
+      ${byArea[area].map(d => dealCard(d, 1)).join("\n      ")}
+    </div>
+  </section>`).join("")}
+
+  <section class="mt-16 bg-ink text-white/75 rounded-sm p-8">
+    <h2 class="display text-[20px] text-white">下一個，換你的房子</h2>
+    <p class="mt-3 text-[16px] leading-[1.9] max-w-xl">
+      每一筆成交背後，都是屋主與我們一起把價格、時機與條件談出來的結果。
+      想知道你的房子現在值多少，先估價再決定要不要賣。
+    </p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">免費估價 ${BRAND.phone}</a>
+      <a href="../index.html#services" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">看售屋服務</a>
+    </div>
+  </section>
+</main>`,
     footer({ depth: 1, hasBuyers }),
   ].join("\n");
 }

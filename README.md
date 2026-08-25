@@ -35,6 +35,7 @@
 | `data/buyers.json` | 你在後台編輯 | 買方需求全部消失 |
 | `data/communities.json` | 你直接在 GitHub 編輯 | 社區規格與發布狀態被還原 |
 | `data/site-config.json` | 你直接在 GitHub 編輯 | 表單金鑰、網址、LINE 連結被清空 |
+| `data/deals.json` | 你在後台編輯 | 賀成交紀錄全部消失 |
 | `data/community-deals.json` | Actions 自動擷取與回補 | 社區成交紀錄清空，要重跑回補 |
 
 批次上傳檔案時，**若清單中出現這兩個，請取消勾選不要上傳**。
@@ -236,6 +237,15 @@ ChatGPT、Perplexity 等 AI 爬蟲多半不執行 JS，只讀原始 HTML。
 
 網站上線後建議到 Google Search Console 提交 sitemap：
 `https://twhouse416.github.io/chengguo-site/sitemap.xml`
+
+## 賀成交
+
+在後台的「賀成交」分頁新增。**首頁顯示最新 3 筆**，全部紀錄在 `/deals/` 獨立頁面，依區域分組。
+
+新增時填：圖片、區域、社區名稱（可留空）、說明。圖片會自動壓縮上傳到 `assets/deals/`。
+
+新增的會排在最前面，可以用 ↑ 調整順序，也可以暫時隱藏不刪除。
+沒有任何紀錄時，首頁區塊與獨立頁面都不會顯示。
 
 ## 買方需求牆
 
