@@ -1275,7 +1275,7 @@ function App() {
               <div>
                 <h1 className="display text-[26px]">影片管理</h1>
                 <p className="text-[15px] text-inkSoft mt-2">
-                  影片清單每 6 小時自動同步自 YouTube 頻道，這裡只調整網站上的顯示方式。
+                  影片清單每 6 小時自動同步自 YouTube 頻道，這裡只調整網站上的顯示方式。在 YouTube 改成不公開或刪除的影片，同步時會自動從網站隱藏。
                   {vdata?.updatedAt && (
                     <span className="font-mono text-[13px] text-inkFaint block mt-1">
                       上次同步：{new Date(vdata.updatedAt).toLocaleString("zh-TW")}
@@ -1336,6 +1336,11 @@ function App() {
                               {vdata.heroVideoId === v.videoId && (
                                 <span className="text-orangeDeep border border-orange/40 rounded-sm px-2 py-0.5">首頁</span>
                               )}
+                              {v.autoHidden && (
+                                <span className="text-fail border border-fail/40 rounded-sm px-2 py-0.5">
+                                  已在 YouTube 下架{v.missingSince ? `（${v.missingSince}）` : ""}
+                                </span>
+                              )}
                             </div>
                             <div className="text-[13px] text-inkFaint">
                               YouTube 原標題：{v.title}
@@ -1359,7 +1364,12 @@ function App() {
                                 <label className="flex gap-3 items-center cursor-pointer">
                                   <input type="checkbox" checked={!!o.hidden}
                                     onChange={e => setOverride(v.videoId, { hidden: e.target.checked })} />
-                                  <span className="text-[15px]">在網站上隱藏這支影片</span>
+                                  <span className="text-[15px]">
+                                    在網站上隱藏這支影片
+                                    {v.autoHidden && <span className="block text-[13px] text-fail mt-0.5">
+                                      這支已在 YouTube 下架，網站上已自動隱藏
+                                    </span>}
+                                  </span>
                                 </label>
                               </div>
                             </div>

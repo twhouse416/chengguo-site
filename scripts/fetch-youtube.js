@@ -72,10 +72,46 @@ async function main() {
 
   /* 與既有清單合併：保留已抓過但已滑出 RSS 範圍的舊影片 */
   const known = new Map((data.videos || []).map(v => [v.videoId, v]));
+  const fetchedIds = new Set(fetched.map(v => v.videoId));
   fetched.forEach(v => {
     const prev = known.get(v.videoId) || {};
-    known.set(v.videoId, { ...prev, ...v });   // YouTube 上的原始資料以最新為準
+    known.set(v.videoId, { ...prev, ...v, missingSince: undefined });   // 重新出現就清掉標記
   });
+
+  /* ---- 自動隱藏已從 YouTube 下架的影片 ----
+     RSS 只提供最新 15 支，所以「不在 RSS 裡」有兩種可能：
+       (a) 影片被改成不公開／私人／刪除
+       (b) 影片還在，只是比較舊、滑出了 15 支的範圍
+     用 RSS 中最舊那支的發布日當界線：比它新、卻不在 RSS 裡的，
+     就是 (a)，自動隱藏。比它舊的屬於 (b)，保持原狀。 */
+  const oldestInFeed = fetched.length
+    ? fetched.map(v => v.published).sort()[0]
+    : null;
+
+  let autoHidden = 0, autoRestored = 0;
+  if (oldestInFeed) {
+    known.forEach((v, id) => {
+      const shouldBeInFeed = v.published && v.published >= oldestInFeed;
+
+      if (shouldBeInFeed && !fetchedIds.has(id)) {
+        /* 該出現卻沒出現：研判已在 YouTube 上改為不公開或刪除 */
+        if (!v.autoHidden) {
+          v.autoHidden = true;
+          v.missingSince = new Date().toISOString().slice(0, 10);
+          autoHidden++;
+          console.log(`[下架] ${(v.titleShown || v.title || id).slice(0, 40)}　已從 YouTube 移除或改為不公開，網站上自動隱藏`);
+        }
+      } else if (fetchedIds.has(id) && v.autoHidden) {
+        /* 又出現了：可能是改回公開，取消自動隱藏 */
+        delete v.autoHidden;
+        delete v.missingSince;
+        autoRestored++;
+        console.log(`[恢復] ${(v.titleShown || v.title || id).slice(0, 40)}　已重新公開，取消自動隱藏`);
+      }
+    });
+  }
+  if (autoHidden) console.log(`[提示] 本次自動隱藏 ${autoHidden} 支影片`);
+  if (autoRestored) console.log(`[提示] 本次恢復 ${autoRestored} 支影片`);
 
   /* 套用後台的覆寫設定 */
   const overrides = data.overrides || {};
@@ -83,10 +119,13 @@ async function main() {
     const o = overrides[v.videoId] || {};
     return {
       ...v,
+      autoHidden: v.autoHidden || undefined,
+      missingSince: v.missingSince || undefined,
       titleShown: o.title || v.title,
       descShown: o.desc || v.desc,
       category: o.category || "",
-      hidden: !!o.hidden,
+      /* 手動隱藏，或因為在 YouTube 上被下架而自動隱藏 */
+      hidden: !!o.hidden || !!v.autoHidden,
       order: typeof o.order === "number" ? o.order : null,
     };
   });
