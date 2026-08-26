@@ -25,7 +25,7 @@
 <meta name="twitter:description" content="高雄美術館特區、農十六特區各社區的實價登錄成交紀錄、社區基本資料與學區資訊。逐筆列出成交，不做平均，方便對照條件相近的戶別。" />
 <meta name="twitter:image" content="https://twhouse416.github.io/chengguo-site/assets/area-01-artmuseum.jpg" />
 
-
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"url":"https://twhouse416.github.io/chengguo-site/communities/meishu-baitiane.html","name":"美術白天鵝"},{"@type":"ListItem","position":2,"url":"https://twhouse416.github.io/chengguo-site/communities/meishu-1hao-yuan.html","name":"美術1号院"},{"@type":"ListItem","position":3,"url":"https://twhouse416.github.io/chengguo-site/communities/aimeiguan.html","name":"艾美館"},{"@type":"ListItem","position":4,"url":"https://twhouse416.github.io/chengguo-site/communities/boti.html","name":"城揚波堤"},{"@type":"ListItem","position":5,"url":"https://twhouse416.github.io/chengguo-site/communities/yangguang-yihuayuan.html","name":"陽光藝花園"},{"@type":"ListItem","position":6,"url":"https://twhouse416.github.io/chengguo-site/communities/meishu-dongshijie.html","name":"美術東世界"},{"@type":"ListItem","position":7,"url":"https://twhouse416.github.io/chengguo-site/communities/aman-huiguan.html","name":"阿曼會館"},{"@type":"ListItem","position":8,"url":"https://twhouse416.github.io/chengguo-site/communities/milo.html","name":"米羅"},{"@type":"ListItem","position":9,"url":"https://twhouse416.github.io/chengguo-site/communities/yinxiang-bali.html","name":"印象巴黎"},{"@type":"ListItem","position":10,"url":"https://twhouse416.github.io/chengguo-site/communities/wei-meishu.html","name":"惟美術"},{"@type":"ListItem","position":11,"url":"https://twhouse416.github.io/chengguo-site/communities/huangyuan-yuzhiyuan.html","name":"皇苑御之苑"},{"@type":"ListItem","position":12,"url":"https://twhouse416.github.io/chengguo-site/communities/meiting-yuan.html","name":"美廳苑"}]}</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +48,9 @@
   ::selection { background:#FD7305; color:#fff; }
   .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
   :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  /* hidden 屬性預設是 display:none，但會被 Tailwind 的 flex/grid 等 display 類別蓋過。
+     加上這條確保 hidden 一定生效。 */
+  [hidden] { display: none !important; }
   details > summary { list-style: none; cursor: pointer; }
   details > summary::-webkit-details-marker { display: none; }
   details[open] .faq-plus { transform: rotate(45deg); }
@@ -109,7 +112,7 @@
         <a href="../notes/index.html" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">知識文章</a>
         <a href="../videos/index.html" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">影片</a>
         <a href="../index.html#about" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">關於團隊</a>
-        <a href="../index.html#deals" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">近期成交</a>
+        <a href="../deals/index.html" class="menu-link text-[16px] text-inkSoft py-2.5 border-b border-line">近期成交</a>
       </nav>
       <div class="py-3"><a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer"
       class="inline-flex items-center gap-1.5 text-[15px] font-medium text-orangeDeep hover:text-orange whitespace-nowrap">
@@ -143,9 +146,164 @@
   </p>
   <div class="mt-6 h-px bg-line"></div>
 
-  <div class="mt-10 border border-line rounded-sm bg-surface p-8">
-    <p class="text-[16px] text-inkSoft leading-[1.9]">社區頁面陸續整理中。想了解特定社區的行情，歡迎直接來電。</p>
-    <a href="tel:0797669977" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+  
+  <div class="mt-10 grid md:grid-cols-2 gap-6">
+    <a href="meishu-baitiane.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術白天鵝</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">美術館特區內少見的中小坪數規劃，2～3 房為主，全平面車位，緊鄰 41 公頃美術館園區。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">27.2–51.1</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="meishu-1hao-yuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術1号院</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">興富發於美術館特區推出的大型社區，美術館公園第一排，2 房到 4 房產品線齊全，全區車位配比接近 1:1。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">41.9–55.9</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="aimeiguan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">艾美館</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">本業建設於美術南五街的電梯大樓，2 房到 3 房為主，基地 345 坪，公設集中且實用，頂樓有空中花園。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">30.2–42.6</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="boti.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">城揚波堤</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設的愛河景觀大樓，臨河第一排，可遠眺中都濕地公園與市區夜景。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">20.6–61.9</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="yangguang-yihuayuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">陽光藝花園</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">2007 年園冶獎作品，位處美術館路與美術東四路角地，棟距大、公設豐富，坪數跨度從 2 房到大坪數都有。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">24.6–41.9</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="meishu-dongshijie.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術東世界</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">北京建設的五棟式規劃，每層 2～3 戶、每棟一部電梯，後棟正對兒童公園與美術館園區。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">26.4–39.3</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="aman-huiguan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">阿曼會館</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設 2006 年完工，2～3 房中小坪數規劃，無 4 房產品，是首購族常看的社區之一。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">21.9–40</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="milo.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">米羅</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設於美術東八街的社區，一層兩戶規劃，房型從 1 房到 4-5 房都有，坪數跨度大，公設比約 29.32%。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">6.9–38.3</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="yinxiang-bali.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">印象巴黎</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">和築建設 504 戶大型社區，產品從套房到 4 房齊全，美術館第二排，是美術館特區成交量最大的社區之一。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">7.1–81.5</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="wei-meishu.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">惟美術</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設新成屋，2～4 房規劃，平面車位佔多數，步行約 6 分鐘可達聯合醫院、3～5 分鐘可達輕軌站。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">46.9–76.1</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="huangyuan-yuzhiyuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">皇苑御之苑</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">皇苑建設 27 層大樓，67～100 坪大坪數規劃，全平面車位 551 個，位於 44 期重劃區、鄰近中都愛河濕地公園。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">29.1–74.6</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
+    <a href="meiting-yuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
+      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美廳苑</h2>
+      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設 29 層雙棟社區，266 戶、2～4 房規劃，平面車位佔多數，2022 年底完工的美術館特區新成屋。</p>
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+        <div>
+          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">41.8–58.2</span>
+          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+        </div>
+        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+      </div>
+    </a>
   </div>
 
   <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
@@ -166,6 +324,7 @@
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="tel:0797669977" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+        
         <a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">看在售物件 ↗</a>
       </div>
       <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
@@ -175,7 +334,7 @@
         <a href="../index.html#tools" class="hover:text-orange transition">試算工具</a>
         <a href="../notes/index.html" class="hover:text-orange transition">知識文章</a>
         <a href="../videos/index.html" class="hover:text-orange transition">影片</a>
-        <a href="../index.html#deals" class="hover:text-orange transition">近期成交</a>
+        <a href="../deals/index.html" class="hover:text-orange transition">近期成交</a>
         <a href="../index.html#faq" class="hover:text-orange transition">常見問題</a>
       </nav>
       <div class="mt-8"><div class="flex items-center gap-2">
@@ -188,13 +347,136 @@
     </a>
   </div></div>
     </div>
-    <div class="md:col-span-5 md:text-right font-mono text-[13px] leading-[2] text-white/60">
-      <div class="text-white">台灣房屋 澄果團隊</div>
-      <div>澄果資產有限公司</div>
-      <div>804 高雄市鼓山區青海路416號</div>
-      <div><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></div>
+    <div class="md:col-span-5">
+      <div class="border border-white/15 rounded-sm p-7">
+  <h3 class="text-[18px] font-bold text-white">留下聯絡方式，我們回電給你</h3>
+  <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
+    不方便講電話也沒關係，填一下需求，我們會挑你方便的時段聯絡。
+  </p>
+
+  <form id="contactForm" class="mt-6 space-y-4" novalidate>
+    <input type="hidden" name="access_key" value="1ed3ef7d-7db9-47d6-9648-134f82d63a7c" />
+    <input type="hidden" name="subject" value="澄果團隊官網｜客戶諮詢" />
+    <input type="hidden" name="from_name" value="澄果團隊官網" />
+    <!-- 蜜罐欄位：機器人會填，真人看不到，用來擋垃圾訊息 -->
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-name">稱呼 <span class="text-orange">*</span></label>
+        <input id="cf-name" name="稱呼" required maxlength="30" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="王先生 / 陳小姐" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-phone">聯絡電話 <span class="text-orange">*</span></label>
+        <input id="cf-phone" name="聯絡電話" required type="tel" inputmode="tel" maxlength="20"
+          class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="09xx-xxx-xxx" />
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-line">LINE ID（選填）</label>
+        <input id="cf-line" name="LINE ID" maxlength="40" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="習慣用 LINE 聯絡再填" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-email">Email（選填）</label>
+        <input id="cf-email" name="Email" type="email" maxlength="80" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="要收書面資料再填" />
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-type">需求類型</label>
+        <select id="cf-type" name="需求類型" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="我要賣房" class="text-ink">我要賣房</option><option value="我要買房" class="text-ink">我要買房</option><option value="想先估價" class="text-ink">想先估價</option><option value="換屋規劃" class="text-ink">換屋規劃</option><option value="其他" class="text-ink">其他</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-time">方便聯絡的時段</label>
+        <select id="cf-time" name="方便聯絡時段" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="都可以" class="text-ink">都可以</option><option value="上午 9-12 點" class="text-ink">上午 9-12 點</option><option value="下午 1-6 點" class="text-ink">下午 1-6 點</option><option value="晚上 6-9 點" class="text-ink">晚上 6-9 點</option><option value="假日" class="text-ink">假日</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-msg">想詢問的內容</label>
+      <textarea id="cf-msg" name="詢問內容" rows="3" maxlength="500" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition"
+        placeholder="例如：想知道美術館特區三房的行情，預算 1,500 萬左右"></textarea>
+    </div>
+
+    <button type="submit" id="cf-submit"
+      class="w-full inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition disabled:opacity-50">
+      送出
+    </button>
+
+    <p class="text-[13px] leading-[1.8] text-white/45">
+      送出前會顯示
+      <button type="button" id="cf-privacy-open" class="text-orange/80 hover:text-orange hover:underline">個資蒐集告知事項</button>
+      ，同意後才會送出。
+    </p>
+
+    <p id="cf-status" class="text-[14px] leading-[1.8]" role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<!-- 個資告知事項 -->
+<div id="cf-privacy" hidden class="fixed inset-0 z-[110] bg-ink/90 flex items-center justify-center p-4 md:p-10">
+  <div class="bg-surface text-ink rounded-sm max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+    <div class="p-8">
+      <h3 class="display text-[20px] mb-5">個人資料蒐集、處理及利用告知事項</h3>
+      <div class="space-y-4 text-[15px] leading-[1.9] text-inkSoft">
+        <p>依《個人資料保護法》第 8 條規定，澄果資產有限公司（以下稱本公司）於蒐集您的個人資料前，謹告知下列事項：</p>
+        <div>
+          <div class="font-bold text-ink mb-1">一、蒐集目的</div>
+          <p>不動產仲介服務、客戶管理與服務、行銷業務聯繫，以及回覆您的諮詢需求。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">二、蒐集的個人資料類別</div>
+          <p>您於本表單主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址，以及您所填寫的需求內容。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">三、利用期間、地區、對象及方式</div>
+          <p>期間：自您提供之日起，至您要求停止利用或本公司停止提供服務時止。<br />
+             地區：中華民國境內。<br />
+             對象：本公司及所屬經紀人員。非經您同意或法令規定，不會提供予第三人。<br />
+             方式：以電話、簡訊、LINE、電子郵件或其他通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">四、您得行使的權利</div>
+          <p>依個資法第 3 條，您得向本公司請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用，或請求刪除您的個人資料。
+             請來電 <a href="tel:0797669977" class="text-orangeDeep hover:underline">07-9766977</a> 或親洽本公司辦理。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">五、不提供個人資料的影響</div>
+          <p>本表單為選擇性填寫。若不提供聯絡方式，本公司將無法與您聯繫或提供相關服務，但不影響您以電話等其他方式洽詢。</p>
+        </div>
+      </div>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <button type="button" id="cf-privacy-agree"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+          我已閱讀並同意，送出
+        </button>
+        <button type="button" id="cf-privacy-close"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm border border-line text-ink hover:bg-paper transition">
+          再想一下
+        </button>
+      </div>
     </div>
   </div>
+</div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-6 font-mono text-[13px] text-white/55 flex flex-wrap gap-x-8 gap-y-1">
+      <span class="text-white/80">台灣房屋 澄果團隊</span>
+      <span>澄果資產有限公司</span>
+      <span>804 高雄市鼓山區青海路416號</span>
+      <span><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></span>
+    </div>
+  </div>
+
   <div class="border-t border-white/10">
     <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
       <span>© 2026 澄果資產有限公司</span>
@@ -204,6 +486,97 @@
 </footer>
 
 <script>
+  /* 聯絡表單：送到 Web3Forms，全程原生 JavaScript */
+  (function () {
+    var form = document.getElementById("contactForm");
+    if (!form) return;
+
+    var status = document.getElementById("cf-status");
+    var submit = document.getElementById("cf-submit");
+    var modal = document.getElementById("cf-privacy");
+    var agreed = false;          // 這次工作階段是否已同意告知事項
+    var pendingSubmit = false;   // 是否因為要看告知事項而暫停送出
+
+    function openModal(pending) {
+      pendingSubmit = !!pending;
+      modal.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      modal.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
+
+    /* 主動點連結查看：只是閱讀，不會觸發送出 */
+    document.getElementById("cf-privacy-open").addEventListener("click", function () {
+      openModal(false);
+    });
+    document.getElementById("cf-privacy-close").addEventListener("click", function () {
+      closeModal();
+      if (pendingSubmit) {
+        pendingSubmit = false;
+        say("需要同意告知事項才能送出。你也可以直接來電 07-9766977。");
+      }
+    });
+    document.getElementById("cf-privacy-agree").addEventListener("click", function () {
+      agreed = true;
+      closeModal();
+      if (pendingSubmit) { pendingSubmit = false; send(); }
+    });
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+    });
+
+    function say(msg, ok) {
+      status.textContent = msg;
+      status.className = "text-[14px] leading-[1.8] " + (ok ? "text-orange" : "text-white/70");
+    }
+
+    function send() {
+      submit.disabled = true;
+      submit.textContent = "送出中…";
+      say("");
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || "送出失敗");
+          form.reset();
+          agreed = false;   /* 下一次送出仍需再次同意 */
+          say("已收到你的訊息，我們會盡快與你聯絡。急件請直接來電 07-9766977。", true);
+          submit.textContent = "已送出";
+        })
+        .catch(function () {
+          say("送出時發生問題，請稍後再試，或直接來電 07-9766977。");
+          submit.disabled = false;
+          submit.textContent = "送出";
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var name = form.querySelector("#cf-name").value.trim();
+      var phone = form.querySelector("#cf-phone").value.trim();
+
+      if (!name) { say("請填寫稱呼"); form.querySelector("#cf-name").focus(); return; }
+      if (!phone) { say("請填寫聯絡電話"); form.querySelector("#cf-phone").focus(); return; }
+      /* 電話只做寬鬆檢查：市話、手機、含分機或連字號都放行 */
+      if (phone.replace(/[^0-9]/g, "").length < 8) {
+        say("電話號碼看起來不完整，請再確認一次"); form.querySelector("#cf-phone").focus(); return;
+      }
+
+      /* 資料填妥後才顯示告知事項，同意即接著送出 */
+      if (!agreed) { openModal(true); return; }
+      send();
+    });
+  })();
+
   /* 手機選單：純原生，不依賴框架 */
   (function () {
     var btn = document.getElementById("menuBtn");
