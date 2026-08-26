@@ -209,6 +209,9 @@ function communityPage(c, deals, others, hasBuyers) {
         <dd class="text-[15px] text-ink text-right">${esc(v)}</dd>
       </div>`).join("\n      ")}
     </dl>
+    <p class="text-[13px] text-inkFaint leading-relaxed mt-4">
+      資料來源：樂居網。建案規格可能因來源而有差異，實際條件請以社區管委會、建商公開資料與產權登記為準。
+    </p>
   </section>
 
   <!-- 成交紀錄 -->
