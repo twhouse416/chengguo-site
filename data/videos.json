@@ -10,7 +10,17 @@
     "團隊日常"
   ],
   "heroVideoId": "4CbIq8b-Wes",
-  "overrides": {},
+  "overrides": {
+    "1-3wV5pHWsQ": {
+      "hidden": true
+    },
+    "VYmFRpy_oQ0": {
+      "hidden": true
+    },
+    "n9OHlHFyUBo": {
+      "hidden": true
+    }
+  },
   "videos": [
     {
       "videoId": "3qUxgCEUs4Y",
@@ -45,7 +55,7 @@
       "titleShown": "馬卡綠園道 馬爾地夫景觀三房車位 #美術館 #澄果團隊 #台灣房屋 #房仲 #馬爾地夫",
       "descShown": "✪ 台　灣　房　屋　澄　果　團　隊 ✪",
       "category": "",
-      "hidden": false,
+      "hidden": true,
       "order": null
     },
     {
@@ -69,7 +79,7 @@
       "titleShown": "後驛捷運旁 棋琴22重奏 二房平車",
       "descShown": "-------------------------------------------------",
       "category": "",
-      "hidden": false,
+      "hidden": true,
       "order": null
     },
     {
@@ -117,7 +127,7 @@
       "titleShown": "「層峰之上的私藏府邸，以建築之名，定義豪宅典範」",
       "descShown": "美術館大地坪電梯車墅    ",
       "category": "",
-      "hidden": false,
+      "hidden": true,
       "order": null
     },
     {
@@ -229,5 +239,5 @@
       "order": null
     }
   ],
-  "updatedAt": "2026-08-26T00:55:23.830Z"
+  "updatedAt": "2026-08-25T00:54:42.407Z"
 }
