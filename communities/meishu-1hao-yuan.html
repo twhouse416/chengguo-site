@@ -772,6 +772,18 @@
         placeholder="例如：想知道美術館特區三房的行情，預算 1,500 萬左右"></textarea>
     </div>
 
+    <!-- 個資法第20條第2項：行銷須另行取得同意，預設不勾選 -->
+    <label for="cf-marketing" class="flex items-start gap-2.5 cursor-pointer select-none">
+      <input id="cf-marketing" name="行銷同意" type="checkbox" value="同意"
+        class="mt-[3px] w-4 h-4 shrink-0 accent-[#FD7305] cursor-pointer" />
+      <span class="text-[13px] leading-[1.75] text-white/50">
+        我願意收到澄果團隊的房市行情、新案與活動資訊（不勾選不影響本次諮詢，日後也可隨時來電免費取消）
+      </span>
+    </label>
+
+    <!-- 個資法第7條第4項：同意之舉證責任在蒐集者，隨表單一併送出同意時間 -->
+    <input type="hidden" id="cf-consent-at" name="同意告知事項時間" value="" />
+
     <button type="submit" id="cf-submit"
       class="w-full inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition disabled:opacity-50">
       送出
@@ -796,23 +808,30 @@
         <p>依《個人資料保護法》第 8 條規定，澄果資產有限公司（以下稱本公司）於蒐集您的個人資料前，謹告知下列事項：</p>
         <div>
           <div class="font-bold text-ink mb-1">一、蒐集目的</div>
-          <p>不動產仲介服務、客戶管理與服務、行銷業務聯繫，以及回覆您的諮詢需求。</p>
+          <p>040 行銷、069 契約、類似契約或其他法律關係事務、090 消費者、客戶管理與服務、181 其他經營合於營業登記項目所定之業務。
+             具體而言為不動產仲介服務、客戶管理與服務、行銷業務聯繫，以及回覆您的諮詢需求。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">二、蒐集的個人資料類別</div>
-          <p>您於本表單主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址，以及您所填寫的需求內容。</p>
+          <p>C001 辨識個人者（您主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址）、
+             C002 辨識財務者（您主動提供的預算等資訊），以及您於本表單填寫的需求內容。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">三、利用期間、地區、對象及方式</div>
-          <p>期間：自您提供之日起，至您要求停止利用或本公司停止提供服務時止。<br />
-             地區：中華民國境內。<br />
-             對象：本公司及所屬經紀人員。非經您同意或法令規定，不會提供予第三人。<br />
+          <p>期間：未成交之諮詢資料，保存至最後聯繫日起 2 年；已成交案件之相關資料，保存至契約成立日起 5 年。
+             期限屆至後本公司將刪除或停止處理利用，法令另有規定者從其規定。<br />
+             地區：中華民國境內；惟本公司使用之線上表單服務供應商（Web3Forms）之伺服器可能位於境外，您送出表單即同時同意此項傳輸。<br />
+             對象：本公司及所屬經紀人員；前述線上表單服務供應商（僅作訊息轉寄，不作其他利用）；
+             及您委託本公司進行不動產交易時，為完成該交易所必要之履約協力單位（地政士、金融機構、不動產估價師等）。
+             除上述及法令規定外，非經您同意不會提供予其他第三人。<br />
              方式：以電話、簡訊、LINE、電子郵件或其他通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">四、您得行使的權利</div>
-          <p>依個資法第 3 條，您得向本公司請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用，或請求刪除您的個人資料。
-             請來電 <a href="tel:0797669977" class="text-orangeDeep hover:underline">07-9766977</a> 或親洽本公司辦理。</p>
+          <p>依個資法第 3 條，您得向本公司請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用，或請求刪除您的個人資料；
+             本項權利不得預先拋棄，亦不得以特約限制。查詢、閱覽或製給複製本，本公司得酌收必要成本費用。</p>
+          <p class="mt-2">另依個資法第 20 條第 2 項，您得隨時免費表示拒絕接受行銷，本公司於接獲通知後將立即停止利用您的個人資料進行行銷。</p>
+          <p class="mt-2">行使上述權利，請來電 <a href="tel:0797669977" class="text-orangeDeep hover:underline">07-9766977</a> 或親洽本公司辦理。</p>
         </div>
         <div>
           <div class="font-bold text-ink mb-1">五、不提供個人資料的影響</div>
@@ -887,6 +906,16 @@
     });
     document.getElementById("cf-privacy-agree").addEventListener("click", function () {
       agreed = true;
+      /* 個資法第7條第4項：同意的舉證責任在蒐集者，把同意時間隨表單送出留存 */
+      var stamp = document.getElementById("cf-consent-at");
+      if (stamp) {
+        var d = new Date();
+        function p(n) { return (n < 10 ? "0" : "") + n; }
+        stamp.value = d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+          " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) +
+          "（本地時間，UTC" + (d.getTimezoneOffset() > 0 ? "-" : "+") +
+          p(Math.abs(d.getTimezoneOffset()) / 60 | 0) + "）";
+      }
       closeModal();
       if (pendingSubmit) { pendingSubmit = false; send(); }
     });
@@ -908,7 +937,13 @@
       fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify((function () {
+          var payload = Object.fromEntries(new FormData(form));
+          /* 未勾選的 checkbox 不會進 FormData，明確寫成「不同意」才有紀錄可查 */
+          var mk = document.getElementById("cf-marketing");
+          payload["行銷同意"] = (mk && mk.checked) ? "同意" : "不同意";
+          return payload;
+        })()),
       })
         .then(function (r) { return r.json(); })
         .then(function (d) {
