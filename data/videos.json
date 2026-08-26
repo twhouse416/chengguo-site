@@ -56,7 +56,9 @@
       "descShown": "✪ 台　灣　房　屋　澄　果　團　隊 ✪",
       "category": "",
       "hidden": true,
-      "order": null
+      "order": null,
+      "autoHidden": true,
+      "missingSince": "2026-08-26"
     },
     {
       "videoId": "4MErCZOl7MA",
@@ -80,7 +82,9 @@
       "descShown": "-------------------------------------------------",
       "category": "",
       "hidden": true,
-      "order": null
+      "order": null,
+      "autoHidden": true,
+      "missingSince": "2026-08-26"
     },
     {
       "videoId": "32QmV2VBVUw",
@@ -128,7 +132,9 @@
       "descShown": "美術館大地坪電梯車墅    ",
       "category": "",
       "hidden": true,
-      "order": null
+      "order": null,
+      "autoHidden": true,
+      "missingSince": "2026-08-26"
     },
     {
       "videoId": "4CbIq8b-Wes",
@@ -239,5 +245,5 @@
       "order": null
     }
   ],
-  "updatedAt": "2026-08-25T00:54:42.407Z"
+  "updatedAt": "2026-08-26T06:36:43.796Z"
 }
