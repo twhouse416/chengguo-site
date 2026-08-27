@@ -31,6 +31,16 @@ const OUT_DIR = path.join(ROOT, "communities");
  * 這樣社區頁不會因為嵌了影片就多背 YouTube 播放器的載入成本。
  */
 
+/* Google 的 VideoObject 要求 uploadDate 是完整 ISO 8601（含時區），
+   純日期 2026-08-27 會被判定為「datetime 值無效／缺少時區」。
+   後台的日期選擇器只能給純日期，所以在這裡補上台灣時區。 */
+export function isoDate(d) {
+  if (!d) return "";
+  const s = String(d).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return `${s}T00:00:00+08:00`;
+  return s;   /* 已經是完整格式就原樣沿用 */
+}
+
 /* 接受完整網址或裸 ID，統一取出 11 碼影片 ID */
 export function ytId(raw) {
   if (!raw) return "";
@@ -238,7 +248,7 @@ function communityPage(c, deals, others, hasBuyers) {
       name: c.video.title || `${c.name} 社區介紹`,
       description: c.video.desc || `${c.name}（${c.address}）的社區環境與周邊生活機能介紹。`,
       thumbnailUrl: [`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`],
-      ...(c.video.date ? { uploadDate: c.video.date } : {}),
+      ...(c.video.date ? { uploadDate: isoDate(c.video.date) } : {}),
       embedUrl: `https://www.youtube.com/embed/${vid}`,
       contentUrl: `https://www.youtube.com/watch?v=${vid}`,
       publisher: { "@type": "Organization", name: BRAND.teamName },
