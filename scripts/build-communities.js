@@ -41,6 +41,27 @@ export function isoDate(d) {
   return s;   /* 已經是完整格式就原樣沿用 */
 }
 
+/* 影片說明常常是直接從 YouTube 複製過來的長文，裡面有大量換行。
+   HTML 不認換行字元，全部塞進一個 <p> 會擠成一大坨，所以要自己分段：
+   空行分段落，段落內的單一換行轉成 <br>。 */
+export function descBlocks(desc) {
+  return String(desc || "")
+    .replace(/\r\n?/g, "\n")
+    .split(/\n{2,}/)
+    .map(b => b.trim())
+    .filter(Boolean);
+}
+
+/* 給 Google 的 description 要的是一段乾淨的文字，不是整篇。
+   取前面幾段、去掉換行，過長就截斷。 */
+export function descForSchema(desc, fallback) {
+  const blocks = descBlocks(desc);
+  if (!blocks.length) return fallback;
+  let s = blocks.slice(0, 3).join(" ").replace(/\s+/g, " ").trim();
+  if (s.length > 300) s = s.slice(0, 297).trimEnd() + "…";
+  return s;
+}
+
 /* 接受完整網址或裸 ID，統一取出 11 碼影片 ID */
 export function ytId(raw) {
   if (!raw) return "";
@@ -48,6 +69,31 @@ export function ytId(raw) {
   if (/^[\w-]{11}$/.test(s)) return s;
   const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
   return m ? m[1] : "";
+}
+
+/* 說明文字排版：前兩段直接顯示，其餘收進展開區塊，
+   免得整篇 YouTube 說明把社區資料表推到很下面。 */
+const LEAD = 3;
+function descHtml(desc, title) {
+  const blocks = descBlocks(desc);
+  if (!blocks.length) return `<p class="text-[15px] text-inkSoft leading-[1.9] mt-4">${esc(title)}</p>`;
+
+  const para = b => `<p class="text-[15px] text-inkSoft leading-[1.9]">${esc(b).replace(/\n/g, "<br />")}</p>`;
+  const lead = blocks.slice(0, LEAD).map(para).join("\n      ");
+  const rest = blocks.slice(LEAD);
+
+  return `<div class="mt-5 space-y-4">
+      ${lead}
+    </div>
+    ${rest.length ? `<details class="mt-4 group">
+      <summary class="font-mono text-[13px] text-orangeDeep inline-flex items-center gap-2 select-none cursor-pointer">
+        展開完整影片說明
+        <span class="transition group-open:rotate-180 text-[10px]">▼</span>
+      </summary>
+      <div class="mt-4 space-y-4">
+        ${rest.map(para).join("\n        ")}
+      </div>
+    </details>` : ""}`;
 }
 
 function videoSection(c) {
@@ -73,8 +119,8 @@ function videoSection(c) {
           </span></span>
       </button>
     </div>
-    <p class="text-[15px] text-inkSoft leading-[1.9] mt-4">${esc(desc || title)}</p>
-    <p class="text-[13px] text-inkFaint mt-2">
+    ${descHtml(desc, title)}
+    <p class="text-[13px] text-inkFaint mt-4">
       影片由${esc(BRAND.teamName)}拍攝製作。
       <a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer"
         class="text-orangeDeep hover:underline">在 YouTube 觀看 ↗</a>
@@ -246,7 +292,7 @@ function communityPage(c, deals, others, hasBuyers) {
       "@context": "https://schema.org",
       "@type": "VideoObject",
       name: c.video.title || `${c.name} 社區介紹`,
-      description: c.video.desc || `${c.name}（${c.address}）的社區環境與周邊生活機能介紹。`,
+      description: descForSchema(c.video.desc, `${c.name}（${c.address}）的社區環境與周邊生活機能介紹。`),
       thumbnailUrl: [`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`],
       ...(c.video.date ? { uploadDate: isoDate(c.video.date) } : {}),
       embedUrl: `https://www.youtube.com/embed/${vid}`,
