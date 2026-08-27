@@ -78,6 +78,21 @@ ${pages.map(p => `  <url>
   console.log(`[產生] sitemap.xml（${pages.length} 個網址）`);
 }
 
+/* robots.txt 也依 site-config.json 的 siteUrl 產生，
+   換網域時只要改設定檔一處，不必再手動改這個檔。 */
+function buildRobots() {
+  const txt = `User-agent: *
+Allow: /
+
+# 後台不需要被搜尋引擎收錄
+Disallow: /admin/
+
+Sitemap: ${SITE}/sitemap.xml
+`;
+  writeFileSync(path.join(ROOT, "robots.txt"), txt, "utf-8");
+  console.log("[產生] robots.txt");
+}
+
 function main() {
   const market = readJson("data/market-data.json", { areas: [] });
   const articlesData = readJson("data/articles.json", { articles: [] });
@@ -123,8 +138,9 @@ function main() {
   /* 社區頁 */
   const communities = buildCommunities(hasBuyers);
 
-  /* 網站地圖 */
+  /* 網站地圖與 robots.txt */
   buildSitemap(articles, communities, dealCount > 0);
+  buildRobots();
 
   console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、賀成交 ${dealCount} 筆、買方需求 ${hasBuyers ? "有" : "無"}`);
 }

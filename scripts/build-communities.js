@@ -22,6 +22,71 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const OUT_DIR = path.join(ROOT, "communities");
 
+/* ---------- 社區介紹影片 ----------
+ * data/communities.json 每個社區可加一個 video 物件：
+ *   "video": { "id": "YouTube 網址或影片 ID", "title": "...", "desc": "...", "date": "2026-08-20" }
+ * 沒填 id 就整個區塊不顯示。
+ *
+ * 顯示方式為「封面替身」：先只放 YouTube 縮圖，使用者點了才真的載入 iframe。
+ * 這樣社區頁不會因為嵌了影片就多背 YouTube 播放器的載入成本。
+ */
+
+/* 接受完整網址或裸 ID，統一取出 11 碼影片 ID */
+export function ytId(raw) {
+  if (!raw) return "";
+  const s = String(raw).trim();
+  if (/^[\w-]{11}$/.test(s)) return s;
+  const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+  return m ? m[1] : "";
+}
+
+function videoSection(c) {
+  const id = ytId(c.video?.id);
+  if (!id) return "";
+  const title = c.video.title || `${c.name} 社區介紹`;
+  const desc = c.video.desc || "";
+
+  return `
+  <!-- 社區介紹影片 -->
+  <section class="mt-10" id="video">
+    <h2 class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">社區介紹影片</h2>
+    <div id="ytBox" class="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
+      <button type="button" id="ytPlay" class="group absolute inset-0 w-full h-full text-left"
+        aria-label="播放 ${esc(title)}">
+        <img src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg"
+          onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg';"
+          alt="${esc(title)}" loading="lazy"
+          class="w-full h-full object-cover group-hover:opacity-90 transition" />
+        <span class="absolute inset-0 flex items-center justify-center">
+          <span class="w-16 h-16 rounded-full bg-orange/95 flex items-center justify-center group-hover:scale-110 transition">
+            <svg viewBox="0 0 24 24" class="w-7 h-7 ml-1" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+          </span></span>
+      </button>
+    </div>
+    <p class="text-[15px] text-inkSoft leading-[1.9] mt-4">${esc(desc || title)}</p>
+    <p class="text-[13px] text-inkFaint mt-2">
+      影片由${esc(BRAND.teamName)}拍攝製作。
+      <a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer"
+        class="text-orangeDeep hover:underline">在 YouTube 觀看 ↗</a>
+    </p>
+  </section>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("ytPlay");
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        var box = document.getElementById("ytBox");
+        box.innerHTML = '<iframe class="w-full h-full" ' +
+          'src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" ' +
+          'title="${esc(title).replace(/'/g, "&#39;")}" ' +
+          'allow="autoplay; encrypted-media; picture-in-picture; fullscreen" ' +
+          'allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+      });
+    })();
+  </script>`;
+}
+
 /* ---------- 成交紀錄表格 ---------- */
 function dealsTable(deals) {
   if (!deals?.length) {
@@ -164,6 +229,22 @@ function communityPage(c, deals, others, hasBuyers) {
     },
   ];
 
+  /* 有影片才加 VideoObject，讓 Google 知道這頁有影片，搜尋結果可能出現縮圖 */
+  const vid = ytId(c.video?.id);
+  if (vid) {
+    jsonLd.push({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: c.video.title || `${c.name} 社區介紹`,
+      description: c.video.desc || `${c.name}（${c.address}）的社區環境與周邊生活機能介紹。`,
+      thumbnailUrl: [`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`],
+      ...(c.video.date ? { uploadDate: c.video.date } : {}),
+      embedUrl: `https://www.youtube.com/embed/${vid}`,
+      contentUrl: `https://www.youtube.com/watch?v=${vid}`,
+      publisher: { "@type": "Organization", name: BRAND.teamName },
+    });
+  }
+
   if (c.faq?.length) {
     jsonLd.push({
       "@context": "https://schema.org", "@type": "FAQPage",
@@ -199,6 +280,7 @@ function communityPage(c, deals, others, hasBuyers) {
   <p class="mt-4 text-[17px] text-inkSoft leading-[1.95] max-w-2xl">${esc(c.summary)}</p>
   <p class="mt-3 font-mono text-[14px] text-inkFaint">${esc(c.address)}</p>
   <div class="mt-6 h-px bg-line"></div>
+${videoSection(c)}
 
   <!-- 基本資料 -->
   <section class="mt-10">

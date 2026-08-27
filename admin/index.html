@@ -963,6 +963,7 @@ function App() {
   const newCommunity = () => ({
     slug: "", name: "", aliases: [], district: "鼓山區", area: "美術館特區", areaCode: "01",
     address: "", addressKeywords: [], addressRanges: [], projectNames: [], draft: true, summary: "",
+    video: { id: "", title: "", desc: "", date: "" },
     specs: [["建設公司", ""], ["總戶數", ""], ["樓層規劃", ""], ["坪數範圍", ""],
             ["格局", ""], ["公設比", ""], ["車位", ""], ["基地面積", ""]],
     highlights: [], considerations: [],
@@ -1685,6 +1686,65 @@ function App() {
                     <option value="draft">草稿（網站看不到）</option>
                     <option value="published">發布</option>
                   </select>
+                </div>
+              </div>
+
+              {/* 社區介紹影片 */}
+              <div className="bg-surface border border-line rounded-sm p-6 space-y-5 mt-6">
+                <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">社區介紹影片</div>
+                <div className="bg-tint border-l-2 border-orange px-5 py-4">
+                  <p className="text-[14px] text-orangeDeep leading-[1.9]">
+                    貼上 YouTube 網址即可，系統會自動取出影片編號。
+                    影片設為「公開」或「不公開」都能播放，設成「私人」則不行。
+                    留空的話，社區頁就不會出現影片區塊。
+                  </p>
+                </div>
+
+                <div>
+                  <Label hint="直接從 YouTube 網址列複製貼上就好">YouTube 網址</Label>
+                  <input className={inputCls} value={cDraft.video?.id || ""}
+                    placeholder="https://www.youtube.com/watch?v=xxxxxxxxxxx"
+                    onChange={e => set({ video: { ...(cDraft.video || {}), id: e.target.value } })} />
+                  {(() => {
+                    const raw = (cDraft.video?.id || "").trim();
+                    if (!raw) return null;
+                    const m = /^[\w-]{11}$/.test(raw)
+                      ? raw
+                      : (raw.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || [])[1];
+                    return m
+                      ? <div className="mt-3 flex items-start gap-4">
+                          <img src={"https://i.ytimg.com/vi/" + m + "/mqdefault.jpg"} alt=""
+                            className="w-40 rounded-sm border border-line" />
+                          <p className="text-[13px] text-inkFaint leading-[1.9]">
+                            影片編號：<span className="font-mono text-ink">{m}</span><br />
+                            看到縮圖就表示網址正確。
+                          </p>
+                        </div>
+                      : <p className="mt-2 text-[13px] text-orangeDeep">
+                          這個網址看不出影片編號，請確認是不是完整的 YouTube 網址。
+                        </p>;
+                  })()}
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <Label hint="留空會自動用「社區名 社區介紹」">影片標題</Label>
+                    <input className={inputCls} value={cDraft.video?.title || ""}
+                      placeholder="美廳苑 社區環境介紹"
+                      onChange={e => set({ video: { ...(cDraft.video || {}), title: e.target.value } })} />
+                  </div>
+                  <div>
+                    <Label hint="影片的發布日期，給 Google 判讀用">上片日期</Label>
+                    <input type="date" className={inputCls} value={cDraft.video?.date || ""}
+                      onChange={e => set({ video: { ...(cDraft.video || {}), date: e.target.value } })} />
+                  </div>
+                </div>
+
+                <div>
+                  <Label hint="顯示在播放器下方，也會給 Google 當作影片說明">影片說明</Label>
+                  <textarea rows={2} className={inputCls} value={cDraft.video?.desc || ""}
+                    placeholder="帶你實際走一趟，看公設、車道動線與周邊生活機能。"
+                    onChange={e => set({ video: { ...(cDraft.video || {}), desc: e.target.value } })} />
                 </div>
               </div>
 
