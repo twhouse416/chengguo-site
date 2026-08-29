@@ -48,7 +48,7 @@ function unescapeXml(s) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-/* YouTube 的 RSS 對機房 IP（GitHub Actions 就是）偶爾會回 5xx，
+/* YouTube 的 RSS 對機房 IP（GitHub Actions 就是）偶爾會回 4xx/5xx，
    不是我們的設定有問題，隔一下再要通常就過了。
    跟 fetch-market-data.js 一樣做重試，間隔逐次拉長。 */
 async function fetchRss(tries = 4) {
