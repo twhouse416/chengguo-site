@@ -1,7 +1,22 @@
 {
-  "updatedAt": "2026-08-31T00:57:48.922Z",
+  "updatedAt": "2026-09-01T01:29:52.844Z",
   "deals": {
     "meishu-baitiane": [
+      {
+        "date": "2026-06-28",
+        "floor": "十五層",
+        "totalFloor": "二十四層",
+        "ping": 38.28,
+        "unitPrice": 37.2,
+        "totalPrice": 1425,
+        "layout": "1房2廳2衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東四路６９６號十五樓之８",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-06-19",
         "floor": "四層",
@@ -13,6 +28,21 @@
         "parking": "坡道平面",
         "kind": "成屋",
         "addr": "高雄市鼓山區美術東四路６９６號四樓之６",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
+        "date": "2026-06-14",
+        "floor": "九層",
+        "totalFloor": "二十四層",
+        "ping": 39.18,
+        "unitPrice": 37.5,
+        "totalPrice": 1470,
+        "layout": "0房0廳0衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術東四路６９８號九樓",
         "project": "",
         "unit": "",
         "note": ""
@@ -4470,36 +4500,6 @@
         "unit": "",
         "addr": "高雄市鼓山區美術東四路６９０號十三樓之２",
         "note": "預售屋、或土地及建物分件登記案件；"
-      },
-      {
-        "date": "2022-01-18",
-        "floor": "十六層",
-        "totalFloor": "二十四層",
-        "ping": 52.71,
-        "unitPrice": 36.4,
-        "totalPrice": 1878,
-        "layout": "2房2廳2衛",
-        "parking": "坡道平面",
-        "kind": "成屋",
-        "project": "",
-        "unit": "",
-        "addr": "高雄市鼓山區美術東四路６９６號十六樓之９",
-        "note": "預售屋、或土地及建物分件登記案件；"
-      },
-      {
-        "date": "2022-01-17",
-        "floor": "二十二層",
-        "totalFloor": "二十四層",
-        "ping": 50.17,
-        "unitPrice": 40,
-        "totalPrice": 1950,
-        "layout": "2房2廳2衛",
-        "parking": "坡道平面",
-        "kind": "成屋",
-        "project": "",
-        "unit": "",
-        "addr": "高雄市鼓山區美術東四路６９０號二十二樓之３",
-        "note": "預售屋、或土地及建物分件登記案件；"
       }
     ],
     "meishu-1hao-yuan": [
@@ -5257,6 +5257,21 @@
       }
     ],
     "boti": [
+      {
+        "date": "2026-05-29",
+        "floor": "三層",
+        "totalFloor": "十五層",
+        "ping": 36.52,
+        "unitPrice": 33.5,
+        "totalPrice": 1224,
+        "layout": "3房1廳2衛",
+        "parking": "坡道機械",
+        "kind": "成屋",
+        "addr": "高雄市鼓山區美術南二路７０巷３７號三樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-04-29",
         "floor": "十三層",
