@@ -1,0 +1,30 @@
+name: 診斷門牌比對
+
+# 手動觸發：當某社區的成交筆數跟實價登錄網站對不起來時，
+# 用這個流程把內政部原始檔案裡含指定門牌關鍵字的列全部印出來。
+# 只讀不寫，不會更動 repo 內任何資料檔。
+
+on:
+  workflow_dispatch:
+    inputs:
+      keyword:
+        description: "門牌關鍵字（例如 裕誠路168）"
+        required: true
+        default: "裕誠路168"
+      periods:
+        description: "往回幾期（一期=一季，建議 4）"
+        required: true
+        default: "4"
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 診斷
+        run: node scripts/debug-address-match.js "${{ inputs.keyword }}" "${{ inputs.periods }}"
