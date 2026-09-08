@@ -1,0 +1,25 @@
+name: 診斷生活圈路名分布
+
+# 手動觸發：檢查首頁四大生活圈的均價，實際是從哪些路的成交算出來的。
+# 只讀不寫，不會更動 repo 內任何資料檔。
+
+on:
+  workflow_dispatch:
+    inputs:
+      periods:
+        description: "往回幾期（一期=一季；首頁均價用 2 期）"
+        required: true
+        default: "2"
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 診斷
+        run: node scripts/debug-area-roads.js "${{ inputs.periods }}"
