@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-08T03:27:49.918Z",
+  "updatedAt": "2026-09-08T03:45:08.357Z",
   "deals": {
     "meishu-baitiane": [
       {
@@ -20292,6 +20292,6 @@
       }
     ]
   },
-  "backfilledAt": "2026-09-08T03:27:49.918Z",
-  "backfillPeriods": 19
+  "backfilledAt": "2026-09-08T03:45:08.357Z",
+  "backfillPeriods": 3
 }
