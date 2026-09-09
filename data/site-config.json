@@ -7,6 +7,6 @@
   "siteUrl": "https://twhouse416.github.io/chengguo-site",
   "_siteUrl": "網站網址，結尾不要加斜線。之後換自訂網域時只要改這裡，全站的 canonical、sitemap、分享連結都會跟著換。",
 
-  "lineUrl": "",
+  "lineUrl": "https://lin.ee/Y7D8Ygk",
   "_lineUrl": "LINE 官方帳號連結，例如 https://lin.ee/xxxxx。填了之後頁尾會多一個綠色 LINE 按鈕。"
 }

@@ -84,7 +84,7 @@ export const FAQS = [
   ["房屋出售的流程有哪些？",
    "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
   ["高雄美術館特區的房價怎麼看？",
-   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪平均單價、成交價格帶與總價中位數，可以先抓範圍。"],
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪平均單價、常見單價區間與常見總價，可以先抓範圍。"],
   ["農十六和美術館特區差在哪裡？",
    "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
   ["房地合一稅怎麼算？",
@@ -228,6 +228,12 @@ function areasSection(market) {
     ? { min: Math.min(...allRows.map(t => t.bandLow)), max: Math.max(...allRows.map(t => t.bandHigh)) }
     : null;
 
+  /* 滑鼠停留時的說明。用詞刻意避開「中位數」「百分位」這類統計術語——
+     一般客戶看不懂，看懂的人也不需要我們解釋。
+     兩句都把「實際仍可能高於或低於」講在前面，客戶才不會拿個案來對質。 */
+  const BAND_HINT = esc("近一年成交由低到高排列，去掉最高與最低各四分之一後的範圍。實際成交仍可能高於或低於此區間。");
+  const TOTAL_HINT = esc("把近一年的成交總價由低到高排列，取正中間那一筆。比平均數不容易被少數豪宅拉高。");
+
   /* 成交是否集中在少數幾棟：筆數 ÷ 門牌數 超過 3.5 就提示。
      一個新案交屋後一年內可能登錄七、八十筆、全在同一個門牌，
      會把整區均價帶高——那是一手價，不是區內中古行情。
@@ -259,8 +265,8 @@ function areasSection(market) {
           <div class="absolute h-[3px] bg-orange/35 rounded-sm" style="left:${left}%;width:${width}%"></div>
           <div class="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm" style="left:calc(${mid}% - 1.5px)"></div>
         </div>
-        <div class="font-mono text-[11px] text-inkSoft mt-1.5">成交帶 ${t.bandLow}–${t.bandHigh} 萬・${t.sampleSize} 筆${t.buildingSize ? `・${t.buildingSize} 個門牌` : ""}</div>
-        ${t.medianTotalPrice ? `<div class="font-mono text-[11px] text-inkFaint mt-0.5">總價中位數 ${Number(t.medianTotalPrice).toLocaleString("en-US")} 萬</div>` : ""}
+        <div class="font-mono text-[11px] text-inkSoft mt-1.5" title="${BAND_HINT}">常見單價 ${t.bandLow}–${t.bandHigh} 萬・${t.sampleSize} 筆${t.buildingSize ? `・${t.buildingSize} 個門牌` : ""}</div>
+        ${t.medianTotalPrice ? `<div class="font-mono text-[11px] text-inkFaint mt-0.5" title="${TOTAL_HINT}">常見總價 ${Number(t.medianTotalPrice).toLocaleString("en-US")} 萬</div>` : ""}
       </div>`;
     })() : "";
     return `<div class="py-2">
@@ -276,7 +282,7 @@ function areasSection(market) {
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近一年實際成交住宅的每坪平均單價與常見價格帶（取 25%–75% 百分位）。平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。數字包含新成屋交屋後的第一手過戶。新案的一手價通常高於同區中古行情，某一區近期若有新案集中交屋，均價就會被帶高——可以對照「筆數／門牌數」判斷：門牌數少而筆數多，代表成交集中在少數幾棟。總價中位數含車位，兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
+    "近一年實際成交住宅的每坪平均單價，以及多數成交落在的價格區間——把成交由低到高排列，去掉最高與最低各四分之一後的範圍，實際成交仍可能高於或低於此區間。平均前也已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。數字包含新成屋交屋後的第一手過戶。新案的一手價通常高於同區中古行情，某一區近期若有新案集中交屋，均價就會被帶高——可以對照「筆數／門牌數」判斷：門牌數少而筆數多，代表成交集中在少數幾棟。常見總價指的是把成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
   <div class="grid sm:grid-cols-2 gap-6">
     ${areas.map(a => {
       const m = AREA_META[a.code] || {};
