@@ -185,6 +185,9 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
     </nav>`}
     <div class="hidden ${compact ? "sm" : "xl"}:flex items-center gap-4 shrink-0">
       ${compact ? "" : socialLinks("light", "sm")}
+      ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 px-5 py-3 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition whitespace-nowrap">
+        ${LINE_ICON.replace("CLS", "w-5 h-5")}LINE 諮詢</a>` : ""}
       <a href="${BRAND.phoneHref}" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 ${BRAND.phone}</a>
     </div>
     ${compact ? "" : `<button id="menuBtn" aria-label="開啟選單" aria-expanded="false"
@@ -202,6 +205,9 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
       </nav>
       <div class="py-3">${listingLink}</div>
       <a href="${BRAND.phoneHref}" class="flex items-center justify-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white">來電諮詢 ${BRAND.phone}</a>
+      ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
+        class="flex items-center justify-center gap-1.5 mt-2 px-6 py-3 text-[15px] font-medium rounded-sm bg-[#06C755] text-white">
+        ${LINE_ICON.replace("CLS", "w-5 h-5")}LINE 諮詢</a>` : ""}
       <div class="pt-4 pb-1">${socialLinks("light")}</div>
     </div>
   </div>`}
@@ -374,6 +380,38 @@ export function contactForm() {
 }
 
 /* ---------- Footer ---------- */
+/* LINE 官方帳號的品牌圖示，導覽列與浮動按鈕共用 */
+const LINE_ICON = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="CLS"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>`;
+
+/* 手機版右下角的浮動 LINE 按鈕。
+   ------------------------------------------------
+   為什麼只給手機：手機點 LINE 會直接開 App，是轉換率最高的入口；
+   桌機畫面寬，浮動元件反而擋內容，桌機的入口放在導覽列。
+   捲到頁尾時自動淡出，否則會蓋住頁尾的聯絡按鈕與表單送出鈕。
+   未設定 lineUrl 時整段不輸出。 */
+function lineFab() {
+  if (!BRAND.lineUrl) return "";
+  return `<a id="lineFab" href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
+  aria-label="用 LINE 詢問"
+  class="xl:hidden fixed right-4 bottom-4 z-40 w-14 h-14 flex items-center justify-center rounded-full bg-[#06C755] text-white shadow-lg transition-opacity duration-300">
+  ${LINE_ICON.replace("CLS", "w-8 h-8")}
+</a>
+<script>
+  /* 捲到頁尾就把浮動按鈕淡出，避免蓋住頁尾的按鈕 */
+  (function () {
+    var fab = document.getElementById("lineFab");
+    var foot = document.querySelector("footer");
+    if (!fab || !foot || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        fab.style.opacity = e.isIntersecting ? "0" : "1";
+        fab.style.pointerEvents = e.isIntersecting ? "none" : "auto";
+      });
+    }, { rootMargin: "0px" }).observe(foot);
+  })();
+</script>`;
+}
+
 export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
   const up = "../".repeat(depth);
   const home = depth === 0 ? "" : `${up}index.html`;
@@ -387,7 +425,8 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
   ];
 
   if (compact) {
-    return `<footer class="border-t border-line">
+    return `${lineFab()}
+<footer class="border-t border-line">
   <div class="${width} mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
     <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
     <span class="flex flex-wrap gap-x-6 gap-y-2">
@@ -400,7 +439,8 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
 </html>`;
   }
 
-  return `<footer id="contact" class="bg-ink text-white/75">
+  return `${lineFab()}
+<footer id="contact" class="bg-ink text-white/75">
   <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
     <div class="md:col-span-7">
       <h2 class="display text-2xl text-white">先聊聊，不用急著決定</h2>
