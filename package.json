@@ -1,0 +1,14 @@
+{
+  "name": "chengguo-site",
+  "private": true,
+  "type": "module",
+  "description": "台灣房屋 澄果團隊 官方網站（GitHub Pages 靜態站）",
+  "scripts": {
+    "build": "node scripts/build-site.js && npm run css",
+    "css": "tailwindcss -i src/tailwind.css -o assets/tailwind.css --minify",
+    "images": "node scripts/optimize-images.js --write"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -124,16 +124,7 @@ ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</scri
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = { theme: { extend: {
-    colors: { ink:'#16191D', inkSoft:'#474D55', inkFaint:'#737A83',
-      paper:'#F4F4F2', surface:'#FFFFFF', line:'#DEDCD7',
-      orange:'#FD7305', orangeDeep:'#B85400', tint:'#FCEFE3' },
-    fontFamily: { sans:['"Noto Sans TC"','sans-serif'], mono:['"IBM Plex Mono"','monospace'] },
-    borderRadius: { DEFAULT:'3px', sm:'2px', md:'4px' },
-  }}}
-</script>
+<link rel="stylesheet" href="${up}assets/tailwind.css" />
 <style>
   html { scroll-behavior: smooth; }
   /* 錨點跳轉時預留 sticky header 的高度，避免標題被蓋住 */
