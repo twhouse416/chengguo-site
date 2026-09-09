@@ -6,7 +6,7 @@
  * 本腳本設計為「每日執行、有新一期資料才會變動結果」。
  *
  * v2 變更：
- * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價平均
+ * - 生活圈行情用「近四季（約一年）」的成屋資料，以「棟」為單位計算單價平均
  * - 「最新即時檔」只有十天份，不能當一整季看待
  *
  * 執行方式： node scripts/fetch-market-data.js
@@ -178,6 +178,21 @@ function readAllMainCsv(extractDir) {
   return records;
 }
 
+/* 同一棟的門牌：取到「號」為止，樓層與「之N」都算同一棟。
+   例：高雄市三民區德旺街192號十五樓之3 → 高雄市三民區德旺街192號 */
+function doorKey(addr) {
+  const s = normalize(addr);
+  const m = s.match(/^(.*?\d+號)/);
+  return m ? m[1] : s;
+}
+
+function median(arr) {
+  if (!arr.length) return 0;
+  const a = [...arr].sort((x, y) => x - y);
+  const mid = Math.floor(a.length / 2);
+  return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
+}
+
 /* ---------- 依生活圈設定篩選 + 計算單價平均（萬元/坪） ----------
    typeGroup 指定建物型態群組（電梯住宅／透天），不給就不限型態。 */
 function computeAreaAverage(records, area, typeGroup) {
@@ -218,7 +233,7 @@ function computeAreaAverage(records, area, typeGroup) {
     return unitPrice > 0;
   });
 
-  if (matched.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
+  if (matched.length === 0) return { sampleSize: 0, dealSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
 
   /* 第一層保護：單價明顯不合理的直接剔除。
      透天的總價含土地、坪數只算建物，大基地小建物的案子單價會暴衝到數百萬，
@@ -227,21 +242,37 @@ function computeAreaAverage(records, area, typeGroup) {
   const minY = (SR.minWanPerPing ?? 0) * 10000;
   const maxY = (SR.maxWanPerPing ?? Infinity) * 10000;
 
-  const all = matched
-    .map(r => parseFloat(r["單價元平方公尺"]) / M2_TO_PING)
-    .filter(v => v >= minY && v <= maxY)
-    .sort((a, b) => a - b);
+  /* 第二層保護：以「棟」為單位，不是以「筆」。
+     ------------------------------------------------
+     一個剛完銷的新建案，一年內可能就登錄七、八十筆，全部同一個價位。
+     若直接把每一筆平均，那一棟就會主導整個生活圈的數字——
+     實測：中都重劃區 226 筆裡有 63 筆來自德旺街同一個新案（約 45 萬/坪），
+     把全區從 37 萬拉到 41 萬。那是那一棟的價格，不是這個生活圈的行情。
 
-  if (all.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
+     作法：同一門牌（取到「號」為止，樓層與「之N」視為同一棟）先算自己的
+     中位數，再拿各棟的中位數去做後續的修剪與平均。這樣不論一棟成交 80 筆
+     還是 2 筆，對區域數字的影響力都一樣是「一棟」。 */
+  const byDoor = new Map();
+  matched.forEach(r => {
+    const v = parseFloat(r["單價元平方公尺"]) / M2_TO_PING;
+    if (!(v >= minY && v <= maxY)) return;
+    const key = doorKey(r["土地位置建物門牌"]);
+    if (!byDoor.has(key)) byDoor.set(key, []);
+    byDoor.get(key).push(v);
+  });
 
-  /* 第二層保護：剔除頭尾極端值。
-     10 筆以上剔各 10%；5～9 筆也要剔掉頭尾各 1 筆——
-     小樣本反而更禁不起一個離群值，原本「不足10筆就不剔除」是錯的設計。 */
+  const dealSize = [...byDoor.values()].reduce((s, a) => s + a.length, 0);
+  const all = [...byDoor.values()].map(median).sort((a, b) => a - b);
+
+  if (all.length === 0) return { sampleSize: 0, dealSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
+
+  /* 第三層保護：剔除頭尾極端的「棟」。
+     10 棟以上剔各 10%；5～9 棟剔掉頭尾各 1 棟——
+     小樣本反而更禁不起一個離群值。 */
   const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : (all.length >= 5 ? 1 : 0);
   const prices = cut > 0 ? all.slice(cut, all.length - cut) : all;
 
-  /* 代表值用平均數，但是「修剪後的平均」——頭尾極端值已在上一步剔除，
-     所以少數高價或低價案不會把數字帶偏，同時保留全部樣本的資訊。 */
+  /* 代表值：修剪後各棟中位數的平均 */
   const mean = prices.reduce((s, v) => s + v, 0) / prices.length;
 
   // 取 25%～75% 百分位當作「常見成交價格帶」
@@ -249,10 +280,11 @@ function computeAreaAverage(records, area, typeGroup) {
   const toWan = (v) => Math.round(v / 10000);
 
   return {
-    sampleSize: all.length,          // 已扣掉單價不合理的
+    sampleSize: all.length,          // 棟數（單價合理的門牌數）
+    dealSize,                        // 這些棟合計的成交筆數
     rawSize: matched.length,         // 篩選條件命中的原始筆數
-    trimmedSize: prices.length,      // 實際用來計算的筆數
-    avgPricePerPing: Math.round(mean / 1000) / 10, // 修剪後平均，萬元/坪
+    trimmedSize: prices.length,      // 實際用來計算的棟數
+    avgPricePerPing: Math.round(mean / 1000) / 10, // 各棟中位數修剪後的平均，萬元/坪
     bandLow: toWan(pct(0.25)),
     bandHigh: toWan(pct(0.75)),
   };
@@ -516,6 +548,7 @@ async function main() {
         bandLow: cur.bandLow,
         bandHigh: cur.bandHigh,
         sampleSize: cur.sampleSize,
+        dealSize: cur.dealSize ?? 0,
         lowSample: cur.sampleSize > 0 && cur.sampleSize < 5,
         trendPct,
       };
@@ -532,6 +565,7 @@ async function main() {
       bandLow: main.bandLow ?? null,
       bandHigh: main.bandHigh ?? null,
       sampleSize: main.sampleSize ?? 0,
+      dealSize: main.dealSize ?? 0,
       lowSample: (main.sampleSize ?? 0) < 5,
       trendPct: main.trendPct ?? null,
     };
@@ -539,7 +573,7 @@ async function main() {
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價為近四季（約一年）成屋成交的平均價，已先剔除頭尾各一成極端值與單價明顯異常者再平均，價格帶取25%～75%百分位。電梯住宅與透天分開統計，不限屋齡。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價以「棟」為單位計算：同一門牌先取中位數，再剔除頭尾各一成後平均各棟，避免單一新建案的大量成交主導區域數字；資料期間為近四季（約一年）成屋成交，價格帶取25%～75%百分位。電梯住宅與透天分開統計，不限屋齡。",
     areas,
   };
 

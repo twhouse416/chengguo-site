@@ -84,7 +84,7 @@ export const FAQS = [
   ["房屋出售的流程有哪些？",
    "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
   ["高雄美術館特區的房價怎麼看？",
-   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪平均單價與成交價格帶，可以先抓範圍。"],
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，以棟為單位統計近一年電梯住宅與透天各自的每坪平均單價與成交價格帶，可以先抓範圍。"],
   ["農十六和美術館特區差在哪裡？",
    "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
   ["房地合一稅怎麼算？",
@@ -234,7 +234,7 @@ function areasSection(market) {
     if (!t.avgPricePerPing) {
       return `<div class="flex items-baseline justify-between gap-3 py-2">
         <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
-        <span class="font-mono text-[12px] text-inkFaint">近半年無成交紀錄</span>
+        <span class="font-mono text-[12px] text-inkFaint">近一年無成交紀錄</span>
       </div>`;
     }
     const span = domain ? (domain.max - domain.min || 1) : 1;
@@ -247,7 +247,7 @@ function areasSection(market) {
           <div class="absolute h-[3px] bg-orange/35 rounded-sm" style="left:${left}%;width:${width}%"></div>
           <div class="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm" style="left:calc(${mid}% - 1.5px)"></div>
         </div>
-        <div class="font-mono text-[11px] text-inkSoft mt-1.5">成交帶 ${t.bandLow}–${t.bandHigh} 萬・${t.sampleSize} 筆</div>
+        <div class="font-mono text-[11px] text-inkSoft mt-1.5">成交帶 ${t.bandLow}–${t.bandHigh} 萬・${t.sampleSize} 棟${t.dealSize ? `・${t.dealSize} 筆` : ""}</div>
       </div>`;
     })() : "";
     return `<div class="py-2">
@@ -256,13 +256,13 @@ function areasSection(market) {
         <span class="font-mono ${size} font-semibold text-ink leading-none">${t.avgPricePerPing}<span class="text-[12px] font-normal text-inkSoft ml-1">萬/坪</span></span>
       </div>
       ${bar}
-      ${t.lowSample ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">樣本數偏少，僅供參考</p>` : ""}
+      ${t.lowSample ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">社區數偏少，僅供參考</p>` : ""}
     </div>`;
   };
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近一年實際成交住宅的每坪平均單價與常見價格帶（取 25%–75% 百分位）。平均前已剔除頭尾各一成的極端成交，避免少數高價案把數字拉高。不限屋齡，新舊物件一起計算。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
+    "近一年實際成交住宅的每坪平均單價與常見價格帶（取 25%–75% 百分位）。以「棟」為單位計算——同一棟社區先取自己的中位數，再平均各棟，避免一個剛完銷的新建案動輒數十筆成交就主導整區數字；頭尾各一成的極端值也已剔除。不限屋齡，新舊物件一起計算。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
   <div class="grid sm:grid-cols-2 gap-6">
     ${areas.map(a => {
       const m = AREA_META[a.code] || {};
@@ -281,7 +281,7 @@ function areasSection(market) {
     }).join("\n    ")}
   </div>
   ${domain ? `<div class="mt-8 pt-4 border-t border-line flex justify-between font-mono text-[11px] text-inkFaint">
-    <span>${domain.min} 萬/坪</span><span>四區共用刻度｜直線為該區平均單價</span><span>${domain.max} 萬/坪</span>
+    <span>${domain.min} 萬/坪</span><span>四區共用刻度｜直線為該區平均單價（以棟計）</span><span>${domain.max} 萬/坪</span>
   </div>` : ""}
   <p class="mt-4 font-mono text-[11px] text-inkFaint">
     ${market?.updatedAt
