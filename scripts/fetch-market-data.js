@@ -6,8 +6,8 @@
  * 本腳本設計為「每日執行、有新一期資料才會變動結果」。
  *
  * v2 變更：
- * - 「本期均價」改成合併最近兩季（約近6個月）資料計算，避免單季樣本數太少
- * - 「走勢」改成比較「再往前兩季」（約6個月前的區間）
+ * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價中位數
+ * - 「最新即時檔」只有十天份，不能當一整季看待
  *
  * 執行方式： node scripts/fetch-market-data.js
  * 由 .github/workflows/update-market-data.yml 每日排程呼叫。
@@ -61,6 +61,18 @@ function normalize(str) {
     .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
     .replace(/[Ａ-Ｚａ-ｚ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
     .replace(/\s+/g, "");
+}
+
+/* 屋齡＝交易年 − 建築完成年（民國年）。
+   建築完成年月空白時回傳 null，代表無法判斷。 */
+function ageYears(r) {
+  const built = String(r["建築完成年月"] || "").trim();
+  const deal = String(r["交易年月日"] || "").trim();
+  if (built.length < 6 || deal.length < 6) return null;
+  const by = parseInt(built.slice(0, built.length - 4), 10);
+  const dy = parseInt(deal.slice(0, deal.length - 4), 10);
+  if (!by || !dy || by < 1 || dy < by) return null;
+  return dy - by;
 }
 
 /* 關於單價：直接使用內政部的「單價元平方公尺」，不要自己扣車位。
@@ -194,6 +206,14 @@ function computeAreaAverage(records, area, typeGroup) {
        主要用途空白時不排除——實價登錄常有空值，全濾掉會損失太多樣本。 */
     const use = (r["主要用途"] || "").trim();
     if (use && (AREAS_CONFIG.excludeUses || []).some(k => use.includes(k))) return false;
+
+    /* 屋齡上限：既然對外宣告「N 年內」，屋齡不明的就不能混進來 */
+    const maxAge = typeGroup?.maxAgeYears ?? AREAS_CONFIG.maxAgeYears;
+    if (maxAge != null) {
+      const age = ageYears(r);
+      if (age === null || age > maxAge) return false;
+    }
+
     const unitPrice = parseFloat(r["單價元平方公尺"]);
     return unitPrice > 0;
   });
@@ -422,27 +442,36 @@ async function main() {
   if (existsSync(TMP)) rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
 
-  // 近6個月窗口：本期 + 上一季
+  /* 下載四期：最新即時檔 + 往前三季。
+     注意「最新即時檔」只涵蓋最近一批公告（約十天），筆數很少，
+     不能把它當成一整季看待。 */
   const currentDir = downloadAndExtract(CURRENT_ZIP_URL, "current");
   const prevSeasonDir = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(3)), "prev1");
-  const recentRecords = [
-    ...readAllMainCsv(currentDir),
-    ...readAllMainCsv(prevSeasonDir),
-  ];
 
-  // 6個月前窗口（拿來算走勢）：往前兩季 + 往前三季
-  let trendRecords = [];
   let trendDir1 = null, trendDir2 = null;
   try {
     trendDir1 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(6)), "trend1");
     trendDir2 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(9)), "trend2");
-    trendRecords = [
-      ...readAllMainCsv(trendDir1),
-      ...readAllMainCsv(trendDir2),
-    ];
   } catch (e) {
-    console.warn("[警告] 走勢比較資料下載失敗，本次先不計算走勢：", e.message);
+    console.warn("[警告] 較早的季檔下載失敗，樣本會少一些：", e.message);
   }
+
+  /* 生活圈行情用「近四季（約一年）」計算。
+     原本只用 current + 上一季，但 current 只有十天份，
+     實際等於單季樣本——美術館特區一度只有 104 筆，四個區有兩個不到 40 筆。
+     四期資料本來就已經下載了（社區比對在用），拿來一起算不增加任何成本。
+     代價是時間窗變長、短期波動被平滑，但樣本足夠比反應靈敏重要。 */
+  const recentRecords = [
+    ...readAllMainCsv(currentDir),
+    ...readAllMainCsv(prevSeasonDir),
+    ...readAllMainCsv(trendDir1),
+    ...readAllMainCsv(trendDir2),
+  ];
+  console.log(`[生活圈] 近四季成屋共 ${recentRecords.length} 筆可供比對`);
+
+  /* 走勢改為不計算：可比較的區間要再往前四季，得多下載四個大檔，
+     而網站本來就不顯示漲跌幅，成本不值得。 */
+  const trendRecords = [];
 
   // 社區成交：時間窗拉到近四季，且含預售屋（新建案的交易多在預售檔）
   const communityRecords = [
@@ -511,7 +540,7 @@ async function main() {
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近兩季（約6個月）成交合併計算，已剔除頭尾各一成極端值，價格帶取25%～75%百分位。電梯住宅與透天分開統計。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近四季（約一年）成屋成交合併計算，已剔除頭尾各一成極端值與單價明顯異常者，價格帶取25%～75%百分位。電梯住宅與透天分開統計，並限屋齡20年內。",
     areas,
   };
 
