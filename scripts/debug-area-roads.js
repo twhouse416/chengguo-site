@@ -26,6 +26,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const TMP = path.join(ROOT, ".tmp-areadebug");
 const AREAS = JSON.parse(readFileSync(path.join(ROOT, "config/areas.json"), "utf-8"));
+/* 診斷時把所有型態群組合起來看（電梯住宅＋透天），才知道整個生活圈抓到什麼 */
+const TYPE_MATCH = (AREAS.propertyTypes || []).flatMap(t => t.match);
 
 const M2_TO_PING = 0.3025;
 const SEASON_ZIP_URL = s =>
@@ -133,7 +135,8 @@ function readCsv(dir) {
 async function main() {
   const periods = parseInt(process.argv[2], 10) || 2;
   console.log(`\n=== 生活圈路名分布診斷（近 ${periods} 期）===`);
-  console.log(`建物型態篩選：${AREAS.propertyTypeFilter || "（無）"}\n`);
+  console.log(`建物型態：${(AREAS.propertyTypes || []).map(x => x.label + "(" + x.match.join("/") + ")").join("、")}`);
+  console.log(`排除用途：${(AREAS.excludeUses || []).join("、") || "（無）"}\n`);
 
   rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
@@ -165,7 +168,10 @@ async function main() {
       const byRange = ranges.some(rg =>
         district.includes(rg.district || area.district) && inAddressRange(addr, [rg]));
       if (!byKeyword && !byRange) return false;
-      if (AREAS.propertyTypeFilter && !(r["建物型態"] || "").includes(AREAS.propertyTypeFilter)) return false;
+      const type = r["建物型態"] || "";
+      if (!TYPE_MATCH.some(k => type.includes(k))) return false;
+      const use = (r["主要用途"] || "").trim();
+      if (use && (AREAS.excludeUses || []).some(k => use.includes(k))) return false;
       return parseFloat(r["單價元平方公尺"]) > 0;
     });
 

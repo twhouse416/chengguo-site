@@ -84,7 +84,7 @@ export const FAQS = [
   ["房屋出售的流程有哪些？",
    "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
   ["高雄美術館特區的房價怎麼看？",
-   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近半年的每坪單價中位數與常見成交價格帶，可以先抓範圍。"],
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近半年電梯住宅與透天各自的每坪單價中位數與成交價格帶，可以先抓範圍。"],
   ["農十六和美術館特區差在哪裡？",
    "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
   ["房地合一稅怎麼算？",
@@ -220,44 +220,61 @@ function servicesSection() {
 
 function areasSection(market) {
   const areas = market?.areas || [];
-  const bands = areas.filter(a => a.bandLow && a.bandHigh);
-  const domain = bands.length
-    ? { min: Math.min(...bands.map(a => a.bandLow)), max: Math.max(...bands.map(a => a.bandHigh)) }
+
+  /* 每個生活圈可能有多組型態（電梯住宅、透天）。
+     刻度要四區共用才有比較意義，所以先蒐集所有型態的價格帶算出共同範圍。 */
+  const allRows = areas.flatMap(a => a.types || []).filter(t => t.bandLow && t.bandHigh);
+  const domain = allRows.length
+    ? { min: Math.min(...allRows.map(t => t.bandLow)), max: Math.max(...allRows.map(t => t.bandHigh)) }
     : null;
 
-  const band = a => {
-    if (!a.bandLow || !a.bandHigh || !domain) {
-      return `<div class="h-9 flex items-center font-mono text-[11px] text-inkFaint">成交資料不足</div>`;
+  /* 單一型態的一行：標籤、中位數、價格帶長條 */
+  const typeRow = (t, isMain) => {
+    const size = isMain ? "text-[26px]" : "text-[20px]";
+    if (!t.avgPricePerPing) {
+      return `<div class="flex items-baseline justify-between gap-3 py-2">
+        <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
+        <span class="font-mono text-[12px] text-inkFaint">近半年無成交紀錄</span>
+      </div>`;
     }
-    const span = domain.max - domain.min || 1;
-    const left = ((a.bandLow - domain.min) / span) * 100;
-    const width = ((a.bandHigh - a.bandLow) / span) * 100;
-    const avg = Math.min(Math.max(((a.avgPricePerPing - domain.min) / span) * 100, 0), 100);
-    return `<div class="h-9 pt-3">
-      <div class="relative h-[3px] bg-line rounded-sm">
-        <div class="absolute h-[3px] bg-orange/35 rounded-sm" style="left:${left}%;width:${width}%"></div>
-        <div class="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm" style="left:calc(${avg}% - 1.5px)"></div>
+    const span = domain ? (domain.max - domain.min || 1) : 1;
+    const bar = (domain && t.bandLow && t.bandHigh) ? (() => {
+      const left = ((t.bandLow - domain.min) / span) * 100;
+      const width = ((t.bandHigh - t.bandLow) / span) * 100;
+      const mid = Math.min(Math.max(((t.avgPricePerPing - domain.min) / span) * 100, 0), 100);
+      return `<div class="mt-2">
+        <div class="relative h-[3px] bg-line rounded-sm">
+          <div class="absolute h-[3px] bg-orange/35 rounded-sm" style="left:${left}%;width:${width}%"></div>
+          <div class="absolute w-[3px] h-[11px] bg-ink -top-[4px] rounded-sm" style="left:calc(${mid}% - 1.5px)"></div>
+        </div>
+        <div class="font-mono text-[11px] text-inkSoft mt-1.5">成交帶 ${t.bandLow}–${t.bandHigh} 萬・${t.sampleSize} 筆</div>
+      </div>`;
+    })() : "";
+    return `<div class="py-2">
+      <div class="flex items-baseline justify-between gap-3">
+        <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
+        <span class="font-mono ${size} font-semibold text-ink leading-none">${t.avgPricePerPing}<span class="text-[12px] font-normal text-inkSoft ml-1">萬/坪</span></span>
       </div>
-      <div class="font-mono text-[11px] text-inkSoft mt-2">成交帶 ${a.bandLow}–${a.bandHigh} 萬</div>
+      ${bar}
+      ${t.lowSample ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">樣本數偏少，僅供參考</p>` : ""}
     </div>`;
   };
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近六個月大樓實際成交的每坪單價中位數與常見價格帶（取 25%–75% 百分位），並已剔除頭尾各一成的極端成交。數字用來抓範圍，實際行情會因屋齡、樓層、格局與座向而有落差。")}
+    "近六個月實際成交的每坪單價中位數與常見價格帶（取 25%–75% 百分位），並已剔除頭尾各一成的極端成交。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。數字用來抓範圍，實際行情會因屋齡、樓層、格局與座向而有落差。")}
   <div class="grid sm:grid-cols-2 gap-6">
     ${areas.map(a => {
       const m = AREA_META[a.code] || {};
+      const types = (a.types && a.types.length) ? a.types : [a];
       return `<article class="flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
       <img src="${m.img}" alt="${esc(a.name)}" class="w-full aspect-[3/2] object-cover shrink-0" loading="lazy" />
       <div class="flex flex-col flex-1 p-7">
         <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(m.district || "")}</div>
         <h3 class="text-xl font-bold mt-1 mb-2.5 tracking-tight">${esc(a.name)}</h3>
         <p class="text-[15px] text-inkSoft leading-[1.85]">${esc(m.desc || "")}</p>
-        <div class="mt-auto pt-5">
-          <div class="font-mono text-[30px] font-semibold text-ink leading-none">${a.avgPricePerPing ?? "—"}<span class="text-[13px] font-normal text-inkSoft ml-1">萬/坪</span></div>
-          ${band(a)}
-          ${a.lowSample ? `<p class="font-mono text-[12px] text-orangeDeep mt-2">樣本數偏少，僅供參考</p>` : ""}
+        <div class="mt-auto pt-5 divide-y divide-line">
+          ${types.map((t, i) => typeRow(t, i === 0)).join("\n          ")}
         </div>
       </div>
     </article>`;

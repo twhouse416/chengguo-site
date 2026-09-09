@@ -158,8 +158,9 @@ function readAllMainCsv(extractDir) {
   return records;
 }
 
-/* ---------- 依生活圈設定篩選 + 計算平均單價（萬元/坪） ---------- */
-function computeAreaAverage(records, area) {
+/* ---------- 依生活圈設定篩選 + 計算單價中位數（萬元/坪） ----------
+   typeGroup 指定建物型態群組（電梯住宅／透天），不給就不限型態。 */
+function computeAreaAverage(records, area, typeGroup) {
   /* keywords：整條路都屬於這個生活圈，巷弄自動涵蓋
      roadRanges：只有某一段屬於，用號碼範圍與單雙號界定 */
   const normKeywords = (area.keywords || []).map(normalize);
@@ -178,7 +179,13 @@ function computeAreaAverage(records, area) {
     const byRange = ranges.some(rg =>
       district.includes(rg.district || area.district) && inAddressRange(address, [rg]));
     if (!byKeyword && !byRange) return false;
-    if (AREAS_CONFIG.propertyTypeFilter && !type.includes(AREAS_CONFIG.propertyTypeFilter)) return false;
+    if (typeGroup && !typeGroup.match.some(k => type.includes(k))) return false;
+
+    /* 排除非住宅用途。大樓一樓的店面「建物型態」一樣是住宅大樓，
+       只有「主要用途」分得出來，不排除的話店面的高單價會混進住宅行情。
+       主要用途空白時不排除——實價登錄常有空值，全濾掉會損失太多樣本。 */
+    const use = (r["主要用途"] || "").trim();
+    if (use && (AREAS_CONFIG.excludeUses || []).some(k => use.includes(k))) return false;
     const unitPrice = parseFloat(r["單價元平方公尺"]);
     return unitPrice > 0;
   });
@@ -297,6 +304,10 @@ function collectCommunityDeals(records) {
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
         kind: r.__presale ? "預售" : "成屋",
+    /* 大樓一樓的店面在「建物型態」上一樣是住宅大樓，只有「主要用途」看得出來。
+       社區頁逐筆列出時保留店面成交（對想買店面的人有價值），但標示清楚，
+       且不納入上方的單價範圍統計，避免被誤讀成住家行情。 */
+    use: /商業|店鋪|店面/.test((r["主要用途"] || "").trim()) ? "店面" : "",
         addr: (r["土地位置建物門牌"] || "").trim(),
         project: (r["建案名稱"] || "").trim(),
         unit: (r["棟及號"] || "").trim(),
@@ -436,30 +447,51 @@ async function main() {
     process.exit(1);
   }
 
+  const TYPES = AREAS_CONFIG.propertyTypes || [];
+
   const areas = AREAS_CONFIG.areas.map(area => {
-    const current = computeAreaAverage(recentRecords, area);
-    const past = trendRecords.length ? computeAreaAverage(trendRecords, area) : { avgPricePerPing: null };
+    /* 每個建物型態群組各算一組數字。
+       電梯住宅與透天的單價意義不同（透天總價含土地、坪數只算建物），
+       混在一起取中位數對兩者都不準，所以分開統計、分開顯示。 */
+    const byType = TYPES.map(t => {
+      const cur = computeAreaAverage(recentRecords, area, t);
+      const past = trendRecords.length
+        ? computeAreaAverage(trendRecords, area, t) : { avgPricePerPing: null };
+      let trendPct = null;
+      if (cur.avgPricePerPing && past.avgPricePerPing) {
+        trendPct = Math.round(((cur.avgPricePerPing - past.avgPricePerPing) / past.avgPricePerPing) * 1000) / 10;
+      }
+      return {
+        key: t.key,
+        label: t.label,
+        avgPricePerPing: cur.avgPricePerPing,
+        bandLow: cur.bandLow,
+        bandHigh: cur.bandHigh,
+        sampleSize: cur.sampleSize,
+        lowSample: cur.sampleSize > 0 && cur.sampleSize < 5,
+        trendPct,
+      };
+    });
 
-    let trendPct = null;
-    if (current.avgPricePerPing && past.avgPricePerPing) {
-      trendPct = Math.round(((current.avgPricePerPing - past.avgPricePerPing) / past.avgPricePerPing) * 1000) / 10;
-    }
-
+    const main = byType[0] || {};
     return {
       code: area.code,
       name: area.name,
-      avgPricePerPing: current.avgPricePerPing,
-      bandLow: current.bandLow,
-      bandHigh: current.bandHigh,
-      sampleSize: current.sampleSize,
-      lowSample: current.sampleSize < 5,
-      trendPct, // 保留供內部參考，網站不直接顯示漲跌幅
+      types: byType,
+      /* 以下沿用原欄位名，指向第一組（電梯住宅），
+         讓舊的前端程式與既有資料格式不會壞掉 */
+      avgPricePerPing: main.avgPricePerPing ?? null,
+      bandLow: main.bandLow ?? null,
+      bandHigh: main.bandHigh ?? null,
+      sampleSize: main.sampleSize ?? 0,
+      lowSample: (main.sampleSize ?? 0) < 5,
+      trendPct: main.trendPct ?? null,
     };
   });
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價與價格帶為近兩季（約6個月）成交合併計算，價格帶取25%～75%百分位。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近兩季（約6個月）成交合併計算，已剔除頭尾各一成極端值，價格帶取25%～75%百分位。電梯住宅與透天分開統計。",
     areas,
   };
 

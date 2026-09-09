@@ -155,8 +155,11 @@ function dealsTable(deals) {
     </div>`;
   }
 
-  const prices = deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  /* 單價範圍只算住家，店面單價本來就高一截，混進來會讓人誤判住家行情 */
+  const homes = deals.filter(d => d.use !== "店面");
+  const prices = homes.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
   const low = prices[0], high = prices[prices.length - 1];
+  const shops = deals.length - homes.length;
 
   /* 資料多時只列最近 40 筆，其餘收在展開區塊裡，避免頁面過長 */
   const SHOW = 40;
@@ -173,11 +176,15 @@ function dealsTable(deals) {
       <span class="font-mono text-[24px] font-semibold text-ink ml-2">${deals.length}</span>
       ${deals.length >= 300 ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 300 筆）</span>` : ""}
     </div>
-    <div>
-      <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
+    ${prices.length ? `<div>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
       <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">${low}–${high}</span>
       <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
-    </div>
+      ${shops ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（另有 ${shops} 筆店面未計入）</span>` : ""}
+    </div>` : `<div>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
+      <span class="font-mono text-[13px] text-inkSoft ml-2">近期只有店面成交，無住家紀錄</span>
+    </div>`}
     ${presale ? `<div>
       <span class="font-mono text-[12px] text-inkFaint">其中預售</span>
       <span class="font-mono text-[20px] font-semibold text-ink ml-2">${presale}</span>
@@ -202,7 +209,7 @@ function dealsTable(deals) {
       <tbody>
         ${shown.map(d => `<tr class="border-b border-line last:border-0">
           <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
-          <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
+          <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="block font-mono text-[11px] text-ink bg-tint border border-orange/40 rounded-sm px-1 mt-1 inline-block">店面</span>` : ""}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
           <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
@@ -234,7 +241,7 @@ function dealsTable(deals) {
         <tbody>
           ${rest.map(d => `<tr class="border-b border-line last:border-0">
             <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
-            <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
+            <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="block font-mono text-[11px] text-ink bg-tint border border-orange/40 rounded-sm px-1 mt-1 inline-block">店面</span>` : ""}</td>
             <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
             <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
             <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
