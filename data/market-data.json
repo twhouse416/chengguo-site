@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-09T04:57:56.397Z",
+  "updatedAt": "2026-09-09T05:14:43.811Z",
   "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近兩季（約6個月）成交合併計算，已剔除頭尾各一成極端值，價格帶取25%～75%百分位。電梯住宅與透天分開統計。",
   "areas": [
     {
@@ -14,7 +14,7 @@
           "bandHigh": 39,
           "sampleSize": 104,
           "lowSample": false,
-          "trendPct": -11
+          "trendPct": -10.7
         },
         {
           "key": "townhouse",
@@ -32,7 +32,7 @@
       "bandHigh": 39,
       "sampleSize": 104,
       "lowSample": false,
-      "trendPct": -11
+      "trendPct": -10.7
     },
     {
       "code": "02",
@@ -51,12 +51,12 @@
         {
           "key": "townhouse",
           "label": "透天",
-          "avgPricePerPing": 38.5,
+          "avgPricePerPing": 34,
           "bandLow": 30,
-          "bandHigh": 484,
-          "sampleSize": 6,
-          "lowSample": false,
-          "trendPct": 25.8
+          "bandHigh": 39,
+          "sampleSize": 4,
+          "lowSample": true,
+          "trendPct": 11.1
         }
       ],
       "avgPricePerPing": 40.2,
