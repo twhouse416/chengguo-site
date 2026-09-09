@@ -159,9 +159,12 @@ async function main() {
     const ranges = area.roadRanges || [];
 
     const matched = all.filter(r => {
-      if (!(r["鄉鎮市區"] || "").includes(area.district)) return false;
+      const district = r["鄉鎮市區"] || "";
       const addr = normalize(r["土地位置建物門牌"]);
-      if (!keys.some(k => addr.includes(k)) && !inAddressRange(addr, ranges)) return false;
+      const byKeyword = district.includes(area.district) && keys.some(k => addr.includes(k));
+      const byRange = ranges.some(rg =>
+        district.includes(rg.district || area.district) && inAddressRange(addr, [rg]));
+      if (!byKeyword && !byRange) return false;
       if (AREAS.propertyTypeFilter && !(r["建物型態"] || "").includes(AREAS.propertyTypeFilter)) return false;
       return parseFloat(r["單價元平方公尺"]) > 0;
     });
@@ -173,7 +176,8 @@ async function main() {
       console.log(`路段：　${ranges.map(r => {
         const p = r.parity === "odd" ? "單號" : r.parity === "even" ? "雙號" : "單雙皆取";
         const n = (r.from != null || r.to != null) ? `${r.from ?? "不限"}-${r.to ?? "不限"}號` : "全路";
-        return `${r.road} ${n}（${p}）`;
+        const d = r.district ? `${r.district}／` : "";
+        return `${d}${r.road} ${n}（${p}）`;
       }).join("；")}`);
     }
     console.log(`══════════════════════════════════════════`);
@@ -186,8 +190,11 @@ async function main() {
       const addr = normalize(r["土地位置建物門牌"]);
       const road = roadOf(r["土地位置建物門牌"]);
       const price = Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10;
-      const hitKey = (area.keywords || []).find(k => addr.includes(normalize(k)))
-        || (inAddressRange(addr, ranges) ? "（路段範圍）" : "?");
+      const dist = r["鄉鎮市區"] || "";
+      const hitKey = (dist.includes(area.district)
+          ? (area.keywords || []).find(k => addr.includes(normalize(k))) : null)
+        || (ranges.some(rg => dist.includes(rg.district || area.district) && inAddressRange(addr, [rg]))
+            ? "（路段範圍）" : "?");
       if (!byRoad.has(road)) byRoad.set(road, { prices: [], keys: new Set() });
       byRoad.get(road).prices.push(price);
       byRoad.get(road).keys.add(hitKey);

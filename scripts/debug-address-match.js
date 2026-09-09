@@ -153,25 +153,41 @@ async function main() {
     console.log(`   🔍 找到 ${hits.length} 筆門牌含「${keyword}」：\n`);
     totalHits += hits.length;
 
+    const M2 = 0.3025;
+    const wan = v => (v / M2 / 10000).toFixed(1);   // 元/㎡ → 萬元/坪
+
     hits.forEach(r => {
       const date = rocToDate(r["交易年月日"]);
       const price = parseFloat(r["單價元平方公尺"]);
       const cancelled = (r["解約情形"] || "").trim();
       const district = (r["鄉鎮市區"] || "").trim();
+      const type = (r["建物型態"] || "").trim();
 
-      /* 逐項檢查會不會被主流程的條件濾掉 */
+      const total = parseFloat(r["總價元"]) || 0;
+      const area = parseFloat(r["建物移轉總面積平方公尺"]) || 0;
+      const pkPrice = parseFloat(r["車位總價元"]) || 0;
+      const pkArea = parseFloat(r["車位移轉總面積平方公尺"]) || 0;
+
+      /* 扣掉車位後重算：車位的價格與面積比例不同，含車位的成交
+         用內政部給的單價會失真，這裡兩種都算出來對照 */
+      const netTotal = total - pkPrice;
+      const netArea = area - pkArea;
+      const netUnit = netArea > 0 ? netTotal / netArea : 0;
+
       const reasons = [];
-      if (!district.includes("鼓山區")) reasons.push(`行政區是「${district}」不是鼓山區`);
       if (!(price > 0)) reasons.push(`單價元平方公尺無效（${r["單價元平方公尺"]}）`);
       if (cancelled) reasons.push(`已解約（${cancelled}）`);
       if (!date) reasons.push(`交易年月日無法解析（${r["交易年月日"]}）`);
+      if (!type.includes("住宅大樓")) reasons.push(`建物型態不是住宅大樓（${type || "空白"}）`);
 
       const verdict = reasons.length ? `⛔ 會被濾掉：${reasons.join("、")}` : `✔ 條件全過`;
 
-      console.log(`   ${date}  ${(r["土地位置建物門牌"] || "").trim()}`);
-      console.log(`      檔案 ${r.__file}${r.__presale ? "（預售）" : ""}`);
-      console.log(`      建物型態「${(r["建物型態"] || "").trim()}」　主要用途「${(r["主要用途"] || "").trim()}」`);
-      console.log(`      總價 ${r["總價元"]}　單價/㎡ ${r["單價元平方公尺"]}　移轉層次 ${(r["移轉層次"] || "").trim()}`);
+      console.log(`   ${date}  ${district}${(r["土地位置建物門牌"] || "").trim()}`);
+      console.log(`      檔案 ${r.__file}${r.__presale ? "（預售）" : ""}　移轉層次 ${(r["移轉層次"] || "").trim()}／${(r["總樓層數"] || "").trim()}`);
+      console.log(`      建物型態「${type}」　主要用途「${(r["主要用途"] || "").trim()}」`);
+      console.log(`      總價 ${total.toLocaleString()} 元　建物面積 ${area} ㎡（${(area * M2).toFixed(1)} 坪）`);
+      console.log(`      車位 ${(r["車位類別"] || "無").trim()}　車位價 ${pkPrice.toLocaleString()} 元　車位面積 ${pkArea} ㎡`);
+      console.log(`      內政部單價 ${wan(price)} 萬/坪　｜　扣車位後 ${netUnit ? wan(netUnit) : "—"} 萬/坪`);
       console.log(`      ${verdict}\n`);
     });
 

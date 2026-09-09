@@ -169,10 +169,15 @@ function computeAreaAverage(records, area) {
     const district = r["鄉鎮市區"] || "";
     const address = normalize(r["土地位置建物門牌"]);
     const type = r["建物型態"] || "";
-    if (!district.includes(area.district)) return false;
-    const hit = normKeywords.some(k => address.includes(k))
-             || inAddressRange(address, ranges);
-    if (!hit) return false;
+
+    /* keywords 用生活圈本身的行政區。
+       roadRanges 可以各自指定 district——有些路的單雙號分屬不同行政區，
+       例如明誠三路雙號在鼓山區，卻屬於瑞豐巨蛋（左營區）生活圈。 */
+    const byKeyword = district.includes(area.district)
+      && normKeywords.some(k => address.includes(k));
+    const byRange = ranges.some(rg =>
+      district.includes(rg.district || area.district) && inAddressRange(address, [rg]));
+    if (!byKeyword && !byRange) return false;
     if (AREAS_CONFIG.propertyTypeFilter && !type.includes(AREAS_CONFIG.propertyTypeFilter)) return false;
     const unitPrice = parseFloat(r["單價元平方公尺"]);
     return unitPrice > 0;
