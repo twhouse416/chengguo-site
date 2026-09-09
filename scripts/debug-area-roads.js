@@ -74,6 +74,11 @@ function roadOf(addr) {
    內政部在「車位總價元」有揭露時已經先扣過，重複扣會高估。
    車位價未揭露（為 0）時內政部無從扣起，那類紀錄單價本來就偏低，屬於資料限制。 */
 
+function mean(arr) {
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
 function median(arr) {
   if (!arr.length) return 0;
   const a = [...arr].sort((x, y) => x - y);
@@ -141,8 +146,9 @@ function readCsv(dir) {
 }
 
 async function main() {
-  const periods = parseInt(process.argv[2], 10) || 2;
+  const periods = parseInt(process.argv[2], 10) || 3;
   console.log(`\n=== 生活圈路名分布診斷（近 ${periods} 期）===`);
+  console.log(`（從上一季往回抓——本季的季檔內政部通常還沒公告）`);
   console.log(`建物型態：${(AREAS.propertyTypes || []).map(x => x.label + "(" + x.match.join("/") + ")").join("、")}`);
   console.log(`排除用途：${(AREAS.excludeUses || []).join("、") || "（無）"}\n`);
 
@@ -151,7 +157,7 @@ async function main() {
 
   let all = [];
   for (let i = 0; i < periods; i++) {
-    const season = seasonCode(i);
+    const season = seasonCode(i + 1);   // 跳過本季：季檔要季末才公告
     process.stdout.write(`下載 ${season} … `);
     const dir = download(season);
     if (!dir) { console.log("❌ 失敗，跳過"); continue; }
@@ -240,7 +246,29 @@ async function main() {
       );
     });
     console.log("─".repeat(74));
-    console.log(`全區中位數 ${areaMed.toFixed(1)} 萬/坪　（首頁顯示的是平均數，會略有差異）`);
+    console.log(`全區平均 ${mean(allPrices).toFixed(1)} 萬/坪　中位數 ${areaMed.toFixed(1)} 萬/坪`);
+    console.log(`（首頁顯示的是剔除頭尾各一成後的平均，會比這裡的原始平均再收斂一點）`);
+
+    /* 門牌層級：同一棟大樓會有很多筆成交。若某一棟就佔了整區的一大半，
+       那首頁的數字其實是那一棟的價格，不是整個生活圈的行情。 */
+    const byDoor = new Map();
+    matched.forEach(r => {
+      const raw = normalize(r["土地位置建物門牌"]);
+      /* 取到「號」為止，樓層與「之N」不計，同一棟就會合併 */
+      const m = raw.match(/^(.*?\d+號)/);
+      const door = m ? m[1].replace(/^.*?[縣市]/, "").replace(/^.*?區/, "") : raw.slice(0, 20);
+      const price = Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10;
+      if (!byDoor.has(door)) byDoor.set(door, []);
+      byDoor.get(door).push(price);
+    });
+    const doors = [...byDoor.entries()].sort((a, b) => b[1].length - a[1].length).slice(0, 12);
+    console.log(`\n門牌集中度（前 ${doors.length} 名，共 ${byDoor.size} 個門牌）`);
+    console.log("─".repeat(74));
+    doors.forEach(([door, ps]) => {
+      const share = (ps.length / matched.length * 100).toFixed(1);
+      console.log(`${door.padEnd(24)}${String(ps.length).padStart(5)} 筆　佔 ${share.padStart(5)}%　平均 ${mean(ps).toFixed(1)} 萬/坪`);
+    });
+    console.log("─".repeat(74));
   }
 
   console.log(`\n\n=== 判讀方式 ===`);
