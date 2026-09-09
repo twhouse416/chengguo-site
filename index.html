@@ -307,9 +307,24 @@
   <div class="mb-10">
     <div class="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Market Data</div>
     <h2 class="display text-2xl md:text-[28px] text-ink">四個主力生活圈，現在的行情</h2>
-    <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-3xl">近一年實際成交住宅的每坪平均單價，以及多數成交落在的價格區間——把成交由低到高排列，去掉最高與最低各四分之一後的範圍，實際成交仍可能高於或低於此區間。平均前也已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。數字包含新成屋交屋後的第一手過戶。新案的一手價通常高於同區中古行情，某一區近期若有新案集中交屋，均價就會被帶高——可以對照「筆數／門牌數」判斷：門牌數少而筆數多，代表成交集中在少數幾棟。常見總價指的是把成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。</p>
+    <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-3xl">近一年實際成交的每坪平均單價與常見價格區間。電梯住宅與透天分開計算，兩者的單價不能直接比較。</p>
     <div class="mt-6 h-px bg-line"></div>
   </div>
+
+  
+  <details class="mb-10 -mt-4 border border-line rounded-sm bg-surface">
+    <summary class="px-6 py-4 cursor-pointer text-[15px] font-medium hover:text-orangeDeep transition">
+      這些數字是怎麼算出來的？
+    </summary>
+    <div class="px-6 pb-6 -mt-1 space-y-4 text-[15px] text-inkSoft leading-[1.9]">
+      <p><strong class="text-ink font-bold">常見單價區間</strong>：把近一年的成交由低到高排列，去掉最高與最低各四分之一後的範圍。實際成交仍可能高於或低於這個區間。</p>
+      <p><strong class="text-ink font-bold">平均單價</strong>：平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。</p>
+      <p><strong class="text-ink font-bold">常見總價</strong>：成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。</p>
+      <p><strong class="text-ink font-bold">新案交屋的影響</strong>：數字包含新成屋交屋後的第一手過戶，一手價通常高於同區中古行情。某一區近期若有新案集中交屋，均價就會被帶高——對照「筆數／門牌數」可以判斷：門牌數少而筆數多，代表成交集中在少數幾棟。</p>
+      <p><strong class="text-ink font-bold">為什麼透天要分開算</strong>：透天的總價含土地、坪數只算建物，單價的意義與電梯住宅不同。</p>
+      <p>同一區內屋齡、樓層、格局與座向的差異都會造成落差，這些數字僅供抓範圍用。要看個別社區的逐筆成交，請進各社區頁。</p>
+    </div>
+  </details>
   <div class="grid sm:grid-cols-2 gap-6">
     <article class="flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
       <img src="assets/area-01-artmuseum.jpg" alt="美術館特區" class="w-full aspect-[3/2] object-cover shrink-0" loading="lazy" />
@@ -500,6 +515,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true">
           <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
+      <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-8 py-4 text-[16px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-5 h-5"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>LINE 諮詢
+      </a>
       <a href="tel:0797669977"
         class="inline-flex items-center px-8 py-4 text-[16px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
         直接來電 07-9766977
@@ -507,7 +526,7 @@
     </div>
 
     <p class="mt-6 font-mono text-[13px] text-white/45 leading-relaxed">
-      想找的條件在官網上沒看到？很多屋主的委託還在準備階段，來電告訴我們需求，我們幫你留意。
+      想找的條件在官網上沒看到？很多屋主的委託還在準備階段，用 LINE 或來電告訴我們需求，我們幫你留意。
     </p>
   </div>
 </section>
