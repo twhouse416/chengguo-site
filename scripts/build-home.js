@@ -5,7 +5,7 @@
  * 要改文案請改這個檔案，不要改 index.html（會被覆蓋）。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON } from "./lib/layout.js";
 
 /* ================= 固定文案 ================= */
 
@@ -286,7 +286,22 @@ function areasSection(market) {
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近一年實際成交住宅的每坪平均單價，以及多數成交落在的價格區間——把成交由低到高排列，去掉最高與最低各四分之一後的範圍，實際成交仍可能高於或低於此區間。平均前也已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。數字包含新成屋交屋後的第一手過戶。新案的一手價通常高於同區中古行情，某一區近期若有新案集中交屋，均價就會被帶高——可以對照「筆數／門牌數」判斷：門牌數少而筆數多，代表成交集中在少數幾棟。常見總價指的是把成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
+    "近一年實際成交的每坪平均單價與常見價格區間。電梯住宅與透天分開計算，兩者的單價不能直接比較。")}
+
+  ${/* 原本這裡是一整段長文，讀者不會看完。改成摺疊：想知道細節的人自己打開。 */""}
+  <details class="mb-10 -mt-4 border border-line rounded-sm bg-surface">
+    <summary class="px-6 py-4 cursor-pointer text-[15px] font-medium hover:text-orangeDeep transition">
+      這些數字是怎麼算出來的？
+    </summary>
+    <div class="px-6 pb-6 -mt-1 space-y-4 text-[15px] text-inkSoft leading-[1.9]">
+      <p><strong class="text-ink font-bold">常見單價區間</strong>：把近一年的成交由低到高排列，去掉最高與最低各四分之一後的範圍。實際成交仍可能高於或低於這個區間。</p>
+      <p><strong class="text-ink font-bold">平均單價</strong>：平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。</p>
+      <p><strong class="text-ink font-bold">常見總價</strong>：成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。</p>
+      <p><strong class="text-ink font-bold">新案交屋的影響</strong>：數字包含新成屋交屋後的第一手過戶，一手價通常高於同區中古行情。某一區近期若有新案集中交屋，均價就會被帶高——對照「筆數／門牌數」可以判斷：門牌數少而筆數多，代表成交集中在少數幾棟。</p>
+      <p><strong class="text-ink font-bold">為什麼透天要分開算</strong>：透天的總價含土地、坪數只算建物，單價的意義與電梯住宅不同。</p>
+      <p>同一區內屋齡、樓層、格局與座向的差異都會造成落差，這些數字僅供抓範圍用。要看個別社區的逐筆成交，請進各社區頁。</p>
+    </div>
+  </details>
   <div class="grid sm:grid-cols-2 gap-6">
     ${areas.map(a => {
       const m = AREA_META[a.code] || {};
@@ -341,6 +356,10 @@ function listingsSection() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true">
           <path d="M7 17L17 7M17 7H9M17 7v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
+      ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-8 py-4 text-[16px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition">
+        ${LINE_ICON.replace("CLS", "w-5 h-5")}LINE 諮詢
+      </a>` : ""}
       <a href="${BRAND.phoneHref}"
         class="inline-flex items-center px-8 py-4 text-[16px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">
         直接來電 ${BRAND.phone}
@@ -348,7 +367,7 @@ function listingsSection() {
     </div>
 
     <p class="mt-6 font-mono text-[13px] text-white/45 leading-relaxed">
-      想找的條件在官網上沒看到？很多屋主的委託還在準備階段，來電告訴我們需求，我們幫你留意。
+      想找的條件在官網上沒看到？很多屋主的委託還在準備階段，用 LINE 或來電告訴我們需求，我們幫你留意。
     </p>
   </div>
 </section>`;
