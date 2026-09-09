@@ -161,6 +161,23 @@ function dealsTable(deals) {
   const low = prices[0], high = prices[prices.length - 1];
   const shops = deals.length - homes.length;
 
+  /* 特殊交易的標記
+     ------------------------------------------------
+     實價登錄裡本來就混有親屬間移轉、部分持分、含增建或瑕疵屋等成交，
+     單價會明顯低於行情（也偶有偏高的）。這些是真實登錄資料、不能刪，
+     但直接跟一般成交並列，客戶容易誤判「這個社區可以買到 6.9 萬」。
+     作法：跟同社區住家單價的中位數比，低於六成或高於一點六倍的標星號，
+     並在表格下方說明可能的原因。只標記、不下定論——我們無從得知
+     每一筆的實際情形，說死了反而不實在。 */
+  const mid = prices.length
+    ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
+       : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
+    : 0;
+  const isOutlier = d =>
+    d.use !== "店面" && d.unitPrice && mid > 0 && prices.length >= 5
+    && (d.unitPrice < mid * 0.6 || d.unitPrice > mid * 1.6);
+  const outliers = deals.filter(isOutlier).length;
+
   /* 資料多時只列最近 40 筆，其餘收在展開區塊裡，避免頁面過長 */
   const SHOW = 40;
   const shown = deals.slice(0, SHOW);
@@ -213,7 +230,7 @@ function dealsTable(deals) {
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
           <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
           <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
-          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
           <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
         </tr>`).join("\n        ")}
       </tbody>
@@ -245,13 +262,24 @@ function dealsTable(deals) {
             <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
             <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
             <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
-            <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}</td>
+            <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
             <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
           </tr>`).join("\n          ")}
         </tbody>
       </table>
     </div>
   </details>` : ""}
+
+  ${outliers ? `<p class="text-[14px] text-inkSoft leading-[1.9] mt-4 border-l-2 border-orange pl-4">
+    <span class="text-orangeDeep font-bold">＊</span>
+    標記的 ${outliers} 筆，單價與本社區其他成交差距較大，<strong class="text-ink font-bold">很可能不是一般的市場交易</strong>。
+    實價登錄會如實收錄各種移轉情形，常見的原因包括：親屬或關係人之間的移轉、
+    只買賣部分持分（不是完整一戶）、屋況有瑕疵或需要大幅整修、含未登記增建，
+    以及買賣雙方有其他約定（例如帶租約、附帶條件）。
+    單價明顯偏高的，則常見於坪數很小的產品、含裝潢家電，或高樓層的景觀戶。
+    這幾筆不宜當作行情參考，判斷這個社區的價格時建議先把它們排除。
+    想知道某一筆的實際情形，可以問我們，我們幫你查。
+  </p>` : ""}
 
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
     單價單位為萬元／坪，總價單位為萬元。含車位的交易，單價會被車位價格拉低，
