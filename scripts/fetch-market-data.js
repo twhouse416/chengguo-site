@@ -192,13 +192,24 @@ function computeAreaAverage(records, area, typeGroup) {
 
   if (matched.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
 
+  /* 第一層保護：單價明顯不合理的直接剔除。
+     透天的總價含土地、坪數只算建物，大基地小建物的案子單價會暴衝到數百萬，
+     那不是行情而是資料特性造成的假象，必須先擋掉。 */
+  const SR = AREAS_CONFIG.sanityRange || {};
+  const minY = (SR.minWanPerPing ?? 0) * 10000;
+  const maxY = (SR.maxWanPerPing ?? Infinity) * 10000;
+
   const all = matched
     .map(r => parseFloat(r["單價元平方公尺"]) / M2_TO_PING)
+    .filter(v => v >= minY && v <= maxY)
     .sort((a, b) => a - b);
 
-  /* 剔除頭尾各 10% 的極端值。老公寓、親友交易、含大量車位的案子都會落在兩端，
-     不剔除的話幾筆就能把整區行情帶偏。樣本少於 10 筆時不剔除，否則剩太少反而失真。 */
-  const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : 0;
+  if (all.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
+
+  /* 第二層保護：剔除頭尾極端值。
+     10 筆以上剔各 10%；5～9 筆也要剔掉頭尾各 1 筆——
+     小樣本反而更禁不起一個離群值，原本「不足10筆就不剔除」是錯的設計。 */
+  const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : (all.length >= 5 ? 1 : 0);
   const prices = cut > 0 ? all.slice(cut, all.length - cut) : all;
 
   /* 代表值用中位數：房價是偏態分布，少數高價案會把平均數拉高，
@@ -211,8 +222,9 @@ function computeAreaAverage(records, area, typeGroup) {
   const toWan = (v) => Math.round(v / 10000);
 
   return {
-    sampleSize: matched.length,
-    trimmedSize: prices.length,
+    sampleSize: all.length,          // 已扣掉單價不合理的
+    rawSize: matched.length,         // 篩選條件命中的原始筆數
+    trimmedSize: prices.length,      // 實際用來計算的筆數
     avgPricePerPing: Math.round(median / 1000) / 10, // 中位數，萬元/坪
     bandLow: toWan(pct(0.25)),
     bandHigh: toWan(pct(0.75)),
