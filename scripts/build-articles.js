@@ -18,6 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer } from "./lib/layout.js";
+import { articleRelated } from "./lib/related.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -227,6 +228,8 @@ function pageHtml(a, others, hasBuyers) {
     </p>
     <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
   </section>
+
+  ${articleRelated(a, "../")}
 
   ${others.length ? `<section class="mt-14 pt-8 border-t border-line">
     <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>

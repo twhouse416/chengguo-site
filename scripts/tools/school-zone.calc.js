@@ -7,16 +7,24 @@ const BRAND = {
   phoneHref: "tel:0797669977",
 };
 
+/* 官方原文裡「全里為○○國中學區」這種寫法，會被誤抓成里名「全里」，
+   這幾個詞不是里，要排除。 */
+const NOT_VILLAGE = ["全里", "各里", "該里", "本里", "此里", "上里"];
+
 /* 從官方學區原文抽出里名：里名前必須是分隔符或字串開頭 */
 function extractVillages(zone) {
   const out = [];
   const re = /(^|[^\u4e00-\u9fff])([\u4e00-\u9fff]{2,3}里)/g;
   let m;
   while ((m = re.exec(zone)) !== null) {
-    if (!out.includes(m[2])) out.push(m[2]);
+    if (!out.includes(m[2]) && !NOT_VILLAGE.includes(m[2])) out.push(m[2]);
   }
   return out;
 }
+
+/* 沒有 stage 的舊資料一律當國小，避免升級時漏掉 */
+const stageOf = e => e.stage || "國民小學";
+const STAGES = ["國民小學", "國民中學"];
 
 /* 把符合的里名在原文中標起來 */
 function Highlight({ text, term }) {
@@ -114,11 +122,21 @@ function Calculator() {
               {district}{village}　對應學區
             </h2>
             <p className="text-[15px] text-inkSoft mb-6">
-              共 {results.length} 筆。請對照原文確認你的「鄰」別是否落在範圍內。
+              共 {results.length} 筆，含國小與國中。請對照原文確認你的「鄰」別是否落在範圍內。
             </p>
 
+            {STAGES.map(stage => {
+              const group = results.filter(r => stageOf(r) === stage);
+              return (
+                <div key={stage} className="mb-8 last:mb-0">
+                  <div className="font-mono text-[13px] tracking-wider text-orangeDeep mb-3">
+                    {stage}　{group.length} 筆
+                  </div>
+                  {group.length === 0 ? (
+                    <p className="text-[15px] text-inkSoft">這個里在本資料中沒有對應的{stage}紀錄。</p>
+                  ) : (
             <div className="space-y-4">
-              {results.map((r, i) => (
+              {group.map((r, i) => (
                 <article key={i} className="bg-surface border border-line rounded-sm p-6">
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
                     <h3 className="text-[19px] font-bold tracking-tight">{r.school}</h3>
@@ -135,6 +153,10 @@ function Calculator() {
                 </article>
               ))}
             </div>
+                  )}
+                </div>
+              );
+            })}
 
             {results.length > 1 && (
               <p className="mt-5 text-[15px] text-inkSoft leading-[1.9]">

@@ -29,7 +29,9 @@ import { SITE, BRAND, esc, head, header, footer } from "./layout.js";
  * @param {string[]} o.notes     底部說明條列
  * @param {string} [o.sourceName] 來源名稱
  * @param {string} [o.sourceUrl]
+ * @param {Array<[string,string]>} [o.sources] 額外的資料來源連結
  * @param {Array<[string,string]>} [o.faq]
+ * @param {string} [o.relatedHtml] CTA 前面的相關內容區塊（純 HTML，可留空）
  * @param {string} o.ctaTitle
  * @param {string} o.ctaBody
  * @param {string} o.calcScript  React 計算器的程式碼（不含 <script> 標籤）
@@ -125,6 +127,8 @@ export function buildTool(o, hasBuyers = false) {
     </ul>
     ${o.sourceUrl ? `<a href="${o.sourceUrl}" target="_blank" rel="noopener noreferrer"
       class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">${esc(o.sourceName || "資料來源")} →</a>` : ""}
+    ${(o.sources || []).map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener noreferrer"
+      class="block mt-3 font-mono text-[13px] text-orangeDeep hover:underline">${esc(n)} →</a>`).join("\n    ")}
   </section>
 
   ${o.faq?.length ? `<section class="mt-14 pt-10 border-t-2 border-ink">
@@ -140,6 +144,8 @@ export function buildTool(o, hasBuyers = false) {
       </details>`).join("\n      ")}
     </div>
   </section>` : ""}
+
+  ${o.relatedHtml || ""}
 
   <section class="mt-12 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">${esc(o.ctaTitle)}</h2>
