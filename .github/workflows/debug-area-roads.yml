@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       periods:
-        description: "往回幾期（一期=一季；首頁均價用 2 期）"
+        description: "往回幾期（一期=一季；首頁均價用近 4 季，本季季檔尚未公告故從上一季起算）"
         required: true
-        default: "2"
+        default: "3"
 
 jobs:
   debug:
