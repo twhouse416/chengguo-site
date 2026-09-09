@@ -38,6 +38,24 @@ function normalize(str) {
     .replace(/\s+/g, "");
 }
 
+/* 與 fetch-market-data.js 相同的路段判斷：路名＋號碼範圍＋單雙號 */
+function inAddressRange(normAddr, ranges) {
+  if (!ranges?.length) return false;
+  for (const r of ranges) {
+    const road = normalize(r.road || "");
+    if (!road || !normAddr.includes(road)) continue;
+    const after = normAddr.split(road)[1] || "";
+    const m = after.match(/^(\d+)/);
+    if (!m) continue;
+    const no = parseInt(m[1], 10);
+    if (no < (r.from ?? -Infinity) || no > (r.to ?? Infinity)) continue;
+    if (r.parity === "odd" && no % 2 === 0) continue;
+    if (r.parity === "even" && no % 2 === 1) continue;
+    return true;
+  }
+  return false;
+}
+
 /* 從門牌取出路名：去掉縣市與行政區，取到「路/街/大道」為止。
    巷弄以後的部分不要，否則每條巷都變成一個獨立項目，看不出分布。 */
 function roadOf(addr) {
@@ -137,18 +155,27 @@ async function main() {
   console.log(`\n合計 ${all.length} 筆（全台）\n`);
 
   for (const area of AREAS.areas) {
-    const keys = area.keywords.map(normalize);
+    const keys = (area.keywords || []).map(normalize);
+    const ranges = area.roadRanges || [];
 
     const matched = all.filter(r => {
       if (!(r["鄉鎮市區"] || "").includes(area.district)) return false;
-      if (!keys.some(k => normalize(r["土地位置建物門牌"]).includes(k))) return false;
+      const addr = normalize(r["土地位置建物門牌"]);
+      if (!keys.some(k => addr.includes(k)) && !inAddressRange(addr, ranges)) return false;
       if (AREAS.propertyTypeFilter && !(r["建物型態"] || "").includes(AREAS.propertyTypeFilter)) return false;
       return parseFloat(r["單價元平方公尺"]) > 0;
     });
 
     console.log(`\n══════════════════════════════════════════`);
     console.log(`【${area.code} ${area.name}】${area.district}　共 ${matched.length} 筆`);
-    console.log(`關鍵字：${area.keywords.join("、")}`);
+    console.log(`整條路：${(area.keywords || []).join("、") || "（無）"}`);
+    if (ranges.length) {
+      console.log(`路段：　${ranges.map(r => {
+        const p = r.parity === "odd" ? "單號" : r.parity === "even" ? "雙號" : "單雙皆取";
+        const n = (r.from != null || r.to != null) ? `${r.from ?? "不限"}-${r.to ?? "不限"}號` : "全路";
+        return `${r.road} ${n}（${p}）`;
+      }).join("；")}`);
+    }
     console.log(`══════════════════════════════════════════`);
 
     if (!matched.length) { console.log("（沒有抓到任何紀錄）"); continue; }
@@ -159,7 +186,8 @@ async function main() {
       const addr = normalize(r["土地位置建物門牌"]);
       const road = roadOf(r["土地位置建物門牌"]);
       const price = Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10;
-      const hitKey = area.keywords.find(k => addr.includes(normalize(k))) || "?";
+      const hitKey = (area.keywords || []).find(k => addr.includes(normalize(k)))
+        || (inAddressRange(addr, ranges) ? "（路段範圍）" : "?");
       if (!byRoad.has(road)) byRoad.set(road, { prices: [], keys: new Set() });
       byRoad.get(road).prices.push(price);
       byRoad.get(road).keys.add(hitKey);

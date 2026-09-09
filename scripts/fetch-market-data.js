@@ -160,13 +160,19 @@ function readAllMainCsv(extractDir) {
 
 /* ---------- 依生活圈設定篩選 + 計算平均單價（萬元/坪） ---------- */
 function computeAreaAverage(records, area) {
-  const normKeywords = area.keywords.map(normalize);
+  /* keywords：整條路都屬於這個生活圈，巷弄自動涵蓋
+     roadRanges：只有某一段屬於，用號碼範圍與單雙號界定 */
+  const normKeywords = (area.keywords || []).map(normalize);
+  const ranges = area.roadRanges || [];
+
   const matched = records.filter(r => {
     const district = r["鄉鎮市區"] || "";
     const address = normalize(r["土地位置建物門牌"]);
     const type = r["建物型態"] || "";
     if (!district.includes(area.district)) return false;
-    if (!normKeywords.some(k => address.includes(k))) return false;
+    const hit = normKeywords.some(k => address.includes(k))
+             || inAddressRange(address, ranges);
+    if (!hit) return false;
     if (AREAS_CONFIG.propertyTypeFilter && !type.includes(AREAS_CONFIG.propertyTypeFilter)) return false;
     const unitPrice = parseFloat(r["單價元平方公尺"]);
     return unitPrice > 0;
@@ -174,18 +180,28 @@ function computeAreaAverage(records, area) {
 
   if (matched.length === 0) return { sampleSize: 0, avgPricePerPing: null, bandLow: null, bandHigh: null };
 
-  const pricesPerPing = matched
+  const all = matched
     .map(r => parseFloat(r["單價元平方公尺"]) / M2_TO_PING)
     .sort((a, b) => a - b);
-  const avg = pricesPerPing.reduce((a, b) => a + b, 0) / pricesPerPing.length;
 
-  // 取 25%～75% 百分位當作「常見成交價格帶」，避免極端值拉走整體印象
-  const pct = (p) => pricesPerPing[Math.min(pricesPerPing.length - 1, Math.floor(pricesPerPing.length * p))];
+  /* 剔除頭尾各 10% 的極端值。老公寓、親友交易、含大量車位的案子都會落在兩端，
+     不剔除的話幾筆就能把整區行情帶偏。樣本少於 10 筆時不剔除，否則剩太少反而失真。 */
+  const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : 0;
+  const prices = cut > 0 ? all.slice(cut, all.length - cut) : all;
+
+  /* 代表值用中位數：房價是偏態分布，少數高價案會把平均數拉高，
+     中位數才貼近實務上講的「一般成交行情」。 */
+  const mid = Math.floor(prices.length / 2);
+  const median = prices.length % 2 ? prices[mid] : (prices[mid - 1] + prices[mid]) / 2;
+
+  // 取 25%～75% 百分位當作「常見成交價格帶」
+  const pct = (p) => prices[Math.min(prices.length - 1, Math.floor(prices.length * p))];
   const toWan = (v) => Math.round(v / 10000);
 
   return {
     sampleSize: matched.length,
-    avgPricePerPing: Math.round(avg / 1000) / 10, // 換算成「萬元/坪」，取一位小數
+    trimmedSize: prices.length,
+    avgPricePerPing: Math.round(median / 1000) / 10, // 中位數，萬元/坪
     bandLow: toWan(pct(0.25)),
     bandHigh: toWan(pct(0.75)),
   };
