@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer } from "./lib/layout.js";
+import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer , thumbOf, imgSize } from "./lib/layout.js";
 import { articleRelated } from "./lib/related.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -66,7 +66,7 @@ function blockHtml(b) {
 
     case "image":
       return `<figure class="my-12">
-        <img src="../${esc(b.src)}" alt="${esc(b.alt || "")}" loading="lazy"
+        <img src="../${esc(b.src)}" alt="${esc(b.alt || "")}" loading="lazy"${imgSize(b.src)}
           class="w-full h-auto rounded-sm border border-line bg-surface" />
         ${b.caption ? `<figcaption class="mt-3 text-[14px] text-inkFaint leading-relaxed">${esc(b.caption)}</figcaption>` : ""}
       </figure>`;
@@ -173,7 +173,7 @@ function pageHtml(a, others, hasBuyers) {
       <p class="text-[16px] leading-[1.95] text-orangeDeep">
         本文最後更新於 ${fmtDate(a.updated || a.date)}。房市與法規變動快，部分內容可能已不是最新狀況，建議來電向我們確認。
       </p></div>` : ""}
-    ${a.cover ? `<img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}"
+    ${a.cover ? `<img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}"${imgSize(a.cover)}
       class="w-full h-auto rounded-sm border border-line bg-surface mt-8" />` : ""}
     <div class="mt-10">
       ${(a.blocks || []).filter(visible).map(blockHtml).join("\n      ")}
@@ -235,7 +235,7 @@ function pageHtml(a, others, hasBuyers) {
     <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>
     <div class="space-y-6">
       ${others.map(o => `<a href="${o.slug}.html" class="flex gap-4 group items-start">
-        ${o.cover ? `<img src="../${esc(o.cover)}" alt="" loading="lazy"
+        ${o.cover ? `<img src="../${esc(thumbOf(o.cover))}" alt="" loading="lazy"${imgSize(thumbOf(o.cover))}
           class="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />` : ""}
         <div>
           <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">${esc(o.tag)}</div>

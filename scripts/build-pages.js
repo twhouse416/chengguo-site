@@ -6,7 +6,7 @@
  * 即使爬蟲不執行 JS，內容仍完整可讀。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize } from "./lib/layout.js";
 import { dealCard } from "./build-home.js";
 
 /* ================= 文章列表 ================= */
@@ -24,7 +24,7 @@ export function buildNotesIndex({ articles, hasBuyers }) {
 
   const cards = articles.map(a => `<article class="border-t-2 border-ink pt-5" data-tag="${esc(a.tag)}">
     ${a.cover ? `<a href="${a.slug}.html" class="block mb-4">
-      <img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"
+      <img src="../${esc(thumbOf(a.cover))}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"${imgSize(thumbOf(a.cover))}
         class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>` : ""}
     <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
       <span class="text-orangeDeep tracking-wider">${esc(a.tag)}</span>

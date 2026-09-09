@@ -39,6 +39,35 @@ export const BRAND = {
   lineUrl: CONFIG.lineUrl || "",
 };
 
+/* 圖片尺寸表：建置時由 scripts/optimize-images.js 產生。
+   把 width/height 寫進 <img>，瀏覽器在圖片載入前就知道要留多少空間，
+   版面不會在載入過程往下跳（Core Web Vitals 的 CLS）。
+   有些圖片是用 Tailwind 的 aspect-[3/2] 保留空間，那類不需要再加。 */
+const IMG_SIZES = (() => {
+  try {
+    return JSON.parse(readFileSync(path.resolve(__layoutDir, "../../data/image-sizes.json"), "utf-8"));
+  } catch { return {}; }
+})();
+
+/* 傳入以站根目錄為基準的路徑（例如 assets/team-office.jpg），
+   回傳可直接放進 <img> 的 width/height 屬性字串；查不到就回空字串。 */
+export function imgSize(src) {
+  const key = String(src || "").replace(/^(\.\.\/)+/, "").split("?")[0];
+  const d = IMG_SIZES[key];
+  return d ? ` width="${d[0]}" height="${d[1]}"` : "";
+}
+
+/* 列表用的縮圖：封面圖在首頁與列表頁只顯示成小方塊，
+   載入 900px 的原圖是浪費。optimize-images.js 會為每張封面另外產一張
+   640×427 的 -thumb.jpg。查不到縮圖時自動退回原圖，不會破圖。 */
+export function thumbOf(src) {
+  const s = String(src || "");
+  if (!/\.(jpe?g|png)$/i.test(s)) return s;          // svg 之類的維持原樣
+  const t = s.replace(/\.(jpe?g|png)$/i, "-thumb.jpg");
+  const key = t.replace(/^(\.\.\/)+/, "");
+  return IMG_SIZES[key] ? t : s;
+}
+
 export const esc = s => String(s ?? "")
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   .replace(/"/g, "&quot;").replace(/'/g, "&#39;");

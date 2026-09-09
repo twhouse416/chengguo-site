@@ -5,7 +5,7 @@
  * 要改文案請改這個檔案，不要改 index.html（會被覆蓋）。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize } from "./lib/layout.js";
 
 /* ================= 固定文案 ================= */
 
@@ -458,7 +458,7 @@ function articlesSection(articles) {
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
       ${list.map(a => `<article class="border-t-2 border-ink pt-5">
         ${a.cover ? `<a href="notes/${a.slug}.html" class="block mb-4">
-          <img src="${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"
+          <img src="${esc(thumbOf(a.cover))}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"${imgSize(thumbOf(a.cover))}
             class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>` : ""}
         <div class="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">${esc(a.tag)}</div>
         <h3 class="text-[17px] font-bold leading-snug mb-3 tracking-tight">
@@ -516,7 +516,7 @@ export function dealCard(d, depth = 0) {
   const up = "../".repeat(depth);
   const title = [d.community, d.caption].filter(Boolean).join("　");
   return `<figure>
-    <img src="${up}${esc(d.img)}" alt="${esc(d.area)} ${esc(title)} 成交" loading="lazy"
+    <img src="${up}${esc(d.img)}" alt="${esc(d.area)} ${esc(title)} 成交" loading="lazy"${imgSize(d.img)}
       class="w-full h-auto rounded-sm border border-line bg-paper" />
     <figcaption class="mt-4">
       <div class="font-mono text-[11px] tracking-wider text-inkFaint">
