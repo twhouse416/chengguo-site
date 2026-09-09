@@ -228,6 +228,18 @@ function areasSection(market) {
     ? { min: Math.min(...allRows.map(t => t.bandLow)), max: Math.max(...allRows.map(t => t.bandHigh)) }
     : null;
 
+  /* 成交是否集中在少數幾棟：筆數 ÷ 門牌數 超過 3.5 就提示。
+     一個新案交屋後一年內可能登錄七、八十筆、全在同一個門牌，
+     會把整區均價帶高——那是一手價，不是區內中古行情。
+     用比值自動判斷而不是寫死在某一區：新案賣完比值自然降回來，提示會
+     自己消失；換別區有新案交屋，提示也會自己出現，不必回頭改程式。
+     門檻 3.5 的依據：目前四區的比值是中都 4.3、美術館 1.8、農十六 1.4、
+     瑞豐 1.6，只有中都會亮，且第二高的離門檻還有距離，不會誤觸。 */
+  const CONCENTRATION_LIMIT = 3.5;
+  const concentrated = (t) =>
+    t.sampleSize >= 20 && t.buildingSize > 0
+    && (t.sampleSize / t.buildingSize) > CONCENTRATION_LIMIT;
+
   /* 單一型態的一行：標籤、平均單價、價格帶長條 */
   const typeRow = (t, isMain) => {
     const size = isMain ? "text-[26px]" : "text-[20px]";
@@ -258,12 +270,13 @@ function areasSection(market) {
       </div>
       ${bar}
       ${t.lowSample ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">樣本數偏少，僅供參考</p>` : ""}
+      ${concentrated(t) ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">含新案交屋一手成交，高於中古行情</p>` : ""}
     </div>`;
   };
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近一年實際成交住宅的每坪平均單價與常見價格帶（取 25%–75% 百分位）。平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。單價旁另標示這些成交分布在幾個門牌——門牌數少代表成交集中在少數幾棟新案，數字的代表性要打折。總價中位數含車位，兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
+    "近一年實際成交住宅的每坪平均單價與常見價格帶（取 25%–75% 百分位）。平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。數字包含新成屋交屋後的第一手過戶。新案的一手價通常高於同區中古行情，某一區近期若有新案集中交屋，均價就會被帶高——可以對照「筆數／門牌數」判斷：門牌數少而筆數多，代表成交集中在少數幾棟。總價中位數含車位，兩區單價接近時，總價才看得出坪數與產品的差別。電梯住宅與透天分開計算——透天的總價含土地、坪數只算建物，兩者單價不能直接比較。同一區內屋齡、樓層、格局與座向的差異都會造成落差，此區間僅供抓範圍用。")}
   <div class="grid sm:grid-cols-2 gap-6">
     ${areas.map(a => {
       const m = AREA_META[a.code] || {};
