@@ -66,30 +66,13 @@ function roadOf(addr) {
   return m ? m[1] : (s.slice(0, 8) || "（無法判讀）");
 }
 
-/* ---------- 單價計算：扣除車位 ----------
-   內政部的「單價元平方公尺」＝ 總價 ÷ 建物移轉總面積，
-   分子含車位價、分母含車位面積。車位每坪單價遠低於住家，
-   含車位的成交會被稀釋，實務上比行情一律先扣車位。
-
-   例：50 坪（含車位 10 坪）總價 1,800 萬、車位 200 萬
-       內政部：1800 ÷ 50 = 36.0 萬/坪
-       扣車位：1600 ÷ 40 = 40.0 萬/坪
-
-   車位欄位缺漏或扣完不合理時，退回使用內政部給的單價。 */
-function unitPricePerM2(r) {
-  const official = parseFloat(r["單價元平方公尺"]) || 0;
-  const total = parseFloat(r["總價元"]) || 0;
-  const area = parseFloat(r["建物移轉總面積平方公尺"]) || 0;
-  const pkPrice = parseFloat(r["車位總價元"]) || 0;
-  const pkArea = parseFloat(r["車位移轉總面積平方公尺"]) || 0;
-
-  if (pkPrice > 0 && pkArea > 0 && total > pkPrice && area > pkArea) {
-    const net = (total - pkPrice) / (area - pkArea);
-    /* 扣完若比原本低，或高到不合理（超過三倍），視為欄位有問題，不採用 */
-    if (net > official && net < official * 3) return net;
-  }
-  return official;
-}
+/* 關於單價：直接使用內政部的「單價元平方公尺」，不要自己扣車位。
+   一度以為這個欄位含車位需要自己扣，實測證明不用——
+   例：美術東四路43號，總價 2,058 萬、建物 150.46 ㎡、車位價 270 萬、車位 33.1 ㎡
+       不扣車位：2058 ÷ 150.46 = 45.2 萬/坪
+       扣掉車位：(2058-270) ÷ (150.46-33.1) = 50.4 萬/坪  ← 內政部給的就是這個
+   內政部在「車位總價元」有揭露時已經先扣過，重複扣會高估。
+   車位價未揭露（為 0）時內政部無從扣起，那類紀錄單價本來就偏低，屬於資料限制。 */
 
 function median(arr) {
   if (!arr.length) return 0;
@@ -220,7 +203,7 @@ async function main() {
     matched.forEach(r => {
       const addr = normalize(r["土地位置建物門牌"]);
       const road = roadOf(r["土地位置建物門牌"]);
-      const price = Math.round(unitPricePerM2(r) / M2_TO_PING / 1000) / 10;
+      const price = Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10;
       const dist = r["鄉鎮市區"] || "";
       const hitKey = (dist.includes(area.district)
           ? (area.keywords || []).find(k => addr.includes(normalize(k))) : null)
@@ -243,7 +226,7 @@ async function main() {
       .sort((a, b) => b.n - a.n);
 
     const allPrices = matched.map(r =>
-      Math.round(unitPricePerM2(r) / M2_TO_PING / 1000) / 10);
+      Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10);
     const areaMed = median(allPrices);
 
     console.log(`\n${"路名".padEnd(16)}${"筆數".padStart(5)}${"中位數".padStart(9)}${"最低".padStart(8)}${"最高".padStart(8)}   命中關鍵字`);
