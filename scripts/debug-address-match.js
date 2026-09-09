@@ -22,11 +22,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const TMP = path.join(ROOT, ".tmp-debug");
 
-const AREAS = JSON.parse(readFileSync(path.join(ROOT, "config/areas.json"), "utf-8"));
-/* 判定用的型態與用途條件直接讀設定檔，避免跟正式流程不一致 */
-const TYPE_MATCH = (AREAS.propertyTypes || []).flatMap(t => t.match);
-const EXCLUDE_USES = AREAS.excludeUses || [];
-
 const SEASON_ZIP_URL = season =>
   `https://plvr.land.moi.gov.tw/DownloadSeason?season=${season}&type=zip&fileName=lvr_landcsv.zip`;
 
@@ -119,9 +114,7 @@ async function main() {
 
   console.log(`\n=== 門牌比對診斷 ===`);
   console.log(`關鍵字：${keyword}（已做全形轉半形）`);
-  console.log(`期數：${periods}`);
-  console.log(`納入型態：${TYPE_MATCH.join("／") || "（未設定）"}`);
-  console.log(`排除用途：${EXCLUDE_USES.join("、") || "（無）"}\n`);
+  console.log(`期數：${periods}\n`);
 
   rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
@@ -185,11 +178,7 @@ async function main() {
       if (!(price > 0)) reasons.push(`單價元平方公尺無效（${r["單價元平方公尺"]}）`);
       if (cancelled) reasons.push(`已解約（${cancelled}）`);
       if (!date) reasons.push(`交易年月日無法解析（${r["交易年月日"]}）`);
-      if (TYPE_MATCH.length && !TYPE_MATCH.some(k => type.includes(k)))
-        reasons.push(`建物型態不在統計範圍（${type || "空白"}）`);
-      const use = (r["主要用途"] || "").trim();
-      if (use && EXCLUDE_USES.some(k => use.includes(k)))
-        reasons.push(`主要用途被排除（${use}）`);
+      if (!type.includes("住宅大樓")) reasons.push(`建物型態不是住宅大樓（${type || "空白"}）`);
 
       const verdict = reasons.length ? `⛔ 會被濾掉：${reasons.join("、")}` : `✔ 條件全過`;
 
