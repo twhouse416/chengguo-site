@@ -106,6 +106,31 @@ function readCsv(dir, pattern, isPresale) {
   return records;
 }
 
+/* ---------- 單價計算：扣除車位 ----------
+   內政部的「單價元平方公尺」＝ 總價 ÷ 建物移轉總面積，
+   分子含車位價、分母含車位面積。車位每坪單價遠低於住家，
+   含車位的成交會被稀釋，實務上比行情一律先扣車位。
+
+   例：50 坪（含車位 10 坪）總價 1,800 萬、車位 200 萬
+       內政部：1800 ÷ 50 = 36.0 萬/坪
+       扣車位：1600 ÷ 40 = 40.0 萬/坪
+
+   車位欄位缺漏或扣完不合理時，退回使用內政部給的單價。 */
+function unitPricePerM2(r) {
+  const official = parseFloat(r["單價元平方公尺"]) || 0;
+  const total = parseFloat(r["總價元"]) || 0;
+  const area = parseFloat(r["建物移轉總面積平方公尺"]) || 0;
+  const pkPrice = parseFloat(r["車位總價元"]) || 0;
+  const pkArea = parseFloat(r["車位移轉總面積平方公尺"]) || 0;
+
+  if (pkPrice > 0 && pkArea > 0 && total > pkPrice && area > pkArea) {
+    const net = (total - pkPrice) / (area - pkArea);
+    /* 扣完若比原本低，或高到不合理（超過三倍），視為欄位有問題，不採用 */
+    if (net > official && net < official * 3) return net;
+  }
+  return official;
+}
+
 /* 季別代碼：往回第 n 期（0 = 當季） */
 function seasonCode(back) {
   const now = new Date();
@@ -137,7 +162,7 @@ function download(season) {
 }
 
 function toDeal(r) {
-  const unitM2 = parseFloat(r["單價元平方公尺"]);
+  const unitM2 = unitPricePerM2(r);
   const areaM2 = parseFloat(r["建物移轉總面積平方公尺"]) || 0;
   const rooms = r["建物現況格局-房"] || "";
   const halls = r["建物現況格局-廳"] || "";
