@@ -6,7 +6,7 @@
  * 本腳本設計為「每日執行、有新一期資料才會變動結果」。
  *
  * v2 變更：
- * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價中位數
+ * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價平均
  * - 「最新即時檔」只有十天份，不能當一整季看待
  *
  * 執行方式： node scripts/fetch-market-data.js
@@ -178,7 +178,7 @@ function readAllMainCsv(extractDir) {
   return records;
 }
 
-/* ---------- 依生活圈設定篩選 + 計算單價中位數（萬元/坪） ----------
+/* ---------- 依生活圈設定篩選 + 計算單價平均（萬元/坪） ----------
    typeGroup 指定建物型態群組（電梯住宅／透天），不給就不限型態。 */
 function computeAreaAverage(records, area, typeGroup) {
   /* keywords：整條路都屬於這個生活圈，巷弄自動涵蓋
@@ -240,10 +240,9 @@ function computeAreaAverage(records, area, typeGroup) {
   const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : (all.length >= 5 ? 1 : 0);
   const prices = cut > 0 ? all.slice(cut, all.length - cut) : all;
 
-  /* 代表值用中位數：房價是偏態分布，少數高價案會把平均數拉高，
-     中位數才貼近實務上講的「一般成交行情」。 */
-  const mid = Math.floor(prices.length / 2);
-  const median = prices.length % 2 ? prices[mid] : (prices[mid - 1] + prices[mid]) / 2;
+  /* 代表值用平均數，但是「修剪後的平均」——頭尾極端值已在上一步剔除，
+     所以少數高價或低價案不會把數字帶偏，同時保留全部樣本的資訊。 */
+  const mean = prices.reduce((s, v) => s + v, 0) / prices.length;
 
   // 取 25%～75% 百分位當作「常見成交價格帶」
   const pct = (p) => prices[Math.min(prices.length - 1, Math.floor(prices.length * p))];
@@ -253,7 +252,7 @@ function computeAreaAverage(records, area, typeGroup) {
     sampleSize: all.length,          // 已扣掉單價不合理的
     rawSize: matched.length,         // 篩選條件命中的原始筆數
     trimmedSize: prices.length,      // 實際用來計算的筆數
-    avgPricePerPing: Math.round(median / 1000) / 10, // 中位數，萬元/坪
+    avgPricePerPing: Math.round(mean / 1000) / 10, // 修剪後平均，萬元/坪
     bandLow: toWan(pct(0.25)),
     bandHigh: toWan(pct(0.75)),
   };
@@ -501,7 +500,7 @@ async function main() {
   const areas = AREAS_CONFIG.areas.map(area => {
     /* 每個建物型態群組各算一組數字。
        電梯住宅與透天的單價意義不同（透天總價含土地、坪數只算建物），
-       混在一起取中位數對兩者都不準，所以分開統計、分開顯示。 */
+       混在一起平均對兩者都不準，所以分開統計、分開顯示。 */
     const byType = TYPES.map(t => {
       const cur = computeAreaAverage(recentRecords, area, t);
       const past = trendRecords.length
@@ -540,7 +539,7 @@ async function main() {
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近四季（約一年）成屋成交合併計算，已剔除頭尾各一成極端值與單價明顯異常者，價格帶取25%～75%百分位。電梯住宅與透天分開統計，並限屋齡20年內。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價為近四季（約一年）成屋成交的平均價，已先剔除頭尾各一成極端值與單價明顯異常者再平均，價格帶取25%～75%百分位。電梯住宅與透天分開統計，不限屋齡。",
     areas,
   };
 

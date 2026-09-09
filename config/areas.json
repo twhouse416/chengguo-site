@@ -159,6 +159,5 @@
   "sanityRange": {
     "minWanPerPing": 3,
     "maxWanPerPing": 150
-  },
-  "maxAgeYears": 20
+  }
 }
