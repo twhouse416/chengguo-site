@@ -46,13 +46,44 @@ function unescapeXml(s) {
     .trim();
 }
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* YouTube 的 RSS 對機房 IP（GitHub Actions 就是）偶爾會回 4xx/5xx，
+   不是我們的設定有問題，隔一下再要通常就過了。
+   跟 fetch-market-data.js 一樣做重試，間隔逐次拉長。 */
+async function fetchRss(tries = 4) {
+  for (let i = 1; i <= tries; i++) {
+    try {
+      /* 加逾時：對方不回應時要主動放棄，否則整個工作會一直卡著 */
+      const res = await fetch(RSS_URL, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; chengguo-site-bot/1.0)" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (res.ok) return await res.text();
+      console.log(`[重試] 第 ${i} 次讀取回 HTTP ${res.status}`);
+    } catch (e) {
+      console.log(`[重試] 第 ${i} 次讀取出錯：${e.message}`);
+    }
+    if (i < tries) {
+      const wait = i * 20;
+      console.log(`[等待] ${wait} 秒後再試`);
+      await sleep(wait * 1000);
+    }
+  }
+  return null;
+}
+
 async function main() {
   console.log("[讀取]", RSS_URL);
-  const res = await fetch(RSS_URL, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; chengguo-site-bot/1.0)" },
-  });
-  if (!res.ok) throw new Error(`RSS 讀取失敗（HTTP ${res.status}）`);
-  const xml = await res.text();
+  const xml = await fetchRss();
+
+  /* 全部重試都失敗：保留現有的 videos.json，不要讓整個流程變紅。
+     影片清單沿用上一次的結果，網站照常重新建置，下一輪排程再試。 */
+  if (xml === null) {
+    console.log("[略過] YouTube RSS 這次讀不到，沿用現有影片清單，不做更動");
+    console.log("::warning::YouTube RSS 暫時無法讀取，本次略過影片同步");
+    return;
+  }
 
   const entries = xml.split("<entry>").slice(1);
   console.log(`[解析] RSS 中有 ${entries.length} 支影片`);
