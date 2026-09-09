@@ -212,7 +212,11 @@ function servicesSection() {
           <span class="font-mono text-[12px] text-orangeDeep pt-1 shrink-0">${String(j + 1).padStart(2, "0")}</span>
           <span>${esc(t)}</span></li>`).join("\n        ")}
       </ul>
-      <a href="${BRAND.phoneHref}" class="font-mono text-[15px] text-orangeDeep hover:underline">${esc(s.cta)} →</a>
+      ${/* 三張服務卡片的行動連結改成加 LINE：這裡的訴求是「先問問看」，
+           打電話的心理門檻比傳訊息高。文字維持原本的說法不變。
+           未設定 lineUrl 時自動退回電話，不會變成沒有作用的連結。 */""}
+      <a href="${BRAND.lineUrl || BRAND.phoneHref}"${BRAND.lineUrl ? ` target="_blank" rel="noopener noreferrer"` : ""}
+        class="font-mono text-[15px] text-orangeDeep hover:underline">${esc(s.cta)} →</a>
     </div>`).join("\n    ")}
   </div>
 </section>`;
