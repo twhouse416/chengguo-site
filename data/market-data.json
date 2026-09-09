@@ -1,46 +1,134 @@
 {
-  "updatedAt": "2026-09-09T00:47:40.429Z",
-  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。均價與價格帶為近兩季（約6個月）成交合併計算，價格帶取25%～75%百分位。",
+  "updatedAt": "2026-09-09T04:57:56.397Z",
+  "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價中位數與價格帶為近兩季（約6個月）成交合併計算，已剔除頭尾各一成極端值，價格帶取25%～75%百分位。電梯住宅與透天分開統計。",
   "areas": [
     {
       "code": "01",
       "name": "美術館特區",
-      "avgPricePerPing": 37.3,
-      "bandLow": 32,
-      "bandHigh": 41,
-      "sampleSize": 102,
+      "types": [
+        {
+          "key": "elevator",
+          "label": "電梯住宅",
+          "avgPricePerPing": 35.7,
+          "bandLow": 33,
+          "bandHigh": 39,
+          "sampleSize": 104,
+          "lowSample": false,
+          "trendPct": -11
+        },
+        {
+          "key": "townhouse",
+          "label": "透天",
+          "avgPricePerPing": 41.1,
+          "bandLow": 37,
+          "bandHigh": 45,
+          "sampleSize": 2,
+          "lowSample": true,
+          "trendPct": 0
+        }
+      ],
+      "avgPricePerPing": 35.7,
+      "bandLow": 33,
+      "bandHigh": 39,
+      "sampleSize": 104,
       "lowSample": false,
-      "trendPct": -12.9
+      "trendPct": -11
     },
     {
       "code": "02",
       "name": "農十六特區",
-      "avgPricePerPing": 32.1,
-      "bandLow": 27,
-      "bandHigh": 36,
-      "sampleSize": 18,
+      "types": [
+        {
+          "key": "elevator",
+          "label": "電梯住宅",
+          "avgPricePerPing": 40.2,
+          "bandLow": 35,
+          "bandHigh": 48,
+          "sampleSize": 96,
+          "lowSample": false,
+          "trendPct": 14.9
+        },
+        {
+          "key": "townhouse",
+          "label": "透天",
+          "avgPricePerPing": 38.5,
+          "bandLow": 30,
+          "bandHigh": 484,
+          "sampleSize": 6,
+          "lowSample": false,
+          "trendPct": 25.8
+        }
+      ],
+      "avgPricePerPing": 40.2,
+      "bandLow": 35,
+      "bandHigh": 48,
+      "sampleSize": 96,
       "lowSample": false,
-      "trendPct": 0.6
+      "trendPct": 14.9
     },
     {
       "code": "03",
       "name": "瑞豐・巨蛋",
-      "avgPricePerPing": 27,
-      "bandLow": 23,
-      "bandHigh": 33,
-      "sampleSize": 30,
+      "types": [
+        {
+          "key": "elevator",
+          "label": "電梯住宅",
+          "avgPricePerPing": 32.2,
+          "bandLow": 26,
+          "bandHigh": 35,
+          "sampleSize": 36,
+          "lowSample": false,
+          "trendPct": -0.6
+        },
+        {
+          "key": "townhouse",
+          "label": "透天",
+          "avgPricePerPing": 45.8,
+          "bandLow": 43,
+          "bandHigh": 49,
+          "sampleSize": 2,
+          "lowSample": true,
+          "trendPct": 31.2
+        }
+      ],
+      "avgPricePerPing": 32.2,
+      "bandLow": 26,
+      "bandHigh": 35,
+      "sampleSize": 36,
       "lowSample": false,
-      "trendPct": -12.9
+      "trendPct": -0.6
     },
     {
       "code": "04",
       "name": "中都重劃區",
-      "avgPricePerPing": 38.1,
-      "bandLow": 20,
-      "bandHigh": 54,
-      "sampleSize": 52,
+      "types": [
+        {
+          "key": "elevator",
+          "label": "電梯住宅",
+          "avgPricePerPing": 40.3,
+          "bandLow": 38,
+          "bandHigh": 45,
+          "sampleSize": 132,
+          "lowSample": false,
+          "trendPct": -1.9
+        },
+        {
+          "key": "townhouse",
+          "label": "透天",
+          "avgPricePerPing": null,
+          "bandLow": null,
+          "bandHigh": null,
+          "sampleSize": 0,
+          "lowSample": false,
+          "trendPct": null
+        }
+      ],
+      "avgPricePerPing": 40.3,
+      "bandLow": 38,
+      "bandHigh": 45,
+      "sampleSize": 132,
       "lowSample": false,
-      "trendPct": 41.6
+      "trendPct": -1.9
     }
   ]
 }
