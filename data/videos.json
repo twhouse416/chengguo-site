@@ -43,8 +43,10 @@
       "titleShown": "駁二輕軌旁大面寬靜謐車墅",
       "descShown": "✪ 台　灣　房　屋　澄　果　團　隊 ✪",
       "category": "",
-      "hidden": false,
-      "order": null
+      "hidden": true,
+      "order": null,
+      "autoHidden": true,
+      "missingSince": "2026-09-11"
     },
     {
       "videoId": "1-3wV5pHWsQ",
@@ -243,7 +245,19 @@
       "category": "",
       "hidden": false,
       "order": null
+    },
+    {
+      "videoId": "59wcs0DePyU",
+      "title": "【買房筆記】五個買房關鍵 #房地產 #高雄買房",
+      "desc": "買房可以說是人生大事之一，這裡整理了5大項一定要注意的重點，之後會再一步步和大家分享更多買房小細節唷!如果有什麼想法，或是遇到問題，歡迎底下留言一起討論唷~",
+      "published": "2024-12-14",
+      "thumb": "https://i2.ytimg.com/vi/59wcs0DePyU/hqdefault.jpg",
+      "titleShown": "【買房筆記】五個買房關鍵 #房地產 #高雄買房",
+      "descShown": "買房可以說是人生大事之一，這裡整理了5大項一定要注意的重點，之後會再一步步和大家分享更多買房小細節唷!如果有什麼想法，或是遇到問題，歡迎底下留言一起討論唷~",
+      "category": "",
+      "hidden": false,
+      "order": null
     }
   ],
-  "updatedAt": "2026-09-11T02:31:11.128Z"
+  "updatedAt": "2026-09-11T10:24:34.804Z"
 }
