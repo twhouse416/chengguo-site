@@ -491,7 +491,29 @@ ${videoSection(c)}
 }
 
 /* ---------- 社區列表頁 ---------- */
+/* 生活圈的顯示順序：先照這裡排，沒列到的排在後面。
+   依社區數排序會讓農十六在補齊之前一直吊車尾，
+   但這是團隊的主力區之一，順序應該由我們決定，不是由資料多寡決定。 */
+const AREA_ORDER = ["美術館特區", "農十六特區", "瑞豐・巨蛋", "中都重劃區"];
+
+function groupByArea(list) {
+  const map = new Map();
+  list.forEach(c => {
+    const key = c.area || "其他";
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(c);
+  });
+  const rank = a => {
+    const i = AREA_ORDER.indexOf(a);
+    return i === -1 ? AREA_ORDER.length : i;
+  };
+  return [...map.entries()]
+    .map(([area, items]) => ({ area, items }))
+    .sort((a, b) => rank(a.area) - rank(b.area) || a.area.localeCompare(b.area, "zh-Hant"));
+}
+
 function communityIndex(list, dealsMap, hasBuyers) {
+  const groups = groupByArea(list);
   const jsonLd = list.length ? [{
     "@context": "https://schema.org", "@type": "ItemList",
     itemListElement: list.map((c, i) => ({
@@ -526,14 +548,20 @@ function communityIndex(list, dealsMap, hasBuyers) {
   ${list.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
     <p class="text-[16px] text-inkSoft leading-[1.9]">社區頁面陸續整理中。想了解特定社區的行情，歡迎直接來電。</p>
     <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
-  </div>` : `
-  <div class="mt-10 grid md:grid-cols-2 gap-6">
-    ${list.map(c => {
+  </div>` : groups.map(g => `
+  <section class="mt-12">
+    <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
+      <h2 class="display text-[23px]">${esc(g.area)}</h2>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0">${g.items.length} 個社區</span>
+    </div>
+
+    <div class="mt-6 grid md:grid-cols-2 gap-6">
+    ${g.items.map(c => {
       const deals = dealsMap[c.slug] || [];
       const prices = deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
       return `<a href="${c.slug}.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(c.area)}・${esc(c.district)}</div>
-      <h2 class="text-[21px] font-bold tracking-tight mt-1 mb-3">${esc(c.name)}</h2>
+      <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">${esc(c.name)}</h3>
       <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">${esc(c.summary)}</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         ${prices.length ? `<div>
@@ -545,7 +573,17 @@ function communityIndex(list, dealsMap, hasBuyers) {
       </div>
     </a>`;
     }).join("\n    ")}
-  </div>`}
+    </div>
+
+    ${/* 社區數還少的區塊，補一句邀請詢問。等這一區補到 3 個以上就自動消失，
+         不必回頭改程式。空著不講話會像「這一區我們沒在做」，講清楚反而是入口。 */""}
+    ${g.items.length < 3 ? `<p class="mt-5 text-[15px] text-inkSoft leading-[1.9]">
+      這一區還有更多社區正在整理中。想先查某個社區的成交行情，
+      ${BRAND.lineUrl
+        ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">用 LINE 問我們</a>最快。`
+        : `<a href="${BRAND.phoneHref}" class="text-orangeDeep hover:underline">直接來電</a>問我們最快。`}
+    </p>` : ""}
+  </section>`).join("\n")}
 
   <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">想查的社區不在名單上？</h2>
@@ -589,7 +627,14 @@ export function buildCommunities(hasBuyers) {
     });
 
   list.forEach(c => {
-    const others = list.filter(o => o.slug !== c.slug).slice(0, 4);
+    /* 其他社區：同一個生活圈的優先，不足 4 個才補其他區。
+       原本是直接取名單前 4 個，結果農十六的社區頁推薦的全是美術館，
+       對正在看那一區的人沒有意義。 */
+    const pool = list.filter(o => o.slug !== c.slug);
+    const others = [
+      ...pool.filter(o => o.area === c.area),
+      ...pool.filter(o => o.area !== c.area),
+    ].slice(0, 4);
     const html = communityPage(c, dealsData.deals?.[c.slug] || [], others, hasBuyers);
     writeFileSync(path.join(OUT_DIR, `${c.slug}.html`), html, "utf-8");
     console.log("[產生]", `communities/${c.slug}.html`);
