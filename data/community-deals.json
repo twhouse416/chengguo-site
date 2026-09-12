@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-09T07:34:17.203Z",
+  "updatedAt": "2026-09-12T00:49:53.969Z",
   "deals": {
     "meishu-baitiane": [
       {
@@ -8074,6 +8074,22 @@
     ],
     "yinxiang-bali": [
       {
+        "date": "2026-05-30",
+        "floor": "八層",
+        "totalFloor": "十五層",
+        "ping": 23.03,
+        "unitPrice": 32.6,
+        "totalPrice": 750,
+        "layout": "1房1廳1衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東四路４５８號八樓之５",
+        "project": "",
+        "unit": "",
+        "note": "含裝潢費；含傢俱設備費；"
+      },
+      {
         "date": "2026-04-12",
         "floor": "三層",
         "totalFloor": "十五層",
@@ -15995,6 +16011,22 @@
     ],
     "meiting-yuan": [
       {
+        "date": "2026-07-24",
+        "floor": "十九層",
+        "totalFloor": "二十九層",
+        "ping": 41.79,
+        "unitPrice": 43.1,
+        "totalPrice": 1800,
+        "layout": "3房2廳2衛",
+        "parking": "坡道機械",
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東六街１５５號十九樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-05-16",
         "floor": "十七層",
         "totalFloor": "二十九層",
@@ -18893,6 +18925,22 @@
         "kind": "成屋",
         "use": "",
         "addr": "高雄市鼓山區裕誠路１６８７號二十五樓",
+        "project": "",
+        "unit": "",
+        "note": "毛胚屋；"
+      },
+      {
+        "date": "2026-06-12",
+        "floor": "二十六層",
+        "totalFloor": "三十八層",
+        "ping": 127.25,
+        "unitPrice": 29.9,
+        "totalPrice": 3800,
+        "layout": "0房0廳0衛",
+        "parking": "坡道平面",
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區裕誠路１６８７號二十六樓",
         "project": "",
         "unit": "",
         "note": "毛胚屋；"
