@@ -13,6 +13,10 @@
  * 一個社區常橫跨多個門牌，所以同一社區可能分成好幾列，
  * 看到相鄰號碼、筆數與價位都相近的，通常就是同一個社區。
  *
+ * 記憶體：早期版本把所有期別的紀錄先 concat 成一個大陣列再比對，跑 20 期
+ * （約 130 萬筆）時 Node 的堆積會爆掉（FATAL ERROR: JavaScript heap out of memory）。
+ * 現在改成「下載一期 → 立刻比對 → 丟掉」，記憶體只需容納單一期，跑 40 期也不會爆。
+ *
  * 用法：
  *   node scripts/debug-area-communities.js [期數] [生活圈代碼]
  *   node scripts/debug-area-communities.js 8 02      近 8 期的農十六
@@ -136,9 +140,16 @@ function download(season) {
   return null;
 }
 
+/* 四大生活圈都在高雄，季檔裡高雄是 E_lvr_land_a.csv。
+   只讀這一支，記憶體與解析時間都省下二十分之一；
+   萬一檔名對不上（內政部改格式）就退回讀全部，不會整個跑不動。 */
+const CITY_PREFIX = "E";
+
 function readCsv(dir) {
   const records = [];
-  for (const file of readdirSync(dir).filter(f => /_lvr_land_a\.csv$/i.test(f))) {
+  const all = readdirSync(dir).filter(f => /_lvr_land_a\.csv$/i.test(f));
+  const city = all.filter(f => f.toUpperCase().startsWith(CITY_PREFIX + "_"));
+  for (const file of (city.length ? city : all)) {
     const rows = parseCSV(readFileSync(path.join(dir, file), "utf-8"));
     if (rows.length < 3) continue;
     const header = rows[0];
@@ -155,8 +166,8 @@ function readCsv(dir) {
 /* 同一棟：門牌取到「號」為止，樓層與「之N」不計 */
 function doorKey(addr) {
   const s = normalize(addr);
-  const m = s.match(/^(.*?\d+號)/);
-  const raw = m ? m[1] : s;
+  const m = s.match(/^(.*?)(\d+)號/);
+  const raw = m ? m[1] + m[2] + "號" : s;
   return raw.replace(/^.*?[縣市]/, "").replace(/^.*?區/, "");
 }
 
@@ -176,70 +187,81 @@ async function main() {
   console.log(`建物型態：${(AREAS.propertyTypes || []).map(x => x.label).join("、")}`);
   console.log(`排除用途：${(AREAS.excludeUses || []).join("、") || "（無）"}\n`);
 
+  const areas = AREAS.areas.filter(a => !onlyCode || a.code === onlyCode);
+  if (!areas.length) { console.log(`找不到代碼 ${onlyCode} 的生活圈`); return; }
+
+  /* 每個生活圈一組累加器，逐期累進，不保留原始紀錄 */
+  const acc = new Map();
+  areas.forEach(a => acc.set(a.code, {
+    area: a, matched: 0, doors: new Map(),
+    keys: (a.keywords || []).map(normalize),
+    ranges: a.roadRanges || [],
+  }));
+
   rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
 
-  let all = [];
+  let readTotal = 0;
   for (let i = 0; i < periods; i++) {
     const season = seasonCode(i + 1);
     process.stdout.write(`下載 ${season} … `);
     const dir = download(season);
     if (!dir) { console.log("❌ 失敗，跳過"); continue; }
+
     const recs = readCsv(dir);
-    console.log(`✅ ${recs.length} 筆`);
-    all = all.concat(recs);
+    readTotal += recs.length;
+
+    for (const r of recs) {
+      const price = parseFloat(r["單價元平方公尺"]);
+      if (!(price > 0)) continue;
+      const type = r["建物型態"] || "";
+      if (!TYPE_MATCH.some(k => type.includes(k))) continue;
+      const use = (r["主要用途"] || "").trim();
+      if (use && (AREAS.excludeUses || []).some(k => use.includes(k))) continue;
+
+      const district = r["鄉鎮市區"] || "";
+      const addr = normalize(r["土地位置建物門牌"]);
+
+      for (const st of acc.values()) {
+        const a = st.area;
+        const byKeyword = district.includes(a.district) && st.keys.some(k => addr.includes(k));
+        const byRange = st.ranges.some(rg =>
+          district.includes(rg.district || a.district) && inAddressRange(addr, [rg]));
+        if (!byKeyword && !byRange) continue;
+
+        st.matched++;
+        const door = doorKey(r["土地位置建物門牌"]);
+        let v = st.doors.get(door);
+        if (!v) { v = { prices: [], pings: [], dates: [], floors: new Set() }; st.doors.set(door, v); }
+        v.prices.push(Math.round(price / M2_TO_PING / 1000) / 10);
+        const ping = parseFloat(r["建物移轉總面積平方公尺"] || 0) * M2_TO_PING;
+        if (ping > 0) v.pings.push(Math.round(ping * 10) / 10);
+        const date = rocToDate(r["交易年月日"]);
+        if (date) v.dates.push(date);
+        const fl = (r["總樓層數"] || "").trim();
+        if (fl) v.floors.add(fl);
+        break;   // 一筆成交只歸一個生活圈
+      }
+    }
+
+    console.log(`✅ ${recs.length} 筆（累計比對到 ${[...acc.values()].reduce((s, x) => s + x.matched, 0)} 筆）`);
     rmSync(dir, { recursive: true, force: true });
   }
   rmSync(TMP, { recursive: true, force: true });
 
-  if (!all.length) { console.log("\n沒有讀到任何資料，無法診斷。"); return; }
-  console.log(`\n合計 ${all.length} 筆（全台）`);
+  if (!readTotal) { console.log("\n沒有讀到任何資料，無法診斷。"); return; }
+  console.log(`\n合計讀取 ${readTotal} 筆（高雄市成屋）`);
 
-  const areas = AREAS.areas.filter(a => !onlyCode || a.code === onlyCode);
-  if (!areas.length) { console.log(`找不到代碼 ${onlyCode} 的生活圈`); return; }
-
-  /* 同時累積成結構化資料，最後寫成檔案 */
   const out = { 產生時間: new Date().toISOString(), 期數: periods, 生活圈: [] };
 
-  for (const area of areas) {
-    const keys = (area.keywords || []).map(normalize);
-    const ranges = area.roadRanges || [];
-
-    const matched = all.filter(r => {
-      const district = r["鄉鎮市區"] || "";
-      const addr = normalize(r["土地位置建物門牌"]);
-      const byKeyword = district.includes(area.district) && keys.some(k => addr.includes(k));
-      const byRange = ranges.some(rg =>
-        district.includes(rg.district || area.district) && inAddressRange(addr, [rg]));
-      if (!byKeyword && !byRange) return false;
-      const type = r["建物型態"] || "";
-      if (!TYPE_MATCH.some(k => type.includes(k))) return false;
-      const use = (r["主要用途"] || "").trim();
-      if (use && (AREAS.excludeUses || []).some(k => use.includes(k))) return false;
-      return parseFloat(r["單價元平方公尺"]) > 0;
-    });
-
+  for (const st of acc.values()) {
+    const area = st.area;
     console.log(`\n══════════════════════════════════════════════════════════`);
-    console.log(`【${area.code} ${area.name}】${area.district}　共 ${matched.length} 筆成交`);
+    console.log(`【${area.code} ${area.name}】${area.district}　共 ${st.matched} 筆成交`);
     console.log(`══════════════════════════════════════════════════════════`);
-    if (!matched.length) { console.log("（沒有抓到任何紀錄）"); continue; }
+    if (!st.matched) { console.log("（沒有抓到任何紀錄）"); continue; }
 
-    const byDoor = new Map();
-    matched.forEach(r => {
-      const door = doorKey(r["土地位置建物門牌"]);
-      const price = Math.round(parseFloat(r["單價元平方公尺"]) / M2_TO_PING / 1000) / 10;
-      const ping = Math.round(parseFloat(r["建物移轉總面積平方公尺"] || 0) * M2_TO_PING * 10) / 10;
-      const date = rocToDate(r["交易年月日"]);
-      const floors = (r["總樓層數"] || "").trim();
-      if (!byDoor.has(door)) byDoor.set(door, { prices: [], pings: [], dates: [], floors: new Set() });
-      const v = byDoor.get(door);
-      v.prices.push(price);
-      if (ping > 0) v.pings.push(ping);
-      if (date) v.dates.push(date);
-      if (floors) v.floors.add(floors);
-    });
-
-    const rows = [...byDoor.entries()]
+    const rows = [...st.doors.entries()]
       .map(([door, v]) => ({
         door, n: v.prices.length,
         med: median(v.prices), min: Math.min(...v.prices), max: Math.max(...v.prices),
@@ -249,24 +271,19 @@ async function main() {
       }))
       .sort((a, b) => b.n - a.n || b.med - a.med);
 
-    console.log(`\n共 ${rows.length} 個門牌有成交，以下依筆數排序：\n`);
-    console.log(`${"門牌".padEnd(22)}${"筆數".padStart(4)}${"中位數".padStart(8)}${"最低".padStart(7)}${"最高".padStart(7)}${"坪數".padStart(7)}  ${"最近成交".padEnd(11)}總樓層`);
-    console.log("─".repeat(88));
-    rows.forEach(r => {
-      console.log(
-        `${r.door.padEnd(22)}${String(r.n).padStart(4)}${r.med.toFixed(1).padStart(8)}` +
-        `${r.min.toFixed(1).padStart(7)}${r.max.toFixed(1).padStart(7)}${(r.ping || 0).toFixed(1).padStart(7)}  ` +
-        `${(r.last || "—").padEnd(11)}${r.floors}`
-      );
+    console.log(`\n共 ${rows.length} 個門牌有成交，前 25 名：\n`);
+    console.log(`${"門牌".padEnd(24)}${"筆數".padStart(5)}${"中位數".padStart(8)}${"坪數".padStart(8)}  ${"最近成交".padEnd(12)}總樓層`);
+    console.log("─".repeat(76));
+    rows.slice(0, 25).forEach(r => {
+      console.log(`${r.door.padEnd(24)}${String(r.n).padStart(5)}${r.med.toFixed(1).padStart(8)}` +
+        `${(r.ping || 0).toFixed(1).padStart(8)}  ${(r.last || "—").padEnd(12)}${r.floors}`);
     });
-    console.log("─".repeat(88));
-
-    const top = rows.slice(0, 10).reduce((s, r) => s + r.n, 0);
-    console.log(`前 10 個門牌合計 ${top} 筆，佔全區 ${(top / matched.length * 100).toFixed(0)}%`);
+    console.log("─".repeat(76));
+    console.log(`（完整清單在下載的 door-index.json 裡，共 ${rows.length} 個門牌）`);
 
     out.生活圈.push({
       代碼: area.code, 名稱: area.name, 行政區: area.district,
-      成交筆數: matched.length, 門牌數: rows.length,
+      成交筆數: st.matched, 門牌數: rows.length,
       門牌: rows.map(r => ({
         門牌: r.door, 筆數: r.n,
         單價中位數: Math.round(r.med * 10) / 10,
@@ -278,17 +295,10 @@ async function main() {
     });
   }
 
-  const outPath = path.join(ROOT, "door-index.json");
-  writeFileSync(outPath, JSON.stringify(out, null, 1), "utf-8");
+  writeFileSync(path.join(ROOT, "door-index.json"), JSON.stringify(out, null, 1), "utf-8");
   console.log(`\n[完成] 門牌索引已寫入 door-index.json（` +
     `${out.生活圈.reduce((s, a) => s + a.門牌數, 0)} 個門牌）`);
   console.log(`這個檔案會被打包成可下載的檔案，不必從畫面上複製。`);
-
-  console.log(`\n\n=== 怎麼看 ===`);
-  console.log(`1. 筆數多＝市場流通性高，建社區頁的效益最大（有成交紀錄可以列）`);
-  console.log(`2. 相鄰門牌、筆數與價位都相近的，通常是同一個社區的不同棟`);
-  console.log(`3. 坪數中位數看得出產品定位：30 坪上下是首購換屋、80 坪以上是大坪數`);
-  console.log(`4. 最近成交太舊（半年以上沒有）代表這棟現在沒什麼在流通\n`);
 }
 
 main().catch(e => { console.error("[失敗]", e); process.exit(1); });
