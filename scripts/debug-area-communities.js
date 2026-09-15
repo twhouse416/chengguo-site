@@ -17,10 +17,13 @@
  *   node scripts/debug-area-communities.js [期數] [生活圈代碼]
  *   node scripts/debug-area-communities.js 8 02      近 8 期的農十六
  *
+ * 另外會把結果寫成 door-index.json（門牌索引），由 workflow 打包成可下載的
+ * 檔案。門牌數量動輒兩三百筆，用看的、用複製貼上的都不切實際，下載檔案最省事。
+ *
  * 只讀不寫，不會動到 data/ 底下任何檔案。
  */
 
-import { readFileSync, readdirSync, mkdirSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -195,6 +198,9 @@ async function main() {
   const areas = AREAS.areas.filter(a => !onlyCode || a.code === onlyCode);
   if (!areas.length) { console.log(`找不到代碼 ${onlyCode} 的生活圈`); return; }
 
+  /* 同時累積成結構化資料，最後寫成檔案 */
+  const out = { 產生時間: new Date().toISOString(), 期數: periods, 生活圈: [] };
+
   for (const area of areas) {
     const keys = (area.keywords || []).map(normalize);
     const ranges = area.roadRanges || [];
@@ -257,7 +263,26 @@ async function main() {
 
     const top = rows.slice(0, 10).reduce((s, r) => s + r.n, 0);
     console.log(`前 10 個門牌合計 ${top} 筆，佔全區 ${(top / matched.length * 100).toFixed(0)}%`);
+
+    out.生活圈.push({
+      代碼: area.code, 名稱: area.name, 行政區: area.district,
+      成交筆數: matched.length, 門牌數: rows.length,
+      門牌: rows.map(r => ({
+        門牌: r.door, 筆數: r.n,
+        單價中位數: Math.round(r.med * 10) / 10,
+        單價最低: Math.round(r.min * 10) / 10,
+        單價最高: Math.round(r.max * 10) / 10,
+        坪數中位數: Math.round(r.ping * 10) / 10,
+        最近成交: r.last, 總樓層: r.floors,
+      })),
+    });
   }
+
+  const outPath = path.join(ROOT, "door-index.json");
+  writeFileSync(outPath, JSON.stringify(out, null, 1), "utf-8");
+  console.log(`\n[完成] 門牌索引已寫入 door-index.json（` +
+    `${out.生活圈.reduce((s, a) => s + a.門牌數, 0)} 個門牌）`);
+  console.log(`這個檔案會被打包成可下載的檔案，不必從畫面上複製。`);
 
   console.log(`\n\n=== 怎麼看 ===`);
   console.log(`1. 筆數多＝市場流通性高，建社區頁的效益最大（有成交紀錄可以列）`);
