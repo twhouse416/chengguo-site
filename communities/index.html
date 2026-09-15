@@ -144,17 +144,45 @@
   <div class="mt-6 h-px bg-line"></div>
 
   
-  <section class="mt-12">
+  <div id="commTools" hidden class="mt-10 border border-line rounded-sm bg-surface p-5">
+    <div class="flex flex-wrap items-end gap-4">
+      <label class="flex-1 min-w-[220px]">
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">搜尋社區</span>
+        <input id="commSearch" type="search" autocomplete="off" placeholder="輸入社區名稱，例如 美術、皇苑"
+          class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface" />
+      </label>
+      <label class="min-w-[180px]">
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">排序</span>
+        <select id="commSort" class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface">
+          <option value="default">預設（依生活圈）</option>
+          <option value="deals">成交筆數多到少</option>
+          <option value="priceDesc">單價高到低</option>
+          <option value="priceAsc">單價低到高</option>
+          <option value="name">社區名稱</option>
+        </select>
+      </label>
+      <div>
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">檢視</span>
+        <div class="flex border border-line rounded-sm overflow-hidden">
+          <button type="button" data-view="card" class="view-btn px-4 py-2.5 text-[15px] bg-ink text-white">卡片</button>
+          <button type="button" data-view="compact" class="view-btn px-4 py-2.5 text-[15px] bg-surface text-inkSoft">精簡</button>
+        </div>
+      </div>
+    </div>
+    <p id="commCount" class="font-mono text-[12px] text-inkFaint mt-4">共 14 個社區</p>
+  </div>
+  <section class="mt-12" data-group>
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">美術館特區</h2>
-      <span class="font-mono text-[12px] text-inkFaint shrink-0">13 個社區</span>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>13</span> 個社區</span>
     </div>
 
-    <div class="mt-6 grid md:grid-cols-2 gap-6">
-    <a href="meishu-baitiane.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <div class="mt-6 grid md:grid-cols-2 gap-6" data-grid>
+    <a href="meishu-baitiane.html" data-card data-name="美術白天鵝 白天鵝 美術館特區 鼓山區 高雄市鼓山區美術東四路690-698號" data-deals="300" data-price="38.2"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術白天鵝</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">美術館特區內少見的中小坪數規劃，2～3 房為主，全平面車位，緊鄰 41 公頃美術館園區。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">美術館特區內少見的中小坪數規劃，2～3 房為主，全平面車位，緊鄰 41 公頃美術館園區。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -164,10 +192,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="meishu-1hao-yuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="meishu-1hao-yuan.html" data-card data-name="美術1号院 美術一号院 美術1號院 興富發華人桂冠 美術館特區 鼓山區 高雄市鼓山區明誠四路與美術東二路口" data-deals="33" data-price="44.8"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術1号院</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">興富發於美術館特區推出的大型社區，美術館公園第一排，2 房到 4 房產品線齊全，全區車位配比接近 1:1。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">興富發於美術館特區推出的大型社區，美術館公園第一排，2 房到 4 房產品線齊全，全區車位配比接近 1:1。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -177,10 +206,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="aimeiguan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="aimeiguan.html" data-card data-name="艾美館 本業艾美館 美術館特區 鼓山區 高雄市鼓山區美術南五街272-286號（雙號）" data-deals="28" data-price="34.6"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">艾美館</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">本業建設於美術南五街的電梯大樓，2 房到 3 房為主，基地 345 坪，公設集中且實用，頂樓有空中花園。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">本業建設於美術南五街的電梯大樓，2 房到 3 房為主，基地 345 坪，公設集中且實用，頂樓有空中花園。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -190,10 +220,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="boti.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="boti.html" data-card data-name="城揚波堤 波堤 波堤大樓 美術館特區 鼓山區 高雄市鼓山區河西一路1437-1447號（單號）、美術南二路70巷33-37號（單號）" data-deals="46" data-price="34.7"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">城揚波堤</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設的愛河景觀大樓，臨河第一排，可遠眺中都濕地公園與市區夜景。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設的愛河景觀大樓，臨河第一排，可遠眺中都濕地公園與市區夜景。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -203,10 +234,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="yangguang-yihuayuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="yangguang-yihuayuan.html" data-card data-name="陽光藝花園 北京陽光藝花園 美術館特區 鼓山區 高雄市鼓山區美術東四路216-246號（雙號）、美術館路77-87號（單號）" data-deals="43" data-price="34.5"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">陽光藝花園</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">2007 年園冶獎作品，位處美術館路與美術東四路角地，棟距大、公設豐富，坪數跨度從 2 房到大坪數都有。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">2007 年園冶獎作品，位處美術館路與美術東四路角地，棟距大、公設豐富，坪數跨度從 2 房到大坪數都有。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -216,10 +248,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="meishu-dongshijie.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="meishu-dongshijie.html" data-card data-name="美術東世界 美術東世界大樓 美術館特區 鼓山區 高雄市鼓山區美術東四路289-317號（單號）" data-deals="41" data-price="31.8"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美術東世界</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">北京建設的五棟式規劃，每層 2～3 戶、每棟一部電梯，後棟正對兒童公園與美術館園區。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">北京建設的五棟式規劃，每層 2～3 戶、每棟一部電梯，後棟正對兒童公園與美術館園區。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -229,10 +262,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="aman-huiguan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="aman-huiguan.html" data-card data-name="阿曼會館 京城阿曼會館 京艷 美術館特區 鼓山區 高雄市鼓山區美術北三路31-41號（單號）" data-deals="23" data-price="33.6"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">阿曼會館</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設 2006 年完工，2～3 房中小坪數規劃，無 4 房產品，是首購族常看的社區之一。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設 2006 年完工，2～3 房中小坪數規劃，無 4 房產品，是首購族常看的社區之一。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -242,10 +276,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="milo.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="milo.html" data-card data-name="米羅 京城米羅 美術館特區 鼓山區 高雄市鼓山區美術東八街82-106號（雙號）" data-deals="20" data-price="30.3"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">米羅</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設於美術東八街的社區，一層兩戶規劃，房型從 1 房到 4-5 房都有，坪數跨度大，公設比約 29.32%。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">京城建設於美術東八街的社區，一層兩戶規劃，房型從 1 房到 4-5 房都有，坪數跨度大，公設比約 29.32%。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -255,10 +290,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="yinxiang-bali.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="yinxiang-bali.html" data-card data-name="印象巴黎 和築印象巴黎 美術館特區 鼓山區 高雄市鼓山區美術東四路430-458號（雙號）" data-deals="151" data-price="28.8"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">印象巴黎</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">和築建設 504 戶大型社區，產品從套房到 4 房齊全，美術館第二排，是美術館特區成交量最大的社區之一。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">和築建設 504 戶大型社區，產品從套房到 4 房齊全，美術館第二排，是美術館特區成交量最大的社區之一。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -268,10 +304,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="wei-meishu.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="wei-meishu.html" data-card data-name="惟美術 城揚惟美術 美術館特區 鼓山區 高雄市鼓山區美術東四路27、29號" data-deals="76" data-price="50.7"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">惟美術</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設新成屋，2～4 房規劃，平面車位佔多數，步行約 6 分鐘可達聯合醫院、3～5 分鐘可達輕軌站。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設新成屋，2～4 房規劃，平面車位佔多數，步行約 6 分鐘可達聯合醫院、3～5 分鐘可達輕軌站。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -281,10 +318,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="huangyuan-yuzhiyuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="huangyuan-yuzhiyuan.html" data-card data-name="皇苑御之苑 御之苑 美術館特區 鼓山區 高雄市鼓山區馬卡道路66-72、75-79號" data-deals="300" data-price="42.8"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">皇苑御之苑</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">皇苑建設 27 層大樓，67～100 坪大坪數規劃，全平面車位 551 個，位於 44 期重劃區、鄰近中都愛河濕地公園。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">皇苑建設 27 層大樓，67～100 坪大坪數規劃，全平面車位 551 個，位於 44 期重劃區、鄰近中都愛河濕地公園。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -294,10 +332,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="meiting-yuan.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="meiting-yuan.html" data-card data-name="美廳苑 城揚美廳苑 美術館特區 鼓山區 高雄市鼓山區美術東六街153-173號（單號）" data-deals="193" data-price="49.1"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">美廳苑</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設 29 層雙棟社區，266 戶、2～4 房規劃，平面車位佔多數，2022 年底完工的美術館特區新成屋。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">城揚建設 29 層雙棟社區，266 戶、2～4 房規劃，平面車位佔多數，2022 年底完工的美術館特區新成屋。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -307,10 +346,11 @@
         <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
       </div>
     </a>
-    <a href="guangzhou-yuncui.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <a href="guangzhou-yuncui.html" data-card data-name="光洲耘翠 耘翠 光洲建設耘翠 美術館特區 鼓山區 高雄市鼓山區美術東四路55-69號（單號）" data-deals="82" data-price="28.2"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">美術館特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">光洲耘翠</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">光洲建設於美術館特區推出的 170 戶社區，2021 年 12 月完工，43 至 58 坪的 3、4 房規劃，基地約 950 坪並設有泳池會館，車位 221 個。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">光洲建設於美術館特區推出的 170 戶社區，2021 年 12 月完工，43 至 58 坪的 3、4 房規劃，基地約 950 坪並設有泳池會館，車位 221 個。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -326,17 +366,18 @@
     
   </section>
 
-  <section class="mt-12">
+  <section class="mt-12" data-group>
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">農十六特區</h2>
-      <span class="font-mono text-[12px] text-inkFaint shrink-0">1 個社區</span>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>1</span> 個社區</span>
     </div>
 
-    <div class="mt-6 grid md:grid-cols-2 gap-6">
-    <a href="huaren-hui.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+    <div class="mt-6 grid md:grid-cols-2 gap-6" data-grid>
+    <a href="huaren-hui.html" data-card data-name="華人匯 華人滙 興富發華人匯 農十六特區 鼓山區 高雄市鼓山區龍勝路287-291號、裕誠路1687-1693號（單號）" data-deals="101" data-price="29.1"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">農十六特區・鼓山區</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">華人匯</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">興富發建設地上 38 層雙棟社區，252 戶、基地約 1,830 坪，毛胚交屋可自由客變，是農十六特區的大坪數指標案。</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">興富發建設地上 38 層雙棟社區，252 戶、基地約 1,830 坪，毛胚交屋可自由客變，是農十六特區的大坪數指標案。</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         <div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -354,6 +395,103 @@
       <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">用 LINE 問我們</a>最快。
     </p>
   </section>
+  <div id="commEmpty" hidden class="mt-12 border border-line rounded-sm bg-surface p-8">
+    <p class="text-[16px] text-inkSoft leading-[1.9]">
+      沒有符合的社區。換個關鍵字試試，或直接告訴我們社區名稱，我們手上還有很多沒整理成頁面的資料。
+    </p>
+    <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
+      class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+      用 LINE 問我們
+    </a>
+  </div>
+<style>
+  /* 精簡檢視：一欄、縮排距、收起摘要，一頁看得到更多社區 */
+  .compact [data-grid] { grid-template-columns: 1fr; gap: 0; }
+  .compact [data-card] { padding: 0.9rem 1.1rem; border-radius: 0; margin-top: -1px; }
+  .compact [data-summary] { display: none; }
+  .compact [data-card] h3 { font-size: 17px; margin: 0.1rem 0 0; }
+  .compact [data-card] > div:last-child { margin-top: 0.5rem; padding-top: 0.5rem; }
+</style>
+<script>
+  (function () {
+    var tools = document.getElementById("commTools");
+    if (!tools) return;
+    tools.hidden = false;   /* 有 JS 才顯示工具列 */
+
+    var search = document.getElementById("commSearch");
+    var sort = document.getElementById("commSort");
+    var count = document.getElementById("commCount");
+    var empty = document.getElementById("commEmpty");
+    var groups = [].slice.call(document.querySelectorAll("[data-group]"));
+    var main = document.querySelector("main");
+
+    /* 記住每張卡片原本的位置，切回「預設」時能還原 */
+    groups.forEach(function (g) {
+      var grid = g.querySelector("[data-grid]");
+      [].slice.call(grid.children).forEach(function (el, i) { el.dataset.order = i; });
+    });
+
+    function num(el, key) { return parseFloat(el.dataset[key]) || 0; }
+
+    function apply() {
+      var q = (search.value || "").trim().toLowerCase();
+      var mode = sort.value;
+      var shown = 0;
+
+      groups.forEach(function (g) {
+        var grid = g.querySelector("[data-grid]");
+        var cards = [].slice.call(grid.querySelectorAll("[data-card]"));
+        var visible = 0;
+
+        cards.forEach(function (c) {
+          var hit = !q || (c.dataset.name || "").toLowerCase().indexOf(q) !== -1;
+          c.hidden = !hit;
+          if (hit) visible++;
+        });
+
+        cards.sort(function (a, b) {
+          if (mode === "deals") return num(b, "deals") - num(a, "deals");
+          if (mode === "priceDesc") return num(b, "price") - num(a, "price");
+          if (mode === "priceAsc") {
+            /* 沒有成交資料的排最後，不要讓 0 佔住最前面 */
+            var pa = num(a, "price") || Infinity, pb = num(b, "price") || Infinity;
+            return pa - pb;
+          }
+          if (mode === "name") {
+            return (a.querySelector("h3").textContent || "")
+              .localeCompare(b.querySelector("h3").textContent || "", "zh-Hant");
+          }
+          return num(a, "order") - num(b, "order");
+        }).forEach(function (c) { grid.appendChild(c); });
+
+        var badge = g.querySelector("[data-group-count]");
+        if (badge) badge.textContent = visible;
+        g.hidden = visible === 0;
+        shown += visible;
+      });
+
+      count.textContent = q ? ("找到 " + shown + " 個社區") : ("共 " + shown + " 個社區");
+      if (empty) empty.hidden = shown !== 0;
+    }
+
+    search.addEventListener("input", apply);
+    sort.addEventListener("change", apply);
+
+    [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var compact = b.dataset.view === "compact";
+        main.classList.toggle("compact", compact);
+        [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
+          var on = x === b;
+          x.className = "view-btn px-4 py-2.5 text-[15px] " +
+            (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
+        });
+      });
+    });
+
+    apply();
+  })();
+</script>
 
   <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">想查的社區不在名單上？</h2>
