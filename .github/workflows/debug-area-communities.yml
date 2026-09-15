@@ -1,0 +1,29 @@
+name: 診斷生活圈熱門社區
+
+# 手動觸發：用實價登錄算出每個生活圈「哪幾棟成交最多」，
+# 用來決定接下來要建哪些社區頁。只讀不寫，不會更動 repo 內任何資料檔。
+
+on:
+  workflow_dispatch:
+    inputs:
+      periods:
+        description: "往回幾期（一期=一季）。查熱門社區建議 8 期（約兩年）"
+        required: true
+        default: "8"
+      areaCode:
+        description: "只看某個生活圈：01美術館 02農十六 03瑞豐巨蛋 04中都（留空=全部）"
+        required: false
+        default: ""
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 診斷
+        run: node scripts/debug-area-communities.js "${{ inputs.periods }}" "${{ inputs.areaCode }}"
