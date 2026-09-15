@@ -27,3 +27,12 @@ jobs:
 
       - name: 診斷
         run: node scripts/debug-area-communities.js "${{ inputs.periods }}" "${{ inputs.areaCode }}"
+
+      - name: 打包門牌索引供下載
+        # 門牌動輒兩三百筆，從畫面複製不切實際。
+        # 這一步把結果存成可下載的檔案，跑完在頁面最下方的 Artifacts 區塊取得。
+        uses: actions/upload-artifact@v4
+        with:
+          name: door-index
+          path: door-index.json
+          retention-days: 14
