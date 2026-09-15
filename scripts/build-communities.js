@@ -512,6 +512,150 @@ function groupByArea(list) {
     .sort((a, b) => rank(a.area) - rank(b.area) || a.area.localeCompare(b.area, "zh-Hant"));
 }
 
+/* 列表頁的搜尋／排序／檢視切換
+   ------------------------------------------------
+   社區會愈來愈多，平鋪的卡片到二十幾個就開始難找。
+   三個功能都是純前端、不需要後端：
+     搜尋——即時篩選，比對社區名、別名、生活圈與地址
+     排序——依成交筆數或單價；屋齡與戶數在規格表是自由文字，解析不可靠故不列入
+     檢視——卡片（適合瀏覽）／精簡（一頁看更多，適合比較）
+   沒有 JavaScript 時整條工具列不顯示，所有社區照常全部列出，不影響 SEO 與爬蟲。 */
+function toolbar(total) {
+  return `
+  <div id="commTools" hidden class="mt-10 border border-line rounded-sm bg-surface p-5">
+    <div class="flex flex-wrap items-end gap-4">
+      <label class="flex-1 min-w-[220px]">
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">搜尋社區</span>
+        <input id="commSearch" type="search" autocomplete="off" placeholder="輸入社區名稱，例如 美術、皇苑"
+          class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface" />
+      </label>
+      <label class="min-w-[180px]">
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">排序</span>
+        <select id="commSort" class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface">
+          <option value="default">預設（依生活圈）</option>
+          <option value="deals">成交筆數多到少</option>
+          <option value="priceDesc">單價高到低</option>
+          <option value="priceAsc">單價低到高</option>
+          <option value="name">社區名稱</option>
+        </select>
+      </label>
+      <div>
+        <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">檢視</span>
+        <div class="flex border border-line rounded-sm overflow-hidden">
+          <button type="button" data-view="card" class="view-btn px-4 py-2.5 text-[15px] bg-ink text-white">卡片</button>
+          <button type="button" data-view="compact" class="view-btn px-4 py-2.5 text-[15px] bg-surface text-inkSoft">精簡</button>
+        </div>
+      </div>
+    </div>
+    <p id="commCount" class="font-mono text-[12px] text-inkFaint mt-4">共 ${total} 個社區</p>
+  </div>`;
+}
+
+function emptyState() {
+  return `
+  <div id="commEmpty" hidden class="mt-12 border border-line rounded-sm bg-surface p-8">
+    <p class="text-[16px] text-inkSoft leading-[1.9]">
+      沒有符合的社區。換個關鍵字試試，或直接告訴我們社區名稱，我們手上還有很多沒整理成頁面的資料。
+    </p>
+    <a href="${BRAND.lineUrl || BRAND.phoneHref}"${BRAND.lineUrl ? ' target="_blank" rel="noopener noreferrer"' : ''}
+      class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+      ${BRAND.lineUrl ? "用 LINE 問我們" : `來電諮詢 ${BRAND.phone}`}
+    </a>
+  </div>`;
+}
+
+function listScript() {
+  return `
+<style>
+  /* 精簡檢視：一欄、縮排距、收起摘要，一頁看得到更多社區 */
+  .compact [data-grid] { grid-template-columns: 1fr; gap: 0; }
+  .compact [data-card] { padding: 0.9rem 1.1rem; border-radius: 0; margin-top: -1px; }
+  .compact [data-summary] { display: none; }
+  .compact [data-card] h3 { font-size: 17px; margin: 0.1rem 0 0; }
+  .compact [data-card] > div:last-child { margin-top: 0.5rem; padding-top: 0.5rem; }
+</style>
+<script>
+  (function () {
+    var tools = document.getElementById("commTools");
+    if (!tools) return;
+    tools.hidden = false;   /* 有 JS 才顯示工具列 */
+
+    var search = document.getElementById("commSearch");
+    var sort = document.getElementById("commSort");
+    var count = document.getElementById("commCount");
+    var empty = document.getElementById("commEmpty");
+    var groups = [].slice.call(document.querySelectorAll("[data-group]"));
+    var main = document.querySelector("main");
+
+    /* 記住每張卡片原本的位置，切回「預設」時能還原 */
+    groups.forEach(function (g) {
+      var grid = g.querySelector("[data-grid]");
+      [].slice.call(grid.children).forEach(function (el, i) { el.dataset.order = i; });
+    });
+
+    function num(el, key) { return parseFloat(el.dataset[key]) || 0; }
+
+    function apply() {
+      var q = (search.value || "").trim().toLowerCase();
+      var mode = sort.value;
+      var shown = 0;
+
+      groups.forEach(function (g) {
+        var grid = g.querySelector("[data-grid]");
+        var cards = [].slice.call(grid.querySelectorAll("[data-card]"));
+        var visible = 0;
+
+        cards.forEach(function (c) {
+          var hit = !q || (c.dataset.name || "").toLowerCase().indexOf(q) !== -1;
+          c.hidden = !hit;
+          if (hit) visible++;
+        });
+
+        cards.sort(function (a, b) {
+          if (mode === "deals") return num(b, "deals") - num(a, "deals");
+          if (mode === "priceDesc") return num(b, "price") - num(a, "price");
+          if (mode === "priceAsc") {
+            /* 沒有成交資料的排最後，不要讓 0 佔住最前面 */
+            var pa = num(a, "price") || Infinity, pb = num(b, "price") || Infinity;
+            return pa - pb;
+          }
+          if (mode === "name") {
+            return (a.querySelector("h3").textContent || "")
+              .localeCompare(b.querySelector("h3").textContent || "", "zh-Hant");
+          }
+          return num(a, "order") - num(b, "order");
+        }).forEach(function (c) { grid.appendChild(c); });
+
+        var badge = g.querySelector("[data-group-count]");
+        if (badge) badge.textContent = visible;
+        g.hidden = visible === 0;
+        shown += visible;
+      });
+
+      count.textContent = q ? ("找到 " + shown + " 個社區") : ("共 " + shown + " 個社區");
+      if (empty) empty.hidden = shown !== 0;
+    }
+
+    search.addEventListener("input", apply);
+    sort.addEventListener("change", apply);
+
+    [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var compact = b.dataset.view === "compact";
+        main.classList.toggle("compact", compact);
+        [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
+          var on = x === b;
+          x.className = "view-btn px-4 py-2.5 text-[15px] " +
+            (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
+        });
+      });
+    });
+
+    apply();
+  })();
+</script>`;
+}
+
 function communityIndex(list, dealsMap, hasBuyers) {
   const groups = groupByArea(list);
   const jsonLd = list.length ? [{
@@ -548,21 +692,31 @@ function communityIndex(list, dealsMap, hasBuyers) {
   ${list.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
     <p class="text-[16px] text-inkSoft leading-[1.9]">社區頁面陸續整理中。想了解特定社區的行情，歡迎直接來電。</p>
     <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
-  </div>` : groups.map(g => `
-  <section class="mt-12">
+  </div>` : toolbar(list.length) + groups.map(g => `
+  <section class="mt-12" data-group>
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">${esc(g.area)}</h2>
-      <span class="font-mono text-[12px] text-inkFaint shrink-0">${g.items.length} 個社區</span>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>${g.items.length}</span> 個社區</span>
     </div>
 
-    <div class="mt-6 grid md:grid-cols-2 gap-6">
+    <div class="mt-6 grid md:grid-cols-2 gap-6" data-grid>
     ${g.items.map(c => {
       const deals = dealsMap[c.slug] || [];
       const prices = deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
-      return `<a href="${c.slug}.html" class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+      /* 排序與搜尋用的資料：搜尋比對社區名、別名、生活圈與地址；
+         排序只用可靠的欄位（成交筆數、單價中位數），屋齡與戶數在規格表裡是
+         自由文字（「店舖9戶／住宅769戶」這種），解析容易出錯，不拿來排序。 */
+      const mid = prices.length
+        ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
+           : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
+        : 0;
+      const hay = [c.name, ...(c.aliases || []), c.area, c.district, c.address]
+        .filter(Boolean).join(" ");
+      return `<a href="${c.slug}.html" data-card data-name="${esc(hay)}" data-deals="${deals.length}" data-price="${Math.round(mid * 10) / 10}"
+      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(c.area)}・${esc(c.district)}</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">${esc(c.name)}</h3>
-      <p class="text-[15px] text-inkSoft leading-[1.85] flex-1">${esc(c.summary)}</p>
+      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">${esc(c.summary)}</p>
       <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
         ${prices.length ? `<div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
@@ -583,7 +737,7 @@ function communityIndex(list, dealsMap, hasBuyers) {
         ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">用 LINE 問我們</a>最快。`
         : `<a href="${BRAND.phoneHref}" class="text-orangeDeep hover:underline">直接來電</a>問我們最快。`}
     </p>` : ""}
-  </section>`).join("\n")}
+  </section>`).join("\n") + emptyState() + listScript()}
 
   <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">想查的社區不在名單上？</h2>
