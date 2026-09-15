@@ -1572,7 +1572,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北五街66-96號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設 2019 年 4 月完工的 29 層大樓，366 戶、37 至 79 坪的中大坪數規劃，車位全為坡道平面。",
       "specs": [
         [
@@ -1667,7 +1667,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東六街115-151號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "和築建設 2006 年完工的 424 戶大型社區，坪數 18.3 到 59.4 坪，小坪數到大坪數都有，公設比 29.01% 在特區內偏低。",
       "specs": [
         [
@@ -1763,7 +1763,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路158號",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "新總陽建設位於明誠四路的單棟社區，地上 26 層共 263 戶，坪數 21 至 40 坪，車位兼有坡道平面與機械。",
       "specs": [
         [
@@ -1854,7 +1854,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區龍水二路99-117號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "城揚與日宇合建、2015 年 5 月完工的大坪數社區，48.6 至 110.9 坪規劃，216 戶搭配 278 個平面車位。",
       "specs": [
         [
@@ -1947,7 +1947,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北三路240-252號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "興富發建設規劃的 25 層大樓，142 戶、65.4 至 93 坪，全案以大坪數為主的社區。",
       "specs": [
         [
@@ -2028,7 +2028,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北五街112-126號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "興富發建設 2014 年完工的 118 戶大樓，坪數 64.4 到 96.3 坪，採毛胚交屋，室內裝修需自行發包。",
       "specs": [
         [
@@ -2122,7 +2122,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區青海路295-307號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "皇苑建設 2014 年 1 月完工的社區，地上 28 層共 155 戶，坪數 62 至 176 坪，屬大坪數規劃。",
       "specs": [
         [
@@ -2216,7 +2216,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區馬卡道路339-347號",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "城揚建設開發、使用執照 104 年的 15 層社區，112 戶、23.1 至 49 坪，在美術館特區屬於中小坪數的選擇。",
       "specs": [
         [
@@ -2308,7 +2308,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區青海路322-338號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設 2024 年 6 月完工，122 戶、23 至 43 坪，是美術館特區少見的中小坪數新案。",
       "specs": [
         [
@@ -2402,7 +2402,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路207-229號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設規劃的 267 戶大樓，地上 25 層、坪數 62 到 138 坪，車位 446 個全為平面，基地約 2,200 坪。",
       "specs": [
         [
@@ -2492,7 +2492,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東二路245-253號（單號）、美術北三路220-238號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "城揚建設位於美術東二路與美術北三路轉角的社區，地上 15 層共 185 戶，坪數 26 至 53 坪。",
       "specs": [
         [
@@ -2585,7 +2585,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北三路85-109號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "太普開發於 2007 年 8 月完工的 15 層社區，222 戶、21 至 66 坪，公設比 28 至 30% 在特區內偏低。",
       "specs": [
         [
@@ -2668,7 +2668,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東七街96-122號（雙號）、美術東二路432-440號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "太普開發 2006 年 1 月完工的轉角基地社區，220 戶、21.9 至 72 坪，坪數帶橫跨小家庭到大坪數。",
       "specs": [
         [
@@ -2759,7 +2759,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區龍水二路17-27號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "本業建設 2014 年完工的 84 戶社區，地上 15 層、坪數 40.3 到 61 坪，基地 1,366 坪，屬低密度配置。",
       "specs": [
         [
@@ -2848,7 +2848,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路338-346號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "協勝發建設 2024 年 3 月完工的新案，地上 29 層共 112 戶，坪數 53 至 70 坪，車位全為坡道平面。",
       "specs": [
         [
@@ -2942,7 +2942,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東六街196-220號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設於 2004 年 2 月完工的 14 層社區，144 戶、24 至 93 坪，公設比 29.75% 屬於同區偏低的一群。",
       "specs": [
         [
@@ -3032,7 +3032,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路253-267號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設的 14 層社區，182 戶、34 至 49.7 坪，公設比 29.83% 在區內屬偏低。",
       "specs": [
         [
@@ -3114,7 +3114,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南二路133-135號（單號）、美術南五街188-196號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設 2005 年完工的 156 戶社區，地上 14 層、坪數 23.8 到 48.9 坪，基地 2,853 坪，公設比 30.49%。",
       "specs": [
         [
@@ -3211,7 +3211,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區馬卡道路387-389號",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "2016 年 11 月完工的馬卡道路社區，地上 29 層共 81 戶，坪數 69 至 102 坪，車位全為坡道平面。",
       "specs": [
         [
@@ -3305,7 +3305,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路269-275號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "仰德建設於 2025 年 7 月完工的新案，地上 25 層、95 戶，48.4 至 67 坪，全案 138 個坡道平面車位。",
       "specs": [
         [
@@ -3399,7 +3399,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北三路225-235號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設規劃的 15 層社區，199 戶、24 至 88 坪，基地約 864 坪，產品線從小坪數到大坪數都有。",
       "specs": [
         [
@@ -3485,7 +3485,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北三路272-280號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "晟揚建設、使用執照 105 年的 68 戶大樓，地上 19 層、坪數 59 到 114 坪，車位 79 個，屬小基地的大坪數規劃。",
       "specs": [
         [
@@ -3579,7 +3579,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術北五街55-57號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "興益發建設在美術北五街的 12 層社區，共 65 戶，坪數 23.2 至 54.5 坪，公設比 27.60% 偏低。",
       "specs": [
         [
@@ -3665,7 +3665,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南五街198-206號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "一功建設於 2013 年 6 月完工的 15 層社區，僅 52 戶，坪數 28.6 至 68.3 坪，屬於小規模的住宅大樓。",
       "specs": [
         [
@@ -3759,7 +3759,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東四路368-388號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "鼎宇建設的 27 層大樓，185 戶、88 至 240 坪，基地約 3,150 坪，是區內少數的純大坪數社區。",
       "specs": [
         [
@@ -3845,7 +3845,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路270-282號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "鼎宇建設的美術園邸 B 棟，地上 27 層、138 戶，坪數 58.7 到 97 坪，公設比 29.04% 在同類大樓中偏低。",
       "specs": [
         [
@@ -3926,7 +3926,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路256-268號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "鼎宇建設在明誠四路的 27 層社區 A 棟，共 137 戶，坪數 57.6 至 83 坪，公設比 28.99%。",
       "specs": [
         [
@@ -4008,7 +4008,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路41-43號（單號）、美術東四路319-327號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "全誠建設於 2006 年 1 月完工的轉角基地社區，95 戶、35 至 75 坪，公設比 29.11% 在同區偏低。",
       "specs": [
         [
@@ -4101,7 +4101,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術東四路418號",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "鼎宇建設 2015 年完工，全案僅 22 戶、61 至 130 坪，單一門牌、接近一層一戶的大坪數規劃。",
       "specs": [
         [
@@ -4194,7 +4194,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路216-228號（雙號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "皇苑建設的 69 戶大樓，地上 24 層、坪數 83 到 185 坪，基地約 846 坪，是特區內少見的純大坪數規劃。",
       "specs": [
         [
@@ -4279,7 +4279,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路301-315號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "太普建設於 2021 年 10 月完工的 29 層社區，224 戶、45 至 80 坪，配置 313 個平面車位。",
       "specs": [
         [
@@ -4373,7 +4373,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區美術南三路317-329號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "太普建設的 29 層大樓，192 戶、56 至 71 坪，坪數帶集中的中大坪數社區，門牌在美術南三路單號側。",
       "specs": [
         [
@@ -4463,7 +4463,7 @@
       "areaCode": "01",
       "address": "高雄市鼓山區明誠四路25-35號（單號）",
       "addressKeywords": [],
-      "draft": true,
+      "draft": false,
       "summary": "龍騰建設於 2018 年 9 月完工的 29 層社區，216 戶、51 至 98 坪，公設比 32.99% 在同區偏低。",
       "specs": [
         [
