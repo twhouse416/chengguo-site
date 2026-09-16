@@ -140,17 +140,68 @@
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
     我們把常被問到的社區整理成獨立頁面，列出實價登錄的每一筆成交紀錄、社區基本資料與學區資訊。
     成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
+    先選一個生活圈，或直接用上方搜尋找社區名稱。
   </p>
   <div class="mt-6 h-px bg-line"></div>
 
-  
+  <div id="areaHub" class="mt-10 grid sm:grid-cols-2 gap-5">
+    <a href="#area-01" data-hub-link data-area="01"
+        class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+        <div class="font-mono text-[12px] tracking-wider text-inkFaint">鼓山區</div>
+        <h2 class="text-[23px] font-bold tracking-tight mt-1">美術館特區</h2>
+        <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">美術白天鵝、皇苑御之苑、美樹香榭 等</p>
+        <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
+          <div class="font-mono text-[12px] text-inkFaint">
+            <span class="text-[20px] font-semibold text-ink">46</span> 個社區<span class="mx-1.5">・</span>成交 3,846 筆
+          </div>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
+        </div>
+      </a>
+    <a href="#area-02" data-hub-link data-area="02"
+        class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+        <div class="font-mono text-[12px] tracking-wider text-inkFaint">鼓山區</div>
+        <h2 class="text-[23px] font-bold tracking-tight mt-1">農十六特區</h2>
+        <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">遠雄PARK16、華人匯</p>
+        <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
+          <div class="font-mono text-[12px] text-inkFaint">
+            <span class="text-[20px] font-semibold text-ink">2</span> 個社區<span class="mx-1.5">・</span>成交 430 筆
+          </div>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
+        </div>
+      </a>
+    <div class="border border-line border-dashed rounded-sm bg-paper p-7">
+          <div class="font-mono text-[12px] tracking-wider text-inkFaint">左營區</div>
+          <h2 class="text-[21px] font-bold tracking-tight mt-1">瑞豐・巨蛋</h2>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3">
+            這一區的社區頁還在整理。想先查某個社區的成交行情，
+            <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">用 LINE 問我們</a>最快。
+          </p>
+        </div>
+    <a href="#area-04" data-hub-link data-area="04"
+        class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+        <div class="font-mono text-[12px] tracking-wider text-inkFaint">三民區</div>
+        <h2 class="text-[23px] font-bold tracking-tight mt-1">中都重劃區</h2>
+        <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">美樹大悅、潤隆樹禾苑、上美術 等</p>
+        <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
+          <div class="font-mono text-[12px] text-inkFaint">
+            <span class="text-[20px] font-semibold text-ink">5</span> 個社區<span class="mx-1.5">・</span>成交 1,654 筆
+          </div>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
+        </div>
+      </a>
+  </div>
+
+  <div id="areaBack" hidden class="mt-10">
+    <a href="#" data-hub-back class="font-mono text-[13px] text-orangeDeep hover:underline">← 回生活圈</a>
+  </div>
   <div id="commTools" hidden class="mt-10 border border-line rounded-sm bg-surface p-5">
     <div class="flex flex-wrap items-end gap-4">
       <label class="flex-1 min-w-[220px]">
         <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">搜尋社區</span>
-        <input id="commSearch" type="search" autocomplete="off" placeholder="輸入社區名稱，例如 美術、皇苑"
+        <input id="commSearch" type="search" autocomplete="off" placeholder="社區名稱、路名都可以，例如 皇苑、德興街"
           class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface" />
       </label>
+      <div id="commTools2" class="flex flex-wrap items-end gap-4">
       <label class="min-w-[180px]">
         <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">排序</span>
         <select id="commSort" class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface">
@@ -168,10 +219,11 @@
           <button type="button" data-view="compact" class="view-btn px-4 py-2.5 text-[15px] bg-surface text-inkSoft">精簡</button>
         </div>
       </div>
+      </div>
     </div>
     <p id="commCount" class="font-mono text-[12px] text-inkFaint mt-4">共 53 個社區</p>
   </div>
-  <section class="mt-12" data-group>
+  <section class="mt-12" data-group id="area-01" data-area="01">
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">美術館特區</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>46</span> 個社區</span>
@@ -1012,7 +1064,7 @@
     
   </section>
 
-  <section class="mt-12" data-group>
+  <section class="mt-12" data-group id="area-02" data-area="02">
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">農十六特區</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>2</span> 個社區</span>
@@ -1064,7 +1116,7 @@
     </p>
   </section>
 
-  <section class="mt-12" data-group>
+  <section class="mt-12" data-group id="area-04" data-area="04">
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">中都重劃區</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>5</span> 個社區</span>
@@ -1176,12 +1228,23 @@
     </a>
   </div>
 <style>
-  /* 精簡檢視：一欄、縮排距、收起摘要，一頁看得到更多社區 */
+  /* 精簡檢視：一欄、一列一個社區，左邊名稱、右邊數字。
+     社區多的生活圈（美術館特區有四十幾個）用卡片檢視要捲很久，
+     精簡檢視把每一列壓到一百像素以內，一個螢幕看得到六、七個，掃視快很多。
+     想看介紹再切回卡片。 */
   .compact [data-grid] { grid-template-columns: 1fr; gap: 0; }
-  .compact [data-card] { padding: 0.9rem 1.1rem; border-radius: 0; margin-top: -1px; }
+  .compact [data-card] {
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    column-gap: 1rem; padding: 0.65rem 1rem; border-radius: 0; margin-top: -1px;
+  }
   .compact [data-summary] { display: none; }
-  .compact [data-card] h3 { font-size: 17px; margin: 0.1rem 0 0; }
-  .compact [data-card] > div:last-child { margin-top: 0.5rem; padding-top: 0.5rem; }
+  .compact [data-card] > div:first-child { grid-column: 1; grid-row: 1; font-size: 11px; }
+  .compact [data-card] h3 { grid-column: 1; grid-row: 2; font-size: 16px; margin: 0.1rem 0 0; }
+  .compact [data-card] > div:last-child {
+    grid-column: 2; grid-row: 1 / 3; display: block; text-align: right;
+    margin: 0; padding: 0; border: 0;
+  }
+  .compact [data-card] > div:last-child > span:last-child { display: none; }
 </style>
 <script>
   (function () {
@@ -1195,6 +1258,7 @@
     var empty = document.getElementById("commEmpty");
     var groups = [].slice.call(document.querySelectorAll("[data-group]"));
     var main = document.querySelector("main");
+    var TOTAL = document.querySelectorAll("[data-grid] [data-card]").length;
 
     /* 記住每張卡片原本的位置，切回「預設」時能還原 */
     groups.forEach(function (g) {
@@ -1213,6 +1277,9 @@
         var grid = g.querySelector("[data-grid]");
         var cards = [].slice.call(grid.querySelectorAll("[data-card]"));
         var visible = 0;
+        /* 搜尋時跨全部生活圈；沒搜尋時只顯示選中的那一區，
+           還沒選（入口那一層）就全部收起來，畫面上只留四張生活圈卡片。 */
+        var inScope = q ? true : (current ? g.dataset.area === current : false);
 
         cards.forEach(function (c) {
           var hit = !q || (c.dataset.name || "").toLowerCase().indexOf(q) !== -1;
@@ -1237,30 +1304,90 @@
 
         var badge = g.querySelector("[data-group-count]");
         if (badge) badge.textContent = visible;
-        g.hidden = visible === 0;
-        shown += visible;
+        g.hidden = !inScope || visible === 0;
+        if (inScope) shown += visible;
       });
 
-      count.textContent = q ? ("找到 " + shown + " 個社區") : ("共 " + shown + " 個社區");
-      if (empty) empty.hidden = shown !== 0;
+      if (q) count.textContent = "跨全部生活圈找到 " + shown + " 個社區";
+      else if (current) count.textContent = "這一區共 " + shown + " 個社區";
+      else count.textContent = "共 " + TOTAL + " 個社區，先選生活圈，或直接搜尋社區名稱";
+      /* 入口那一層本來就沒有卡片，不該跳出「找不到社區」 */
+      if (empty) empty.hidden = (!q && !current) || shown !== 0;
     }
 
-    search.addEventListener("input", apply);
+    /* ---------- 兩層瀏覽 ----------
+       第一層是生活圈入口，第二層是該區的社區清單，兩層都在同一頁、靠網址的 #area-XX 切換。
+       這樣做的好處：點下去不必重新載入、上一頁會正常運作，而且
+       「美術館特區的社區清單」這個網址可以直接傳給客戶。
+       搜尋時自動跨全部生活圈——知道社區名字的人不該被逼著先選區域。 */
+    var tools2 = document.getElementById("commTools2");
+    var hub = document.getElementById("areaHub");
+    var back = document.getElementById("areaBack");
+    var COMPACT_FROM = 12;   /* 社區多到這個數量就預設用精簡檢視 */
+    var current = "";
+
+    function setView(compact) {
+      main.classList.toggle("compact", compact);
+      [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
+        var on = (x.dataset.view === "compact") === compact;
+        x.className = "view-btn px-4 py-2.5 text-[15px] " +
+          (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
+      });
+    }
+
+    function areaOf(hash) {
+      /* 樣板字串會吃掉反斜線，所以這裡要寫兩個 */
+      var m = /^#area-(\w+)$/.exec(hash || "");
+      if (!m) return "";
+      return groups.some(function (g) { return g.dataset.area === m[1]; }) ? m[1] : "";
+    }
+
+    function route(scroll) {
+      var searching = !!(search.value || "").trim();
+      current = areaOf(location.hash);
+      var showHub = !current && !searching;
+
+      if (hub) hub.hidden = !showHub;
+      if (back) back.hidden = showHub;
+      /* 搜尋框永遠在——知道社區名字的人不必先選區域；
+         排序與檢視切換要有清單才有意義，入口那一層收起來。 */
+      if (tools2) tools2.hidden = showHub;
+
+      if (current && !searching) {
+        var g = groups.filter(function (x) { return x.dataset.area === current; })[0];
+        setView(g && g.querySelectorAll("[data-card]").length > COMPACT_FROM);
+      }
+      apply();
+      if (scroll && current && !searching) {
+        var t = document.getElementById("area-" + current);
+        if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    [].slice.call(document.querySelectorAll("[data-hub-link]")).forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        location.hash = "area-" + a.dataset.area;
+      });
+    });
+    if (back) back.querySelector("[data-hub-back]").addEventListener("click", function (e) {
+      e.preventDefault();
+      search.value = "";
+      /* 用 pushState 清掉 hash，保留上一頁可以回到剛才看的生活圈 */
+      history.pushState("", "", location.pathname + location.search);
+      route(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    window.addEventListener("hashchange", function () { route(true); });
+
+    search.addEventListener("input", function () { route(false); });
     sort.addEventListener("change", apply);
 
     [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (b) {
-      b.addEventListener("click", function () {
-        var compact = b.dataset.view === "compact";
-        main.classList.toggle("compact", compact);
-        [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
-          var on = x === b;
-          x.className = "view-btn px-4 py-2.5 text-[15px] " +
-            (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
-        });
-      });
+      b.addEventListener("click", function () { setView(b.dataset.view === "compact"); });
     });
 
-    apply();
+    route(false);
   })();
 </script>
 
