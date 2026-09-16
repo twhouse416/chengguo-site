@@ -7,6 +7,11 @@
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize } from "./lib/layout.js";
 import { loadCommunities } from "./lib/related.js";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 /* ================= 固定文案 ================= */
 
@@ -139,14 +144,131 @@ const ILLUS = {
 /* ================= 各區塊 ================= */
 
 function heroSection(heroVideo) {
+  /* 首頁主視覺的影片：自動播放，但絕不讓 YouTube 的驗證畫面露出來
+     ------------------------------------------------
+     兩難：自動播放一定要在載入時就叫起 YouTube 播放器，而那正是會跳出
+     「登入帳戶以確認你不是機器人」的動作——共用 IP、公司網路、VPN 都可能中，
+     何時發生我們無法預測也擋不掉。
+
+     解法是「封面圖蓋在播放器上面，確認真的開始播了才掀開」：
+       1. 版面上先放封面圖，播放器在它底下（看不見）
+       2. 用 YouTube 官方的 IFrame API 監聽播放狀態
+       3. 只有收到「正在播放」才把封面圖淡出，露出影片
+       4. 六秒內沒播成（被擋、載入失敗、網路慢），封面圖就一直留著，
+          播放器直接移除——使用者從頭到尾只會看到一張正常的封面圖
+
+     所以驗證畫面即使真的出現，也永遠在封面圖底下，客戶看不到。
+     封面圖上有播放鍵，按下去會換成有控制列的正常播放器，
+     旁邊固定放「在 YouTube 上觀看」，萬一按了才遇到驗證，也有出路。 */
+  const poster = heroVideo
+    ? (existsSync(path.join(ROOT, `assets/videos/${heroVideo.videoId}.jpg`))
+        ? `assets/videos/${heroVideo.videoId}.jpg`
+        : (heroVideo.thumb || `https://i.ytimg.com/vi/${heroVideo.videoId}/maxresdefault.jpg`))
+    : "";
+  const heroTitle = heroVideo ? esc(heroVideo.titleShown || heroVideo.title) : "";
+
   const media = heroVideo
-    ? `<div class="relative w-full aspect-[3/2] rounded-sm overflow-hidden bg-ink">
-        <iframe class="absolute inset-0 w-full h-full"
-          src="https://www.youtube-nocookie.com/embed/${heroVideo.videoId}?autoplay=1&mute=1&loop=1&playlist=${heroVideo.videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1"
-          title="${esc(heroVideo.titleShown || heroVideo.title)}" loading="lazy"
-          allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-        <a href="videos/index.html" aria-label="前往影片專區" class="absolute inset-0 block"></a>
-      </div>`
+    ? `<div class="relative w-full aspect-[3/2] rounded-sm overflow-hidden bg-ink" data-hero-video data-id="${esc(heroVideo.videoId)}">
+        <div data-hero-frame class="absolute inset-0"></div>
+        <img data-hero-poster src="${esc(poster)}" alt="${heroTitle}"
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          width="1280" height="720" />
+        <button type="button" data-hero-play
+          class="absolute inset-0 w-full h-full flex items-center justify-center group"
+          aria-label="播放影片：${heroTitle}">
+          <span class="absolute inset-0 bg-ink/25 group-hover:bg-ink/10 transition"></span>
+          <span class="relative flex items-center justify-center w-[68px] h-[48px] rounded-md bg-ink/75 group-hover:bg-orange transition">
+            <svg width="22" height="24" viewBox="0 0 22 24" aria-hidden="true"><path d="M2 2 L20 12 L2 22 Z" fill="#fff"/></svg>
+          </span>
+        </button>
+        <div class="absolute left-0 right-0 bottom-0 flex items-end justify-between gap-3 p-4 pointer-events-none">
+          <span data-hero-caption class="text-white text-[14px] leading-snug drop-shadow max-w-[70%]">${heroTitle}</span>
+          <a href="https://www.youtube.com/watch?v=${esc(heroVideo.videoId)}" target="_blank" rel="noopener noreferrer"
+            class="pointer-events-auto shrink-0 font-mono text-[12px] text-white/90 hover:text-white underline underline-offset-4">在 YouTube 上觀看</a>
+        </div>
+      </div>
+      <p class="mt-3 font-mono text-[12px] text-inkFaint">
+        <a href="videos/index.html" class="hover:text-orangeDeep">看更多社區與行情影片 →</a>
+      </p>
+      <script>
+        (function () {
+          var box = document.querySelector("[data-hero-video]");
+          if (!box) return;
+          var id = box.dataset.id;
+          var frame = box.querySelector("[data-hero-frame]");
+          var poster = box.querySelector("[data-hero-poster]");
+          var btn = box.querySelector("[data-hero-play]");
+          var player = null, revealed = false, timer = null;
+
+          function reveal() {
+            if (revealed) return;
+            revealed = true;
+            clearTimeout(timer);
+            poster.style.opacity = "0";
+            /* 封面圖淡出後才移除，避免中間閃一下 */
+            setTimeout(function () { poster.hidden = true; }, 700);
+          }
+
+          /* 沒播成就把播放器整個拿掉——被擋住的驗證畫面沒必要留在頁面上 */
+          function giveUp() {
+            if (revealed) return;
+            try { if (player && player.destroy) player.destroy(); } catch (e) {}
+            frame.innerHTML = "";
+            player = null;
+          }
+
+          /* 按播放鍵：換成有控制列、有聲音的正常播放器 */
+          btn.addEventListener("click", function () {
+            clearTimeout(timer);
+            try { if (player && player.destroy) player.destroy(); } catch (e) {}
+            var f = document.createElement("iframe");
+            f.className = "absolute inset-0 w-full h-full";
+            f.src = "https://www.youtube-nocookie.com/embed/" + id +
+              "?autoplay=1&playsinline=1&rel=0&modestbranding=1";
+            f.title = btn.getAttribute("aria-label") || "";
+            f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+            f.setAttribute("allowfullscreen", "");
+            f.referrerPolicy = "strict-origin-when-cross-origin";
+            frame.innerHTML = "";
+            frame.appendChild(f);
+            poster.hidden = true;
+            btn.hidden = true;
+            revealed = true;
+          });
+
+          /* 手機用行動網路時常擋自動播放，省得白載入一次播放器 */
+          var save = navigator.connection && navigator.connection.saveData;
+          if (save) return;
+
+          function start() {
+            player = new YT.Player(frame, {
+              videoId: id,
+              playerVars: {
+                autoplay: 1, mute: 1, loop: 1, playlist: id, controls: 0,
+                modestbranding: 1, playsinline: 1, rel: 0, disablekb: 1,
+              },
+              events: {
+                onReady: function (e) { try { e.target.playVideo(); } catch (x) {} },
+                onStateChange: function (e) { if (e.data === 1) reveal(); },
+                onError: giveUp,
+              },
+            });
+            timer = setTimeout(giveUp, 6000);
+          }
+
+          if (window.YT && window.YT.Player) { start(); return; }
+          var prev = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = function () {
+            if (typeof prev === "function") prev();
+            start();
+          };
+          var tag = document.createElement("script");
+          tag.src = "https://www.youtube.com/iframe_api";
+          tag.async = true;
+          tag.onerror = giveUp;
+          document.head.appendChild(tag);
+        })();
+      </script>`
     : `<img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍" class="w-full aspect-[3/2] object-cover rounded-sm" />`;
 
   return `<section id="top" class="border-b border-line">

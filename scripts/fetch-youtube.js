@@ -11,7 +11,8 @@
  * videos.json 裡，不會因為滑出 RSS 範圍而消失。
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
+import { execSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -173,6 +174,35 @@ async function main() {
   data.updatedAt = new Date().toISOString();
 
   writeFileSync(DATA_PATH, JSON.stringify(data, null, 2) + "\n", "utf-8");
+
+  /* 首頁主視覺的封面圖存成自家檔案
+     ------------------------------------------------
+     首頁不再一進站就載入 YouTube 播放器（那會跳出「登入帳戶以確認你不是機器人」），
+     改成先顯示封面圖、按下才播。封面圖如果直接連 YouTube 的網址，
+     首頁還是會對第三方發一次請求；存成自己的檔案就完全不必。
+     只存主視覺這一支，不是全部影片——其餘影片的縮圖只出現在影片專區的小方塊，
+     沒必要為此讓倉庫多出十幾 MB。 */
+  const hero = merged.find(v => v.videoId === data.heroVideoId && !v.hidden)
+    || merged.find(v => !v.hidden);
+  if (hero) {
+    const dir = path.join(ROOT, "assets/videos");
+    mkdirSync(dir, { recursive: true });
+    const out = path.join(dir, `${hero.videoId}.jpg`);
+    /* maxresdefault 不是每支影片都有，沒有時退回 hqdefault */
+    const urls = [
+      `https://i.ytimg.com/vi/${hero.videoId}/maxresdefault.jpg`,
+      `https://i.ytimg.com/vi/${hero.videoId}/hqdefault.jpg`,
+    ];
+    let ok = false;
+    for (const u of urls) {
+      try {
+        execSync(`curl -sL -f --connect-timeout 20 --max-time 60 -o "${out}" "${u}"`, { stdio: "pipe" });
+        /* YouTube 對不存在的尺寸會回一張 120x90 的灰底圖，用檔案大小擋掉 */
+        if (statSync(out).size > 5000) { ok = true; console.log(`[封面] 已存 ${path.relative(ROOT, out)}（${u.split("/").pop()}）`); break; }
+      } catch {}
+    }
+    if (!ok) console.warn("[警告] 主視覺封面圖下載失敗，首頁會改用 YouTube 的縮圖網址");
+  }
 
   const visible = merged.filter(v => !v.hidden).length;
   console.log(`[完成] 共 ${merged.length} 支影片，其中 ${visible} 支公開顯示`);
