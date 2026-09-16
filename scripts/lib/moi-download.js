@@ -30,7 +30,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
 
 const BASE = "https://plvr.land.moi.gov.tw";
@@ -56,20 +56,45 @@ export function seasonCode(back) {
 export function listHistoryPeriods(tmpDir) {
   const f = path.join(tmpDir, "history-list.html");
   mkdirSync(tmpDir, { recursive: true });
-  try {
-    execSync(`curl -sL -f --connect-timeout 20 --max-time 60 ${UA} ` +
-      `-o "${f}" "${BASE}/DownloadHistory_ajax_list"`, { stdio: "pipe" });
-  } catch {
-    console.warn("[警告] 讀不到非本期清單，這次只抓本期十天檔");
+  const r = fetchTo(`${BASE}/DownloadHistory_ajax_list`, f);
+  if (r.code !== "200" || !r.size) {
+    console.warn(`[警告] 讀不到非本期清單（HTTP ${r.code}${r.err ? "，" + r.err : ""}），這次只抓本期十天檔`);
     return [];
   }
-  if (!existsSync(f)) return [];
   const html = readFileSync(f, "utf-8");
   /* href="javaScript:downloadLast('20260701');" */
   const set = new Set();
   for (const m of html.matchAll(/downloadLast\(\s*['"](\d{8})['"]\s*\)/g)) set.add(m[1]);
   rmSync(f, { force: true });
+  if (!set.size) console.warn(`[警告] 非本期清單讀到了（${r.size} bytes）但找不到期別，內政部可能改了頁面寫法`);
   return [...set].sort();   // 舊到新
+}
+
+/**
+ * 下載一個檔案，回傳 { code, size, err }。
+ * 刻意不用 curl 的 -f：那會讓所有錯誤都變成同一個「exit 22」，
+ * 看不出到底是 403、404 還是連不上。改成自己收 HTTP 狀態碼與 stderr，
+ * 出問題時記錄檔上直接看得出原因。
+ */
+function fetchTo(url, out) {
+  const errFile = out + ".err";
+  try {
+    const code = execSync(
+      `curl -sSL --connect-timeout 30 --max-time 300 ${UA} ` +
+      `-o "${out}" -w "%{http_code}" "${url}" 2>"${errFile}"`,
+      { encoding: "utf-8" }
+    ).trim();
+    let err = "";
+    try { err = readFileSync(errFile, "utf-8").trim().slice(0, 200); } catch {}
+    rmSync(errFile, { force: true });
+    const size = existsSync(out) ? statSync(out).size : 0;
+    return { code, size, err };
+  } catch (e) {
+    let err = "";
+    try { err = readFileSync(errFile, "utf-8").trim().slice(0, 200); } catch {}
+    rmSync(errFile, { force: true });
+    return { code: "ERR", size: 0, err: err || String(e.message).slice(0, 200) };
+  }
 }
 
 /**
@@ -82,26 +107,35 @@ export function downloadAndExtract(url, label, tmpDir, retries = 3) {
   mkdirSync(dir, { recursive: true });
 
   for (let a = 1; a <= retries; a++) {
-    try {
-      execSync(`curl -sL -f --connect-timeout 30 --max-time 300 ${UA} -o "${zip}" "${url}"`,
-        { stdio: "pipe" });
+    const r = fetchTo(url, zip);
+
+    if (r.code === "200" && r.size > 0) {
       /* 內政部在資料還沒發布時會回傳 HTML 錯誤頁而不是 404，
-         所以要自己檢查檔頭是不是 ZIP（PK），否則 unzip 會噴一堆看不懂的訊息。 */
+         所以不能只看狀態碼，要檢查檔頭是不是 ZIP（PK）。 */
       const head = readFileSync(zip).subarray(0, 2);
-      if (!(head[0] === 0x50 && head[1] === 0x4b)) {
-        console.warn(`  [略過] ${label} 回傳的不是壓縮檔（該期資料應該還沒發布）`);
+      if (head[0] === 0x50 && head[1] === 0x4b) {
+        try {
+          execSync(`unzip -o -q "${zip}" -d "${dir}"`, { stdio: "pipe" });
+          rmSync(zip, { force: true });
+          return dir;
+        } catch (e) {
+          console.warn(`  [警告] ${label} 壓縮檔解不開：${String(e.message).slice(0, 120)}`);
+        }
+      } else {
+        const peek = readFileSync(zip).subarray(0, 120).toString("utf-8").replace(/\s+/g, " ");
+        console.warn(`  [略過] ${label} 回傳的不是壓縮檔（${r.size} bytes）：${peek}`);
         rmSync(zip, { force: true });
         rmSync(dir, { recursive: true, force: true });
-        return null;
+        return null;   // 該期資料還沒發布，重試也沒用
       }
-      execSync(`unzip -o -q "${zip}" -d "${dir}"`);
-      rmSync(zip, { force: true });
-      return dir;
-    } catch (e) {
-      console.warn(`  [警告] ${label} 第 ${a} 次下載失敗`);
-      if (a < retries) execSync(`sleep ${a * 15}`);
+    } else {
+      console.warn(`  [警告] ${label} 第 ${a} 次失敗：HTTP ${r.code}、${r.size} bytes` +
+        (r.err ? `，${r.err}` : ""));
     }
+
+    if (a < retries) execSync(`sleep ${a * 10}`);
   }
+  rmSync(zip, { force: true });
   rmSync(dir, { recursive: true, force: true });
   return null;
 }
