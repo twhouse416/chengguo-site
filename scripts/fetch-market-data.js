@@ -1,5 +1,5 @@
 /**
- * 澄果團隊｜四大生活圈行情自動更新腳本（v2）
+ * 澄果團隊｜四大生活圈行情自動更新腳本（v4）
  * ------------------------------------------------
  * 資料來源：內政部不動產交易實價查詢服務網（plvr.land.moi.gov.tw）
  * 官方資料本身「每月 1、11、21 日」批次公告，不是逐日更新。
@@ -16,15 +16,26 @@
  *   「當下沒設定到的社區，那段成交永久遺失」——新增社區時補不回歷史。
  *   改成先存後撈之後，社區設定變成查詢條件，改門牌、加社區都只是重撈一次。
  *
+ * v4 變更：下載來源改為「本期十天檔 + 內政部提供的全部非本期批次（約七期）」
+ * - 不再每次下載季檔。池子已經保存全部歷史，季檔給不了新東西，
+ *   每次多抓四個 14 MB 的檔案只是浪費時間；季檔留給一次性回補。
+ * - 非本期批次是關鍵：內政部查詢網站看得到、但季檔裡還沒有的那段成交，
+ *   就在這七期裡（網址 DownloadHistory?type=history&fileName=<發布日期>）。
+ *   原本資料會缺一塊，正是因為只抓本期與季檔，中間那幾批從來沒被抓過。
+ * - 期別清單從網站讀出來，不寫死，內政部換期會自動跟上。
+ *
  * 執行方式： node scripts/fetch-market-data.js
  * 由 .github/workflows/update-market-data.yml 每日排程呼叫。
  */
 
-import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { mergeIntoPool, loadPool } from "./lib/deal-pool.js";
+import {
+  CURRENT_URL, historyUrl, seasonUrl, seasonCode,
+  listHistoryPeriods, downloadAndExtract as dl, readAll, dateRange,
+} from "./lib/moi-download.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -34,9 +45,8 @@ const OUTPUT_PATH = path.join(ROOT, "data/market-data.json");
 const COMMUNITY_CONFIG = path.join(ROOT, "data/communities.json");
 const COMMUNITY_OUTPUT = path.join(ROOT, "data/community-deals.json");
 
-const CURRENT_ZIP_URL = "https://plvr.land.moi.gov.tw/Download?type=zip&fileName=lvr_landcsv.zip";
-const SEASON_ZIP_URL = (season) =>
-  `https://plvr.land.moi.gov.tw/DownloadSeason?season=${season}&type=zip&fileName=lvr_landcsv.zip`;
+/* 下載網址與 CSV 讀取都移到 scripts/lib/moi-download.js，
+   回補腳本與這一支共用同一份，不再各寫一次。 */
 
 const M2_TO_PING = 0.3025; // 平方公尺 轉 坪
 
@@ -90,113 +100,6 @@ function ageYears(r) {
        扣掉車位：(2058-270) ÷ (150.46-33.1) = 50.4 萬/坪  ← 內政部給的就是這個
    內政部在「車位總價元」有揭露時已經先扣過，重複扣會高估。
    車位價未揭露（為 0）時內政部無從扣起，那類紀錄單價本來就偏低，屬於資料限制。 */
-
-/* ---------- 工具：計算「N 個月前」對應的季別代碼（民國年+S+季） ---------- */
-function seasonCodeMonthsAgo(monthsAgo) {
-  const now = new Date();
-  let rocYear = now.getFullYear() - 1911;
-  let quarter = Math.ceil((now.getMonth() + 1) / 3);
-  let quartersBack = Math.round(monthsAgo / 3);
-  quarter -= quartersBack;
-  while (quarter <= 0) {
-    quarter += 4;
-    rocYear -= 1;
-  }
-  return `${rocYear}S${quarter}`;
-}
-
-/* 「N 個月前」的民國年月日（如 1150915），用來切時間窗。
-   實價登錄的交易年月日就是這個格式的純數字，轉成整數比大小即可，
-   不必轉成 Date，也就不會有時區問題。 */
-function rocCutoffMonthsAgo(monthsAgo) {
-  const d = new Date();
-  d.setMonth(d.getMonth() - monthsAgo);
-  const y = d.getFullYear() - 1911;
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return parseInt(`${y}${m}${day}`, 10);
-}
-
-/* ---------- 下載並解壓 ---------- */
-function sleep(sec) {
-  /* 同步等待，避免對內政部的伺服器造成連續請求 */
-  execSync(`sleep ${sec}`);
-}
-
-function downloadAndExtract(url, label, retries = 3) {
-  const zipPath = path.join(TMP, `${label}.zip`);
-  const extractDir = path.join(TMP, label);
-  mkdirSync(extractDir, { recursive: true });
-
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    console.log(`[下載] ${label}${attempt > 1 ? `（第 ${attempt} 次嘗試）` : ""}: ${url}`);
-    try {
-      /* 加上 User-Agent 與逾時，並在重試之間等待，降低被視為異常流量的機會 */
-      execSync(
-        `curl -L -f -s --connect-timeout 30 --max-time 300 ` +
-        `-A "Mozilla/5.0 (compatible; chengguo-site/1.0)" ` +
-        `-o "${zipPath}" "${url}"`,
-        { stdio: "inherit" }
-      );
-      execSync(`unzip -o -q "${zipPath}" -d "${extractDir}"`);
-      return extractDir;
-    } catch (e) {
-      console.warn(`[警告] ${label} 第 ${attempt} 次下載失敗：${e.message}`);
-      if (attempt < retries) {
-        const wait = attempt * 20;
-        console.log(`       ${wait} 秒後重試…`);
-        sleep(wait);
-      }
-    }
-  }
-  console.warn(`[警告] ${label} 重試 ${retries} 次仍失敗，這段資料先跳過`);
-  return null;
-}
-
-/* ---------- 簡易 CSV 解析（處理雙引號內含逗號的欄位） ---------- */
-function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuotes) {
-      if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
-      else if (c === '"') { inQuotes = false; }
-      else { field += c; }
-    } else {
-      if (c === '"') inQuotes = true;
-      else if (c === ",") { row.push(field); field = ""; }
-      else if (c === "\n" || c === "\r") {
-        if (c === "\r" && text[i + 1] === "\n") i++;
-        row.push(field); field = "";
-        rows.push(row); row = [];
-      } else field += c;
-    }
-  }
-  if (field.length || row.length) { row.push(field); rows.push(row); }
-  return rows.filter(r => r.length > 1);
-}
-
-/* ---------- 讀取某個解壓目錄下，所有「不動產買賣_a」主檔 ---------- */
-function readAllMainCsv(extractDir) {
-  if (!extractDir) return [];
-  const files = readdirSync(extractDir).filter(f => /_lvr_land_a\.csv$/i.test(f));
-  let records = [];
-  for (const file of files) {
-    const raw = readFileSync(path.join(extractDir, file), "utf-8");
-    const rows = parseCSV(raw);
-    if (rows.length < 3) continue;
-    const header = rows[0]; // 中文欄名
-    rows.slice(2).forEach(r => { // 第2行是英文欄名，資料從第3行開始
-      const record = {};
-      header.forEach((h, idx) => { record[h.trim()] = r[idx]; });
-      records.push(record);
-    });
-  }
-  return records;
-}
 
 /* 同一棟的門牌：取到「號」為止，樓層與「之N」都算同一棟。
    例：高雄市三民區德旺街192號十五樓之3 → 高雄市三民區德旺街192號 */
@@ -316,39 +219,6 @@ function computeAreaAverage(records, area, typeGroup) {
     bandHigh: toWan(pct(0.75)),
     medianTotalPrice,                // 總價中位數，萬元
   };
-}
-
-/* ---------- 讀取預售屋買賣（_b 檔），新建案的交易多在這裡 ---------- */
-let presaleHeaderLogged = false;
-
-function readAllPresaleCsv(extractDir) {
-  if (!extractDir) return [];
-  const files = readdirSync(extractDir).filter(f => /_lvr_land_b\.csv$/i.test(f));
-  if (!files.length && !presaleHeaderLogged) {
-    console.log("[預售] 這個壓縮檔裡沒有 _lvr_land_b.csv（預售屋買賣）");
-    presaleHeaderLogged = true;
-  }
-  let records = [];
-  for (const file of files) {
-    const raw = readFileSync(path.join(extractDir, file), "utf-8");
-    const rows = parseCSV(raw);
-    if (rows.length < 3) continue;
-    const header = rows[0];
-
-    if (!presaleHeaderLogged) {
-      console.log(`[預售] ${file} 的欄位（共 ${header.length} 個）：`);
-      console.log(`       ${header.map(h => h.trim()).join(" / ")}`);
-      presaleHeaderLogged = true;
-    }
-
-    rows.slice(2).forEach(r => {
-      const rec = {};
-      header.forEach((h, idx) => { rec[h.trim()] = r[idx]; });
-      rec.__presale = true;
-      records.push(rec);
-    });
-  }
-  return records;
 }
 
 /* ---------- 依社區地址關鍵字，抓出每一筆成交紀錄 ---------- */
@@ -501,57 +371,77 @@ async function main() {
   if (existsSync(TMP)) rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
 
-  /* 下載四期：最新即時檔 + 往前三季。
-     注意「最新即時檔」只涵蓋最近一批公告（約十天），筆數很少，
-     不能把它當成一整季看待。 */
-  const currentDir = downloadAndExtract(CURRENT_ZIP_URL, "current");
-  const prevSeasonDir = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(3)), "prev1");
+  /* ---------- 下載 ----------
+     抓「本期十天檔 + 內政部目前提供的全部非本期批次（約七期）」。
+     這樣一次涵蓋近三個月的所有公告，就算連續幾次排程失敗也不會漏掉任何一批。
 
-  let trendDir1 = null, trendDir2 = null;
-  try {
-    trendDir1 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(6)), "trend1");
-    trendDir2 = downloadAndExtract(SEASON_ZIP_URL(seasonCodeMonthsAgo(9)), "trend2");
-  } catch (e) {
-    console.warn("[警告] 較早的季檔下載失敗，樣本會少一些：", e.message);
+     為什麼不再每次都抓季檔：資料池已經保存了所有歷史，季檔提供不了新東西，
+     每次多抓四個 14 MB 的檔案只是浪費時間。季檔留給一次性的長期回補
+     （scripts/backfill-area-pool.js）。
+     例外是池子還沒建立的時候——那時沒有歷史可用，就退回抓上一季墊底，
+     這一版剛上線、還沒跑過回補時就是走這條路。 */
+  const poolBefore = loadPool();
+  const jobs = [];
+  const periods = listHistoryPeriods(TMP);
+  console.log(`[下載] 非本期批次：${periods.length ? periods.join("、") : "（清單讀不到）"}`);
+  periods.forEach(p => jobs.push({ label: `非本期 ${p}`, url: historyUrl(p), key: `h${p}` }));
+  jobs.push({ label: "本期十天檔", url: CURRENT_URL, key: "current" });
+
+  if (poolBefore.length < 500) {
+    console.log(`[下載] 資料池只有 ${poolBefore.length} 筆，先補抓上一季季檔墊底`);
+    console.log(`       （正常情況請改跑「回補生活圈成交資料池」，一次補齊長期歷史）`);
+    const s = seasonCode(1);
+    jobs.unshift({ label: `季檔 ${s}`, url: seasonUrl(s), key: `s${s}` });
   }
 
-  /* 這次下載到的全部紀錄（成屋＋預售，全台） */
-  const downloaded = [
-    ...readAllMainCsv(currentDir),    ...readAllPresaleCsv(currentDir),
-    ...readAllMainCsv(prevSeasonDir), ...readAllPresaleCsv(prevSeasonDir),
-    ...readAllMainCsv(trendDir1),     ...readAllPresaleCsv(trendDir1),
-    ...readAllMainCsv(trendDir2),     ...readAllPresaleCsv(trendDir2),
-  ];
-  console.log(`[下載] 這次共讀到 ${downloaded.length} 筆（全台，含預售）`);
+  /* 逐檔下載 → 立刻併進資料池 → 丟掉解壓目錄與紀錄。
+     八個檔案加起來三十幾萬筆，全部堆在記憶體裡沒有必要也不安全
+     （之前的診斷腳本就是這樣把 Node 的堆積撐爆的）。 */
+  let downloadedCount = 0, fileCount = 0, addedTotal = 0;
+  for (const job of jobs) {
+    process.stdout.write(`[下載] ${job.label} … `);
+    const dir = dl(job.url, job.key, TMP);
+    if (!dir) { console.log("略過"); continue; }
+    const recs = readAll(dir);   // 全台；生活圈的篩選交給資料池
+    const range = dateRange(recs);
+    downloadedCount += recs.length;
+    fileCount++;
+
+    const { added } = mergeIntoPool(recs, AREAS_CONFIG);
+    const sum = Object.values(added).reduce((a, b) => a + b, 0);
+    addedTotal += sum;
+    console.log(`${recs.length} 筆` + (range ? `（交易日 ${range[0]} ～ ${range[1]}）` : "") +
+      `，池中新增 ${sum} 筆`);
+
+    rmSync(dir, { recursive: true, force: true });
+  }
+  console.log(`[下載] 成功讀取 ${fileCount} 個檔案、共 ${downloadedCount} 筆（全台，含預售）`);
 
   /* ---------- 保護機制 ----------
-     下載失敗時紀錄會是空的，若照常寫入會把網站上正確的行情清成空白。
-     資料量明顯不足時直接中止，保留既有資料，等下次排程再試。
-     注意這裡要用「下載到的全台筆數」判斷，不是生活圈命中的筆數——
+     下載全部失敗時池子不會有新資料，但更嚴重的是後面的行情計算會算出空白，
+     寫進網站就把正確的數字洗掉了。所以資料量明顯不足時直接中止，
+     保留既有資料，等下次排程再試。
+     這裡要用「下載到的全台筆數」判斷，不是生活圈命中的筆數——
      命中數本來就只有幾千筆，拿來當門檻會每次都誤判成下載失敗。 */
-  const MIN_RECORDS = 5000;   // 全台一期實價登錄通常有數萬筆，低於此值視為下載不完整
-  if (downloaded.length < MIN_RECORDS) {
+  const MIN_RECORDS = 5000;
+  if (downloadedCount < MIN_RECORDS) {
     console.error(
-      `[中止] 只讀到 ${downloaded.length} 筆資料（預期至少 ${MIN_RECORDS} 筆），` +
+      `[中止] 只讀到 ${downloadedCount} 筆資料（預期至少 ${MIN_RECORDS} 筆），` +
       `研判下載不完整或內政部暫時無法連線。`
     );
     console.error("[中止] 未寫入任何檔案，網站上的現有資料保持不變。稍後再執行一次即可。");
     process.exit(1);
   }
 
-  /* ---------- 併進資料池 ----------
-     凡是落在四大生活圈範圍內的，不管哪個社區、什麼型態、什麼用途，全部存起來。
-     社區設定因此變成「查詢條件」而不是「過濾條件」：
-     以後新增社區或修改門牌範圍，重撈一次就有完整歷史，
-     不必再向內政部要回已經下架的十天檔。 */
-  const pooled = mergeIntoPool(downloaded, AREAS_CONFIG);
-  console.log(`[資料池] 這次命中生活圈 ${pooled.matched} 筆，池中累計 ${pooled.total} 筆`);
-  Object.entries(pooled.added).forEach(([code, n]) => {
-    const name = AREAS_CONFIG.areas.find(a => a.code === code)?.name || code;
-    console.log(`         ${name}：${n > 0 ? `新增 ${n} 筆` : "無新增"}`);
-  });
-
   const pool = loadPool();
+  const poolRange = dateRange(pool);
+  console.log(`[資料池] 共 ${pool.length} 筆（這次新增 ${addedTotal} 筆）` +
+    (poolRange ? `，交易日 ${poolRange[0]} ～ ${poolRange[1]}` : ""));
+  if (pool.length < 100) {
+    console.error(`[中止] 資料池裡幾乎沒有東西，可能是第一次執行或設定有誤。`);
+    console.error(`       請先跑「回補生活圈成交資料池」，再跑這一支。`);
+    process.exit(1);
+  }
 
   /* 生活圈行情用「近四季（約一年）的成屋」計算。
      池子裡是全部歷史，所以這裡要自己把時間窗切出來，
