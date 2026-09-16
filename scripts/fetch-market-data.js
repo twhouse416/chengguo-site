@@ -365,6 +365,18 @@ function rocToDate(v) {
   return `${y}-${m}-${d}`;
 }
 
+/* 「N 個月前」的民國年月日（如 1150915），用來切時間窗。
+   實價登錄的交易年月日就是這個格式的純數字，轉成整數比大小即可，
+   不必轉成 Date，也就不會有時區問題。 */
+function rocCutoffMonthsAgo(monthsAgo) {
+  const d = new Date();
+  d.setMonth(d.getMonth() - monthsAgo);
+  const y = d.getFullYear() - 1911;
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return parseInt(`${y}${m}${day}`, 10);
+}
+
 const PING_PER_M2 = 0.3025;
 
 async function main() {
