@@ -9,6 +9,13 @@
  * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價平均與總價中位數
  * - 「最新即時檔」只有十天份，不能當一整季看待
  *
+ * v3 變更：改用「成交資料池」（data/area-deals/，見 scripts/lib/deal-pool.js）
+ * - 下載到的紀錄凡是落在四大生活圈範圍內，一律先存進池子，不再用社區設定當過濾條件
+ * - 社區成交與生活圈行情都改成從池子撈，不再直接讀當次下載的檔案
+ * - 為什麼：內政部的十天檔只保留最近一批公告，過期就下架。原本的做法等於
+ *   「當下沒設定到的社區，那段成交永久遺失」——新增社區時補不回歷史。
+ *   改成先存後撈之後，社區設定變成查詢條件，改門牌、加社區都只是重撈一次。
+ *
  * 執行方式： node scripts/fetch-market-data.js
  * 由 .github/workflows/update-market-data.yml 每日排程呼叫。
  */
@@ -17,6 +24,7 @@ import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { mergeIntoPool, loadPool } from "./lib/deal-pool.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -95,6 +103,18 @@ function seasonCodeMonthsAgo(monthsAgo) {
     rocYear -= 1;
   }
   return `${rocYear}S${quarter}`;
+}
+
+/* 「N 個月前」的民國年月日（如 1150915），用來切時間窗。
+   實價登錄的交易年月日就是這個格式的純數字，轉成整數比大小即可，
+   不必轉成 Date，也就不會有時區問題。 */
+function rocCutoffMonthsAgo(monthsAgo) {
+  const d = new Date();
+  d.setMonth(d.getMonth() - monthsAgo);
+  const y = d.getFullYear() - 1911;
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return parseInt(`${y}${m}${day}`, 10);
 }
 
 /* ---------- 下載並解壓 ---------- */
@@ -495,45 +515,64 @@ async function main() {
     console.warn("[警告] 較早的季檔下載失敗，樣本會少一些：", e.message);
   }
 
-  /* 生活圈行情用「近四季（約一年）」計算。
-     原本只用 current + 上一季，但 current 只有十天份，
-     實際等於單季樣本——美術館特區一度只有 104 筆，四個區有兩個不到 40 筆。
-     四期資料本來就已經下載了（社區比對在用），拿來一起算不增加任何成本。
-     代價是時間窗變長、短期波動被平滑，但樣本足夠比反應靈敏重要。 */
-  const recentRecords = [
-    ...readAllMainCsv(currentDir),
-    ...readAllMainCsv(prevSeasonDir),
-    ...readAllMainCsv(trendDir1),
-    ...readAllMainCsv(trendDir2),
-  ];
-  console.log(`[生活圈] 近四季成屋共 ${recentRecords.length} 筆可供比對`);
-
-  /* 走勢改為不計算：可比較的區間要再往前四季，得多下載四個大檔，
-     而網站本來就不顯示漲跌幅，成本不值得。 */
-  const trendRecords = [];
-
-  // 社區成交：時間窗拉到近四季，且含預售屋（新建案的交易多在預售檔）
-  const communityRecords = [
+  /* 這次下載到的全部紀錄（成屋＋預售，全台） */
+  const downloaded = [
     ...readAllMainCsv(currentDir),    ...readAllPresaleCsv(currentDir),
     ...readAllMainCsv(prevSeasonDir), ...readAllPresaleCsv(prevSeasonDir),
     ...readAllMainCsv(trendDir1),     ...readAllPresaleCsv(trendDir1),
     ...readAllMainCsv(trendDir2),     ...readAllPresaleCsv(trendDir2),
   ];
-  const presaleCount = communityRecords.filter(r => r.__presale).length;
-  console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（成屋 ${communityRecords.length - presaleCount} 筆、預售 ${presaleCount} 筆，近四季）`);
+  console.log(`[下載] 這次共讀到 ${downloaded.length} 筆（全台，含預售）`);
 
   /* ---------- 保護機制 ----------
-     下載失敗時 recentRecords 會是空的，若照常寫入會把網站上正確的行情清成空白。
-     資料量明顯不足時直接中止，保留既有資料，等下次排程再試。 */
+     下載失敗時紀錄會是空的，若照常寫入會把網站上正確的行情清成空白。
+     資料量明顯不足時直接中止，保留既有資料，等下次排程再試。
+     注意這裡要用「下載到的全台筆數」判斷，不是生活圈命中的筆數——
+     命中數本來就只有幾千筆，拿來當門檻會每次都誤判成下載失敗。 */
   const MIN_RECORDS = 5000;   // 全台一期實價登錄通常有數萬筆，低於此值視為下載不完整
-  if (recentRecords.length < MIN_RECORDS) {
+  if (downloaded.length < MIN_RECORDS) {
     console.error(
-      `[中止] 只讀到 ${recentRecords.length} 筆資料（預期至少 ${MIN_RECORDS} 筆），` +
+      `[中止] 只讀到 ${downloaded.length} 筆資料（預期至少 ${MIN_RECORDS} 筆），` +
       `研判下載不完整或內政部暫時無法連線。`
     );
     console.error("[中止] 未寫入任何檔案，網站上的現有資料保持不變。稍後再執行一次即可。");
     process.exit(1);
   }
+
+  /* ---------- 併進資料池 ----------
+     凡是落在四大生活圈範圍內的，不管哪個社區、什麼型態、什麼用途，全部存起來。
+     社區設定因此變成「查詢條件」而不是「過濾條件」：
+     以後新增社區或修改門牌範圍，重撈一次就有完整歷史，
+     不必再向內政部要回已經下架的十天檔。 */
+  const pooled = mergeIntoPool(downloaded, AREAS_CONFIG);
+  console.log(`[資料池] 這次命中生活圈 ${pooled.matched} 筆，池中累計 ${pooled.total} 筆`);
+  Object.entries(pooled.added).forEach(([code, n]) => {
+    const name = AREAS_CONFIG.areas.find(a => a.code === code)?.name || code;
+    console.log(`         ${name}：${n > 0 ? `新增 ${n} 筆` : "無新增"}`);
+  });
+
+  const pool = loadPool();
+
+  /* 生活圈行情用「近四季（約一年）的成屋」計算。
+     池子裡是全部歷史，所以這裡要自己把時間窗切出來，
+     否則首頁的數字會隨著池子愈積愈久而慢慢變成「十年平均」。 */
+  const cutoff = rocCutoffMonthsAgo(12);
+  const recentRecords = pool.filter(r => {
+    if (r.__presale) return false;
+    const d = parseInt(String(r["交易年月日"] || "").trim(), 10);
+    return d >= cutoff;
+  });
+  console.log(`[生活圈] 近四季成屋共 ${recentRecords.length} 筆可供比對（交易日 ${cutoff} 之後）`);
+
+  /* 走勢改為不計算：可比較的區間要再往前四季，得多下載四個大檔，
+     而網站本來就不顯示漲跌幅，成本不值得。 */
+  const trendRecords = [];
+
+  /* 社區成交改成從池子撈，時間窗不設限——社區頁本來就該列出完整的成交歷史。
+     含預售屋：新建案的交易多半登錄在預售檔，少了它剛交屋的社區頁會是空的。 */
+  const communityRecords = pool;
+  const presaleCount = communityRecords.filter(r => r.__presale).length;
+  console.log(`[社區] 可比對紀錄共 ${communityRecords.length} 筆（成屋 ${communityRecords.length - presaleCount} 筆、預售 ${presaleCount} 筆，全部歷史）`);
 
   const TYPES = AREAS_CONFIG.propertyTypes || [];
 
