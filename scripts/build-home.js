@@ -6,6 +6,7 @@
  */
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize } from "./lib/layout.js";
+import { loadCommunities } from "./lib/related.js";
 
 /* ================= 固定文案 ================= */
 
@@ -225,6 +226,19 @@ function servicesSection() {
 function areasSection(market) {
   const areas = market?.areas || [];
 
+  /* 行情卡片底下接一條通往社區清單的路。
+     首頁的數字只能抓範圍，真正能拿來比價的是社區頁的逐筆成交——
+     看完行情的人下一步就是想看「這一區有哪些社區」，這裡不給入口他就走了。
+     連到 communities/index.html#area-XX，那一頁會直接展開該生活圈的清單。
+     還沒建社區頁的生活圈不給連結，寫清楚整理中，免得點進去是空的。 */
+  let byCode = {};
+  try {
+    loadCommunities().forEach(c => {
+      if (!c.areaCode) return;
+      byCode[c.areaCode] = (byCode[c.areaCode] || 0) + 1;
+    });
+  } catch { byCode = {}; }
+
   /* 每個生活圈可能有多組型態（電梯住宅、透天）。
      刻度要四區共用才有比較意義，所以先蒐集所有型態的價格帶算出共同範圍。 */
   const allRows = areas.flatMap(a => a.types || []).filter(t => t.bandLow && t.bandHigh);
@@ -315,6 +329,12 @@ function areasSection(market) {
         <div class="mt-auto pt-5 divide-y divide-line">
           ${types.map((t, i) => typeRow(t, i === 0)).join("\n          ")}
         </div>
+        ${byCode[a.code]
+          ? `<a href="communities/index.html#area-${esc(a.code)}"
+              class="mt-5 -mb-1 inline-flex items-center justify-between gap-3 border-t border-line pt-4 font-mono text-[13px] text-orangeDeep hover:underline">
+              <span>看這一區 ${byCode[a.code]} 個社區的逐筆成交</span><span aria-hidden="true">→</span>
+            </a>`
+          : `<p class="mt-5 -mb-1 border-t border-line pt-4 font-mono text-[12px] text-inkFaint">這一區的社區頁整理中</p>`}
       </div>
     </article>`;
     }).join("\n    ")}

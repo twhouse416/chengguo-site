@@ -520,6 +520,62 @@ function groupByArea(list) {
     .sort((a, b) => rank(a.area) - rank(b.area) || a.area.localeCompare(b.area, "zh-Hant"));
 }
 
+
+/* ---------- 第一層：生活圈入口 ----------
+   五十幾個社區平鋪在一頁，手機上要捲二十個螢幕。買方本來就是先選區域再挑社區，
+   所以第一層只給四張生活圈卡片，選了之後才在同一頁展開該區的清單。
+   不換頁有兩個好處：點下去是瞬間的，而且整份社區清單仍然在同一個網址底下，
+   搜尋引擎看到的還是「五十幾個社區集中的一頁」。
+   沒有 JavaScript 時所有區塊照常全部列出，入口卡片就是普通的錨點連結。 */
+const AREA_DISTRICT = {
+  "美術館特區": "鼓山區", "農十六特區": "鼓山區",
+  "瑞豐・巨蛋": "左營區", "中都重劃區": "三民區",
+};
+
+function areaHub(groups, dealsMap) {
+  const byArea = new Map(groups.map(g => [g.area, g.items]));
+  return `<div id="areaHub" class="mt-10 grid sm:grid-cols-2 gap-5">
+    ${AREA_ORDER.map(area => {
+      const items = byArea.get(area) || [];
+      const total = items.reduce((n, c) => n + (dealsMap[c.slug] || []).length, 0);
+      const code = items[0]?.areaCode || "";
+      /* 代表社區：成交量最多的三個，讓人一眼認出這一區收了哪些 */
+      const top = [...items]
+        .sort((a, b) => (dealsMap[b.slug] || []).length - (dealsMap[a.slug] || []).length)
+        .slice(0, 3).map(c => c.name);
+
+      if (!items.length) {
+        return `<div class="border border-line border-dashed rounded-sm bg-paper p-7">
+          <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(AREA_DISTRICT[area] || "")}</div>
+          <h2 class="text-[21px] font-bold tracking-tight mt-1">${esc(area)}</h2>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3">
+            這一區的社區頁還在整理。想先查某個社區的成交行情，
+            ${BRAND.lineUrl
+              ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">用 LINE 問我們</a>最快。`
+              : `<a href="${BRAND.phoneHref}" class="text-orangeDeep hover:underline">直接來電</a>問我們最快。`}
+          </p>
+        </div>`;
+      }
+      return `<a href="#area-${esc(code)}" data-hub-link data-area="${esc(code)}"
+        class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
+        <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(AREA_DISTRICT[area] || "")}</div>
+        <h2 class="text-[23px] font-bold tracking-tight mt-1">${esc(area)}</h2>
+        <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">${esc(top.join("、"))}${items.length > 3 ? " 等" : ""}</p>
+        <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
+          <div class="font-mono text-[12px] text-inkFaint">
+            <span class="text-[20px] font-semibold text-ink">${items.length}</span> 個社區<span class="mx-1.5">・</span>成交 ${total.toLocaleString("en-US")} 筆
+          </div>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
+        </div>
+      </a>`;
+    }).join("\n    ")}
+  </div>
+
+  <div id="areaBack" hidden class="mt-10">
+    <a href="#" data-hub-back class="font-mono text-[13px] text-orangeDeep hover:underline">← 回生活圈</a>
+  </div>`;
+}
+
 /* 列表頁的搜尋／排序／檢視切換
    ------------------------------------------------
    社區會愈來愈多，平鋪的卡片到二十幾個就開始難找。
@@ -534,9 +590,10 @@ function toolbar(total) {
     <div class="flex flex-wrap items-end gap-4">
       <label class="flex-1 min-w-[220px]">
         <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">搜尋社區</span>
-        <input id="commSearch" type="search" autocomplete="off" placeholder="輸入社區名稱，例如 美術、皇苑"
+        <input id="commSearch" type="search" autocomplete="off" placeholder="社區名稱、路名都可以，例如 皇苑、德興街"
           class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface" />
       </label>
+      <div id="commTools2" class="flex flex-wrap items-end gap-4">
       <label class="min-w-[180px]">
         <span class="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">排序</span>
         <select id="commSort" class="w-full border border-line rounded-sm px-4 py-2.5 text-[16px] bg-surface">
@@ -553,6 +610,7 @@ function toolbar(total) {
           <button type="button" data-view="card" class="view-btn px-4 py-2.5 text-[15px] bg-ink text-white">卡片</button>
           <button type="button" data-view="compact" class="view-btn px-4 py-2.5 text-[15px] bg-surface text-inkSoft">精簡</button>
         </div>
+      </div>
       </div>
     </div>
     <p id="commCount" class="font-mono text-[12px] text-inkFaint mt-4">共 ${total} 個社區</p>
@@ -575,12 +633,23 @@ function emptyState() {
 function listScript() {
   return `
 <style>
-  /* 精簡檢視：一欄、縮排距、收起摘要，一頁看得到更多社區 */
+  /* 精簡檢視：一欄、一列一個社區，左邊名稱、右邊數字。
+     社區多的生活圈（美術館特區有四十幾個）用卡片檢視要捲很久，
+     精簡檢視把每一列壓到一百像素以內，一個螢幕看得到六、七個，掃視快很多。
+     想看介紹再切回卡片。 */
   .compact [data-grid] { grid-template-columns: 1fr; gap: 0; }
-  .compact [data-card] { padding: 0.9rem 1.1rem; border-radius: 0; margin-top: -1px; }
+  .compact [data-card] {
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    column-gap: 1rem; padding: 0.65rem 1rem; border-radius: 0; margin-top: -1px;
+  }
   .compact [data-summary] { display: none; }
-  .compact [data-card] h3 { font-size: 17px; margin: 0.1rem 0 0; }
-  .compact [data-card] > div:last-child { margin-top: 0.5rem; padding-top: 0.5rem; }
+  .compact [data-card] > div:first-child { grid-column: 1; grid-row: 1; font-size: 11px; }
+  .compact [data-card] h3 { grid-column: 1; grid-row: 2; font-size: 16px; margin: 0.1rem 0 0; }
+  .compact [data-card] > div:last-child {
+    grid-column: 2; grid-row: 1 / 3; display: block; text-align: right;
+    margin: 0; padding: 0; border: 0;
+  }
+  .compact [data-card] > div:last-child > span:last-child { display: none; }
 </style>
 <script>
   (function () {
@@ -594,6 +663,7 @@ function listScript() {
     var empty = document.getElementById("commEmpty");
     var groups = [].slice.call(document.querySelectorAll("[data-group]"));
     var main = document.querySelector("main");
+    var TOTAL = document.querySelectorAll("[data-grid] [data-card]").length;
 
     /* 記住每張卡片原本的位置，切回「預設」時能還原 */
     groups.forEach(function (g) {
@@ -612,6 +682,9 @@ function listScript() {
         var grid = g.querySelector("[data-grid]");
         var cards = [].slice.call(grid.querySelectorAll("[data-card]"));
         var visible = 0;
+        /* 搜尋時跨全部生活圈；沒搜尋時只顯示選中的那一區，
+           還沒選（入口那一層）就全部收起來，畫面上只留四張生活圈卡片。 */
+        var inScope = q ? true : (current ? g.dataset.area === current : false);
 
         cards.forEach(function (c) {
           var hit = !q || (c.dataset.name || "").toLowerCase().indexOf(q) !== -1;
@@ -636,30 +709,90 @@ function listScript() {
 
         var badge = g.querySelector("[data-group-count]");
         if (badge) badge.textContent = visible;
-        g.hidden = visible === 0;
-        shown += visible;
+        g.hidden = !inScope || visible === 0;
+        if (inScope) shown += visible;
       });
 
-      count.textContent = q ? ("找到 " + shown + " 個社區") : ("共 " + shown + " 個社區");
-      if (empty) empty.hidden = shown !== 0;
+      if (q) count.textContent = "跨全部生活圈找到 " + shown + " 個社區";
+      else if (current) count.textContent = "這一區共 " + shown + " 個社區";
+      else count.textContent = "共 " + TOTAL + " 個社區，先選生活圈，或直接搜尋社區名稱";
+      /* 入口那一層本來就沒有卡片，不該跳出「找不到社區」 */
+      if (empty) empty.hidden = (!q && !current) || shown !== 0;
     }
 
-    search.addEventListener("input", apply);
+    /* ---------- 兩層瀏覽 ----------
+       第一層是生活圈入口，第二層是該區的社區清單，兩層都在同一頁、靠網址的 #area-XX 切換。
+       這樣做的好處：點下去不必重新載入、上一頁會正常運作，而且
+       「美術館特區的社區清單」這個網址可以直接傳給客戶。
+       搜尋時自動跨全部生活圈——知道社區名字的人不該被逼著先選區域。 */
+    var tools2 = document.getElementById("commTools2");
+    var hub = document.getElementById("areaHub");
+    var back = document.getElementById("areaBack");
+    var COMPACT_FROM = 12;   /* 社區多到這個數量就預設用精簡檢視 */
+    var current = "";
+
+    function setView(compact) {
+      main.classList.toggle("compact", compact);
+      [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
+        var on = (x.dataset.view === "compact") === compact;
+        x.className = "view-btn px-4 py-2.5 text-[15px] " +
+          (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
+      });
+    }
+
+    function areaOf(hash) {
+      /* 樣板字串會吃掉反斜線，所以這裡要寫兩個 */
+      var m = /^#area-(\\w+)$/.exec(hash || "");
+      if (!m) return "";
+      return groups.some(function (g) { return g.dataset.area === m[1]; }) ? m[1] : "";
+    }
+
+    function route(scroll) {
+      var searching = !!(search.value || "").trim();
+      current = areaOf(location.hash);
+      var showHub = !current && !searching;
+
+      if (hub) hub.hidden = !showHub;
+      if (back) back.hidden = showHub;
+      /* 搜尋框永遠在——知道社區名字的人不必先選區域；
+         排序與檢視切換要有清單才有意義，入口那一層收起來。 */
+      if (tools2) tools2.hidden = showHub;
+
+      if (current && !searching) {
+        var g = groups.filter(function (x) { return x.dataset.area === current; })[0];
+        setView(g && g.querySelectorAll("[data-card]").length > COMPACT_FROM);
+      }
+      apply();
+      if (scroll && current && !searching) {
+        var t = document.getElementById("area-" + current);
+        if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    [].slice.call(document.querySelectorAll("[data-hub-link]")).forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        location.hash = "area-" + a.dataset.area;
+      });
+    });
+    if (back) back.querySelector("[data-hub-back]").addEventListener("click", function (e) {
+      e.preventDefault();
+      search.value = "";
+      /* 用 pushState 清掉 hash，保留上一頁可以回到剛才看的生活圈 */
+      history.pushState("", "", location.pathname + location.search);
+      route(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    window.addEventListener("hashchange", function () { route(true); });
+
+    search.addEventListener("input", function () { route(false); });
     sort.addEventListener("change", apply);
 
     [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (b) {
-      b.addEventListener("click", function () {
-        var compact = b.dataset.view === "compact";
-        main.classList.toggle("compact", compact);
-        [].slice.call(document.querySelectorAll(".view-btn")).forEach(function (x) {
-          var on = x === b;
-          x.className = "view-btn px-4 py-2.5 text-[15px] " +
-            (on ? "bg-ink text-white" : "bg-surface text-inkSoft");
-        });
-      });
+      b.addEventListener("click", function () { setView(b.dataset.view === "compact"); });
     });
 
-    apply();
+    route(false);
   })();
 </script>`;
 }
@@ -694,14 +827,15 @@ function communityIndex(list, dealsMap, hasBuyers) {
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
     我們把常被問到的社區整理成獨立頁面，列出實價登錄的每一筆成交紀錄、社區基本資料與學區資訊。
     成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
+    先選一個生活圈，或直接用上方搜尋找社區名稱。
   </p>
   <div class="mt-6 h-px bg-line"></div>
 
   ${list.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
     <p class="text-[16px] text-inkSoft leading-[1.9]">社區頁面陸續整理中。想了解特定社區的行情，歡迎直接來電。</p>
     <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
-  </div>` : toolbar(list.length) + groups.map(g => `
-  <section class="mt-12" data-group>
+  </div>` : areaHub(groups, dealsMap) + toolbar(list.length) + groups.map(g => `
+  <section class="mt-12" data-group id="area-${esc(g.items[0]?.areaCode || "")}" data-area="${esc(g.items[0]?.areaCode || "")}">
     <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3">
       <h2 class="display text-[23px]">${esc(g.area)}</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0"><span data-group-count>${g.items.length}</span> 個社區</span>
