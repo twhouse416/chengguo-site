@@ -1,22 +1,23 @@
 /**
- * 澄果團隊｜內政部實價登錄資料源探測（v3）
+ * 澄果團隊｜內政部實價登錄資料源探測（v4）
  * ------------------------------------------------
- * 前兩次探測的結論：
- *   v1：內政部查詢網站看得到的成交，確實不在任何「目前可下載」的檔案裡。
- *       十天檔交易日到 2026-08-22、115S2 季檔到 2026-06-03、115S3 還不能下載，
- *       「美術東六街117」在三個檔案裡都是 0 筆（路名有命中，所以比對邏輯沒壞）。
- *   v2：找到兩條很像的線索——
- *       (a) 下載頁有一個分頁叫「非本期下載」，內容由 DownloadHistory_ajax_list 動態載入，
- *           那支網址回傳 20 KB 的 HTML 表格，看起來就是歷史批次清單。
- *       (b) Download?...&period=1150801 回傳了 1,770 KB 的 ZIP。
- *           但大小和本期十天檔一模一樣，很可能是參數被忽略、回傳同一個檔案。
+ * v3 已經找到關鍵：「非本期下載」分頁真的列出了過去每一期的批次——
+ *   發布日期 20260701 / 20260711 / 20260721 / 20260801 / 20260811 / 20260821 / 20260901
+ * 每一列後面都有一個「下載」。空窗期（7～9 月）的資料就在這幾期裡。
  *
- * v3 就是把這兩件事查清楚：
- *   一、把 DownloadHistory_ajax_list 的表格內容整個攤開——
- *       連結、onclick、隱藏欄位、下拉選單的值，全部印出來。
- *       只要裡面有帶期別參數的下載網址，空窗期就能一次補齊。
- *   二、用不同的 period 各下載一次，比對檔案的 MD5 與交易日範圍。
- *       MD5 相同 → 參數被忽略，此路不通；不同 → 真的能指定期別。
+ * 也確認了 Download?...&period=... 是沒用的：六種 period 下載回來的 MD5 完全一樣，
+ * 參數被忽略，回傳的都是同一個本期檔案。
+ *
+ * 剩下的問題只有一個：那個「下載」按鈕實際送出的網址長什麼樣。
+ * v3 看到頁面裡有 DownloadHistory?type=history&fileName= 與 javaScript:downloadLast(
+ * 但括號裡的參數被我的比對式吃掉了（href 裡是雙引號包單引號，正則在第一個單引號就斷了）。
+ *
+ * v4 用三個方法把它挖出來：
+ *   一、改用只認雙引號的比對式重抓 href／onclick，並把每一個「發布日期」附近的
+ *       原始 HTML 原封不動印出來，參數一定在裡面。
+ *   二、直接抓 /js/downloadManager.js，把 downloadLast 這個函式的內容印出來，
+ *       它怎麼組網址一看就知道。
+ *   三、照猜測的幾種寫法實際下載 20260701 那一期，回傳 ZIP 就算成功。
  *
  * 只讀不寫，不會更動 repo 內任何檔案。
  *
@@ -34,27 +35,33 @@ const TMP = path.join(ROOT, ".tmp-probe");
 const KEYWORD = (process.argv[2] || "美術東六街117").trim();
 const ROAD_ONLY = KEYWORD.replace(/[0-9０-９]+$/, "") || KEYWORD;
 const BASE = "https://plvr.land.moi.gov.tw";
-const UA = `-A "Mozilla/5.0 (compatible; chengguo-site/1.0)"`;
+/* 帶 Referer 與 cookie 罐：歷史下載常要求先進過頁面 */
+const JAR = () => `-b "${path.join(TMP, "cookie.txt")}" -c "${path.join(TMP, "cookie.txt")}"`;
+const UA = `-A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36" -e "${BASE}/DownloadOpenData"`;
 
 function run(cmd) {
   return execSync(cmd, { encoding: "utf-8", maxBuffer: 64 * 1024 * 1024 });
 }
-
 function get(url, file) {
   try {
-    run(`curl -sL --connect-timeout 20 --max-time 120 ${UA} -o "${file}" "${url}"`);
+    run(`curl -sL --connect-timeout 20 --max-time 120 ${UA} ${JAR()} -o "${file}" "${url}"`);
     return existsSync(file) ? statSync(file).size : 0;
   } catch { return 0; }
 }
-
-function md5(file) {
-  try { return run(`md5sum "${file}"`).trim().split(/\s+/)[0]; } catch { return "?"; }
+function isZip(file) {
+  if (!existsSync(file) || statSync(file).size < 4) return false;
+  const b = readFileSync(file).subarray(0, 2);
+  return b[0] === 0x50 && b[1] === 0x4b;
+}
+function peek(file, n = 220) {
+  if (!existsSync(file)) return "（沒有檔案）";
+  if (isZip(file)) return "★★ 是 ZIP 檔 ★★";
+  return readFileSync(file).subarray(0, n).toString("utf-8").replace(/\s+/g, " ").trim();
 }
 
 const norm = s => String(s || "")
   .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
   .replace(/\s+/g, "");
-
 const roc = s => {
   s = String(s || "").trim();
   if (s.length < 6) return "";
@@ -78,142 +85,136 @@ function parseCSV(text) {
   return rows.filter(r => r.length > 1);
 }
 
-/* 解開一個 zip，回報高雄的日期範圍與關鍵字命中 */
-function inspectZip(zipPath, label) {
+function inspectZip(zipPath) {
   const dir = path.join(TMP, "x");
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
   try { run(`unzip -o -q "${zipPath}" -d "${dir}"`); }
-  catch { return `    不是有效的壓縮檔`; }
+  catch { return `      解壓失敗`; }
   const lines = [];
   for (const suffix of ["a", "b"]) {
-    const re = new RegExp(`^E_lvr_land_${suffix}\\.csv$`, "i");
-    const files = readdirSync(dir).filter(f => re.test(f));
-    if (!files.length) { lines.push(`    高雄 _${suffix} 檔：不存在`); continue; }
+    const files = readdirSync(dir).filter(f => new RegExp(`^E_lvr_land_${suffix}\\.csv$`, "i").test(f));
+    if (!files.length) { lines.push(`      高雄 _${suffix}：不存在`); continue; }
     let n = 0, dates = [], roadHits = 0, hits = [];
     for (const f of files) {
       const rows = parseCSV(readFileSync(path.join(dir, f), "utf-8"));
       if (rows.length < 3) continue;
-      const header = rows[0].map(h => h.trim());
-      const iDate = header.indexOf("交易年月日");
-      const iAddr = header.indexOf("土地位置建物門牌");
-      const iFloor = header.indexOf("移轉層次");
+      const h = rows[0].map(x => x.trim());
+      const iD = h.indexOf("交易年月日"), iA = h.indexOf("土地位置建物門牌"), iF = h.indexOf("移轉層次");
       rows.slice(2).forEach(r => {
         n++;
-        const d = String(r[iDate] || "").trim();
+        const d = String(r[iD] || "").trim();
         if (d.length >= 6) dates.push(d);
-        if (iAddr < 0) return;
-        const a = norm(r[iAddr]);
+        if (iA < 0) return;
+        const a = norm(r[iA]);
         if (a.includes(norm(ROAD_ONLY))) roadHits++;
-        if (a.includes(norm(KEYWORD))) hits.push(`${r[iAddr]}｜${roc(d)}｜${r[iFloor] || ""}`);
+        if (a.includes(norm(KEYWORD))) hits.push(`${r[iA]}｜${roc(d)}｜${r[iF] || ""}`);
       });
     }
     dates.sort();
-    lines.push(`    ${suffix === "a" ? "成屋" : "預售"} ${n} 筆` +
+    lines.push(`      ${suffix === "a" ? "成屋" : "預售"} ${n} 筆` +
       (dates.length ? `，交易日 ${roc(dates[0])} ～ ${roc(dates[dates.length - 1])}` : "") +
       `，「${ROAD_ONLY}」${roadHits} 筆／「${KEYWORD}」${hits.length} 筆`);
-    hits.slice(0, 10).forEach(h => lines.push(`      ★ ${h}`));
+    hits.slice(0, 10).forEach(x => lines.push(`        ★ ${x}`));
   }
   rmSync(dir, { recursive: true, force: true });
   return lines.join("\n");
 }
 
-/* 把 HTML 裡的表格攤成純文字，方便在記錄檔裡直接讀 */
-function tableToText(html) {
-  return html
-    .replace(/<\s*(script|style)[^>]*>[\s\S]*?<\/\s*\1\s*>/gi, "")
-    .replace(/<\s*\/?\s*(tr|table)[^>]*>/gi, "\n")
-    .replace(/<\s*\/?\s*(td|th)[^>]*>/gi, " | ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .split("\n").map(l => l.replace(/\s+/g, " ").replace(/(\s*\|\s*)+/g, " | ").trim())
-    .filter(l => l && l !== "|")
-    .join("\n");
-}
-
 async function main() {
-  console.log(`\n=== 內政部實價登錄資料源探測 v3 ===`);
+  console.log(`\n=== 內政部實價登錄資料源探測 v4 ===`);
   console.log(`門牌關鍵字：${KEYWORD}（對照組：${ROAD_ONLY}）`);
   console.log(`今天：${new Date().toISOString().slice(0, 10)}\n`);
 
   rmSync(TMP, { recursive: true, force: true });
   mkdirSync(TMP, { recursive: true });
 
-  /* ---------- 一、非本期下載清單 ---------- */
+  /* 先進一次首頁，把 cookie 拿到手 */
+  get(`${BASE}/DownloadOpenData`, path.join(TMP, "home.html"));
+
+  /* ---------- 一、非本期清單的原始 HTML ---------- */
   console.log(`══════════════════════════════════════════`);
-  console.log(`一、「非本期下載」的清單內容`);
+  console.log(`一、「下載」按鈕的原始碼長什麼樣`);
   console.log(`══════════════════════════════════════════`);
-  for (const p of ["DownloadHistory_ajax_list", "Download_ajax_list", "Download_ajax_active"]) {
-    const url = `${BASE}/${p}`;
-    const f = path.join(TMP, "list.html");
-    const size = get(url, f);
-    console.log(`\n【${p}】 ${size} bytes`);
-    if (!size) { console.log(`  拿不到內容`); continue; }
+  const f = path.join(TMP, "list.html");
+  const size = get(`${BASE}/DownloadHistory_ajax_list`, f);
+  console.log(`DownloadHistory_ajax_list：${size} bytes\n`);
+  if (size) {
     const html = readFileSync(f, "utf-8");
 
-    /* 1) 所有帶參數的路徑：真正的下載網址就在這裡面 */
-    const paths = new Set();
-    for (const m of html.matchAll(/["'(]([^"'()\s<>]*(?:Download|download)[^"'()\s<>]*)["')]/g)) {
-      if (m[1].length > 3 && !m[1].startsWith("#")) paths.add(m[1]);
+    /* 只認雙引號，這樣 href="javaScript:downloadLast('20260701')" 的單引號才不會把比對切斷 */
+    const attrs = new Set();
+    for (const m of html.matchAll(/(?:href|onclick|onChange|data-[a-z-]+)\s*=\s*"([^"]{2,200})"/gi)) {
+      attrs.add(m[1].replace(/\s+/g, " ").trim());
     }
-    /* 2) onclick / javascript 呼叫裡的參數 */
-    const calls = new Set();
-    for (const m of html.matchAll(/(?:onclick|href)\s*=\s*["']([^"']*(?:javascript:|\()[^"']*)["']/gi)) {
-      calls.add(m[1].replace(/\s+/g, " ").slice(0, 160));
-    }
-    /* 3) 表單隱藏欄位與下拉選單的值：期別代碼通常在這裡 */
-    const vals = new Set();
-    for (const m of html.matchAll(/<(?:input|option)[^>]*value\s*=\s*["']([^"']{2,40})["'][^>]*>/gi)) {
-      vals.add(m[1]);
-    }
+    console.log(`  href／onclick／data-* 的完整內容（${attrs.size}）：`);
+    [...attrs].slice(0, 60).forEach(a => console.log(`    ${a}`));
 
-    console.log(`  含 Download 的路徑（${paths.size}）：`);
-    [...paths].slice(0, 40).forEach(u => console.log(`    ${u}`));
-    console.log(`  onclick／javascript 呼叫（${calls.size}）：`);
-    [...calls].slice(0, 30).forEach(u => console.log(`    ${u}`));
-    console.log(`  input／option 的 value（${vals.size}）：`);
-    [...vals].slice(0, 60).forEach(u => console.log(`    ${u}`));
-
-    const text = tableToText(html);
-    console.log(`  表格內容（前 40 行）：`);
-    text.split("\n").slice(0, 40).forEach(l => console.log(`    ${l}`));
+    /* 每一個發布日期附近的原始 HTML，參數一定在這裡面 */
+    console.log(`\n  每一期「發布日期」前後的原始碼：`);
+    const seen = new Set();
+    for (const m of html.matchAll(/2026\d{4}/g)) {
+      if (seen.has(m[0])) continue;
+      seen.add(m[0]);
+      const s = Math.max(0, m.index - 260);
+      const snippet = html.slice(s, m.index + 320).replace(/\s+/g, " ");
+      console.log(`\n    ── ${m[0]} ──`);
+      console.log(`    ${snippet}`);
+    }
   }
 
-  /* ---------- 二、period 參數到底有沒有作用 ---------- */
+  /* ---------- 二、downloadLast 是怎麼組網址的 ---------- */
   console.log(`\n══════════════════════════════════════════`);
-  console.log(`二、period 參數有沒有作用`);
+  console.log(`二、downloadLast 函式的內容`);
   console.log(`══════════════════════════════════════════`);
-  console.log(`（MD5 都一樣 → 參數被忽略，回傳的都是同一個本期檔案，此路不通）\n`);
+  for (const js of ["/js/downloadManager.js", "/js/menu_ajax.js", "/js/qt/qt-ajax.js"]) {
+    const jf = path.join(TMP, "s.js");
+    const n = get(BASE + js, jf);
+    console.log(`\n【${js}】${n} bytes`);
+    if (!n) { console.log(`  拿不到`); continue; }
+    const src = readFileSync(jf, "utf-8");
+    /* 把含有 download / History / season 的行印出來，網址組法就在裡面 */
+    const lines = src.split("\n")
+      .map((l, i) => [i + 1, l.trim()])
+      .filter(([, l]) => /download|History|season|url\s*[:=]|\.zip/i.test(l));
+    console.log(`  相關的 ${lines.length} 行：`);
+    lines.slice(0, 60).forEach(([i, l]) => console.log(`    ${String(i).padStart(4)}  ${l.slice(0, 170)}`));
+  }
 
-  const PERIODS = ["", "1150801", "1150811", "1150821", "1150901", "1150701"];
-  const seen = new Map();
-  for (const p of PERIODS) {
-    const url = `${BASE}/Download?type=zip&fileName=lvr_landcsv.zip` + (p ? `&period=${p}` : "");
-    const f = path.join(TMP, `p_${p || "none"}.zip`);
-    const size = get(url, f);
-    const hash = size ? md5(f) : "-";
-    const label = p ? `period=${p}` : "（不帶 period）";
-    console.log(`${label}　${(size / 1024).toFixed(0)} KB　MD5 ${hash.slice(0, 12)}`);
-    if (size) {
-      if (seen.has(hash)) {
-        console.log(`    ↳ 與 ${seen.get(hash)} 完全相同`);
-      } else {
-        seen.set(hash, label);
-        console.log(inspectZip(f, label));
-      }
-    }
-    rmSync(f, { force: true });
+  /* ---------- 三、實際試抓 20260701 那一期 ---------- */
+  console.log(`\n══════════════════════════════════════════`);
+  console.log(`三、實際試抓 20260701 這一期`);
+  console.log(`══════════════════════════════════════════`);
+  console.log(`（回傳 ZIP 就是成功，其餘都是錯誤頁）\n`);
+
+  const P = "20260701";
+  const TRIES = [
+    `${BASE}/DownloadHistory?type=history&fileName=${P}`,
+    `${BASE}/DownloadHistory?type=history&fileName=${P}.zip`,
+    `${BASE}/DownloadHistory?type=history&fileName=lvr_landcsv.zip&period=${P}`,
+    `${BASE}/DownloadHistory?type=history&fileName=lvr_landcsv.zip&historyName=${P}`,
+    `${BASE}/DownloadHistory?type=history&fileName=lvr_landcsv.zip&date=${P}`,
+    `${BASE}/DownloadHistory?type=history&fileName=${P}_lvr_landcsv.zip`,
+    `${BASE}/DownloadHistory?type=season&fileName=lvr_landcsv.zip&season=115S2`,
+    `${BASE}/Download?type=history&fileName=lvr_landcsv.zip&historyName=${P}`,
+  ];
+  for (const u of TRIES) {
+    const zf = path.join(TMP, "t.zip");
+    rmSync(zf, { force: true });
+    const n = get(u, zf);
+    const ok = isZip(zf);
+    console.log(`${u}`);
+    console.log(`  ${(n / 1024).toFixed(0)} KB　${ok ? "★★ ZIP ★★" : "不是 ZIP"}`);
+    console.log(`  ${peek(zf)}`);
+    if (ok) console.log(inspectZip(zf));
+    console.log("");
   }
 
   rmSync(TMP, { recursive: true, force: true });
 
-  console.log(`\n══════════════════════════════════════════`);
-  console.log(`結論要看什麼`);
   console.log(`══════════════════════════════════════════`);
-  console.log(`1. 第二節如果出現兩個以上不同的 MD5，代表 period 真的可以指定期別，`);
-  console.log(`   那就能把 7～9 月的批次逐期抓回來，空窗一次補齊。`);
-  console.log(`2. 第一節如果清單裡有帶期別的下載網址，把那幾行貼給我。`);
-  console.log(`3. 兩者都不通的話，就等 115S3 季檔（約 10 月下旬）自動補上。`);
+  console.log(`第三節只要有一行出現 ★★ ZIP ★★，空窗期就能補齊。`);
+  console.log(`都沒有的話，把第一、二節的內容貼給我，網址的組法就在那裡面。`);
 }
 
 main().catch(e => { console.error("[失敗]", e); process.exit(1); });
