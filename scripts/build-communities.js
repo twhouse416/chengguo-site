@@ -143,6 +143,12 @@ function videoSection(c) {
   </script>`;
 }
 
+/* 社區成交紀錄的兩個門檻。
+   DEAL_CAP：每個社區最多保留幾筆（要與 fetch-market-data.js 的上限一致）。
+   LOW_SAMPLE：低於這個筆數就在列表頁標「樣本少」。 */
+const DEAL_CAP = 600;
+const LOW_SAMPLE = 10;
+
 /* ---------- 成交紀錄表格 ---------- */
 function dealsTable(deals) {
   if (!deals?.length) {
@@ -178,8 +184,10 @@ function dealsTable(deals) {
     && (d.unitPrice < mid * 0.6 || d.unitPrice > mid * 1.6);
   const outliers = deals.filter(isOutlier).length;
 
-  /* 資料多時只列最近 40 筆，其餘收在展開區塊裡，避免頁面過長 */
-  const SHOW = 40;
+  /* 預設只列最近 100 筆，其餘收在展開區塊裡。
+     一次把六百筆全部攤開，手機上要捲很久、頁面也重；
+     一百筆已經足夠看出近期行情，想追溯更早的點開就有。 */
+  const SHOW = 100;
   const shown = deals.slice(0, SHOW);
   const rest = deals.slice(SHOW);
   const presale = deals.filter(d => d.kind === "預售").length;
@@ -191,7 +199,7 @@ function dealsTable(deals) {
     <div>
       <span class="font-mono text-[12px] text-inkFaint">收錄筆數</span>
       <span class="font-mono text-[24px] font-semibold text-ink ml-2">${deals.length}</span>
-      ${deals.length >= 300 ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 300 筆）</span>` : ""}
+      ${deals.length >= DEAL_CAP ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 ${DEAL_CAP} 筆）</span>` : ""}
     </div>
     ${prices.length ? `<div>
       <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
@@ -239,7 +247,7 @@ function dealsTable(deals) {
 
   ${rest.length ? `<details class="mt-4 group">
     <summary class="font-mono text-[13px] text-orangeDeep inline-flex items-center gap-2 select-none">
-      展開其餘 ${rest.length} 筆較早的成交
+      顯示較早的 ${rest.length} 筆成交（${fmtDate(rest[rest.length - 1].date)} 起）
       <span class="transition group-open:rotate-180 text-[10px]">▼</span>
     </summary>
     <div class="overflow-x-auto border border-line rounded-sm bg-surface mt-3">
@@ -717,13 +725,21 @@ function communityIndex(list, dealsMap, hasBuyers) {
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(c.area)}・${esc(c.district)}</div>
       <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">${esc(c.name)}</h3>
       <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">${esc(c.summary)}</p>
-      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between">
+      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-4">
         ${prices.length ? `<div>
           <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
           <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">${prices[0]}–${prices[prices.length - 1]}</span>
           <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+          ${/* 成交筆數：排序選單有「成交筆數多到少」，卡片上看不到筆數的話，
+                使用者不知道為什麼是這個順序。少於 LOW_SAMPLE 筆的另外標記——
+                三、五筆算出來的單價範圍，看起來跟三百筆的一樣可靠，那是誤導。 */""}
+          <div class="mt-1 font-mono text-[12px] text-inkFaint">
+            成交 ${deals.length} 筆${deals.length < LOW_SAMPLE
+              ? `<span class="text-orangeDeep ml-1.5" title="成交筆數少，單價範圍的參考性有限">・樣本少</span>`
+              : ""}
+          </div>
         </div>` : `<span class="font-mono text-[13px] text-inkFaint">成交資料整理中</span>`}
-        <span class="font-mono text-[12px] text-orangeDeep">查看 →</span>
+        <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
       </div>
     </a>`;
     }).join("\n    ")}

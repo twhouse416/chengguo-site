@@ -351,7 +351,11 @@ export function mergeDeals(oldList, newList) {
   [...oldList, ...newList].forEach(d => { if (d?.date) map.set(key(d), d); });
   return [...map.values()]
     .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 300);   // 每個社區最多保留 300 筆
+    /* 每個社區最多保留 600 筆。社區頁預設只顯示最近 100 筆，
+       其餘收在展開區塊裡（見 build-communities.js 的 DEAL_CAP／SHOW）。
+       改這個數字時，build-communities.js 的 DEAL_CAP 要一起改，
+       否則頁面上的「僅收錄最近 N 筆」會寫錯。 */
+    .slice(0, 600);
 }
 
 /* 民國年月日（如 1140312）轉西元 YYYY-MM-DD */
