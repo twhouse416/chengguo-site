@@ -231,6 +231,10 @@ function areasSection(market) {
      看完行情的人下一步就是想看「這一區有哪些社區」，這裡不給入口他就走了。
      連到 communities/index.html#area-XX，那一頁會直接展開該生活圈的清單。
      還沒建社區頁的生活圈不給連結，寫清楚整理中，免得點進去是空的。 */
+  /* 連結上要用的生活圈簡稱。行情卡片上方已經有完整名稱，
+     連結再寫一次「美術館特區」會重複又太長，取簡稱就好。 */
+  const SHORT = { "01": "美術館", "02": "農十六", "03": "瑞豐巨蛋", "04": "中都" };
+
   let byCode = {};
   try {
     loadCommunities().forEach(c => {
@@ -332,9 +336,9 @@ function areasSection(market) {
         ${byCode[a.code]
           ? `<a href="communities/index.html#area-${esc(a.code)}"
               class="mt-5 -mb-1 inline-flex items-center justify-between gap-3 border-t border-line pt-4 font-mono text-[13px] text-orangeDeep hover:underline">
-              <span>看這一區 ${byCode[a.code]} 個社區的逐筆成交</span><span aria-hidden="true">→</span>
+              <span>看${esc(SHORT[a.code] || a.name)}社區大樓資訊</span><span aria-hidden="true">→</span>
             </a>`
-          : `<p class="mt-5 -mb-1 border-t border-line pt-4 font-mono text-[12px] text-inkFaint">這一區的社區頁整理中</p>`}
+          : `<p class="mt-5 -mb-1 border-t border-line pt-4 font-mono text-[12px] text-inkFaint">社區資料整理中</p>`}
       </div>
     </article>`;
     }).join("\n    ")}
