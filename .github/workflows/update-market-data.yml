@@ -17,6 +17,9 @@ permissions:
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    # 現在每次要抓本期十天檔加上七期非本期批次（每個約 14 MB），
+    # 比舊版慢一些，預設的 6 小時上限用不到，但明寫比較好抓問題。
+    timeout-minutes: 60
     steps:
       - name: 取出程式碼
         uses: actions/checkout@v4
