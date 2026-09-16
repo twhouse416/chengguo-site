@@ -1,0 +1,62 @@
+name: 回補生活圈成交資料池
+
+# 手動觸發專用。把過去 N 季的實價登錄下載回來，
+# 落在四大生活圈範圍內的全部存進 data/area-deals/。
+#
+# 跑完之後，社區頁的成交是從這個池子撈出來的，
+# 以後新增社區或修改門牌範圍都不必再向內政部重抓——
+# 因為內政部的十天檔只留最近一批，過期就再也拿不回來。
+#
+# 20 期（五年）大約要跑 25～40 分鐘，主要時間花在下載。
+on:
+  workflow_dispatch:
+    inputs:
+      periods:
+        description: "要回補幾期？（1 期 = 1 季，20 期 = 五年）"
+        required: true
+        default: "20"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 回補資料池
+        run: node scripts/backfill-area-pool.js ${{ inputs.periods }}
+
+      # 回補要跑很久，先存成可下載的檔案，
+      # 萬一後面推送失敗也不必整批重跑
+      - name: 保存資料池
+        uses: actions/upload-artifact@v4
+        with:
+          name: area-deals
+          path: data/area-deals/
+          retention-days: 7
+
+      - name: 提交結果
+        run: |
+          git config user.name "chengguo-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/area-deals
+          git diff --cached --quiet && echo "沒有變動" || git commit -m "回補生活圈成交資料池 $(date +'%Y-%m-%d %H:%M')"
+          for i in 1 2 3 4 5; do
+            if git push; then echo "推送成功"; break; fi
+            if [ $i -eq 5 ]; then echo "::error::推送失敗 5 次"; exit 1; fi
+            echo "推送失敗，$((i*15)) 秒後重試（第 $i 次）"
+            sleep $((i*15))
+            git pull --rebase --autostash || true
+          done
+
+      - name: 下一步提醒
+        run: |
+          echo "::notice::資料池已更新。接著跑一次「更新四大生活圈行情」，社區頁才會反映新資料。"

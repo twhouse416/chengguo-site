@@ -1,0 +1,29 @@
+name: 探測實價登錄資料源
+
+# 手動觸發。內政部查詢網站上看得到的成交，我們下載得到的檔案裡不一定有——
+# 這支流程實測各個下載網址目前能拿到什麼、各自的交易日涵蓋到哪一天，
+# 並查指定門牌在每個檔案裡有沒有出現。
+#
+# 只讀不寫，不會更動 repo 內任何檔案。結果看執行紀錄即可。
+on:
+  workflow_dispatch:
+    inputs:
+      keyword:
+        description: "要追查的門牌關鍵字（例如 美術東六街117）"
+        required: true
+        default: "美術東六街117"
+        type: string
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 探測
+        run: node scripts/probe-moi-sources.js "${{ inputs.keyword }}"
