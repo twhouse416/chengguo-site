@@ -52,16 +52,9 @@ jobs:
           npm run css
 
       - name: 若資料有變動，提交回儲存庫
+        # 提交與推送統一交給 scripts/git-push-retry.sh：
+        # 兩個流程同時跑而被擋下來時，它會以遠端最新為底重做這一筆，
+        # 不做合併，所以不會像舊寫法那樣卡在未合併狀態一路失敗到底。
         run: |
-          git config user.name "chengguo-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/market-data.json data/community-deals.json data/area-deals index.html notes videos tools communities sitemap.xml assets/tailwind.css
-          git diff --cached --quiet && echo "沒有變動，略過提交" || git commit -m "更新行情與社區資料 $(date +'%Y-%m-%d %H:%M')"
-          # GitHub 偶爾會回 5xx，重試幾次避免整批工作白費
-          for i in 1 2 3 4 5; do
-            if git push; then echo "推送成功"; break; fi
-            if [ $i -eq 5 ]; then echo "::error::推送失敗 5 次"; exit 1; fi
-            echo "推送失敗，$((i*15)) 秒後重試（第 $i 次）"
-            sleep $((i*15))
-            git pull --rebase --autostash || true
-          done
+          bash scripts/git-push-retry.sh "更新行情與社區資料 $(date +'%Y-%m-%d %H:%M')" \
+            data/market-data.json data/community-deals.json data/area-deals index.html notes videos tools communities sitemap.xml assets/tailwind.css
