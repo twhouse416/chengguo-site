@@ -4572,7 +4572,7 @@
           "parity": "even"
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "興富發建設 2021 年 7 月完工的中都重劃區雙塔社區，2 至 3 房為主，門牌橫跨十全三路與德興街。",
       "specs": [
         [
@@ -4671,7 +4671,7 @@
           "parity": "even"
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "潤隆建設 2023 年 7 月完工的中都重劃區社區，273 戶，全坡道平面車位，管理費每坪 60 元。",
       "specs": [
         [
@@ -4769,7 +4769,7 @@
           "parity": "odd"
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "榮欣建設 2021 年 6 月完工的中都重劃區 15 層社區，267 戶，坪數從 2 房 23 坪到 4 房 66 坪。",
       "specs": [
         [
@@ -4865,7 +4865,7 @@
           "parity": "odd"
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "福懋建設 2025 年 1 月完工的中都重劃區新案，230 戶，全坡道平面車位，屋齡不到兩年。",
       "specs": [
         [
@@ -4963,7 +4963,7 @@
           "parity": "even"
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "京城建設 2023 年 7 月完工的中都重劃區社區，133 戶純大坪數規劃，全平面車位，榕樹公園第一排。",
       "specs": [
         [
@@ -5062,7 +5062,7 @@
           "to": 369
         }
       ],
-      "draft": true,
+      "draft": false,
       "summary": "遠雄建設位於農十六特區的商四住辦混合案，233 戶含 13 戶辦公室，坪數涵蓋 1 房到 3 房。",
       "specs": [
         [
