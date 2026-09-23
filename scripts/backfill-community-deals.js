@@ -18,6 +18,7 @@ import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { shopUse, fixShopTags } from "./lib/shop-use.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -160,10 +161,8 @@ function toDeal(r) {
     layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
     parking: (r["車位類別"] || "").trim(),
     kind: r.__presale ? "預售" : "成屋",
-    /* 大樓一樓的店面在「建物型態」上一樣是住宅大樓，只有「主要用途」看得出來。
-       社區頁逐筆列出時保留店面成交（對想買店面的人有價值），但標示清楚，
-       且不納入上方的單價範圍統計，避免被誤讀成住家行情。 */
-    use: /商業|店鋪|店面/.test((r["主要用途"] || "").trim()) ? "店面" : "",
+    /* 店面判定見 lib/shop-use.js：主要用途符合「且」移轉層次在一樓才算 */
+    use: shopUse(r),
     project: (r["建案名稱"] || "").trim(),
     unit: (r["棟及號"] || "").trim(),
     addr: (r["土地位置建物門牌"] || "").trim(),
