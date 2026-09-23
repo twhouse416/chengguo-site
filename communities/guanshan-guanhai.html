@@ -199,13 +199,679 @@
       逐筆列出近期成交，不做平均。同一個社區，樓層、面向、坪數與車位配置不同，
       單價落差往往比想像中大——找條件跟你要看的那戶相近的來比，會準確得多。
     </p>
-    <div class="border border-line rounded-sm bg-surface p-8">
-      <p class="text-[16px] text-inkSoft leading-[1.9]">
-        近期尚未擷取到這個社區的實價登錄成交紀錄。內政部資料每月公告三次，
-        新成交需要一段時間才會揭露。想知道目前的行情與屋主開價，歡迎直接來電。
-      </p>
-      <a href="tel:0797669977" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電詢問行情 07-9766977</a>
+    <div class="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+    <div>
+      <span class="font-mono text-[12px] text-inkFaint">收錄筆數</span>
+      <span class="font-mono text-[24px] font-semibold text-ink ml-2">69</span>
+      
     </div>
+    <div>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
+      <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">12.7–32.7</span>
+      <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
+      
+    </div>
+    
+    <div class="font-mono text-[12px] text-inkFaint">期間 2021.04.26－2026.06.17</div>
+  </div>
+
+  <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+    <table class="w-full text-[15px] min-w-[640px]">
+      <thead>
+        <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+          <th class="text-left font-normal py-3 px-4">成交日期</th>
+          <th class="text-left font-normal py-3 px-4">類型</th>
+          <th class="text-left font-normal py-3 px-4">樓層</th>
+          <th class="text-left font-normal py-3 px-4">格局</th>
+          <th class="text-right font-normal py-3 px-4">坪數</th>
+          <th class="text-right font-normal py-3 px-4">單價</th>
+          <th class="text-right font-normal py-3 px-4">總價</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.06.17</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">五層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">56.99</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">25.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,450</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.05.07</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">36.02</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">20.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">735</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.04.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.43</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,438</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.03.25</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十五層，二十六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">5房2廳3衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">87.43</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">16.6</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,450</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.02.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">45.39</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">19.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">900</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.01.22</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.9</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,450</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2026.01.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">54.37</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,450</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.11.17</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十一層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">43.47</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.6</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,025</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.11.15</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">八層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.3</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,380</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.10.04</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">28.98</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">28.3</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">820</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.09.26</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">五層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.9</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,438</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.06.30</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十九層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">28.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">688</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.06.13</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">34.15</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">28.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">980</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.06.11</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十九層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">40.72</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">30.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,226</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.05.16</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">665</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2025.01.18</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">29.23</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">29.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">850</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.12.18</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十七層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.09</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,370</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.10.08</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">28.2</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">670</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.10.06</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">45.39</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22.3</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,011</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.09.22</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十一層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.24</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">28.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">660</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.08.13</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十一層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">45.39</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">17.6</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">800</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.07.07</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.24</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">32.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">760</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.07.02</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">28.98</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.6</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">800</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.06.26</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十八層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">36.02</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">960</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.06.23</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,350</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.06.13</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">一層，二層，騎樓</td>
+          <td class="py-3.5 px-4 text-inkSoft">5房1廳3衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">96.41</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.5</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">2,650</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.06.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,260</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.05.12</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">29.23</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">30.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">890</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.05.03</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">43.47</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.3</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,057</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.04.17</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十五層，二十六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳3衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">67.23</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">20.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,350</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.03.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">九層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">550</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.02.16</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,250</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2024.01.04</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">25.2</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">600</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.12.16</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,110</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.12.09</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.6</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">587</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.11.07</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">九層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">34.15</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">25</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">852</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.10.16</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十五層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">52.96</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">26.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,380</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.08.12</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">28.98</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">692</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.05.14</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.43</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,320</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.04.17</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十五層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.9</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,338</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.04.08</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">九層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">520</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.03.31</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十八層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.09</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,100</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.03.02</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十一層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">41.19</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">989</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.02.27</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">29.23</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">636</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2023.02.16</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十七層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">48.64</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">20.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,010</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.11.19</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.43</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,180</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.11.18</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">33.68</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">800</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.10.03</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,060</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.09.25</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.56</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,100</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.09.22</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">41.19</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">24</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">988</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.07.06</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十七層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">48.74</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">20.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,015</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.06.04</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">36.02</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">785</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.05.05</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">570</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.04.14</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">五層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">56.99</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,300</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.04.12</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.24</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">27.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">630</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.03.22</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">28.98</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.5</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">680</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.02.15</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">52.77</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">22.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,210</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.01.27</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">52.96</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">20.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,080</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2022.01.09</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">34.69</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">19.5</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">675</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.12.06</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十一層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">48.74</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">16.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">787</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.11.20</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">34.15</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">21.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">720</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.11.12</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">二十四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">43.47</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">18.9</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">820</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.11.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房1廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.24</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">17.2</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">400</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.10.17</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">四層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">23.1</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">550</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.07.30</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">28.98</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">17.8</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">516</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.06.21</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">三層</td>
+          <td class="py-3.5 px-4 text-inkSoft">4房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">52.77</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">12.7<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span></td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">670</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.05.18</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十八層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">50.09</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">17.4</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">870</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.05.10</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">十二層</td>
+          <td class="py-3.5 px-4 text-inkSoft">3房2廳2衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">53.43</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">19.7</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">1,050</td>
+        </tr>
+        <tr class="border-b border-line last:border-0">
+          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">2021.04.26</td>
+          <td class="py-3.5 px-4 text-[14px] text-inkFaint">成屋</td>
+          <td class="py-3.5 px-4 text-inkSoft">六層</td>
+          <td class="py-3.5 px-4 text-inkSoft">2房2廳1衛</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">23.8</td>
+          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">16</td>
+          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">380</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+
+  <p class="text-[14px] text-inkSoft leading-[1.9] mt-4 border-l-2 border-orange pl-4">
+    <span class="text-orangeDeep font-bold">＊</span>
+    標記的 1 筆，單價與本社區其他成交差距較大，<strong class="text-ink font-bold">很可能不是一般的市場交易</strong>。
+    實價登錄會如實收錄各種移轉情形，常見的原因包括：親屬或關係人之間的移轉、
+    只買賣部分持分（不是完整一戶）、屋況有瑕疵或需要大幅整修、含未登記增建，
+    以及買賣雙方有其他約定（例如帶租約、附帶條件）。
+    單價明顯偏高的，則常見於坪數很小的產品、含裝潢家電，或高樓層的景觀戶。
+    這幾筆不宜當作行情參考，判斷這個社區的價格時建議先把它們排除。
+    想知道某一筆的實際情形，可以問我們，我們幫你查。
+  </p>
+
+  <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+    單價單位為萬元／坪，總價單位為萬元。含車位的交易，單價會被車位價格拉低，
+    比對時請留意坪數與格局是否相近。標示「預售」者為預售屋買賣，交屋時間與成屋不同。
+    已排除實價登錄上標示解約的紀錄。資料來源為內政部不動產交易實價查詢服務網。
+  </p>
   </section>
 
   <!-- 條件觀察 -->
