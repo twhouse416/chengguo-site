@@ -223,6 +223,39 @@ function computeAreaAverage(records, area, typeGroup) {
 }
 
 /* ---------- 依社區地址關鍵字，抓出每一筆成交紀錄 ---------- */
+
+/* collectCommunityDeals 讀進來的社區設定，供 pruneStale 重用 */
+let COMMUNITY_LIST = [];
+
+/**
+ * 一筆「已經存在 community-deals.json 裡的成交」現在還屬不屬於這個社區。
+ *
+ * 為什麼需要這個：合併是累積的（回補來的歷史不能被沖掉），
+ * 但社區的門牌範圍會修正。範圍改了之後，舊設定抓進來的成交不會自己消失，
+ * 於是同一筆成交可能同時留在兩個社區裡——例如印象巴黎的門牌修正成
+ * 430-458 雙號之後，先前抓到的 451、457 等單號仍留著，而那些其實是京城莫札特的。
+ *
+ * 判定方式與當初擷取時完全一樣：門牌關鍵字、門牌範圍、建案名稱三者有一個命中就保留。
+ * 三種比對條件都沒設的社區不動它（沒有依據可以判斷）。
+ * 沒有門牌也沒有建案名稱的紀錄一律保留，寧可多留也不要誤刪。
+ */
+function stillBelongs(deal, c) {
+  const keys = (c.addressKeywords || []).map(normalize);
+  const projects = (c.projectNames || []).map(normalize);
+  const ranges = c.addressRanges || [];
+  if (!keys.length && !projects.length && !ranges.length) return true;
+
+  const address = normalize(deal.addr || "");
+  const project = normalize(deal.project || "");
+  if (!address && !project) return true;
+
+  if (keys.length && keys.some(k => address.includes(k))) return true;
+  if (ranges.length && inAddressRange(address, ranges)) return true;
+  if (projects.length && project && projects.some(k => project.includes(k))) return true;
+  return false;
+}
+
+
 function collectCommunityDeals(records) {
   let config;
   try {
@@ -233,6 +266,7 @@ function collectCommunityDeals(records) {
   }
 
   const result = {};
+  COMMUNITY_LIST = config.communities || [];
   (config.communities || []).forEach(c => {
     const keys = c.addressKeywords || [];
     if (!keys.length && !(c.projectNames || []).length && !(c.addressRanges || []).length) { result[c.slug] = []; return; }
@@ -555,6 +589,21 @@ async function main() {
         else console.log(`[社區] ${slug}：無新增，維持 ${merged.length} 筆`);
       });
     }
+    /* 舊資料修正：門牌範圍修正前抓進來、現在已經不屬於這個社區的成交，清掉。
+       不這樣做的話，同一筆成交會同時留在兩個社區裡。 */
+    let dropped = 0;
+    COMMUNITY_LIST.forEach(c => {
+      const list = community.deals[c.slug];
+      if (!list) return;
+      const kept = list.filter(d => stillBelongs(d, c));
+      if (kept.length !== list.length) {
+        console.log(`[社區] ${c.slug}：移除 ${list.length - kept.length} 筆已不屬於本社區的舊紀錄`);
+        dropped += list.length - kept.length;
+        community.deals[c.slug] = kept;
+      }
+    });
+    if (dropped) console.log(`[社區] 共移除 ${dropped} 筆門牌範圍修正前的舊紀錄`);
+
     /* 舊資料修正：二樓以上曾被誤標成店面，一併清掉（跑過一次就全部歸位） */
     let fixedShop = 0;
     Object.values(community.deals).forEach(list => { fixedShop += fixShopTags(list); });
