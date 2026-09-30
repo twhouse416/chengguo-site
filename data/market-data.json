@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-29T09:30:46.481Z",
+  "updatedAt": "2026-09-30T00:43:30.733Z",
   "sourceNote": "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價為近四季（約一年）成屋成交的平均價，已先剔除頭尾各一成極端值與單價明顯異常者再平均，常見單價區間為去掉最高與最低各四分之一後的範圍；另標示這些成交分布的門牌數，以及排序後正中間那一筆的成交總價（含車位）。電梯住宅與透天分開統計，不限屋齡。",
   "areas": [
     {
@@ -12,8 +12,8 @@
           "avgPricePerPing": 36.6,
           "bandLow": 33,
           "bandHigh": 39,
-          "sampleSize": 298,
-          "buildingSize": 217,
+          "sampleSize": 295,
+          "buildingSize": 215,
           "medianTotalPrice": 1668,
           "lowSample": false,
           "trendPct": null
@@ -34,8 +34,8 @@
       "avgPricePerPing": 36.6,
       "bandLow": 33,
       "bandHigh": 39,
-      "sampleSize": 298,
-      "buildingSize": 217,
+      "sampleSize": 295,
+      "buildingSize": 215,
       "medianTotalPrice": 1668,
       "lowSample": false,
       "trendPct": null
@@ -50,8 +50,8 @@
           "avgPricePerPing": 34.3,
           "bandLow": 31,
           "bandHigh": 38,
-          "sampleSize": 146,
-          "buildingSize": 110,
+          "sampleSize": 147,
+          "buildingSize": 111,
           "medianTotalPrice": 1250,
           "lowSample": false,
           "trendPct": null
@@ -72,8 +72,8 @@
       "avgPricePerPing": 34.3,
       "bandLow": 31,
       "bandHigh": 38,
-      "sampleSize": 146,
-      "buildingSize": 110,
+      "sampleSize": 147,
+      "buildingSize": 111,
       "medianTotalPrice": 1250,
       "lowSample": false,
       "trendPct": null
@@ -85,12 +85,12 @@
         {
           "key": "elevator",
           "label": "電梯住宅",
-          "avgPricePerPing": 31.4,
+          "avgPricePerPing": 31.5,
           "bandLow": 27,
           "bandHigh": 35,
-          "sampleSize": 80,
+          "sampleSize": 79,
           "buildingSize": 56,
-          "medianTotalPrice": 1434,
+          "medianTotalPrice": 1438,
           "lowSample": false,
           "trendPct": null
         },
@@ -107,12 +107,12 @@
           "trendPct": null
         }
       ],
-      "avgPricePerPing": 31.4,
+      "avgPricePerPing": 31.5,
       "bandLow": 27,
       "bandHigh": 35,
-      "sampleSize": 80,
+      "sampleSize": 79,
       "buildingSize": 56,
-      "medianTotalPrice": 1434,
+      "medianTotalPrice": 1438,
       "lowSample": false,
       "trendPct": null
     },
@@ -126,9 +126,9 @@
           "avgPricePerPing": 39.9,
           "bandLow": 37,
           "bandHigh": 43,
-          "sampleSize": 257,
+          "sampleSize": 256,
           "buildingSize": 64,
-          "medianTotalPrice": 1657,
+          "medianTotalPrice": 1656,
           "lowSample": false,
           "trendPct": null
         },
@@ -148,9 +148,9 @@
       "avgPricePerPing": 39.9,
       "bandLow": 37,
       "bandHigh": 43,
-      "sampleSize": 257,
+      "sampleSize": 256,
       "buildingSize": 64,
-      "medianTotalPrice": 1657,
+      "medianTotalPrice": 1656,
       "lowSample": false,
       "trendPct": null
     }
