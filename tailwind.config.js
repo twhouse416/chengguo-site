@@ -14,6 +14,7 @@ module.exports = {
     "./404.html",
     "./notes/**/*.html",
     "./communities/**/*.html",
+    "./areas/**/*.html",
     "./tools/**/*.html",
     "./videos/**/*.html",
     "./deals/**/*.html",
