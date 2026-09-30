@@ -456,7 +456,9 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "首頁", item: `${SITE}/` },
         { "@type": "ListItem", position: 2, name: "社區行情", item: `${SITE}/communities/` },
-        { "@type": "ListItem", position: 3, name: c.name, item: url },
+        ...(AREA_SLUG[c.area]
+          ? [{ "@type": "ListItem", position: 3, name: c.area, item: `${SITE}/areas/${AREA_SLUG[c.area]}/` }] : []),
+        { "@type": "ListItem", position: AREA_SLUG[c.area] ? 4 : 3, name: c.name, item: url },
       ],
     },
   ];
@@ -541,6 +543,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
   <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
     <a href="../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span>
     <a href="index.html" class="hover:text-orangeDeep">社區行情</a><span class="mx-2">/</span>
+    ${AREA_SLUG[c.area] ? `<a href="../areas/${AREA_SLUG[c.area]}/index.html" class="hover:text-orangeDeep">${esc(c.area)}</a><span class="mx-2">/</span>` : ""}
     <span>${esc(c.name)}</span>
   </nav>
 
@@ -697,6 +700,14 @@ function groupByArea(list) {
    不換頁有兩個好處：點下去是瞬間的，而且整份社區清單仍然在同一個網址底下，
    搜尋引擎看到的還是「五十幾個社區集中的一頁」。
    沒有 JavaScript 時所有區塊照常全部列出，入口卡片就是普通的錨點連結。 */
+/* 生活圈獨立頁的 slug（scripts/build-areas.js 產生） */
+const AREA_SLUG = {
+  "美術館特區": "art-museum",
+  "農十六特區": "nong16",
+  "瑞豐・巨蛋": "ruifeng-arena",
+  "中都重劃區": "zhongdu",
+};
+
 const AREA_DISTRICT = {
   "美術館特區": "鼓山區", "農十六特區": "鼓山區",
   "瑞豐・巨蛋": "左營區", "中都重劃區": "三民區",
@@ -726,18 +737,26 @@ function areaHub(groups, dealsMap) {
           </p>
         </div>`;
       }
-      return `<a href="#area-${esc(code)}" data-hub-link data-area="${esc(code)}"
-        class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
-        <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(AREA_DISTRICT[area] || "")}</div>
-        <h2 class="text-[23px] font-bold tracking-tight mt-1">${esc(area)}</h2>
-        <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">${esc(top.join("、"))}${items.length > 3 ? " 等" : ""}</p>
-        <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
-          <div class="font-mono text-[12px] text-inkFaint">
-            <span class="text-[20px] font-semibold text-ink">${items.length}</span> 個社區<span class="mx-1.5">・</span>成交 ${total.toLocaleString("en-US")} 筆
+      /* 卡片本體仍是同頁展開（原本的行為，點了直接看清單）；
+         底下另外給一條通往生活圈獨立頁的連結——那一頁有區域均價、
+         路段分布、建商與完工年代，是「美術館特區房價」這類查詢的落地頁。 */
+      const slug = AREA_SLUG[area];
+      return `<div class="border border-line rounded-sm bg-surface hover:border-orange transition flex flex-col">
+        <a href="#area-${esc(code)}" data-hub-link data-area="${esc(code)}" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
+          <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(AREA_DISTRICT[area] || "")}</div>
+          <h2 class="text-[23px] font-bold tracking-tight mt-1">${esc(area)}</h2>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">${esc(top.join("、"))}${items.length > 3 ? " 等" : ""}</p>
+          <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
+            <div class="font-mono text-[12px] text-inkFaint">
+              <span class="text-[20px] font-semibold text-ink">${items.length}</span> 個社區<span class="mx-1.5">・</span>成交 ${total.toLocaleString("en-US")} 筆
+            </div>
+            <span class="font-mono text-[12px] text-orangeDeep shrink-0">看清單 →</span>
           </div>
-          <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
-        </div>
-      </a>`;
+        </a>
+        ${slug ? `<a href="../areas/${slug}/index.html" class="border-t border-line px-7 py-4 font-mono text-[13px] text-orangeDeep hover:bg-tint transition flex items-center justify-between gap-3">
+          <span>${esc(area)}行情與路段分布</span><span aria-hidden="true">→</span>
+        </a>` : ""}
+      </div>`;
     }).join("\n    ")}
   </div>
 

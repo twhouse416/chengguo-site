@@ -356,6 +356,11 @@ function areasSection(market) {
   /* 連結上要用的生活圈簡稱。行情卡片上方已經有完整名稱，
      連結再寫一次「美術館特區」會重複又太長，取簡稱就好。 */
   const SHORT = { "01": "美術館", "02": "農十六", "03": "瑞豐巨蛋", "04": "中都" };
+  /* 生活圈頁的網址（scripts/build-areas.js 產生）。
+     原本這裡連的是 communities/index.html#area-XX——同一頁的錨點，
+     沒有自己的 title 與 H1，吃不到「美術館特區房價」這類詞。
+     現在改連到各生活圈的獨立頁，那一頁有區域均價、社區一覽、路段分布與 FAQ。 */
+  const AREA_SLUG = { "01": "art-museum", "02": "nong16", "03": "ruifeng-arena", "04": "zhongdu" };
 
   let byCode = {};
   try {
@@ -456,9 +461,9 @@ function areasSection(market) {
           ${types.map((t, i) => typeRow(t, i === 0)).join("\n          ")}
         </div>
         ${byCode[a.code]
-          ? `<a href="communities/index.html#area-${esc(a.code)}"
+          ? `<a href="areas/${esc(AREA_SLUG[a.code] || "")}/index.html"
               class="mt-5 -mb-1 inline-flex items-center justify-between gap-3 border-t border-line pt-4 font-mono text-[13px] text-orangeDeep hover:underline">
-              <span>看${esc(SHORT[a.code] || a.name)}社區大樓資訊</span><span aria-hidden="true">→</span>
+              <span>看${esc(SHORT[a.code] || a.name)}行情與社區</span><span aria-hidden="true">→</span>
             </a>`
           : `<p class="mt-5 -mb-1 border-t border-line pt-4 font-mono text-[12px] text-inkFaint">社區資料整理中</p>`}
       </div>
