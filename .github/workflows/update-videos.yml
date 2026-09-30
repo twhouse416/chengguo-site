@@ -38,4 +38,4 @@ jobs:
         # 不做合併，所以不會像舊寫法那樣卡在未合併狀態一路失敗到底。
         run: |
           bash scripts/git-push-retry.sh "同步 YouTube 影片 $(date +'%Y-%m-%d %H:%M')" \
-            data/videos.json assets/videos index.html 404.html notes videos tools communities deals sitemap.xml robots.txt llms.txt assets/tailwind.css
+            data/videos.json assets/videos index.html 404.html notes videos tools communities areas deals sitemap.xml robots.txt llms.txt assets/tailwind.css
