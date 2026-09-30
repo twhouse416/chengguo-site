@@ -57,4 +57,4 @@ jobs:
         # 不做合併，所以不會像舊寫法那樣卡在未合併狀態一路失敗到底。
         run: |
           bash scripts/git-push-retry.sh "更新行情與社區資料 $(date +'%Y-%m-%d %H:%M')" \
-            data/market-data.json data/community-deals.json data/area-deals index.html notes videos tools communities sitemap.xml assets/tailwind.css
+            data/market-data.json data/community-deals.json data/area-deals index.html 404.html notes videos tools communities deals sitemap.xml robots.txt llms.txt assets/tailwind.css
