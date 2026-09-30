@@ -4,4 +4,4 @@ Allow: /
 # 後台不需要被搜尋引擎收錄
 Disallow: /admin/
 
-Sitemap: https://twhouse416.github.io/chengguo-site/sitemap.xml
+Sitemap: https://k7.com.tw/sitemap.xml
