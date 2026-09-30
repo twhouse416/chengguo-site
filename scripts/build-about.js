@@ -9,12 +9,12 @@
  * 內容全部沿用首頁已在用的事實（獲獎紀錄、服務年數、件數、服務項目、
  * 聯絡資訊），沒有新增任何未經確認的敘述。
  *
- * 經紀人姓名與證號：可在 data/site-config.json 加一個 team 陣列，
- * 有填就會列出成員並產生 Person schema；沒填就只顯示團隊層級的資訊。
- * 格式見本檔 teamMembers() 的說明。
+ * 署名層級：澄果團隊決定文章與頁面的作者一律用團隊名
+ * （台灣房屋 澄果團隊 / 澄果資產有限公司），不列個別經紀人姓名與證號，
+ * 所以這一頁與文章頁的 author 都是 Organization，不是 Person。
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, head, header, footer } from "./lib/layout.js";
@@ -22,20 +22,6 @@ import { AWARDS, HIGHLIGHTS, FACTS } from "./build-home.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-
-/* data/site-config.json 可選欄位：
-     "team": [
-       { "name": "王小明", "jobTitle": "團隊負責人",
-         "licenseNo": "(93)高市字第00000號", "licenseType": "不動產經紀人",
-         "note": "專辦美術館特區換屋" }
-     ]
-   沒有這個欄位就不顯示成員區塊——寧可不寫，不要放沒有證號的頭銜。 */
-export function teamMembers() {
-  try {
-    const cfg = JSON.parse(readFileSync(path.join(ROOT, "data/site-config.json"), "utf-8"));
-    return Array.isArray(cfg.team) ? cfg.team.filter(m => m?.name) : [];
-  } catch { return []; }
-}
 
 const SERVICES = [
   ["免費房屋估價", "依同社區近期成交案例、樓層面向、屋況與車位條件提供售價區間，不收費也不需要先簽委託。"],
@@ -48,7 +34,6 @@ const SERVICES = [
 
 export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 0, dataUpdated = "" } = {}) {
   const url = `${SITE}/about/`;
-  const members = teamMembers();
 
   const lead = `澄果團隊隸屬台灣房屋，公司全名為澄果資產有限公司，`
     + `深耕高雄市鼓山區美術館特區、鼓山區農十六特區、左營區瑞豐巨蛋生活圈`
@@ -88,21 +73,6 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
         sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube].filter(Boolean),
         knowsLanguage: "zh-TW",
         award: AWARDS,
-        ...(members.length ? {
-          employee: members.map(m => ({
-            "@type": "Person",
-            name: m.name,
-            ...(m.jobTitle ? { jobTitle: m.jobTitle } : {}),
-            ...(m.licenseNo ? {
-              hasCredential: {
-                "@type": "EducationalOccupationalCredential",
-                credentialCategory: m.licenseType || "不動產經紀人",
-                identifier: m.licenseNo,
-              },
-            } : {}),
-            worksFor: { "@id": `${SITE}/#organization` },
-          })),
-        } : {}),
         makesOffer: SERVICES.map(([n, d]) => ({
           "@type": "Offer",
           itemOffered: { "@type": "Service", name: n, description: d },
@@ -166,18 +136,6 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
         <span class="text-orange shrink-0 font-bold">✓</span><span>${esc(h)}</span></li>`).join("\n      ")}
     </ul>
   </section>
-
-  ${members.length ? `<section class="mt-14">
-    <h2 class="display text-[23px] mb-6">團隊成員</h2>
-    <div class="grid sm:grid-cols-2 gap-5">
-      ${members.map(m => `<div class="border border-line rounded-sm bg-surface p-6">
-        <div class="text-[19px] font-bold tracking-tight">${esc(m.name)}</div>
-        ${m.jobTitle ? `<div class="font-mono text-[13px] text-inkFaint mt-1">${esc(m.jobTitle)}</div>` : ""}
-        ${m.licenseNo ? `<div class="font-mono text-[13px] text-inkSoft mt-3">${esc(m.licenseType || "不動產經紀人")}證號 ${esc(m.licenseNo)}</div>` : ""}
-        ${m.note ? `<p class="text-[15px] text-inkSoft leading-[1.85] mt-3">${esc(m.note)}</p>` : ""}
-      </div>`).join("\n      ")}
-    </div>
-  </section>` : ""}
 
   <section class="mt-14">
     <h2 class="display text-[23px] mb-6">歷年獲獎紀錄（${AWARDS.length} 項）</h2>

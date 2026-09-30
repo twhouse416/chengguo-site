@@ -162,10 +162,26 @@ function pageHtml(a, others, hasBuyers) {
   </nav>
 
   <article>
-    <div class="flex items-center gap-4 font-mono text-[12px] mb-4">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[12px] mb-4">
       <span class="text-orangeDeep tracking-wider">${esc(a.tag)}</span>
       <time class="text-inkFaint" datetime="${a.date}">${fmtDate(a.date)}</time>
       ${a.readMinutes ? `<span class="text-inkFaint">約 ${a.readMinutes} 分鐘</span>` : ""}
+    </div>
+    ${/* 署名列
+         ------------------------------------------------
+         原本文章只有 Article schema 裡的 author，頁面上看不到署名。
+         不動產屬 Google 定義的 YMYL 領域，「誰寫的、憑什麼」要讓讀者
+         在頁面上直接看到，不能只寫在結構化資料裡。
+         署名一律用團隊名（澄果團隊的決定，不列個別經紀人），連到關於團隊頁。
+         有 updated 且與發佈日不同時一併標出最後更新日——
+         稅務與貸款類文章的時效性讀者最在意。 */""}
+    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[14px] text-inkFaint mb-7 pb-6 border-b border-line">
+      <span>作者</span>
+      <a href="../about/index.html" rel="author" class="text-ink font-medium hover:text-orangeDeep">${esc(BRAND.teamName)}</a>
+      <span>・高雄在地房仲，深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區</span>
+      ${a.updated && a.updated !== a.date
+        ? `<span class="font-mono text-[13px] w-full sm:w-auto">最後更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time></span>`
+        : ""}
     </div>
     <h1 class="display text-[28px] md:text-[34px]">${esc(a.title)}</h1>
     <p class="mt-5 text-[17px] text-inkSoft leading-[1.95]">${esc(a.summary)}</p>
