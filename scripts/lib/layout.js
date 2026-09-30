@@ -94,7 +94,7 @@ export const AUTO_NOTE = `<!--
 -->`;
 
 /* ---------- head ---------- */
-export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [] }) {
+export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [], noindex = false }) {
   const up = "../".repeat(depth);
   return `${AUTO_NOTE}
 <!DOCTYPE html>
@@ -107,17 +107,19 @@ export function head({ title, description, keywords, canonical, ogImage, ogType 
 <meta name="description" content="${esc(description)}" />
 ${keywords ? `<meta name="keywords" content="${esc(keywords)}" />` : ""}
 <link rel="canonical" href="${canonical}" />
+${/* 404 之類的工具頁不需要被索引，但還是要讓爬蟲跟著頁內連結走，所以是 noindex,follow */""}
+${noindex ? `<meta name="robots" content="noindex,follow" />` : ""}
 <meta property="og:type" content="${ogType}" />
 <meta property="og:site_name" content="${BRAND.teamName}" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(description)}" />
 <meta property="og:url" content="${canonical}" />
-<meta property="og:image" content="${ogImage}" />
+<meta property="og:image" content="${ogImage || `${SITE}/assets/logo-full.png`}" />
 <meta property="og:locale" content="zh_TW" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(description)}" />
-<meta name="twitter:image" content="${ogImage}" />
+<meta name="twitter:image" content="${ogImage || `${SITE}/assets/logo-full.png`}" />
 ${extra}
 ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
 
