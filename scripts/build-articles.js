@@ -26,7 +26,7 @@ const OUT_DIR = path.join(ROOT, "notes");
 const today = new Date().toISOString().slice(0, 10);
 
 /* ---------- 區塊轉 HTML ---------- */
-function blockHtml(b) {
+function blockHtml(b, fallbackAlt = "") {
   switch (b.type) {
     case "h":
       return `<h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">${esc(b.text)}</h2>`;
@@ -66,7 +66,7 @@ function blockHtml(b) {
 
     case "image":
       return `<figure class="my-12">
-        <img src="../${esc(b.src)}" alt="${esc(b.alt || "")}" loading="lazy"${imgSize(b.src)}
+        <img src="../${esc(b.src)}" alt="${esc(b.alt || fallbackAlt)}" loading="lazy"${imgSize(b.src)}
           class="w-full h-auto rounded-sm border border-line bg-surface" />
         ${b.caption ? `<figcaption class="mt-3 text-[14px] text-inkFaint leading-relaxed">${esc(b.caption)}</figcaption>` : ""}
       </figure>`;
@@ -78,7 +78,7 @@ function blockHtml(b) {
 
 /* ---------- 結構化資料 ---------- */
 function jsonLd(a) {
-  const url = `${SITE}/notes/${a.slug}.html`;
+  const url = `${SITE}/notes/${webSlug(a.slug)}.html`;
   const img = a.cover ? `${SITE}/${a.cover}` : `${SITE}/assets/logo-full.png`;
 
   const blocks = [
@@ -140,7 +140,7 @@ function jsonLd(a) {
 
 /* ---------- 整頁 HTML ---------- */
 function pageHtml(a, others, hasBuyers) {
-  const url = `${SITE}/notes/${a.slug}.html`;
+  const url = `${SITE}/notes/${webSlug(a.slug)}.html`;
   const img = a.cover ? `${SITE}/${a.cover}` : `${SITE}/assets/area-01-artmuseum.jpg`;
   const stale = a.reviewBy && today >= a.reviewBy;
 
@@ -176,7 +176,7 @@ function pageHtml(a, others, hasBuyers) {
     ${a.cover ? `<img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}"${imgSize(a.cover)}
       class="w-full h-auto rounded-sm border border-line bg-surface mt-8" />` : ""}
     <div class="mt-10">
-      ${(a.blocks || []).filter(visible).map(blockHtml).join("\n      ")}
+      ${(a.blocks || []).filter(visible).map(b => blockHtml(b, a.title)).join("\n      ")}
     </div>
   </article>
 
@@ -234,8 +234,8 @@ function pageHtml(a, others, hasBuyers) {
   ${others.length ? `<section class="mt-14 pt-8 border-t border-line">
     <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>
     <div class="space-y-6">
-      ${others.map(o => `<a href="${o.slug}.html" class="flex gap-4 group items-start">
-        ${o.cover ? `<img src="../${esc(thumbOf(o.cover))}" alt="" loading="lazy"${imgSize(thumbOf(o.cover))}
+      ${others.map(o => `<a href="${webSlug(o.slug)}.html" class="flex gap-4 group items-start">
+        ${o.cover ? `<img src="../${esc(thumbOf(o.cover))}" alt="${esc(o.title)}" loading="lazy"${imgSize(thumbOf(o.cover))}
           class="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />` : ""}
         <div>
           <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">${esc(o.tag)}</div>
@@ -249,6 +249,55 @@ function pageHtml(a, others, hasBuyers) {
 }
 
 /* ---------- 主流程 ---------- */
+/* ---------- 網址用的英數 slug ----------
+ * 後台建立文章時，slug 是從中文標題自動帶出來的，於是產生了
+ *   notes/高雄美術館買房攻略-房價-生活機能-建案與選屋重點一次看-高雄買房顧問澄果團隊.html
+ * 這種網址。分享出去會變成一長串 %E9%AB%98%E9%9B%84...，沒人想點，
+ * 而且寫進 sitemap 的 <loc> 沒有做 URL 編碼、不符 sitemap 規範。
+ *
+ * 這裡不動 data/articles.json（後台還是照原本的方式管理），
+ * 只在產生 HTML 時把網址換成英數 slug，並在舊的中文檔名留一個
+ * noindex 的轉跳頁，先前分享出去的連結不會失效。
+ *
+ * 以後新增文章時，建議直接在後台把 slug 填成英數。
+ */
+const SLUG_ALIAS = {
+  "高雄美術館買房攻略-房價-生活機能-建案與選屋重點一次看-高雄買房顧問澄果團隊": "meishuguan-buying-guide",
+  "為什麼我們專營高雄美術館特區": "why-we-focus-art-museum",
+};
+export function webSlug(slug) {
+  return SLUG_ALIAS[slug] || slug;
+}
+/* 需要留轉跳頁的舊檔名 */
+function aliasPairs(articles) {
+  return articles
+    .filter(a => SLUG_ALIAS[a.slug])
+    .map(a => ({ from: a.slug, to: SLUG_ALIAS[a.slug], title: a.title }));
+}
+function redirectPage({ from, to, title }) {
+  /* 純 HTML 的轉跳（GitHub Pages 不能設 301），
+     加 noindex 與 canonical，讓搜尋引擎只收新網址。 */
+  return `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>網址已更新｜${esc(title)}</title>
+<meta name="robots" content="noindex,follow" />
+<link rel="canonical" href="${SITE}/notes/${to}.html" />
+<meta http-equiv="refresh" content="0; url=${to}.html" />
+<script>location.replace("${to}.html" + location.hash);</script>
+<style>body{background:#F4F4F2;color:#474D55;font-family:system-ui,"Noto Sans TC",sans-serif;
+padding:12vh 8vw;line-height:1.9}a{color:#C1502E}</style>
+</head>
+<body>
+<p>這篇文章的網址已經更新，正在帶你過去。</p>
+<p><a href="${to}.html">${esc(title)}</a></p>
+</body>
+</html>
+`;
+}
+
 export function buildArticles({ articles, hasBuyers }) {
   const published = articles;
   mkdirSync(OUT_DIR, { recursive: true });
@@ -258,7 +307,7 @@ export function buildArticles({ articles, hasBuyers }) {
   readdirSync(OUT_DIR)
     .filter(f => f.endsWith(".html") && !keep.has(f))
     .forEach(f => {
-      if (!published.some(a => `${a.slug}.html` === f)) {
+      if (!published.some(a => `${webSlug(a.slug)}.html` === f || `${a.slug}.html` === f)) {
         unlinkSync(path.join(OUT_DIR, f));
         console.log("[移除] 已不再發布：", f);
       }
@@ -266,8 +315,14 @@ export function buildArticles({ articles, hasBuyers }) {
 
   published.forEach(a => {
     const others = published.filter(o => o.slug !== a.slug).slice(0, 3);
-    writeFileSync(path.join(OUT_DIR, `${a.slug}.html`), pageHtml(a, others, hasBuyers), "utf-8");
-    console.log("[產生]", `notes/${a.slug}.html`);
+    writeFileSync(path.join(OUT_DIR, `${webSlug(a.slug)}.html`), pageHtml(a, others, hasBuyers), "utf-8");
+    console.log("[產生]", `notes/${webSlug(a.slug)}.html`);
+  });
+
+  /* 舊的中文檔名：留一個 noindex 的轉跳頁，先前分享出去的連結不會失效 */
+  aliasPairs(published).forEach(pair => {
+    writeFileSync(path.join(OUT_DIR, `${pair.from}.html`), redirectPage(pair), "utf-8");
+    console.log("[產生] 舊網址轉跳：", `notes/${pair.from}.html`, "→", `${pair.to}.html`);
   });
   console.log(`[完成] 共產生 ${published.length} 個靜態文章頁`);
 }

@@ -174,9 +174,9 @@ function videoSection(c) {
     <div id="ytBox" class="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
       <button type="button" id="ytPlay" class="group absolute inset-0 w-full h-full text-left"
         aria-label="播放 ${esc(title)}">
-        <img src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg"
+        <img src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg" width="1280" height="720"
           onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg';"
-          alt="${esc(title)}" loading="lazy"
+          alt="${esc(title)} 影片縮圖" loading="lazy"
           class="w-full h-full object-cover group-hover:opacity-90 transition" />
         <span class="absolute inset-0 flex items-center justify-center">
           <span class="w-16 h-16 rounded-full bg-orange/95 flex items-center justify-center group-hover:scale-110 transition">
@@ -393,9 +393,154 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
   </p>`;
 }
 
+/* ---------- 相關社區：三組交叉連結 ----------
+ * 原本只給「其他社區」四個（同生活圈優先），對使用者幫助有限，
+ * 對整站的權重流動也只多四條邊。
+ *
+ * 看社區的人真正會想比的是三種：
+ *   1. 同生活圈、價格帶接近的 —— 這是最直接的替代選項
+ *   2. 同一家建商的其他社區 —— 認建商的買方會一路看下去
+ *   3. 同路段的 —— 走路五分鐘內，生活條件幾乎一樣
+ * 三組都是從既有欄位算出來的，不需要新增任何人工資料。
+ *
+ * 每一組都可能空（例如建商只推過一案），空的就不顯示這一組，
+ * 不用假資料填滿版面。
+ */
+function relatedBlocks(c, groups) {
+  const blocks = groups.filter(g => g.items.length);
+  if (!blocks.length) return "";
+  return `<nav class="mt-14 pt-8 border-t border-line" aria-label="相關社區">
+    ${blocks.map(g => `<div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">${esc(g.label)}</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">${esc(g.hint)}${g.devSlug
+        ? ` <a href="../developers/${g.devSlug}/index.html" class="text-orangeDeep hover:underline">看這家建商的全部社區 →</a>` : ""}</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        ${g.items.map(o => `<a href="${o.slug}.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">${esc(o.meta)}</span>
+            <span class="text-[16px] font-bold tracking-tight">${esc(o.name)}</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>`).join("\n        ")}
+      </div>
+    </div>`).join("\n    ")}
+  </nav>`;
+}
+
+/* 建商名稱正規化：「皇邑建設（信義房屋記為天邑建設）」取括號前，
+   「全泉開發、寶日營造」取第一個。同一家建商在不同社區的寫法常不一致。 */
+/* 建商名稱正規化（建商頁 scripts/build-index-pages.js 也用同一支）。
+   同一家建商在不同社區的登載寫法常不一致：
+     「京城建設」「京城建設股份有限公司」
+     「皇邑建設（信義房屋記為天邑建設）」
+     「全泉開發、寶日營造」
+   不先正規化就會被當成不同建商，建商頁還會因為 slug 相同而互相覆蓋。 */
+export function devName(c) {
+  const raw = typeof c === "string" ? c : specVal(c, "建設公司");
+  if (!raw) return "";
+  return raw
+    .split(/[（(]/)[0]              /* 去掉括號附註 */
+    .split(/[、,，/]/)[0]           /* 多家並列取第一家 */
+    .trim()
+    .replace(/(股份有限公司|有限公司|股份公司|公司)$/, "")  /* 去掉法人尾綴 */
+    .replace(/機構$/, "")
+    .trim();
+}
+const devKey = devName;
+const devLabel = devName;
+
+/* 建商頁的 slug 與門檻都定義在 build-index-pages.js，這裡只借來用，
+   免得兩邊各自維護一張表而對不起來。門檻沒過的建商沒有頁面，回空字串。 */
+import { devSlugOf, schoolSlugOf } from "./build-index-pages.js";
+
+/* 社區的主要路段：取第一個 addressRange 的路名。
+   巷弄要連同巷號一起算（美術東二路132巷 和 美術東二路 是不同路段）。 */
+function mainRoad(c) {
+  return (c.addressRanges || [])[0]?.road || "";
+}
+
+/* 單價中位數，用來找價格帶接近的社區 */
+function midPrice(deals) {
+  const p = (deals || []).filter(d => d.use !== "店面")
+    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  if (!p.length) return 0;
+  return p.length % 2 ? p[(p.length - 1) / 2] : (p[p.length / 2 - 1] + p[p.length / 2]) / 2;
+}
+
+/* 組出三組相關社區。dealsMap 用來算價格帶。 */
+export function relatedGroups(c, list, dealsMap) {
+  const pool = list.filter(o => o.slug !== c.slug);
+  const used = new Set();
+  const take = (arr, n) => {
+    const out = [];
+    for (const o of arr) {
+      if (used.has(o.slug)) continue;
+      used.add(o.slug); out.push(o);
+      if (out.length >= n) break;
+    }
+    return out;
+  };
+
+  /* 1) 同路段 */
+  const road = mainRoad(c);
+  const sameRoad = road
+    ? pool.filter(o => (o.addressRanges || []).some(r => r.road === road))
+    : [];
+
+  /* 2) 同建商 */
+  const dev = devKey(c);
+  const sameDev = dev ? pool.filter(o => devKey(o) === dev) : [];
+
+  /* 3) 同生活圈、單價中位數最接近的。沒有成交的社區算不出價格帶，
+        改用同生活圈且完工年最接近的遞補，總比留白好。 */
+  const myMid = midPrice(dealsMap[c.slug]);
+  const sameArea = pool.filter(o => o.area === c.area);
+  const byPrice = myMid
+    ? sameArea.map(o => ({ o, d: Math.abs(midPrice(dealsMap[o.slug]) - myMid), has: midPrice(dealsMap[o.slug]) > 0 }))
+        .filter(x => x.has).sort((a, b) => a.d - b.d).map(x => x.o)
+    : (() => {
+        const y = Number(yearBuilt(c));
+        return y ? sameArea.map(o => ({ o, d: Math.abs(Number(yearBuilt(o)) - y) || 999 }))
+          .sort((a, b) => a.d - b.d).map(x => x.o) : sameArea;
+      })();
+
+  /* 先挑最專一的（同路段），再同建商，最後同價格帶，避免同一個社區重複出現 */
+  const g1 = take(sameRoad, 4);
+  const g2 = take(sameDev, 4);
+  const g3 = take(byPrice, 4);
+  /* 三組都空的時候（例如這一區只有這一個社區），至少給同生活圈的四個 */
+  const g4 = (g1.length + g2.length + g3.length) ? [] : take(sameArea.length ? sameArea : pool, 4);
+
+  const meta = o => [o.area, yearBuilt(o) ? `${yearBuilt(o)} 年完工` : ""].filter(Boolean).join("・");
+  const wrap = arr => arr.map(o => ({ slug: o.slug, name: o.name, meta: meta(o) }));
+
+  return [
+    { label: `同在${road}的社區`, items: wrap(g1),
+      hint: `門牌在同一條路段，走路可及，生活條件與棟距環境最接近，是比價時最直接的對照。` },
+    { label: `${devLabel(c)}的其他社區`, items: wrap(g2), devSlug: devSlugOf(devKey(c)),
+      hint: `${devKey(c)} 在本站收錄範圍內的其他社區，用料與規劃風格通常有延續性。` },
+    { label: `${c.area}價格帶接近的社區`, items: wrap(g3),
+      hint: `同一個生活圈內，實價登錄單價中位數與本社區最接近的幾個，總價預算相近的話可以一起看。` },
+    { label: `${c.area}的其他社區`, items: wrap(g4), hint: `同一個生活圈內的其他社區。` },
+  ];
+}
+
 /* ---------- 單一社區頁 ---------- */
 function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
   const url = `${SITE}/communities/${c.slug}.html`;
+
+  /* 成交總價中位數（含車位，與表格上的總價欄一致），用來把自備款 FAQ
+     換成這個社區的實際金額。只算住家，店面總價不能拿來推自住自備款。 */
+  const totals = (deals || []).filter(d => d.use !== "店面" && d.totalPrice > 0)
+    .map(d => d.totalPrice).sort((a, b) => a - b);
+  const dealMid = totals.length
+    ? Math.round(totals.length % 2 ? totals[(totals.length - 1) / 2]
+        : (totals[totals.length / 2 - 1] + totals[totals.length / 2]) / 2)
+    : 0;
+  const dealDates = (deals || []).map(d => d.date).filter(Boolean).sort();
+  const dealSpan = dealDates.length
+    ? `${dealDates.length} 筆成交，${dealDates[0].slice(0, 4)}－${dealDates[dealDates.length - 1].slice(0, 4)} 年`
+    : "";
 
   const units = unitCount(c);
   const floors = floorsAbove(c, deals);
@@ -516,10 +661,25 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
     });
   }
 
-  if (c.faq?.length) {
+  /* ---------- 自備款 FAQ 去樣板化 ----------
+     253 個社區頁的「買 XX 要準備多少自備款」答案高度相似（都是貸款八成、
+     自備兩成、仲介費代書費規費契稅），Google 可能判定為樣板內容而降低價值。
+     這裡在原本的答案前面補一句用該社區實際成交總價中位數算出來的金額，
+     每一頁的數字都不一樣，而且對讀者實際有用得多。
+     原本審過的文案完整保留在後面，只是前面多一句具體數字。 */
+  const faqList = (c.faq || []).map(([q, a]) => {
+    if (!/自備款/.test(q) || !dealMid) return [q, a];
+    const down = Math.round(dealMid * 0.2);
+    const lead = `以本社區近期實價登錄成交總價的中位數 ${dealMid.toLocaleString("en-US")} 萬元估算，`
+      + `貸款八成、自備兩成的話，自備款大約是 ${down.toLocaleString("en-US")} 萬元`
+      + `（${dealSpan}）。實際成交總價因樓層、坪數與是否含車位而異，這只是抓一個量級。`;
+    return [q, `${lead}${a}`];
+  });
+
+  if (faqList.length) {
     jsonLd.push({
       "@context": "https://schema.org", "@type": "FAQPage",
-      mainEntity: c.faq.map(([q, a]) => ({
+      mainEntity: faqList.map(([q, a]) => ({
         "@type": "Question", name: q,
         acceptedAnswer: { "@type": "Answer", text: a },
       })),
@@ -614,16 +774,21 @@ ${videoSection(c)}
         </div>
       </div>
       ${c.school.note ? `<p class="text-[15px] text-orangeDeep leading-[1.9] mt-6 pt-6 border-t border-line">${esc(c.school.note)}</p>` : ""}
-      <a href="../tools/school-zone/index.html" class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">用學區查詢工具核對 →</a>
+      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[13px]">
+        <a href="../tools/school-zone/index.html" class="text-orangeDeep hover:underline">用學區查詢工具核對門牌 →</a>
+        ${[c.school.primary, c.school.junior].filter(Boolean)
+          .map(n => ({ n, s: schoolSlugOf(n) })).filter(x => x.s)
+          .map(x => `<a href="../schools/${x.s}/index.html" class="text-orangeDeep hover:underline">${esc(x.n)}學區的其他社區 →</a>`).join("\n        ")}
+      </div>
     </div>
   </section>` : ""}
 
   <!-- FAQ -->
-  ${c.faq?.length ? `<section class="mt-16 pt-10 border-t-2 border-ink">
+  ${faqList.length ? `<section class="mt-16 pt-10 border-t-2 border-ink">
     <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
     <h2 class="display text-[23px] mb-8">關於${esc(c.name)}的常見問題</h2>
     <div class="border-t border-line">
-      ${c.faq.map(([q, a]) => `<details class="border-b border-line group">
+      ${faqList.map(([q, a]) => `<details class="border-b border-line group">
         <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
           <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">${esc(q)}</h3>
           <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
@@ -656,16 +821,8 @@ ${videoSection(c)}
     </p>
   </section>
 
-  <!-- 其他社區 -->
-  ${others.length ? `<nav class="mt-14 pt-8 border-t border-line">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">其他社區</div>
-    <div class="grid sm:grid-cols-2 gap-4">
-      ${others.map(o => `<a href="${o.slug}.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">${esc(o.area)}</span>
-        <span class="text-[16px] font-bold tracking-tight">${esc(o.name)}</span>
-      </a>`).join("\n      ")}
-    </div>
-  </nav>` : ""}
+  <!-- 相關社區 -->
+  ${relatedBlocks(c, others)}
 </main>`,
     footer({ depth: 1, hasBuyers }),
   ].join("\n");
@@ -1107,6 +1264,7 @@ export function buildCommunities(hasBuyers) {
   }
 
   const list = (config.communities || []).filter(c => !c.draft);
+  const dealsMap = dealsData.deals || {};
   /* 成交資料的更新日：顯示在頁面上，同時寫進 ApartmentComplex 與 Dataset 的
      dateModified。搜尋引擎與 AI 引擎都靠這個判斷資料新鮮度。 */
   const dataUpdated = updatedDate(dealsData.updatedAt);
@@ -1123,21 +1281,15 @@ export function buildCommunities(hasBuyers) {
     });
 
   list.forEach(c => {
-    /* 其他社區：同一個生活圈的優先，不足 4 個才補其他區。
-       原本是直接取名單前 4 個，結果農十六的社區頁推薦的全是美術館，
-       對正在看那一區的人沒有意義。 */
-    const pool = list.filter(o => o.slug !== c.slug);
-    const others = [
-      ...pool.filter(o => o.area === c.area),
-      ...pool.filter(o => o.area !== c.area),
-    ].slice(0, 4);
-    const html = communityPage(c, dealsData.deals?.[c.slug] || [], others, hasBuyers, dataUpdated);
+    /* 相關社區：同路段、同建商、同價格帶三組（見 relatedGroups） */
+    const others = relatedGroups(c, list, dealsMap);
+    const html = communityPage(c, dealsMap[c.slug] || [], others, hasBuyers, dataUpdated);
     writeFileSync(path.join(OUT_DIR, `${c.slug}.html`), html, "utf-8");
     console.log("[產生]", `communities/${c.slug}.html`);
   });
 
   writeFileSync(path.join(OUT_DIR, "index.html"),
-    communityIndex(list, dealsData.deals || {}, hasBuyers), "utf-8");
+    communityIndex(list, dealsMap, hasBuyers), "utf-8");
   console.log("[產生] communities/index.html");
   console.log(`[完成] 共產生 ${list.length} 個社區頁`);
 

@@ -25,10 +25,12 @@ import { fileURLToPath } from "node:url";
 import { SITE, BRAND, head, header, footer } from "./lib/layout.js";
 import { buildHome } from "./build-home.js";
 import { buildNotesIndex, buildVideosIndex, buildDealsIndex } from "./build-pages.js";
-import { buildArticles } from "./build-articles.js";
+import { buildArticles, webSlug } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
 import { buildAreas } from "./build-areas.js";
+import { buildIndexPages } from "./build-index-pages.js";
+import { buildAbout } from "./build-about.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -42,7 +44,7 @@ function readJson(rel, fallback) {
   }
 }
 
-function buildSitemap(articles, communities = [], hasDeals = false, areas = []) {
+function buildSitemap(articles, communities = [], hasDeals = false, areas = [], indexPages = { developers: [], schools: [] }) {
   const today = new Date().toISOString().slice(0, 10);
   const pages = [
     { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
@@ -52,17 +54,20 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = []) 
     { loc: `${SITE}/tools/mortgage/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/qingan/`, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/property-tax/`, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/about/`, priority: "0.7", freq: "monthly" },
     ...(hasDeals ? [{ loc: `${SITE}/deals/`, priority: "0.7", freq: "weekly" }] : []),
     ...(communities.length ? [{ loc: `${SITE}/communities/`, priority: "0.8", freq: "weekly" }] : []),
     /* 生活圈頁的優先度給到 0.9：它是「美術館特區房價」這類主要關鍵字的落地頁，
        比單一社區頁重要。 */
     ...areas.map(a => ({ loc: `${SITE}/areas/${a.slug}/`, priority: "0.9", freq: "weekly" })),
+    ...(indexPages.developers || []).map(d => ({ loc: `${SITE}/developers/${d.slug}/`, priority: "0.7", freq: "monthly" })),
+    ...(indexPages.schools || []).map(x => ({ loc: `${SITE}/schools/${x.slug}/`, priority: "0.7", freq: "monthly" })),
     ...communities.map(c => ({
       loc: `${SITE}/communities/${c.slug}.html`,
       priority: "0.9", freq: "weekly",
     })),
     ...articles.map(a => ({
-      loc: `${SITE}/notes/${a.slug}.html`,
+      loc: `${SITE}/notes/${webSlug(a.slug)}.html`,
       lastmod: a.updated || a.date,
       priority: "0.9", freq: "monthly",
     })),
@@ -103,7 +108,7 @@ Sitemap: ${SITE}/sitemap.xml
  * 所以這裡把「我們是誰、資料從哪來、多久更新、網站怎麼分類、引用時要注意什麼」
  * 一次講清楚。內容依實際資料量自動產生，不會寫死數字。
  */
-function buildLlmsTxt({ communities, articles, dealTotal, dataUpdated, areas = [] }) {
+function buildLlmsTxt({ communities, articles, dealTotal, dataUpdated, areas = [], indexPages = { developers: [], schools: [] } }) {
   const byArea = {};
   communities.forEach(c => { byArea[c.area] = (byArea[c.area] || 0) + 1; });
   const txt = `# ${"台灣房屋 澄果團隊"}（澄果資產有限公司）
@@ -141,6 +146,10 @@ ${Object.entries(byArea).map(([a, n]) => `  - ${a}：${n} 個社區`).join("\n")
 - 各生活圈的行情與社區一覽（含區域均價、常見單價區間、社區清單、路段分布、建商與完工年代）：
 ${areas.map(a => `  - ${a.name}（高雄市${a.district}）：${SITE}/areas/${a.slug}/ ｜${a.count} 個社區、${a.deals.toLocaleString("en-US")} 筆成交`).join("\n")}
 - ${SITE}/communities/<slug>.html ：單一社區頁，含實價登錄逐筆成交、社區規格、學區、常見問題
+${(indexPages.developers || []).length ? `- 建商頁（該建商在本站收錄範圍內的社區一覽）：
+${indexPages.developers.map(d => `  - ${d.name}：${SITE}/developers/${d.slug}/ ｜${d.count} 個社區`).join("\n")}` : ""}
+${(indexPages.schools || []).length ? `- 學區頁（學區欄位登載為該校的社區一覽，含官方里鄰劃分原文）：
+${indexPages.schools.map(x => `  - ${x.name}：${SITE}/schools/${x.slug}/ ｜${x.count} 個社區`).join("\n")}` : ""}
 - ${SITE}/tools/mortgage/ ：房貸試算
 - ${SITE}/tools/qingan/ ：新青安貸款資格與額度試算
 - ${SITE}/tools/property-tax/ ：房地合一稅與土地增值稅概算
@@ -244,7 +253,7 @@ function main() {
   }
 
   /* 試算工具 */
-  buildTools(hasBuyers);
+  buildTools(hasBuyers, market);
 
   /* 社區頁 */
   const communities = buildCommunities(hasBuyers);
@@ -253,8 +262,21 @@ function main() {
      而且頁面上的成交筆數要跟社區頁一致。 */
   const areas = buildAreas({ market, articles, hasBuyers });
 
+  /* 建商頁與學區頁：長尾落地頁，只在社區數達門檻時產生 */
+  const indexPages = buildIndexPages({ hasBuyers });
+
+  /* 關於團隊頁：不動產屬 YMYL 領域，Google 對 E-E-A-T 的要求高，
+     團隊資訊需要一個可以被連結、被引用的獨立頁面。 */
+  const cd = readJson("data/community-deals.json", { deals: {} });
+  mkdirSync(path.join(ROOT, "about"), { recursive: true });
+  buildAbout({
+    hasBuyers, communityCount: communities.length,
+    dealTotal: Object.values(cd.deals || {}).reduce((a, b) => a + b.length, 0),
+    dataUpdated: String(cd.updatedAt || "").slice(0, 10),
+  });
+
   /* 網站地圖、robots.txt、llms.txt、404 */
-  buildSitemap(articles, communities, dealCount > 0, areas);
+  buildSitemap(articles, communities, dealCount > 0, areas, indexPages);
   buildRobots();
   const communityDeals = readJson("data/community-deals.json", { deals: {} });
   buildLlmsTxt({
@@ -262,7 +284,7 @@ function main() {
     articles,
     dealTotal: Object.values(communityDeals.deals || {}).reduce((a, b) => a + b.length, 0),
     dataUpdated: String(communityDeals.updatedAt || "").slice(0, 10),
-    areas,
+    areas, indexPages,
   });
   build404();
 

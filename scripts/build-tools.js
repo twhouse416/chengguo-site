@@ -12,6 +12,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildTool } from "./lib/tool-shell.js";
 import { schoolZoneRelated } from "./lib/related.js";
+import { esc } from "./lib/layout.js";
+import { AREAS } from "./build-areas.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -161,13 +163,77 @@ export const TOOLS = [
   },
 ];
 
-export function buildTools(hasBuyers) {
+/* ---------- 四個生活圈的實際總價與自備款 ----------
+ * 工具頁原本純粹是計算器，文字量是全站最低的（房貸試算 981 字）。
+ * 搜尋引擎不容易判斷這一頁在回答什麼問題，AI 引擎也抓不到可引用的事實。
+ *
+ * 補的內容不是我寫的通論，而是 data/market-data.json 裡已經有的
+ * 四個生活圈實際成交數字——常見總價、常見單價區間、樣本筆數，
+ * 再用貸款八成推出自備款。全部可回溯到內政部實價登錄，不需要新增任何人工資料。
+ * 同時把工具頁接到四個生活圈頁，原本工具頁完全沒有指向社區內容的連結。
+ */
+function areaBudgetBlock(market, dataNote) {
+  const rows = (market?.areas || []).map(a => {
+    const e = (a.types || []).find(t => t.key === "elevator") || a;
+    const slug = AREAS.find(x => x.code === a.code)?.slug || "";
+    return { name: a.name, slug, ...e };
+  }).filter(r => r.medianTotalPrice || r.avgPricePerPing);
+  if (!rows.length) return "";
+  return `<section class="mt-16">
+    <h2 class="display text-[23px] mb-4">四個生活圈的常見總價與自備款</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-2xl">
+      下表是澄果團隊主力的四個生活圈，近一年電梯住宅的實際成交數字。
+      自備款欄以貸款八成、自備兩成推算，只是抓一個量級——實際成數由銀行依物件與個人條件核定。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[600px]">
+        <caption class="sr-only">高雄四個生活圈近一年電梯住宅的平均單價、常見單價區間、常見總價與自備款推算</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">生活圈</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">平均單價</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">常見單價區間</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">常見總價</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">自備兩成約</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal">
+              ${r.slug ? `<a href="../../areas/${r.slug}/index.html" class="text-ink hover:text-orangeDeep font-medium">${esc(r.name)}</a>`
+                       : `<span class="font-medium">${esc(r.name)}</span>`}
+            </th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.avgPricePerPing ? `${r.avgPricePerPing} 萬` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${r.bandLow ? `${r.bandLow}–${r.bandHigh} 萬` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.medianTotalPrice ? `${Number(r.medianTotalPrice).toLocaleString("en-US")} 萬` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] font-semibold text-orangeDeep">${r.medianTotalPrice ? `${Math.round(r.medianTotalPrice * 0.2).toLocaleString("en-US")} 萬` : "—"}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      單價單位為萬元／坪，總價與自備款單位為萬元。數字為近四季（約一年）成屋成交，
+      已剔除頭尾各一成極端值；「常見單價區間」為去掉最高與最低各四分之一後的範圍，
+      「常見總價」取排序後正中間那一筆。電梯住宅與透天分開統計，此表為電梯住宅。
+      ${dataNote}資料來源：內政部不動產交易實價查詢服務網。
+      除了自備款，還要準備仲介費、代書費、規費、契稅與裝潢費。
+    </p>
+    <p class="mt-5 font-mono text-[13px]">
+      ${rows.filter(r => r.slug).map(r => `<a href="../../areas/${r.slug}/index.html" class="text-orangeDeep hover:underline mr-4">${esc(r.name)}行情與社區 →</a>`).join("")}
+    </p>
+  </section>`;
+}
+
+export function buildTools(hasBuyers, market = null) {
+  const note = market?.updatedAt ? `資料更新於 ${String(market.updatedAt).slice(0, 10)}。` : "";
+  const budget = areaBudgetBlock(market, note);
   TOOLS.forEach(t => {
     const dir = path.join(ROOT, "tools", t.slug);
     mkdirSync(dir, { recursive: true });
     /* 學區工具是全站點擊最多的頁面，但原本不連任何社區頁；
        把查完學區的人接到社區行情，同時讓社區頁拿到內部連結。 */
-    const relatedHtml = t.slug === "school-zone" ? schoolZoneRelated("../../") : "";
+    /* 四個工具頁都接上生活圈的實際行情與自備款；學區工具另外接社區清單。 */
+    const relatedHtml = (t.slug === "school-zone" ? schoolZoneRelated("../../") : "") + budget;
     const html = buildTool({ ...t, relatedHtml, calcScript: calc(t.slug) }, hasBuyers);
     writeFileSync(path.join(dir, "index.html"), html, "utf-8");
     console.log("[產生]", `tools/${t.slug}/index.html`);

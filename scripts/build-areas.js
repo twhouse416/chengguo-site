@@ -27,6 +27,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, head, header, footer, sectionHead } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
+import { webSlug } from "./build-articles.js";
+import { devSlugOf, schoolSlugOf } from "./build-index-pages.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -423,10 +425,11 @@ function areaPage(area, ctx) {
     ${devs.length ? `<div>
       <h2 class="display text-[21px] mb-5">在這一區推案較多的建商</h2>
       <dl class="border-t border-line">
-        ${devs.slice(0, 10).map(([d, n]) => `<div class="flex justify-between gap-4 py-3.5 border-b border-line">
-          <dt class="text-[15px] text-ink">${esc(d)}</dt>
+        ${devs.slice(0, 10).map(([d, n]) => { const ds = devSlugOf(d); return `<div class="flex justify-between gap-4 py-3.5 border-b border-line">
+          <dt class="text-[15px] text-ink">${ds
+            ? `<a href="../../developers/${ds}/index.html" class="hover:text-orangeDeep">${esc(d)}</a>` : esc(d)}</dt>
           <dd class="font-mono text-[14px] text-inkSoft shrink-0">${n} 個社區</dd>
-        </div>`).join("\n        ")}
+        </div>`; }).join("\n        ")}
       </dl>
       <p class="text-[13px] text-inkFaint leading-relaxed mt-3">
         只列出在這一區有兩個以上社區的建商。建商名稱取自公開平台，各平台記載可能不同。
@@ -482,11 +485,32 @@ function areaPage(area, ctx) {
       <div class="font-mono text-[12px] tracking-wider text-inkFaint mb-4">相關文章</div>
       <ul class="border-t border-line">
         ${rel.map(a => `<li class="border-b border-line py-4">
-          <a href="../../notes/${encodeURIComponent(a.slug)}.html" class="text-[16px] text-ink hover:text-orangeDeep">${esc(a.title)}</a>
+          <a href="../../notes/${encodeURIComponent(webSlug(a.slug))}.html" class="text-[16px] text-ink hover:text-orangeDeep">${esc(a.title)}</a>
         </li>`).join("\n        ")}
       </ul>
     </div>` : ""}
   </section>
+
+  <!-- 學區 -->
+  ${(() => {
+    const m = new Map();
+    items.forEach(c => [c.school?.primary, c.school?.junior].filter(Boolean).forEach(x => {
+      const sl = schoolSlugOf(x);
+      if (sl) m.set(x, { slug: sl, n: (m.get(x)?.n || 0) + 1 });
+    }));
+    const rows = [...m.entries()].sort((a, b) => b[1].n - a[1].n);
+    if (!rows.length) return "";
+    return `<section class="mt-16" id="schools">
+    <h2 class="display text-[21px] mb-4">依學區看${esc(area.name)}的社區</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      括號內是本站社區資料中學區欄位登載為該校的社區數。學區以里、鄰劃分，
+      社區名稱不是依據，實際歸屬請用學區查詢工具核對門牌。
+    </p>
+    <p class="text-[16px] text-ink leading-[2.2]">
+      ${rows.map(([n, v]) => `<a href="../../schools/${v.slug}/index.html" class="inline-block mr-4 text-orangeDeep hover:underline">${esc(n)}<span class="font-mono text-[13px] text-inkFaint ml-1">（${v.n}）</span></a>`).join("")}
+    </p>
+  </section>`;
+  })()}
 
   <!-- 其他生活圈 -->
   <section class="mt-16">

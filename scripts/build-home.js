@@ -6,6 +6,7 @@
  */
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize } from "./lib/layout.js";
+import { webSlug } from "./build-articles.js";
 import { loadCommunities } from "./lib/related.js";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -15,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 /* ================= 固定文案 ================= */
 
-const HIGHLIGHTS = [
+export const HIGHLIGHTS = [
   "深耕高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區",
   "截至 115 年 7 月，約 58% 成交業績來自美術館特區與農十六",
   "免費房屋估價與成交行情分析",
@@ -24,7 +25,7 @@ const HIGHLIGHTS = [
   "首購預算評估與換屋時程規劃",
 ];
 
-const FACTS = [
+export const FACTS = [
   ["58", "%", "成交集中美術館、農十六", "截至 115 年 7 月"],
   ["10", "年以上", "深耕四大生活圈", ""],
   ["150", "件以上", "累計服務件數", ""],
@@ -65,7 +66,7 @@ const SERVICES = [
     cta: "請澄果評估換屋時機" },
 ];
 
-const AWARDS = [
+export const AWARDS = [
   "104年度評鑑優質", "104年度第2季團隊績效第3名", "106年度評鑑優質",
   "107年度評鑑優質", "107年度第1季團隊績效第2名", "107年度上半季戰力精進第1名",
   "108年度評鑑優質", "108年度第1季團隊績效第3名", "109年度評鑑優質",
@@ -269,7 +270,7 @@ function heroSection(heroVideo) {
           document.head.appendChild(tag);
         })();
       </script>`
-    : `<img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍" class="w-full aspect-[3/2] object-cover rounded-sm" />`;
+    : `<img src="assets/area-01-artmuseum.jpg" alt="高雄美術館特區空拍"${imgSize("assets/area-01-artmuseum.jpg")} class="w-full aspect-[3/2] object-cover rounded-sm" loading="lazy" />`;
 
   return `<section id="top" class="border-b border-line">
   <div class="max-w-6xl mx-auto px-6 pt-16 pb-16 grid lg:grid-cols-12 gap-12 items-center">
@@ -452,7 +453,7 @@ function areasSection(market) {
       const m = AREA_META[a.code] || {};
       const types = (a.types && a.types.length) ? a.types : [a];
       return `<article class="flex flex-col border border-line rounded-sm bg-surface overflow-hidden">
-      <img src="${m.img}" alt="${esc(a.name)}" class="w-full aspect-[3/2] object-cover shrink-0" loading="lazy" />
+      <img src="${m.img}" alt="${esc(a.name)}（高雄市${esc(m.district || "")}）空拍"${imgSize(m.img)} class="w-full aspect-[3/2] object-cover shrink-0" loading="lazy" />
       <div class="flex flex-col flex-1 p-7">
         <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(m.district || "")}</div>
         <h3 class="text-xl font-bold mt-1 mb-2.5 tracking-tight">${esc(a.name)}</h3>
@@ -569,7 +570,7 @@ function aboutSection() {
   return `<section id="about" class="bg-surface border-y border-line">
   <div class="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-12 gap-12">
     <div class="lg:col-span-4">
-      <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊 門市" class="w-full aspect-[4/5] object-cover rounded-sm" loading="lazy" />
+      <img src="assets/team-office.jpg" alt="台灣房屋 澄果團隊門市外觀"${imgSize("assets/team-office.jpg")} class="w-full aspect-[4/5] object-cover rounded-sm" loading="lazy" />
     </div>
     <div class="lg:col-span-8">
       <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">About</div>
@@ -608,14 +609,14 @@ function articlesSection(articles) {
     ${sectionHead("Notes", "買房前，先把該懂的事搞懂", "首購與換屋最常卡住的幾個問題，我們整理成好讀的說明。")}
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
       ${list.map(a => `<article class="border-t-2 border-ink pt-5">
-        ${a.cover ? `<a href="notes/${a.slug}.html" class="block mb-4">
+        ${a.cover ? `<a href="notes/${webSlug(a.slug)}.html" class="block mb-4">
           <img src="${esc(thumbOf(a.cover))}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"${imgSize(thumbOf(a.cover))}
             class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>` : ""}
         <div class="font-mono text-[12px] tracking-wider text-orangeDeep mb-3">${esc(a.tag)}</div>
         <h3 class="text-[17px] font-bold leading-snug mb-3 tracking-tight">
-          <a href="notes/${a.slug}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h3>
+          <a href="notes/${webSlug(a.slug)}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h3>
         <p class="text-[15px] text-inkSoft leading-[1.85]">${esc(a.summary)}</p>
-        <a href="notes/${a.slug}.html" class="inline-block font-mono text-[12px] text-orangeDeep mt-5 hover:underline">閱讀全文 →</a>
+        <a href="notes/${webSlug(a.slug)}.html" class="inline-block font-mono text-[12px] text-orangeDeep mt-5 hover:underline">閱讀全文 →</a>
       </article>`).join("\n      ")}
     </div>
     <div class="mt-12">

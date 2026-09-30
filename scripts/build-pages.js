@@ -7,6 +7,7 @@
  */
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize } from "./lib/layout.js";
+import { webSlug } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
 
 /* ================= 文章列表 ================= */
@@ -18,12 +19,12 @@ export function buildNotesIndex({ articles, hasBuyers }) {
     "@type": "ItemList",
     itemListElement: articles.map((a, i) => ({
       "@type": "ListItem", position: i + 1,
-      url: `${SITE}/notes/${a.slug}.html`, name: a.title,
+      url: `${SITE}/notes/${webSlug(a.slug)}.html`, name: a.title,
     })),
   }] : [];
 
   const cards = articles.map(a => `<article class="border-t-2 border-ink pt-5" data-tag="${esc(a.tag)}">
-    ${a.cover ? `<a href="${a.slug}.html" class="block mb-4">
+    ${a.cover ? `<a href="${webSlug(a.slug)}.html" class="block mb-4">
       <img src="../${esc(thumbOf(a.cover))}" alt="${esc(a.coverAlt || a.title)}" loading="lazy"${imgSize(thumbOf(a.cover))}
         class="w-full aspect-[3/2] object-cover bg-paper rounded-sm border border-line" /></a>` : ""}
     <div class="flex items-center gap-3 mb-3 font-mono text-[12px]">
@@ -32,9 +33,9 @@ export function buildNotesIndex({ articles, hasBuyers }) {
       ${a.readMinutes ? `<span class="text-inkFaint">約 ${a.readMinutes} 分鐘</span>` : ""}
     </div>
     <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
-      <a href="${a.slug}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h2>
+      <a href="${webSlug(a.slug)}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h2>
     <p class="text-[15px] text-inkSoft leading-[1.9]">${esc(a.summary)}</p>
-    <a href="${a.slug}.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+    <a href="${webSlug(a.slug)}.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
   </article>`).join("\n      ");
 
   const empty = `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
@@ -127,7 +128,7 @@ export function buildVideosIndex({ videos, hasBuyers }) {
     <button class="play-btn group block w-full text-left" data-id="${esc(v.videoId)}" data-title="${esc(v.titleShown || v.title)}"
       aria-label="播放 ${esc(v.titleShown || v.title)}">
       <div class="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
-        <img src="${esc(v.thumb)}" alt="" loading="lazy" class="w-full h-full object-cover group-hover:opacity-90 transition" />
+        <img src="${esc(v.thumb)}" alt="${esc(v.title || "澄果團隊社區介紹影片")} 影片縮圖"${imgSize(v.thumb)} loading="lazy" class="w-full h-full object-cover group-hover:opacity-90 transition" />
         <span class="absolute inset-0 flex items-center justify-center">
           <span class="w-14 h-14 rounded-full bg-orange/95 flex items-center justify-center group-hover:scale-110 transition">
             <svg viewBox="0 0 24 24" class="w-6 h-6 ml-0.5" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
