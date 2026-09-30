@@ -156,9 +156,9 @@
     <div id="ytBox" class="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
       <button type="button" id="ytPlay" class="group absolute inset-0 w-full h-full text-left"
         aria-label="播放 【華人匯 社區介紹｜高雄農十六特區】">
-        <img src="https://i.ytimg.com/vi/wC4TNmI54tw/maxresdefault.jpg"
+        <img src="https://i.ytimg.com/vi/wC4TNmI54tw/maxresdefault.jpg" width="1280" height="720"
           onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/wC4TNmI54tw/hqdefault.jpg';"
-          alt="【華人匯 社區介紹｜高雄農十六特區】" loading="lazy"
+          alt="【華人匯 社區介紹｜高雄農十六特區】 影片縮圖" loading="lazy"
           class="w-full h-full object-cover group-hover:opacity-90 transition" />
         <span class="absolute inset-0 flex items-center justify-center">
           <span class="w-16 h-16 rounded-full bg-orange/95 flex items-center justify-center group-hover:scale-110 transition">
@@ -1366,7 +1366,11 @@
         </div>
       </div>
       <p class="text-[15px] text-orangeDeep leading-[1.9] mt-6 pt-6 border-t border-line">本社區位於鼓山區龍子里。依高雄市 115 學年度國民小學學區劃分，龍子里整里劃入龍華國小學區。龍華國小為 115 學年度總量管制學校，即使設籍在學區內仍可能需要抽籤或改分發，購屋前務必先向學校確認當學年度的實際狀況。</p>
-      <a href="../tools/school-zone/index.html" class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">用學區查詢工具核對 →</a>
+      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[13px]">
+        <a href="../tools/school-zone/index.html" class="text-orangeDeep hover:underline">用學區查詢工具核對門牌 →</a>
+        <a href="../schools/longhua-es/index.html" class="text-orangeDeep hover:underline">龍華國小學區的其他社區 →</a>
+        <a href="../schools/minghua-js/index.html" class="text-orangeDeep hover:underline">明華國中學區的其他社區 →</a>
+      </div>
     </div>
   </section>
 
@@ -1429,26 +1433,109 @@
     </p>
   </section>
 
-  <!-- 其他社區 -->
-  <nav class="mt-14 pt-8 border-t border-line">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">其他社區</div>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <a href="farglory-park16.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
-        <span class="text-[16px] font-bold tracking-tight">遠雄PARK16</span>
-      </a>
-      <a href="modeng-guocheng.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
-        <span class="text-[16px] font-bold tracking-tight">摩登國城</span>
-      </a>
-      <a href="jingcheng-yalishanda.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
-        <span class="text-[16px] font-bold tracking-tight">京城亞歷山大</span>
-      </a>
-      <a href="lanyuan-huashiji.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
-        <span class="text-[16px] font-bold tracking-tight">蘭園畫世紀</span>
-      </a>
+  <!-- 相關社區 -->
+  <nav class="mt-14 pt-8 border-t border-line" aria-label="相關社區">
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">同在龍勝路的社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">門牌在同一條路段，走路可及，生活條件與棟距環境最接近，是比價時最直接的對照。</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="modeng-guocheng.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2006 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">摩登國城</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="aman16.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2011 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">阿曼十六</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="dawailai.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2004 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">大未來</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="xiandai-fenghua.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2006 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">現代風華</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">興富發建設的其他社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">興富發建設 在本站收錄範圍內的其他社區，用料與規劃風格通常有延續性。 <a href="../developers/xingfufa/index.html" class="text-orangeDeep hover:underline">看這家建商的全部社區 →</a></p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="meishu-1hao-yuan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+            <span class="text-[16px] font-bold tracking-tight">美術1号院</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="kingwang2.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+            <span class="text-[16px] font-bold tracking-tight">國王傳奇2</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="kingwang1.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2014 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">國王傳奇1</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="meishu-dayue.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">中都重劃區・2021 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">美樹大悅</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">農十六特區價格帶接近的社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">同一個生活圈內，實價登錄單價中位數與本社區最接近的幾個，總價預算相近的話可以一起看。</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="caiheitian.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2005 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">采荷天</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="bolanjia.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・1994 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">博覽家</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="xueyuan-tequ.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・2004 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">學園特區</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="taizi-hafo.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">農十六特區・1996 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">太子哈佛</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
     </div>
   </nav>
 </main>

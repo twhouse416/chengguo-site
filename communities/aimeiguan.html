@@ -156,9 +156,9 @@
     <div id="ytBox" class="relative w-full aspect-video rounded-sm overflow-hidden border border-line bg-ink">
       <button type="button" id="ytPlay" class="group absolute inset-0 w-full h-full text-left"
         aria-label="播放 美術館 社區大樓介紹 - 本業建設 艾美館">
-        <img src="https://i.ytimg.com/vi/3qUxgCEUs4Y/maxresdefault.jpg"
+        <img src="https://i.ytimg.com/vi/3qUxgCEUs4Y/maxresdefault.jpg" width="1280" height="720"
           onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/3qUxgCEUs4Y/hqdefault.jpg';"
-          alt="美術館 社區大樓介紹 - 本業建設 艾美館" loading="lazy"
+          alt="美術館 社區大樓介紹 - 本業建設 艾美館 影片縮圖" loading="lazy"
           class="w-full h-full object-cover group-hover:opacity-90 transition" />
         <span class="absolute inset-0 flex items-center justify-center">
           <span class="w-16 h-16 rounded-full bg-orange/95 flex items-center justify-center group-hover:scale-110 transition">
@@ -622,7 +622,11 @@
         </div>
       </div>
       <p class="text-[15px] text-orangeDeep leading-[1.9] mt-6 pt-6 border-t border-line">中山國小為 115 學年度總量管制學校，即使設籍在學區內仍可能需要抽籤或改分發，購屋前務必先向學校確認。學區以里、鄰劃分，實際歸屬請用本站的學區查詢工具核對。</p>
-      <a href="../tools/school-zone/index.html" class="inline-block mt-5 font-mono text-[13px] text-orangeDeep hover:underline">用學區查詢工具核對 →</a>
+      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[13px]">
+        <a href="../tools/school-zone/index.html" class="text-orangeDeep hover:underline">用學區查詢工具核對門牌 →</a>
+        <a href="../schools/zhongshan-es/index.html" class="text-orangeDeep hover:underline">中山國小學區的其他社區 →</a>
+        <a href="../schools/qixian-js/index.html" class="text-orangeDeep hover:underline">七賢國中學區的其他社區 →</a>
+      </div>
     </div>
   </section>
 
@@ -685,26 +689,88 @@
     </p>
   </section>
 
-  <!-- 其他社區 -->
-  <nav class="mt-14 pt-8 border-t border-line">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-5">其他社區</div>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <a href="meishu-baitiane.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
-        <span class="text-[16px] font-bold tracking-tight">美術白天鵝</span>
-      </a>
-      <a href="meishu-1hao-yuan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
-        <span class="text-[16px] font-bold tracking-tight">美術1号院</span>
-      </a>
-      <a href="boti.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
-        <span class="text-[16px] font-bold tracking-tight">城揚波堤</span>
-      </a>
-      <a href="yangguang-yihuayuan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
-        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
-        <span class="text-[16px] font-bold tracking-tight">陽光藝花園</span>
-      </a>
+  <!-- 相關社區 -->
+  <nav class="mt-14 pt-8 border-t border-line" aria-label="相關社區">
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">同在美術南五街的社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">門牌在同一條路段，走路可及，生活條件與棟距環境最接近，是比價時最直接的對照。</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="weiyena.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2005 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">維也納</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="yujian.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2013 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">遇見</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="chengpin.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2013 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">城品</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="qiqin-wenmeiyuan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2015 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">棋琴文美苑</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">本業建設的其他社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">本業建設 在本站收錄範圍內的其他社區，用料與規劃風格通常有延續性。</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="qiandaiyan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2014 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">千代岩</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
+    </div>
+    <div class="mb-9 last:mb-0">
+      <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">美術館特區價格帶接近的社區</div>
+      <p class="text-[14px] text-inkFaint leading-[1.8] mb-4">同一個生活圈內，實價登錄單價中位數與本社區最接近的幾個，總價預算相近的話可以一起看。</p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="meishu-yuandi-a.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+            <span class="text-[16px] font-bold tracking-tight">美術園邸A棟</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="jingcheng-ailisi.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2002 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">京城愛麗絲</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="meishu-fenghuang.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2005 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">美術鳳凰</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+        <a href="yuanjian-zhenshanmei-zhishan.html" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition flex items-baseline justify-between gap-3">
+          <span>
+            <span class="font-mono text-[12px] text-inkFaint block">美術館特區・2008 年完工</span>
+            <span class="text-[16px] font-bold tracking-tight">遠見真善美至善特區</span>
+          </span>
+          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+        </a>
+      </div>
     </div>
   </nav>
 </main>
