@@ -71,6 +71,71 @@ export function ytId(raw) {
   return m ? m[1] : "";
 }
 
+/* ---------- 從規格表裡把數字拆出來給結構化資料用 ----------
+ * specs 是給人看的自由文字（「地上 15 層、地下 2 層」「689 戶（688 戶住家、1 戶店面）」
+ * 「2003/12（內政部實價登錄）；平台另載 2003/09」），schema.org 的
+ * yearBuilt / numberOfFloors / numberOfAccommodationUnits 期待的是純數字。
+ * 這幾個小工具只做「抓得到就抓、抓不到回空」，不做推測。
+ */
+export function specVal(c, key) {
+  return (c.specs || []).find(s => s[0] === key)?.[1] || "";
+}
+export function yearBuilt(c) {
+  /* 完工時間可能寫成 2006/05、2006年3月、1991/05（內政部實價登錄）…
+     一律取第一個四位數年份；抓不到就不輸出這個欄位。 */
+  const v = specVal(c, "完工時間");
+  const m = v.match(/(?:19|20)\d{2}/);
+  if (m) return m[0];
+  /* 也有寫成民國年的（「使照104年」）。民國年加 1911 換成西元，
+     只認 60~130 這個區間，免得把樓層或戶數誤判成年份。 */
+  const roc = v.match(/(\d{2,3})\s*年/);
+  if (roc) {
+    const y = Number(roc[1]);
+    if (y >= 60 && y <= 130) return String(y + 1911);
+  }
+  return "";
+}
+
+/* 實價登錄的總樓層數是國字（「二十四層」），規格表缺樓層時用它補。
+   只處理到 99 層，夠用。 */
+const CN_NUM = { 零: 0, 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+export function cnFloorToNumber(txt) {
+  const s = String(txt || "").replace(/層$/, "").trim();
+  if (!s) return null;
+  if (/^\d+$/.test(s)) return Number(s);
+  const i = s.indexOf("十");
+  if (i < 0) return CN_NUM[s] ?? null;
+  const tens = i === 0 ? 1 : (CN_NUM[s.slice(0, i)] ?? null);
+  const ones = i === s.length - 1 ? 0 : (CN_NUM[s.slice(i + 1)] ?? null);
+  if (tens === null || ones === null) return null;
+  return tens * 10 + ones;
+}
+
+export function floorsAbove(c, deals = []) {
+  const m = specVal(c, "樓層規劃").match(/地上\s*(\d+)\s*層/);
+  if (m) return Number(m[1]);
+  /* 規格表沒寫樓層時，改用實價登錄的總樓層數——同一棟的成交這個欄位一致，
+     取第一筆即可（門牌範圍本來就是用「完工年月＋總樓層」驗證過的）。 */
+  const tf = deals.find(d => d.totalFloor)?.totalFloor;
+  return cnFloorToNumber(tf);
+}
+export function unitCount(c) {
+  /* 「689 戶（688 戶住家、1 戶店面）」要取前面的總數，不是括號裡的 688 */
+  const m = specVal(c, "總戶數").match(/(\d[\d,]*)\s*戶/);
+  return m ? Number(m[1].replace(/,/g, "")) : null;
+}
+
+/* 資料更新日：community-deals.json 的 updatedAt 是完整 ISO 時間，
+   頁面上只顯示到日期，schema 的 dateModified 也用日期就夠。 */
+export function updatedDate(iso) {
+  const s = String(iso || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+}
+export function twDate(ymd) {
+  const m = String(ymd || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[1]} 年 ${Number(m[2])} 月 ${Number(m[3])} 日` : "";
+}
+
 /* 說明文字排版：前兩段直接顯示，其餘收進展開區塊，
    免得整篇 YouTube 說明把社區資料表推到很下面。 */
 const LEAD = 3;
@@ -150,7 +215,7 @@ const DEAL_CAP = 600;
 const LOW_SAMPLE = 10;
 
 /* ---------- 成交紀錄表格 ---------- */
-function dealsTable(deals) {
+function dealsTable(deals, c = {}, dataUpdated = "") {
   if (!deals?.length) {
     return `<div class="border border-line rounded-sm bg-surface p-8">
       <p class="text-[16px] text-inkSoft leading-[1.9]">
@@ -195,7 +260,36 @@ function dealsTable(deals) {
     ? `${fmtDate(deals[deals.length - 1].date)}－${fmtDate(deals[0].date)}`
     : "";
 
-  return `<div class="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-2">
+  /* ---------- 可直接被引用的一句話 ----------
+     AI 引擎（ChatGPT、Perplexity、Google AI Overviews）抓的是完整句子，
+     上面那排數字方塊對人好讀，但拆成一堆 <span> 之後機器讀起來是散的。
+     所以另外補一句把同樣的事實寫成一個完整句子，並標上資料更新日——
+     沒有日期的數字，AI 會判斷成無法驗證時效而優先引用別人。 */
+  /* 門牌數：addr 是完整地址（含「八樓之8」），直接去重會把同一個門牌的
+     不同樓層算成好幾個。切到「號」為止才是真正的門牌數。 */
+  const doors = new Set(
+    deals.map(d => String(d.addr || "").split("號")[0]).filter(Boolean)
+  ).size;
+  const sentence = [
+    `${c.name || "本社區"}${c.address ? `（${c.address}）` : ""}目前收錄 ${deals.length} 筆實價登錄成交紀錄`,
+    span ? `，期間 ${span}` : "",
+    prices.length
+      ? `，住家單價 ${low} 至 ${high} 萬元／坪、中位 ${Math.round(mid * 10) / 10} 萬元／坪`
+      : "",
+    doors > 1 ? `，分布在 ${doors} 個門牌` : "",
+    presale ? `，其中 ${presale} 筆為預售屋買賣` : "",
+    shops ? `，另有 ${shops} 筆店面成交未計入住家單價` : "",
+    "。",
+  ].join("");
+
+  return `<p class="text-[16px] text-inkSoft leading-[1.95] mb-5 max-w-2xl">${esc(sentence)}</p>
+
+  ${dataUpdated ? `<p class="font-mono text-[12px] text-inkFaint mb-6">
+    資料更新於 <time datetime="${dataUpdated}">${twDate(dataUpdated)}</time>
+    ・來源：內政部不動產交易實價查詢服務網（每月 1、11、21 日批次公告）
+  </p>` : ""}
+
+  <div class="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-2">
     <div>
       <span class="font-mono text-[12px] text-inkFaint">收錄筆數</span>
       <span class="font-mono text-[24px] font-semibold text-ink ml-2">${deals.length}</span>
@@ -220,15 +314,18 @@ function dealsTable(deals) {
 
   <div class="overflow-x-auto border border-line rounded-sm bg-surface">
     <table class="w-full text-[15px] min-w-[640px]">
+      ${/* caption 是給機器看的表格標題：AI 解析 HTML 表格時靠它判斷這張表在講什麼。
+           視覺上用 sr-only 藏起來，因為上方的 h2 與摘要句已經講過同樣的事。 */""}
+      <caption class="sr-only">${esc(c.name || "本社區")}實價登錄成交紀錄${span ? `（${span}）` : ""}，共 ${deals.length} 筆，欄位為成交日期、類型、移轉層次、格局、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）</caption>
       <thead>
         <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
-          <th class="text-left font-normal py-3 px-4">成交日期</th>
-          <th class="text-left font-normal py-3 px-4">類型</th>
-          <th class="text-left font-normal py-3 px-4">樓層</th>
-          <th class="text-left font-normal py-3 px-4">格局</th>
-          <th class="text-right font-normal py-3 px-4">坪數</th>
-          <th class="text-right font-normal py-3 px-4">單價</th>
-          <th class="text-right font-normal py-3 px-4">總價</th>
+          <th scope="col" class="text-left font-normal py-3 px-4">成交日期</th>
+          <th scope="col" class="text-left font-normal py-3 px-4">類型</th>
+          <th scope="col" class="text-left font-normal py-3 px-4">樓層</th>
+          <th scope="col" class="text-left font-normal py-3 px-4">格局</th>
+          <th scope="col" class="text-right font-normal py-3 px-4">坪數</th>
+          <th scope="col" class="text-right font-normal py-3 px-4">單價</th>
+          <th scope="col" class="text-right font-normal py-3 px-4">總價</th>
         </tr>
       </thead>
       <tbody>
@@ -297,14 +394,20 @@ function dealsTable(deals) {
 }
 
 /* ---------- 單一社區頁 ---------- */
-function communityPage(c, deals, others, hasBuyers) {
+function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
   const url = `${SITE}/communities/${c.slug}.html`;
+
+  const units = unitCount(c);
+  const floors = floorsAbove(c, deals);
+  const built = yearBuilt(c);
+  const parkingSpec = specVal(c, "車位");
 
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "ApartmentComplex",
       name: c.name,
+      ...(c.aliases?.length ? { alternateName: c.aliases } : {}),
       url,
       description: c.summary,
       address: {
@@ -314,8 +417,38 @@ function communityPage(c, deals, others, hasBuyers) {
         addressRegion: c.district,
         addressCountry: "TW",
       },
-      ...(c.specs?.find(s => s[0] === "總戶數")
-        ? { numberOfAccommodationUnits: c.specs.find(s => s[0] === "總戶數")[1] } : {}),
+      /* 生活圈：把社區跟商圈的關係講清楚，AI 被問到
+         「美術館特區有哪些社區」時才連得起來。 */
+      containedInPlace: {
+        "@type": "Place",
+        name: `高雄市${c.district}${c.area}`,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "高雄市",
+          addressRegion: c.district,
+          addressCountry: "TW",
+        },
+      },
+      /* 以下幾項原本只寫在給人看的規格表裡，機器讀不到。
+         schema 這幾個欄位期待純數字，所以用 specVal 拆出來；拆不到就不輸出。 */
+      ...(units ? { numberOfAccommodationUnits: units } : {}),
+      ...(floors ? { numberOfFloors: floors } : {}),
+      ...(built ? { yearBuilt: built } : {}),
+      ...(parkingSpec ? {
+        amenityFeature: [{
+          "@type": "LocationFeatureSpecification",
+          name: "車位", value: parkingSpec,
+        }],
+      } : {}),
+      ...(dataUpdated ? { dateModified: dataUpdated } : {}),
+      /* 每一頁都帶上組織實體，不只首頁有 */
+      provider: {
+        "@type": "RealEstateAgent",
+        name: BRAND.teamName,
+        legalName: BRAND.legalName,
+        url: `${SITE}/`,
+        telephone: "+886-7-9766977",
+      },
     },
     {
       "@context": "https://schema.org",
@@ -341,6 +474,43 @@ function communityPage(c, deals, others, hasBuyers) {
       embedUrl: `https://www.youtube.com/embed/${vid}`,
       contentUrl: `https://www.youtube.com/watch?v=${vid}`,
       publisher: { "@type": "Organization", name: BRAND.teamName },
+    });
+  }
+
+  /* ---------- Dataset：把實價登錄表格標成資料集 ----------
+     這是全站最有價值的差異化資產——253 個社區、一萬多筆一手成交紀錄。
+     AI 引擎對有 Dataset 標記的資料特別願意引用，因為可以確認
+     來源（內政部）、涵蓋範圍（哪個門牌、哪段期間）與更新時間。
+     沒有這個標記，同一張表只是「一堆 <td>」。 */
+  if (deals.length) {
+    const dates = deals.map(d => d.date).filter(Boolean).sort();
+    jsonLd.push({
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      name: `${c.name}實價登錄成交紀錄`,
+      description: `${c.name}（${c.address}）的不動產買賣成交紀錄，逐筆列出成交日期、移轉層次、總樓層數、建物移轉總面積、建物現況格局、單價與總價，共 ${deals.length} 筆。已排除實價登錄標示解約的紀錄。`,
+      url: `${url}#deals`,
+      temporalCoverage: `${dates[0]}/${dates[dates.length - 1]}`,
+      spatialCoverage: { "@type": "Place", name: c.address },
+      creator: {
+        "@type": "GovernmentOrganization",
+        name: "內政部不動產交易實價查詢服務網",
+        url: "https://plvr.land.moi.gov.tw/",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: BRAND.legalName,
+        url: `${SITE}/`,
+      },
+      isAccessibleForFree: true,
+      inLanguage: "zh-TW",
+      ...(dataUpdated ? { dateModified: dataUpdated } : {}),
+      variableMeasured: [
+        "成交日期", "交易類型", "移轉層次", "總樓層數",
+        "建物移轉總面積（坪）", "建物現況格局", "單價（萬元／坪）",
+        "總價（萬元）", "車位類別",
+      ],
+      about: { "@type": "ApartmentComplex", name: c.name, url },
     });
   }
 
@@ -402,7 +572,7 @@ ${videoSection(c)}
       逐筆列出近期成交，不做平均。同一個社區，樓層、面向、坪數與車位配置不同，
       單價落差往往比想像中大——找條件跟你要看的那戶相近的來比，會準確得多。
     </p>
-    ${dealsTable(deals)}
+    ${dealsTable(deals, c, dataUpdated)}
   </section>
 
   <!-- 條件觀察 -->
@@ -918,6 +1088,9 @@ export function buildCommunities(hasBuyers) {
   }
 
   const list = (config.communities || []).filter(c => !c.draft);
+  /* 成交資料的更新日：顯示在頁面上，同時寫進 ApartmentComplex 與 Dataset 的
+     dateModified。搜尋引擎與 AI 引擎都靠這個判斷資料新鮮度。 */
+  const dataUpdated = updatedDate(dealsData.updatedAt);
   mkdirSync(OUT_DIR, { recursive: true });
 
   /* 清掉已不再發布的頁面 */
@@ -939,7 +1112,7 @@ export function buildCommunities(hasBuyers) {
       ...pool.filter(o => o.area === c.area),
       ...pool.filter(o => o.area !== c.area),
     ].slice(0, 4);
-    const html = communityPage(c, dealsData.deals?.[c.slug] || [], others, hasBuyers);
+    const html = communityPage(c, dealsData.deals?.[c.slug] || [], others, hasBuyers, dataUpdated);
     writeFileSync(path.join(OUT_DIR, `${c.slug}.html`), html, "utf-8");
     console.log("[產生]", `communities/${c.slug}.html`);
   });
