@@ -11,6 +11,7 @@
 module.exports = {
   content: [
     "./index.html",
+    "./404.html",
     "./notes/**/*.html",
     "./communities/**/*.html",
     "./tools/**/*.html",
