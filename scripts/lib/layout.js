@@ -52,9 +52,79 @@ const IMG_SIZES = (() => {
 /* 傳入以站根目錄為基準的路徑（例如 assets/team-office.jpg），
    回傳可直接放進 <img> 的 width/height 屬性字串；查不到就回空字串。 */
 export function imgSize(src) {
-  const key = String(src || "").replace(/^(\.\.\/)+/, "").split("?")[0];
+  const raw = String(src || "").split("?")[0];
+  const key = raw.replace(/^(\.\.\/)+/, "");
   const d = IMG_SIZES[key];
-  return d ? ` width="${d[0]}" height="${d[1]}"` : "";
+  if (d) return ` width="${d[0]}" height="${d[1]}"`;
+
+  /* YouTube 縮圖的尺寸是固定的，不需要查表。
+     沒有 width/height 的話，圖片載入前瀏覽器不知道要留多少空間，
+     版面會往下跳（Core Web Vitals 的 CLS）。 */
+  if (/i\d?\.ytimg\.com/.test(raw) || /ytimg\.com/.test(raw)) {
+    if (/maxresdefault/.test(raw)) return ` width="1280" height="720"`;
+    if (/hqdefault/.test(raw)) return ` width="480" height="360"`;
+    if (/mqdefault/.test(raw)) return ` width="320" height="180"`;
+    if (/sddefault/.test(raw)) return ` width="640" height="480"`;
+  }
+
+  /* SVG 的尺寸就寫在檔案裡，建置時讀一次就好（結果會快取）。
+     文章封面有幾張是手繪的 SVG，不會被 optimize-images.js 掃到。 */
+  if (key.endsWith(".svg")) {
+    if (SVG_SIZES[key] !== undefined) return SVG_SIZES[key];
+    let out = "";
+    try {
+      const txt = readFileSync(path.resolve(__layoutDir, "../../", key), "utf-8").slice(0, 600);
+      const w = txt.match(/\swidth="(\d+)"/), h = txt.match(/\sheight="(\d+)"/);
+      if (w && h) out = ` width="${w[1]}" height="${h[1]}"`;
+      else {
+        const vb = txt.match(/viewBox="[\d.]+ [\d.]+ ([\d.]+) ([\d.]+)"/);
+        if (vb) out = ` width="${Math.round(+vb[1])}" height="${Math.round(+vb[2])}"`;
+      }
+    } catch { out = ""; }
+    SVG_SIZES[key] = out;
+    return out;
+  }
+  /* 最後一道：直接從檔案頭讀 JPEG／PNG 的尺寸。
+     image-sizes.json 是 scripts/optimize-images.js 產生的，
+     新上傳的圖片如果還沒跑過那支腳本就會查不到——
+     與其等人記得去跑，不如建置時自己讀一次（結果會快取）。 */
+  if (/\.(jpe?g|png)$/i.test(key)) {
+    if (RASTER_SIZES[key] !== undefined) return RASTER_SIZES[key];
+    let out = "";
+    try {
+      const buf = readFileSync(path.resolve(__layoutDir, "../../", key));
+      const d = readRasterSize(buf);
+      if (d) out = ` width="${d[0]}" height="${d[1]}"`;
+    } catch { out = ""; }
+    RASTER_SIZES[key] = out;
+    return out;
+  }
+  return "";
+}
+const SVG_SIZES = {};
+const RASTER_SIZES = {};
+
+/* 只讀檔頭就好，不需要圖片處理套件。
+   PNG：IHDR 固定在第 16 位元組起，寬高各 4 bytes big-endian。
+   JPEG：逐段掃到 SOF0～SOF3（0xC0–0xC3）或 SOF5～SOF15，高寬在該段的第 5 位元組起。 */
+function readRasterSize(buf) {
+  if (buf.length > 24 && buf.readUInt32BE(0) === 0x89504e47) {
+    return [buf.readUInt32BE(16), buf.readUInt32BE(20)];
+  }
+  if (buf.length > 4 && buf[0] === 0xFF && buf[1] === 0xD8) {
+    let i = 2;
+    while (i + 9 < buf.length) {
+      if (buf[i] !== 0xFF) { i++; continue; }
+      const marker = buf[i + 1];
+      if (marker === 0xD8 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) { i += 2; continue; }
+      const len = buf.readUInt16BE(i + 2);
+      const isSOF = (marker >= 0xC0 && marker <= 0xCF)
+        && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC;
+      if (isSOF) return [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)];
+      i += 2 + len;
+    }
+  }
+  return null;
 }
 
 /* 列表用的縮圖：封面圖在首頁與列表頁只顯示成小方塊，
@@ -439,7 +509,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
   const home = depth === 0 ? "" : `${up}index.html`;
   const width = compact ? "max-w-3xl" : "max-w-6xl";
   const links = [
-    [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${home}#about`, "關於團隊"],
+    [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${up}about/index.html`, "關於團隊"],
     [`${home}#tools`, "試算工具"], [`${up}notes/index.html`, "知識文章"], [`${up}videos/index.html`, "影片"],
     [`${up}deals/index.html`, "近期成交"],
     ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
