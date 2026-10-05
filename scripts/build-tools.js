@@ -225,7 +225,8 @@ function areaBudgetBlock(market, dataNote) {
 }
 
 export function buildTools(hasBuyers, market = null) {
-  const note = market?.updatedAt ? `資料更新於 ${String(market.updatedAt).slice(0, 10)}。` : "";
+  const d = market?.updatedAt ? String(market.updatedAt).slice(0, 10) : "";
+  const note = d ? `資料更新於 <time datetime="${d}">${d}</time>。` : "";
   const budget = areaBudgetBlock(market, note);
   TOOLS.forEach(t => {
     const dir = path.join(ROOT, "tools", t.slug);

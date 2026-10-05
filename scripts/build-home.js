@@ -475,8 +475,11 @@ function areasSection(market) {
     <span>${domain.min} 萬/坪</span><span>四區共用刻度｜直線為該區平均單價</span><span>${domain.max} 萬/坪</span>
   </div>` : ""}
   <p class="mt-4 font-mono text-[11px] text-inkFaint">
+    ${/* 用 <time datetime> 標記，不只是文字。
+         搜尋引擎與 AI 引擎判斷數字的時效性靠的是這個標記，
+         純文字的日期它們不一定認得出來。 */""}
     ${market?.updatedAt
-      ? `資料更新於 ${new Date(market.updatedAt).toLocaleDateString("zh-TW")}・來源：內政部不動產交易實價查詢服務網`
+      ? `資料更新於 <time datetime="${String(market.updatedAt).slice(0, 10)}">${new Date(market.updatedAt).toLocaleDateString("zh-TW")}</time>・來源：內政部不動產交易實價查詢服務網`
       : "尚未執行首次自動更新，目前為示意資料"}
   </p>
 </section>`;
@@ -761,8 +764,19 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
         ].map(([name, description]) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name, description } })),
       },
     },
+    /* 首頁的 dateModified：行情數字每次自動更新就會變，
+       讓搜尋引擎知道這一頁的內容是動態維護的，不是放著不管的靜態頁。 */
+    ...(market?.updatedAt ? [{
+      "@context": "https://schema.org", "@type": "WebPage",
+      "@id": `${SITE}/`, url: `${SITE}/`, inLanguage: "zh-TW",
+      name: `${BRAND.teamName}｜高雄美術館特區、農十六、瑞豐巨蛋、中都房仲`,
+      dateModified: String(market.updatedAt).slice(0, 10),
+      primaryImageOfPage: { "@type": "ImageObject", url: `${SITE}/assets/team-office.jpg` },
+      isPartOf: { "@id": `${SITE}/#website` },
+    }] : []),
     {
       "@context": "https://schema.org", "@type": "WebSite",
+      "@id": `${SITE}/#website`,
       name: BRAND.teamName, url: `${SITE}/`, inLanguage: "zh-TW",
       publisher: {
         "@type": "Organization", name: BRAND.legalName, url: `${SITE}/`,

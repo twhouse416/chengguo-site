@@ -1143,14 +1143,25 @@ function listScript() {
 </script>`;
 }
 
-function communityIndex(list, dealsMap, hasBuyers) {
+function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
   const groups = groupByArea(list);
+  const dealTotal = Object.values(dealsMap).reduce((a, b) => a + b.length, 0);
   const jsonLd = list.length ? [{
-    "@context": "https://schema.org", "@type": "ItemList",
-    itemListElement: list.map((c, i) => ({
-      "@type": "ListItem", position: i + 1,
-      url: `${SITE}/communities/${c.slug}.html`, name: c.name,
-    })),
+    "@context": "https://schema.org", "@type": "CollectionPage",
+    name: `高雄社區行情一覽`,
+    url: `${SITE}/communities/`,
+    inLanguage: "zh-TW",
+    description: `高雄美術館特區、農十六特區、瑞豐・巨蛋與中都重劃區共 ${list.length} 個社區的實價登錄成交紀錄，合計 ${dealTotal} 筆。`,
+    ...(dataUpdated ? { dateModified: dataUpdated } : {}),
+    publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: list.length,
+      itemListElement: list.map((c, i) => ({
+        "@type": "ListItem", position: i + 1,
+        url: `${SITE}/communities/${c.slug}.html`, name: c.name,
+      })),
+    },
   }] : [];
 
   return [
@@ -1175,6 +1186,11 @@ function communityIndex(list, dealsMap, hasBuyers) {
     成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
     先選一個生活圈，或直接用上方搜尋找社區名稱。
   </p>
+  ${dataUpdated ? `<p class="mt-4 font-mono text-[12px] text-inkFaint">
+    收錄 ${list.length} 個社區、成交 ${Object.values(dealsMap).reduce((a, b) => a + b.length, 0).toLocaleString("en-US")} 筆
+    ・資料更新於 <time datetime="${dataUpdated}">${twDate(dataUpdated)}</time>
+    ・來源：內政部不動產交易實價查詢服務網
+  </p>` : ""}
   <div class="mt-6 h-px bg-line"></div>
 
   ${list.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
@@ -1289,7 +1305,7 @@ export function buildCommunities(hasBuyers) {
   });
 
   writeFileSync(path.join(OUT_DIR, "index.html"),
-    communityIndex(list, dealsMap, hasBuyers), "utf-8");
+    communityIndex(list, dealsMap, hasBuyers, dataUpdated), "utf-8");
   console.log("[產生] communities/index.html");
   console.log(`[完成] 共產生 ${list.length} 個社區頁`);
 

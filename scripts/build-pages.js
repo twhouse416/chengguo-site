@@ -270,6 +270,10 @@ export function buildDealsIndex({ deals, hasBuyers }) {
   all.forEach(d => { (byArea[d.area] || (byArea[d.area] = [])).push(d); });
   const areas = Object.keys(byArea);
 
+  /* 這一頁的 dateModified 取最新一筆成交的日期：
+     賀成交是持續累積的內容，讓搜尋引擎知道它有在更新。 */
+  const latest = all.map(d => d.date).filter(Boolean).sort().pop();
+
   const jsonLd = [{
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -277,6 +281,14 @@ export function buildDealsIndex({ deals, hasBuyers }) {
       { "@type": "ListItem", position: 1, name: "首頁", item: `${SITE}/` },
       { "@type": "ListItem", position: 2, name: "賀成交", item: `${SITE}/deals/` },
     ],
+  }, {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `賀成交｜澄果團隊成交實績`,
+    url: `${SITE}/deals/`,
+    inLanguage: "zh-TW",
+    ...(latest ? { dateModified: String(latest).slice(0, 10) } : {}),
+    publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
   }];
 
   return [
