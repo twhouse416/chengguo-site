@@ -18,7 +18,7 @@
  *    要改文案請改 scripts/build-home.js、scripts/build-pages.js。
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -213,6 +213,63 @@ function build404() {
   console.log("[產生] 404.html");
 }
 
+/* ---------- 內部連結正規化 ----------
+ * 全站的 canonical 用的是目錄形式（https://k7.com.tw/communities/），
+ * 但樣板裡的連結一直寫成 communities/index.html。
+ * Google 從連結爬到 index.html 版本，發現 canonical 指向另一個網址，
+ * 就把它歸檔成「替代頁面（有適當的標準標記）」——歸併的結果是對的，
+ * 但每一條這種連結都白白花掉一次檢索配額。
+ * 站上有五千多條，而 Google 目前還有兩百多頁沒爬到，這很傷。
+ *
+ * 在全部頁面產生完之後統一改寫一次：
+ *   href="communities/index.html"          → href="communities/"
+ *   href="../index.html"                   → href="../"
+ *   href="index.html"                      → href="./"
+ *   href="communities/index.html#area-01"  → href="communities/#area-01"
+ *
+ * 只動 index.html。社區頁與文章頁的 <slug>.html 不受影響——
+ * 它們的 canonical 本來就是 .html 形式。
+ * 外部網址（https://…/index.html）也不動。
+ */
+function normalizeLinks(html) {
+  return html.replace(
+    /href="([^"]*?)index\.html(#[^"]*|\?[^"]*)?"/g,
+    (whole, prefix, tail) => {
+      if (/^(https?:)?\/\//i.test(prefix)) return whole;
+      return `href="${prefix || "./"}${tail || ""}"`;
+    }
+  );
+}
+
+/* 走訪產生出來的 HTML 一次把連結改掉。
+   放在這裡而不是各個樣板裡，是因為樣板有十幾個檔案、連結散落在各處，
+   集中一處才能確定沒有漏網，以後新增頁面也自動適用。
+   admin 是後台應用程式，它的連結不走這套規則，排除掉。 */
+function normalizeAllLinks() {
+  const SKIP = new Set(["admin", "src", "node_modules", ".git", "assets", "data", "config", "scripts"]);
+  let changed = 0, files = 0;
+  const walk = dir => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      if (e.name.startsWith(".") && e.name !== ".") continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        if (dir === ROOT && SKIP.has(e.name)) continue;
+        walk(full);
+      } else if (e.name.endsWith(".html")) {
+        const before = readFileSync(full, "utf-8");
+        const after = normalizeLinks(before);
+        files++;
+        if (after !== before) {
+          writeFileSync(full, after, "utf-8");
+          changed += (before.match(/href="[^"]*?index\.html/g) || []).length;
+        }
+      }
+    }
+  };
+  walk(ROOT);
+  console.log(`[整理] 內部連結改為目錄形式：掃描 ${files} 頁，改寫 ${changed} 條`);
+}
+
 function main() {
   const market = readJson("data/market-data.json", { areas: [] });
   const articlesData = readJson("data/articles.json", { articles: [] });
@@ -287,6 +344,9 @@ function main() {
     areas, indexPages,
   });
   build404();
+
+  /* 最後一步：把內部連結改成與 canonical 一致的目錄形式 */
+  normalizeAllLinks();
 
   console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、賀成交 ${dealCount} 筆、買方需求 ${hasBuyers ? "有" : "無"}`);
 }
