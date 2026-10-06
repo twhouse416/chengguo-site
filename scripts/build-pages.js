@@ -9,6 +9,7 @@
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize } from "./lib/layout.js";
 import { webSlug } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
+import { isoDate } from "./build-communities.js";
 
 /* ================= 文章列表 ================= */
 export function buildNotesIndex({ articles, hasBuyers }) {
@@ -117,7 +118,7 @@ export function buildVideosIndex({ videos, hasBuyers }) {
         name: v.titleShown || v.title,
         description: v.descShown || v.desc || (v.titleShown || v.title),
         thumbnailUrl: v.thumb,
-        uploadDate: v.published,
+        uploadDate: isoDate(v.published),
         embedUrl: `https://www.youtube.com/embed/${v.videoId}`,
         url: `https://www.youtube.com/watch?v=${v.videoId}`,
       },
