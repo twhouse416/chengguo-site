@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <text x="120" y="126" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#737A83">同一個社區</text>
+
+  <!-- 社區範圍 -->
+  <rect x="120" y="164" width="470" height="300" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2" stroke-dasharray="12 9"/>
+
+  <!-- A 棟 -->
+  <rect x="158" y="212" width="180" height="204" fill="#FD7305" fill-opacity="0.75"/>
+  <text x="248" y="282" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#FFFFFF" text-anchor="middle">A 棟</text>
+  <text x="248" y="330" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#FFFFFF" text-anchor="middle">○○路 12 號</text>
+  <text x="248" y="372" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#FFFFFF" text-anchor="middle">某某里 5 鄰</text>
+
+  <!-- B 棟 -->
+  <rect x="372" y="212" width="180" height="204" fill="#16191D" fill-opacity="0.08" stroke="#16191D" stroke-width="2"/>
+  <text x="462" y="282" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#16191D" text-anchor="middle">B 棟</text>
+  <text x="462" y="330" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83" text-anchor="middle">○○路 18 號</text>
+  <text x="462" y="372" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83" text-anchor="middle">某某里 9 鄰</text>
+
+  <text x="355" y="516" font-family="'Noto Sans TC',sans-serif" font-size="26" fill="#16191D" text-anchor="middle">同社區、不同門牌</text>
+
+  <!-- 問號橋接 -->
+  <g stroke="#C9C6C0" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M626 300 H706"/>
+    <path d="M676 272 L706 300 L676 328"/>
+  </g>
+  <text x="666" y="376" font-family="'Noto Sans TC',sans-serif" font-size="40" font-weight="700" fill="#FD7305" text-anchor="middle">？</text>
+
+  <!-- 右側四步驟 -->
+  <text x="754" y="126" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#737A83">四個步驟逐戶確認</text>
+
+  <g font-family="'Noto Sans TC',sans-serif" font-size="28" fill="#16191D">
+    <text x="754" y="214" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#FD7305">01</text>
+    <text x="810" y="214">取得完整地址</text>
+    <text x="754" y="282" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#FD7305">02</text>
+    <text x="810" y="282">查里別、國小國中</text>
+    <text x="754" y="350" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#FD7305">03</text>
+    <text x="810" y="350">對照原文核鄰別</text>
+    <text x="754" y="418" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#FD7305">04</text>
+    <text x="810" y="418">確認入學年度規定</text>
+  </g>
+
+  <path d="M120 620 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="676" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#B85400">學區看里、鄰，不看社區名</text>
+  <text x="120" y="722" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">國小與國中要分開查　｜　學區相同，入學仍須確認資格</text>
+</svg>
