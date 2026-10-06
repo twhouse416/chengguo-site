@@ -217,13 +217,13 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://k7.com.tw/schools/zuoying-js/</loc>
+    <loc>https://k7.com.tw/schools/shengli-es/</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://k7.com.tw/schools/shengli-es/</loc>
+    <loc>https://k7.com.tw/schools/zuoying-js/</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -254,6 +254,12 @@
   </url>
   <url>
     <loc>https://k7.com.tw/schools/sanmin-js/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://k7.com.tw/schools/shiquan-es/</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

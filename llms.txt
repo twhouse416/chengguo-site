@@ -64,18 +64,37 @@
   - 中山國小：https://k7.com.tw/schools/zhongshan-es/ ｜123 個社區
   - 龍華國小：https://k7.com.tw/schools/longhua-es/ ｜69 個社區
   - 明華國中：https://k7.com.tw/schools/minghua-js/ ｜68 個社區
+  - 勝利國小：https://k7.com.tw/schools/shengli-es/ ｜26 個社區
   - 左營國中：https://k7.com.tw/schools/zuoying-js/ ｜26 個社區
-  - 勝利國小：https://k7.com.tw/schools/shengli-es/ ｜25 個社區
   - 三民國小：https://k7.com.tw/schools/sanmin-es/ ｜15 個社區
   - 鼓山高中國中部：https://k7.com.tw/schools/gushan-hs-js/ ｜11 個社區
   - 龍華國中：https://k7.com.tw/schools/longhua-js/ ｜8 個社區
   - 新莊國小：https://k7.com.tw/schools/xinzhuang-es/ ｜7 個社區
   - 三民國中：https://k7.com.tw/schools/sanmin-js/ ｜4 個社區
+  - 十全國小：https://k7.com.tw/schools/shiquan-es/ ｜3 個社區
 - https://k7.com.tw/tools/mortgage/ ：房貸試算
 - https://k7.com.tw/tools/qingan/ ：新青安貸款資格與額度試算
 - https://k7.com.tw/tools/property-tax/ ：房地合一稅與土地增值稅概算
 - https://k7.com.tw/tools/school-zone/ ：學區查詢
 - https://k7.com.tw/notes/ ：購屋知識文章（9 篇）
+  - 高雄美術館買房攻略｜房價、生活機能、建案與選屋重點一次看：https://k7.com.tw/notes/meishuguan-buying-guide.html ｜2026-08-21 更新
+    美術館特區現在一坪多少？綠地、學區與生活機能各自的優勢在哪？這篇整理近一年實價登錄行情、區內主要社區與建案分布，並說明選屋時最容易被忽略的棟距、車位與公設條件。
+  - 【為什麼我們專營高雄美術館特區？】：https://k7.com.tw/notes/why-we-focus-art-museum.html ｜2026-07-31 更新
+    澄果團隊深耕高雄美術館特區十年以上，每天走同一個區域、看同一批社區。這篇說明為什麼專營一區能給出更準的訂價與更快的成交，以及我們如何用實價登錄逐筆比對，而不是報一個籠統的價格。
+  - 2026 新青安 3.0 ，澄果說明讓你一次看懂：https://k7.com.tw/notes/qingan-3-0-thresholds.html ｜2026-07-27 更新
+    額度依家庭狀況最高拉到 1,500 萬，同時新增所得排富、房屋總價上限與年齡限制，並改為一生限貸一次。先確認自己過不過得了門檻。
+  - 高雄買房自備款要準備多少？美術館、農十六、瑞豐、中都四區實算：https://k7.com.tw/notes/down-payment-four-districts.html ｜2026-07-28 更新
+    用內政部實價登錄近半年成交價，換算高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋與三民中都重劃區的三房總價與自備款區間，並列出頭期款之外常被忽略的費用。
+  - 重購退稅怎麼申請？換屋順序、2 年期限與 5 年閉鎖期一次看懂：https://k7.com.tw/notes/repurchase-tax-refund-order.html ｜2026-07-28 更新
+    房地合一稅重購退稅的條件、退還比例計算方式、先買後賣與先賣後買的差別，以及最容易被忽略的 5 年閉鎖期限制。附自住滿 6 年優惠的比較。
+  - 換屋該先買還是先賣？資金壓力與稅務時程的取捨：https://k7.com.tw/notes/buy-first-or-sell-first.html ｜2026-07-28 更新
+    先買後賣與先賣後買的現金流缺口、過渡期成本、議價立場差異，以及重購退稅 2 年與自住優惠 6 年這兩個關鍵時間限制怎麼影響決策。
+  - 高雄美術館特區 vs 農十六：生活品質與生活機能，怎麼選？：https://k7.com.tw/notes/art-museum-vs-nong16.html ｜2026-07-28 更新
+    同在鼓山區、同樣鎖定家庭客的兩大生活圈，每坪價差不小。美術館特區重生活品質、農十六重生活機能，從綠地環境、產品條件到學區劃分與總量管制逐項比較。
+  - 高雄中都重劃區值得買嗎？房價、生活機能與進場時機分析：https://k7.com.tw/notes/zhongdu-worth-waiting.html ｜2026-07-28 更新
+    三民區中都重劃區緊鄰愛河與中都濕地公園，是四大生活圈中總價門檻相對親民、又能兼顧市區距離與重劃區條件的一區。從先天條件、機能現況到適合進場的族群，用實價登錄資料分析。
+  - 為了學區買房值得嗎？高雄美術館、農十六、瑞豐巨蛋、中都購屋指南：https://k7.com.tw/notes/school-district-worth-buying.html ｜2026-10-06 更新
+    學區可以是購屋的重要考量，但生活圈名稱不等於正式學區，買房也不等於取得學位。先確認孩子的入學資格，再比較住宅與預算。
 - https://k7.com.tw/videos/ ：社區與區域介紹影片
 
 ## 引用說明
