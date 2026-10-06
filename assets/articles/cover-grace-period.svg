@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <text x="120" y="118" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">房貸 1,000 萬 ｜ 30 年 ｜ 2.5% ｜ 本息平均攤還</text>
+
+  <!-- 基準線 -->
+  <path d="M120 560 H1080" stroke="#16191D" stroke-width="2"/>
+
+  <!-- 不使用寬限期：平整長條 -->
+  <text x="120" y="188" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">不使用寬限期</text>
+  <rect x="120" y="396" width="200" height="164" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+  <rect x="330" y="396" width="200" height="164" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+  <text x="220" y="372" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#16191D" text-anchor="middle">39,512</text>
+  <text x="430" y="372" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#16191D" text-anchor="middle">39,512</text>
+  <text x="220" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">前 3 年</text>
+  <text x="430" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">第 4 年起</text>
+
+  <!-- 使用寬限期：低 → 高 -->
+  <text x="670" y="188" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#B85400">使用 3 年寬限期</text>
+  <rect x="670" y="474" width="200" height="86" fill="#FD7305" fill-opacity="0.35" stroke="#FD7305" stroke-width="2"/>
+  <rect x="880" y="384" width="200" height="176" fill="#FD7305" fill-opacity="0.85"/>
+  <text x="770" y="450" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#B85400" text-anchor="middle">20,833</text>
+  <text x="980" y="360" font-family="'IBM Plex Mono',monospace" font-size="25" font-weight="700" fill="#B85400" text-anchor="middle">42,475</text>
+  <text x="770" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">寬限期內</text>
+  <text x="980" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">期滿後</text>
+
+  <!-- 落差箭頭 -->
+  <g stroke="#FD7305" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M770 486 V318 H1052 V362"/>
+    <path d="M1038 348 L1052 362 L1066 348"/>
+  </g>
+  <text x="900" y="300" font-family="'Noto Sans TC',sans-serif" font-size="24" font-weight="700" fill="#FD7305" text-anchor="middle">月付金翻倍</text>
+
+  <text x="120" y="662" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">單位：元／月（假設試算，非核貸利率）</text>
+
+  <path d="M120 696 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="752" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#B85400">只有寬限期內付得起，就是預算該調整了</text>
+</svg>
