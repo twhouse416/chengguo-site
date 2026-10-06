@@ -142,8 +142,32 @@ export const esc = s => String(s ?? "")
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
-/* **粗體** → <strong> */
-export const rich = s => esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-ink">$1</strong>');
+/* 文章內文的輕量標記
+ * ------------------------------------------------
+ *   **粗體**        → <strong>
+ *   [文字](網址)    → <a>
+ *
+ * 加連結支援的原因：文章要引用官方公告（學校、區公所、捷運、內政部）
+ * 才站得住腳，也要連到站內的學區查詢、生活圈行情與社區頁。
+ * 沒有連結語法的話，這些只能寫成一串裸網址，讀者不會點，
+ * 爬蟲也抓不到「這一頁連去哪裡」的關係。
+ *
+ * 先 esc 再處理標記，所以內文裡的 < > & 不會變成 HTML。
+ * 網址只允許 http(s)、站內相對路徑與錨點，避免 javascript: 之類的寫法。
+ * 站外連結補 target 與 rel="noopener"，站內連結不加（同分頁開啟才順）。
+ */
+const SAFE_HREF = /^(https?:\/\/|\/|\.{1,2}\/|#)/;
+export const rich = s => esc(s)
+  .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (whole, text, href) => {
+    /* esc 把 & 變成 &amp;，在 href 屬性裡本來就該是這樣，不用還原 */
+    const raw = href.replace(/&amp;/g, "&");
+    if (!SAFE_HREF.test(raw)) return whole;         /* 不認得的協定：原樣保留，方便發現寫錯 */
+    const external = /^https?:\/\//.test(raw) && !raw.startsWith(SITE);
+    return `<a href="${href}" class="text-orangeDeep underline underline-offset-2 hover:no-underline"`
+      + (external ? ` target="_blank" rel="noopener noreferrer"` : "")
+      + `>${text}</a>`;
+  })
+  .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-ink">$1</strong>');
 
 export const fmtDate = d => String(d || "").replaceAll("-", ".");
 
