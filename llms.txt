@@ -75,7 +75,7 @@
 - https://k7.com.tw/tools/qingan/ ：新青安貸款資格與額度試算
 - https://k7.com.tw/tools/property-tax/ ：房地合一稅與土地增值稅概算
 - https://k7.com.tw/tools/school-zone/ ：學區查詢
-- https://k7.com.tw/notes/ ：購屋知識文章（8 篇）
+- https://k7.com.tw/notes/ ：購屋知識文章（9 篇）
 - https://k7.com.tw/videos/ ：社區與區域介紹影片
 
 ## 引用說明
