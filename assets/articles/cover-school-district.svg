@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <!-- 底部基準線 -->
+  <path d="M120 640 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <!-- 左：一個生活圈的範圍（大圓），裡面切出兩個不同學區 -->
+  <g>
+    <circle cx="390" cy="390" r="200" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2" stroke-dasharray="10 8"/>
+    <text x="390" y="155" font-family="'IBM Plex Mono',monospace" font-size="24"
+          fill="#737A83" text-anchor="middle">生活圈名稱</text>
+
+    <!-- 左右兩半＝同一個生活圈裡的不同學區 -->
+    <path d="M390 210 A200 200 0 0 0 390 570 Z" fill="#FD7305" fill-opacity="0.75"/>
+    <path d="M390 210 A200 200 0 0 1 390 570 Z" fill="#16191D" fill-opacity="0.08"/>
+    <path d="M390 190 V590" stroke="#16191D" stroke-width="3"/>
+
+    <text x="300" y="380" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700"
+          fill="#FFFFFF" text-anchor="middle">A 國小</text>
+    <text x="300" y="424" font-family="'IBM Plex Mono',monospace" font-size="22"
+          fill="#FFFFFF" text-anchor="middle">某某里</text>
+
+    <text x="482" y="380" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700"
+          fill="#16191D" text-anchor="middle">B 國小</text>
+    <text x="482" y="424" font-family="'IBM Plex Mono',monospace" font-size="22"
+          fill="#737A83" text-anchor="middle">另一里</text>
+
+    <text x="390" y="690" font-family="'IBM Plex Mono',monospace" font-size="24"
+          fill="#737A83" text-anchor="middle">同一個生活圈，可能分屬不同學區</text>
+  </g>
+
+  <!-- 中間：不等於 -->
+  <g stroke="#C9C6C0" stroke-width="4" stroke-linecap="round">
+    <path d="M648 372 H712"/>
+    <path d="M648 412 H712"/>
+    <path d="M634 432 L726 352"/>
+  </g>
+
+  <!-- 右：查核清單 -->
+  <g>
+    <text x="800" y="155" font-family="'IBM Plex Mono',monospace" font-size="24"
+          fill="#737A83">買之前要核對的</text>
+
+    <g font-family="'Noto Sans TC',sans-serif" font-size="30" fill="#16191D">
+      <rect x="800" y="208" width="26" height="26" fill="none" stroke="#FD7305" stroke-width="3"/>
+      <path d="M806 221 l6 7 l12 -15" fill="none" stroke="#FD7305" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="846" y="232">完整門牌與里、鄰</text>
+
+      <rect x="800" y="278" width="26" height="26" fill="none" stroke="#FD7305" stroke-width="3"/>
+      <path d="M806 291 l6 7 l12 -15" fill="none" stroke="#FD7305" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="846" y="302">國小、國中分開查</text>
+
+      <rect x="800" y="348" width="26" height="26" fill="none" stroke="#FD7305" stroke-width="3"/>
+      <path d="M806 361 l6 7 l12 -15" fill="none" stroke="#FD7305" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="846" y="372">是否總量管制</text>
+
+      <rect x="800" y="418" width="26" height="26" fill="none" stroke="#FD7305" stroke-width="3"/>
+      <path d="M806 431 l6 7 l12 -15" fill="none" stroke="#FD7305" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="846" y="442">設籍與居住規定</text>
+
+      <rect x="800" y="488" width="26" height="26" fill="none" stroke="#FD7305" stroke-width="3"/>
+      <path d="M806 501 l6 7 l12 -15" fill="none" stroke="#FD7305" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="846" y="512">登記與報到期限</text>
+    </g>
+
+    <path d="M800 568 H1080" stroke="#DEDCD7" stroke-width="2"/>
+    <text x="800" y="612" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700"
+          fill="#B85400">買房 ≠ 取得學位</text>
+  </g>
+</svg>
