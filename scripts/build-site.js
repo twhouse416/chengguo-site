@@ -155,6 +155,7 @@ ${indexPages.schools.map(x => `  - ${x.name}：${SITE}/schools/${x.slug}/ ｜${x
 - ${SITE}/tools/property-tax/ ：房地合一稅與土地增值稅概算
 - ${SITE}/tools/school-zone/ ：學區查詢
 - ${SITE}/notes/ ：購屋知識文章（${articles.length} 篇）
+${articles.map(a => `  - ${a.title}：${SITE}/notes/${webSlug(a.slug)}.html ｜${a.updated || a.date} 更新${a.summary ? `\n    ${a.summary}` : ""}`).join("\n")}
 - ${SITE}/videos/ ：社區與區域介紹影片
 
 ## 引用說明

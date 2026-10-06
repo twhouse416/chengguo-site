@@ -52,10 +52,7 @@ function ensureSets() {
   list.forEach(c => {
     const k = devName(c);
     if (k) d.set(k, (d.get(k) || 0) + 1);
-    [c.school?.primary, c.school?.junior].filter(Boolean).forEach(x => {
-      const n = normSchool(x);
-      if (n) sc.set(n, (sc.get(n) || 0) + 1);
-    });
+    schoolNames(c).forEach(n => sc.set(n, (sc.get(n) || 0) + 1));
   });
   [...d.entries()].forEach(([k, n]) => { if (n >= MIN_DEV) HAS_DEV.add(k); });
   [...sc.entries()].forEach(([k, n]) => { if (n >= MIN_SCHOOL) HAS_SCHOOL.add(k); });
@@ -68,12 +65,28 @@ export function devSlugOf(rawName) {
 }
 export function schoolSlugOf(rawName) {
   ensureSets();
-  const k = normSchool(rawName);
+  const k = splitSchools(rawName)[0] || "";
   return k && HAS_SCHOOL.has(k) ? schoolSlug(k) : "";
 }
 
 /* 學校名稱正規化：不同批次的社區資料寫法不一致
    （「中山國小」「市立中山國小」「鼓山區中山國小」都出現過）。 */
+/* 一個欄位裡可能並列兩所學校（「龍華國小／勝利國小」），拆開後各自正規化 */
+export function splitSchools(s) {
+  return String(s || "")
+    .split(/[\/\uFF0F\u3001,\uFF0C;\uFF1B]/)
+    .map(normSchool)
+    .filter(Boolean);
+}
+
+/* 一個社區涉及的所有學校（國小＋國中，含並列寫法），去重 */
+export function schoolNames(c) {
+  const out = new Set();
+  [c?.school?.primary, c?.school?.junior].filter(Boolean)
+    .forEach(x => splitSchools(x).forEach(n => out.add(n)));
+  return [...out];
+}
+
 export function normSchool(s) {
   return String(s || "")
     .replace(/^高雄市/, "")
@@ -534,9 +547,7 @@ export function buildIndexPages({ hasBuyers = false } = {}) {
   /* ---- 學區 ---- */
   const bySchool = new Map();
   list.forEach(c => {
-    [c.school?.primary, c.school?.junior].filter(Boolean).forEach(s => {
-      const k = normSchool(s);
-      if (!k) return;
+    schoolNames(c).forEach(k => {
       if (!bySchool.has(k)) bySchool.set(k, []);
       bySchool.get(k).push(c);
     });
