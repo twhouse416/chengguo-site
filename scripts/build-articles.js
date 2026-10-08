@@ -220,7 +220,7 @@ function pageHtml(a, others, hasBuyers) {
 
   <section class="mt-14 pt-8 border-t border-line">
     <div class="flex flex-wrap gap-6 items-start">
-      <img src="../assets/logo-icon.png" alt="" class="w-14 h-14 object-contain shrink-0" />
+      <img src="../assets/logo-icon.png" alt="" width="56" height="56" class="w-14 h-14 object-contain shrink-0" />
       <div class="flex-1 min-w-[240px]">
         <div class="font-mono text-[12px] tracking-wider text-inkFaint mb-1">關於作者</div>
         <h2 class="text-[18px] font-bold tracking-tight mb-3">${BRAND.teamName}</h2>

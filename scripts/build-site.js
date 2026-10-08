@@ -29,7 +29,8 @@ import { buildArticles, webSlug } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
 import { buildAreas } from "./build-areas.js";
-import { buildIndexPages } from "./build-index-pages.js";
+import { buildIndexPages, devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
+import { devName } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,26 +45,64 @@ function readJson(rel, fallback) {
   }
 }
 
-function buildSitemap(articles, communities = [], hasDeals = false, areas = [], indexPages = { developers: [], schools: [] }) {
+/* 工具頁與關於頁的內容是寫死在程式裡的，不會隨資料每天變動。
+   改了 build-tools.js / build-about.js 的文案時，手動更新這個日期。 */
+const STATIC_CONTENT_DATE = "2026-10-08";
+
+/* sitemap 的 lastmod 必須說實話。
+   全站每天因為行情與 YouTube 同步而重建，如果每一頁都寫成「今天」，
+   Google 會判定這個欄位不可信並整個忽略，檢索預算就無法集中到真正改過的頁面。
+   所以這裡逐頁推算：社區頁用該社區最新一筆成交日，生活圈／學區／建商頁
+   取旗下社區的最大值，列表頁取其資料來源的最新日期，工具頁用上面的常數。 */
+function maxDate(list) {
+  const ds = list.filter(Boolean).map(x => String(x).slice(0, 10)).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x));
+  return ds.length ? ds.sort().at(-1) : "";
+}
+
+function buildSitemap(articles, communities = [], hasDeals = false, areas = [], indexPages = { developers: [], schools: [] }, ctx = {}) {
   const today = new Date().toISOString().slice(0, 10);
+  const { dealsByCommunity = {}, videosUpdated = "", dealsUpdated = "", marketUpdated = "" } = ctx;
+
+  /* 社區 → 最新成交日 */
+  const cLast = {};
+  communities.forEach(c => {
+    cLast[c.slug] = maxDate((dealsByCommunity[c.slug] || []).map(d => d.date)) || c.updated || "";
+  });
+  /* 生活圈／學區／建商 → 旗下社區的最大值 */
+  const groupLast = (filterFn) => maxDate(communities.filter(filterFn).map(c => cLast[c.slug]));
+  const areaLast = {};
+  areas.forEach(a => { areaLast[a.slug] = groupLast(c => c.area === a.name) || marketUpdated; });
+  const devLast = {};
+  (indexPages.developers || []).forEach(d => {
+    devLast[d.slug] = groupLast(c => devSlugOf(devName(c)) === d.slug);
+  });
+  const schoolLast = {};
+  (indexPages.schools || []).forEach(x => {
+    schoolLast[x.slug] = groupLast(c => schoolNames(c).some(n => schoolSlugOf(n) === x.slug));
+  });
+  const allCommunityLast = maxDate(Object.values(cLast));
+  const articlesLast = maxDate(articles.map(a => a.updated || a.date));
+  const homeLast = maxDate([allCommunityLast, articlesLast, dealsUpdated, marketUpdated]);
+
   const pages = [
-    { loc: `${SITE}/`, priority: "1.0", freq: "daily" },
-    { loc: `${SITE}/notes/`, priority: "0.8", freq: "weekly" },
-    { loc: `${SITE}/videos/`, priority: "0.8", freq: "weekly" },
-    { loc: `${SITE}/tools/school-zone/`, priority: "0.7", freq: "monthly" },
-    { loc: `${SITE}/tools/mortgage/`, priority: "0.7", freq: "monthly" },
-    { loc: `${SITE}/tools/qingan/`, priority: "0.7", freq: "monthly" },
-    { loc: `${SITE}/tools/property-tax/`, priority: "0.7", freq: "monthly" },
-    { loc: `${SITE}/about/`, priority: "0.7", freq: "monthly" },
-    ...(hasDeals ? [{ loc: `${SITE}/deals/`, priority: "0.7", freq: "weekly" }] : []),
-    ...(communities.length ? [{ loc: `${SITE}/communities/`, priority: "0.8", freq: "weekly" }] : []),
+    { loc: `${SITE}/`, lastmod: homeLast, priority: "1.0", freq: "daily" },
+    { loc: `${SITE}/notes/`, lastmod: articlesLast, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/videos/`, lastmod: videosUpdated, priority: "0.8", freq: "weekly" },
+    { loc: `${SITE}/tools/school-zone/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/tools/mortgage/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/tools/qingan/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/tools/property-tax/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/about/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    ...(hasDeals ? [{ loc: `${SITE}/deals/`, lastmod: dealsUpdated, priority: "0.7", freq: "weekly" }] : []),
+    ...(communities.length ? [{ loc: `${SITE}/communities/`, lastmod: allCommunityLast, priority: "0.8", freq: "weekly" }] : []),
     /* 生活圈頁的優先度給到 0.9：它是「美術館特區房價」這類主要關鍵字的落地頁，
        比單一社區頁重要。 */
-    ...areas.map(a => ({ loc: `${SITE}/areas/${a.slug}/`, priority: "0.9", freq: "weekly" })),
-    ...(indexPages.developers || []).map(d => ({ loc: `${SITE}/developers/${d.slug}/`, priority: "0.7", freq: "monthly" })),
-    ...(indexPages.schools || []).map(x => ({ loc: `${SITE}/schools/${x.slug}/`, priority: "0.7", freq: "monthly" })),
+    ...areas.map(a => ({ loc: `${SITE}/areas/${a.slug}/`, lastmod: areaLast[a.slug], priority: "0.9", freq: "weekly" })),
+    ...(indexPages.developers || []).map(d => ({ loc: `${SITE}/developers/${d.slug}/`, lastmod: devLast[d.slug], priority: "0.7", freq: "monthly" })),
+    ...(indexPages.schools || []).map(x => ({ loc: `${SITE}/schools/${x.slug}/`, lastmod: schoolLast[x.slug], priority: "0.7", freq: "monthly" })),
     ...communities.map(c => ({
       loc: `${SITE}/communities/${c.slug}.html`,
+      lastmod: cLast[c.slug],
       priority: "0.9", freq: "weekly",
     })),
     ...articles.map(a => ({
@@ -89,6 +128,18 @@ ${pages.map(p => `  <url>
 
 /* robots.txt 也依 site-config.json 的 siteUrl 產生，
    換網域時只要改設定檔一處，不必再手動改這個檔。 */
+/* AI 搜尋引擎的「回答型」爬蟲：使用者問問題時即時抓取並附上出處連結。
+   明確列出來，是因為部分爬蟲只讀自己的 User-agent 區塊，不會套用萬用字元那段；
+   日後若要對「訓練型」爬蟲（GPTBot、ClaudeBot、CCBot、Google-Extended）
+   採取不同政策，也只要改這裡。 */
+const AI_ANSWER_BOTS = [
+  "OAI-SearchBot", "ChatGPT-User",
+  "Claude-SearchBot", "Claude-User",
+  "PerplexityBot", "Perplexity-User",
+  "Google-Extended", "Applebot-Extended",
+  "Bingbot", "Amazonbot", "meta-externalagent",
+];
+
 function buildRobots() {
   const txt = `User-agent: *
 Allow: /
@@ -96,6 +147,8 @@ Allow: /
 # 後台不需要被搜尋引擎收錄
 Disallow: /admin/
 
+# AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
+${AI_ANSWER_BOTS.map(b => `User-agent: ${b}\nAllow: /\nDisallow: /admin/\n`).join("\n")}
 Sitemap: ${SITE}/sitemap.xml
 `;
   writeFileSync(path.join(ROOT, "robots.txt"), txt, "utf-8");
@@ -232,6 +285,14 @@ function build404() {
  * 它們的 canonical 本來就是 .html 形式。
  * 外部網址（https://…/index.html）也不動。
  */
+/* 無障礙：鍵盤使用者按 Tab 第一下會拿到「跳到主要內容」，
+   需要有個 id="main" 的落點。各頁的 <main> 寫在不同的建置檔裡，
+   在這個收尾階段統一補上，只改一處。 */
+function addMainId(html) {
+  if (/<main[^>]*\sid=/.test(html)) return html;
+  return html.replace(/<main(\s|>)/, '<main id="main"$1');
+}
+
 function normalizeLinks(html) {
   return html.replace(
     /href="([^"]*?)index\.html(#[^"]*|\?[^"]*)?"/g,
@@ -258,7 +319,7 @@ function normalizeAllLinks() {
         walk(full);
       } else if (e.name.endsWith(".html")) {
         const before = readFileSync(full, "utf-8");
-        const after = normalizeLinks(before);
+        const after = addMainId(normalizeLinks(before));
         files++;
         if (after !== before) {
           writeFileSync(full, after, "utf-8");
@@ -334,7 +395,13 @@ function main() {
   });
 
   /* 網站地圖、robots.txt、llms.txt、404 */
-  buildSitemap(articles, communities, dealCount > 0, areas, indexPages);
+  const cdForMap = readJson("data/community-deals.json", { deals: {} });
+  buildSitemap(articles, communities, dealCount > 0, areas, indexPages, {
+    dealsByCommunity: cdForMap.deals || {},
+    videosUpdated: maxDate((videos.videos || []).map(v => v.published)),
+    dealsUpdated: maxDate((deals.deals || []).map(d => d.date || d.createdAt)) || String(deals.updatedAt || "").slice(0, 10),
+    marketUpdated: String(market?.updatedAt || cdForMap.updatedAt || "").slice(0, 10),
+  });
   buildRobots();
   const communityDeals = readJson("data/community-deals.json", { deals: {} });
   buildLlmsTxt({

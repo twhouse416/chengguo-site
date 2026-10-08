@@ -40,7 +40,7 @@ export const TOOLS = [
     ],
     sourceName: "國民小學學區劃分一覽表（官方 PDF）",
     sourceUrl: "https://orgws.kcg.gov.tw/001/KcgOrgUploadFiles/225/relfile/0/10486/82b13979-92d5-4bb2-ad6d-9746c86ac3e0.pdf",
-    sources: [["國民中學學區劃分一覽表（官方 PDF）", "https://cloudschool.chc.edu.tw/open-message/074771/get-file/696830c2a044d41ced3a58ca"]],
+    sources: [["國民中學學區劃分一覽表（官方 PDF）", "https://orgws.kcg.gov.tw/001/KcgOrgUploadFiles/326/RelFile/70194/510988/563dec37-81f8-493e-a45f-90003afa40e1.pdf"]],
     faq: [
       ["高雄的國小、國中學區怎麼查？",
        "高雄市的國小與國中學區都以「里」甚至「鄰」劃分，同一個里可能分屬不同學校。可以在本頁選擇行政區與里別，一次查出對應的國小與國中，並對照官方原文確認自己所在的鄰別。不確定時建議直接向學校或區公所確認。"],

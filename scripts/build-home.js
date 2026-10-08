@@ -173,7 +173,7 @@ function heroSection(heroVideo) {
         <div data-hero-frame class="absolute inset-0"></div>
         <img data-hero-poster src="${esc(poster)}" alt="${heroTitle}"
           class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          width="1280" height="720" />
+          width="1280" height="720" fetchpriority="high" decoding="async" />
         <button type="button" data-hero-play
           class="absolute inset-0 w-full h-full flex items-center justify-center group"
           aria-label="播放影片：${heroTitle}">
