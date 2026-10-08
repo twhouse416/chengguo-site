@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="104" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">112 個社區　社區內高低樓層單價比較</text>
+
+  <!-- 大樓剖面 -->
+  <g>
+    <rect x="150" y="160" width="230" height="110" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="150" y="278" width="230" height="110" fill="#16191D" fill-opacity="0.06" stroke="#C9C6C0" stroke-width="2"/>
+    <rect x="150" y="396" width="230" height="110" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="265" y="225" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#FFFFFF" text-anchor="middle">高樓層</text>
+    <text x="265" y="343" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">中樓層</text>
+    <text x="265" y="461" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D" text-anchor="middle">低樓層</text>
+  </g>
+
+  <!-- 差距 -->
+  <g stroke="#FD7305" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M420 215 H500"/><path d="M420 451 H500"/>
+    <path d="M500 215 V451"/>
+  </g>
+  <text x="540" y="310" font-family="'Noto Sans TC',sans-serif" font-size="46" font-weight="700" fill="#B85400">只差 6.8%</text>
+  <text x="540" y="362" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#737A83">中位 +1.95 萬／坪</text>
+  <text x="540" y="410" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">112 個社區裡有 23 個是相反的</text>
+  <text x="540" y="456" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">35 萬／坪、40 坪 ≈ 95 萬總價差</text>
+
+  <path d="M120 558 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="614" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">頂樓呢？49 個可比社區</text>
+  <text x="120" y="670" font-family="'Noto Sans TC',sans-serif" font-size="32" font-weight="700" fill="#16191D">中位差 <tspan fill="#B85400">+0.15 萬／坪</tspan>　26／49 反而更貴</text>
+  <path d="M120 706 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="760" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#B85400">頂樓沒有系統性折價</text>
+</svg>

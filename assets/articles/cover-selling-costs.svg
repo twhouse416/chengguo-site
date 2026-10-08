@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="104" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">成交價　≠　你拿到的錢</text>
+
+  <rect x="120" y="150" width="960" height="62" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+  <text x="150" y="191" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D">成交價</text>
+  <text x="1050" y="191" font-family="'IBM Plex Mono',monospace" font-size="27" fill="#16191D" text-anchor="end">1,500 萬</text>
+
+  <g font-family="'Noto Sans TC',sans-serif" font-size="26" fill="#16191D">
+    <rect x="180" y="238" width="760" height="52" fill="#FD7305" fill-opacity="0.9"/>
+    <text x="210" y="273" fill="#FFFFFF">仲介服務費</text>
+    <text x="910" y="273" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#FFFFFF" text-anchor="end">雙方合計上限 6%</text>
+
+    <rect x="180" y="306" width="760" height="52" fill="#FD7305" fill-opacity="0.72"/>
+    <text x="210" y="341" fill="#FFFFFF">房地合一稅</text>
+    <text x="910" y="341" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#FFFFFF" text-anchor="end">15% – 45%</text>
+
+    <rect x="180" y="374" width="760" height="52" fill="#FD7305" fill-opacity="0.54"/>
+    <text x="210" y="409">土地增值稅</text>
+    <text x="910" y="409" font-family="'IBM Plex Mono',monospace" font-size="23" text-anchor="end">自用 10% / 一般 20–40%</text>
+
+    <rect x="180" y="442" width="760" height="52" fill="#FD7305" fill-opacity="0.36"/>
+    <text x="210" y="477">代書費、履保、規費</text>
+    <text x="910" y="477" font-family="'IBM Plex Mono',monospace" font-size="23" text-anchor="end">數千 – 數萬</text>
+
+    <rect x="180" y="510" width="760" height="52" fill="#FD7305" fill-opacity="0.2"/>
+    <text x="210" y="545">原貸款清償</text>
+    <text x="910" y="545" font-family="'IBM Plex Mono',monospace" font-size="23" text-anchor="end">視餘額</text>
+  </g>
+
+  <rect x="120" y="588" width="960" height="62" fill="#16191D"/>
+  <text x="150" y="629" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#FFFFFF">淨到手</text>
+  <text x="1050" y="629" font-family="'IBM Plex Mono',monospace" font-size="27" fill="#FD7305" text-anchor="end">？</text>
+
+  <path d="M120 692 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="746" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#B85400">持有期間與設籍狀況，可能差到一百萬以上</text>
+</svg>

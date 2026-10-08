@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="104" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">皇苑御之苑　352 筆住家成交　單價分布（萬／坪，依實際比例繪製）</text>
+
+  <path d="M200 330 H1070" stroke="#16191D" stroke-width="2"/>
+  <path d="M200 300 V360" stroke="#16191D" stroke-width="3"/>
+  <path d="M1070 300 V360" stroke="#16191D" stroke-width="3"/>
+  <rect x="345" y="288" width="197" height="84" fill="#FD7305" fill-opacity="0.8"/>
+  <path d="M439 288 V372" stroke="#FFFFFF" stroke-width="5"/>
+
+  <g font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83" text-anchor="middle">
+    <text x="200" y="412">29.1</text>
+    <text x="345" y="412">36.7</text>
+    <text x="542" y="412">47.0</text>
+    <text x="1070" y="412">74.6</text>
+  </g>
+  <g font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83" text-anchor="middle">
+    <text x="200" y="446">最低</text>
+    <text x="345" y="446">Q1</text>
+    <text x="542" y="446">Q3</text>
+    <text x="1070" y="446">最高</text>
+  </g>
+  <text x="439" y="262" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#B85400" text-anchor="middle">中位 41.6</text>
+
+  <path d="M120 516 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="572" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">113 個成交滿 20 筆的社區</text>
+  <text x="120" y="632" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#16191D">社區內部價差中位數 <tspan fill="#B85400">6.3 萬／坪</tspan>（22%）</text>
+  <text x="120" y="682" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">40 坪換算 ＝ 總價差 252 萬</text>
+  <path d="M120 714 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="766" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#B85400">鄰居賣多少，不是你的答案</text>
+</svg>
