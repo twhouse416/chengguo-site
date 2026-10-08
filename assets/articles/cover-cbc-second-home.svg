@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+
+  <text x="120" y="112" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">央行　自然人第 2 戶購屋貸款　2026/9/18 起</text>
+
+  <!-- 成數對照 -->
+  <g>
+    <rect x="120" y="186" width="252" height="128" fill="#16191D" fill-opacity="0.08" stroke="#16191D" stroke-width="2"/>
+    <text x="246" y="252" font-family="'Noto Sans TC',sans-serif" font-size="56" font-weight="700" fill="#16191D" text-anchor="middle">6 成</text>
+    <text x="246" y="292" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">9/18 之前</text>
+
+    <g stroke="#FD7305" stroke-width="5" fill="none" stroke-linecap="round">
+      <path d="M404 250 H468"/>
+      <path d="M444 228 L468 250 L444 272"/>
+    </g>
+
+    <rect x="500" y="186" width="252" height="128" fill="#FD7305" fill-opacity="0.85"/>
+    <text x="626" y="252" font-family="'Noto Sans TC',sans-serif" font-size="56" font-weight="700" fill="#FFFFFF" text-anchor="middle">7 成</text>
+    <text x="626" y="292" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#FFFFFF" text-anchor="middle">9/18 起</text>
+
+    <rect x="800" y="186" width="280" height="128" fill="none" stroke="#C9C6C0" stroke-width="2" stroke-dasharray="10 8"/>
+    <text x="940" y="238" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#B85400" text-anchor="middle">仍無寬限期</text>
+    <text x="940" y="280" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83" text-anchor="middle">本金第一期就要還</text>
+  </g>
+
+  <!-- 四生活圈自備款少準備 -->
+  <text x="120" y="392" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">高雄四個生活圈　自備款少準備（常見總價試算）</text>
+  <path d="M120 416 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <g font-family="'Noto Sans TC',sans-serif">
+    <text x="120" y="472" font-size="27" fill="#16191D">美術館特區</text>
+    <text x="520" y="472" font-size="22" font-family="'IBM Plex Mono',monospace" fill="#737A83" text-anchor="end">1,700 萬</text>
+    <rect x="560" y="450" width="340" height="30" fill="#FD7305" fill-opacity="0.85"/>
+    <text x="920" y="473" font-size="26" font-weight="700" font-family="'IBM Plex Mono',monospace" fill="#B85400">170 萬</text>
+
+    <text x="120" y="532" font-size="27" fill="#16191D">中都重劃區</text>
+    <text x="520" y="532" font-size="22" font-family="'IBM Plex Mono',monospace" fill="#737A83" text-anchor="end">1,650 萬</text>
+    <rect x="560" y="510" width="330" height="30" fill="#FD7305" fill-opacity="0.7"/>
+    <text x="910" y="533" font-size="26" font-weight="700" font-family="'IBM Plex Mono',monospace" fill="#B85400">165 萬</text>
+
+    <text x="120" y="592" font-size="27" fill="#16191D">瑞豐・巨蛋</text>
+    <text x="520" y="592" font-size="22" font-family="'IBM Plex Mono',monospace" fill="#737A83" text-anchor="end">1,442 萬</text>
+    <rect x="560" y="570" width="288" height="30" fill="#FD7305" fill-opacity="0.55"/>
+    <text x="868" y="593" font-size="26" font-weight="700" font-family="'IBM Plex Mono',monospace" fill="#B85400">144 萬</text>
+
+    <text x="120" y="652" font-size="27" fill="#16191D">農十六特區</text>
+    <text x="520" y="652" font-size="22" font-family="'IBM Plex Mono',monospace" fill="#737A83" text-anchor="end">1,258 萬</text>
+    <rect x="560" y="630" width="252" height="30" fill="#FD7305" fill-opacity="0.4"/>
+    <text x="832" y="653" font-size="26" font-weight="700" font-family="'IBM Plex Mono',monospace" fill="#B85400">126 萬</text>
+  </g>
+
+  <path d="M120 702 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="752" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">自備款少準備，但月付金變高</text>
+</svg>
