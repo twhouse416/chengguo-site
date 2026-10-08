@@ -80,7 +80,7 @@ export const TOOLS = [
       ["寬限期真的划算嗎？",
        "寬限期讓前期壓力變小，但本金沒有減少，寬限期結束後月付會跳升，而且整段期間付出的利息會比不用寬限期更多。以貸款960萬、30年、2.3%計算，加3年寬限期後總利息會多出約26萬元。使用前先確認寬限期滿後的月付負擔得起。"],
       ["高雄的房貸成數大概可以貸到幾成？",
-       "一般首購、名下無房者通常可貸七到八成；名下已有房屋者成數會下降，並受央行信用管制規定影響。實際成數由銀行依物件的屋齡、地段、坪數條件，以及個人收入與信用狀況綜合評估，同一間房子在不同銀行也可能拿到不同條件。"],
+       "一般首購、名下無房者通常可貸七到八成，不在央行成數規範的限制內；名下已有房屋者則受央行規定的上限約束——自 2026 年 9 月 18 日起，自然人第 2 戶上限為 7 成（原 6 成），第 3 戶以上 3 成，兩者都不得有寬限期；高價住宅（高雄為 4,000 萬元以上）上限 3 成。換屋自住者可與銀行切結、自撥款日起 18 個月內出售原屋，不受成數上限與寬限期限制。上述是上限不是保證，實際成數仍由銀行依物件的屋齡、地段、坪數條件，以及個人收入與信用狀況綜合評估，同一間房子在不同銀行也可能拿到不同條件。"],
       ["除了頭期款，還要準備哪些錢？",
        "仲介服務費（買方為成交價的2%）、代書費、規費、契稅、印花稅、火險與地震險，以及裝潢與家電。中古屋整理一般抓總價的5%–10%，若重視高級裝潢可能需要到20%。建議在頭期款之外，額外預留至少半年的生活準備金。"],
     ],
@@ -224,6 +224,61 @@ function areaBudgetBlock(market, dataNote) {
   </section>`;
 }
 
+/* 央行不動產抵押貸款業務規定摘要（2026/9/18 起）
+   放在房貸與新青安兩個工具頁。成數是銀行核貸的硬天花板，
+   試算完月付金卻不知道自己能貸幾成，等於白算一次。
+   規定調整時只要改這裡的 CBC_ROWS 與 CBC_EFFECTIVE。 */
+const CBC_EFFECTIVE = "2026-09-18";
+const CBC_SOURCE = "https://www.cbc.gov.tw/tw/cp-357-192864-4319f-1.html";
+const CBC_ROWS = [
+  ["自然人第 1 戶（名下已有房屋者）", "未設上限", "不得有寬限期"],
+  ["自然人第 2 戶", "7 成", "不得有寬限期"],
+  ["自然人第 3 戶以上", "3 成", "不得有寬限期"],
+  ["公司法人購置住宅", "3 成", "不得有寬限期"],
+  ["自然人購置高價住宅", "3 成", "不得有寬限期"],
+  ["餘屋貸款", "3 成", "—"],
+];
+
+function cbcRulesBlock() {
+  return `<section class="mt-16">
+    <h2 class="display text-[23px] mb-4">央行現行成數上限（2026 年 9 月 18 日起）</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-2xl">
+      自然人第 2 戶購屋貸款的成數上限，自 <time datetime="${CBC_EFFECTIVE}">2026 年 9 月 18 日</time> 起由 6 成調升為 <strong class="font-bold text-ink">7 成</strong>，但仍不得有寬限期。
+      成數是銀行核貸的上限，不是保證；實際成數仍由銀行依物件與個人條件核定。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[520px]">
+        <caption class="sr-only">中央銀行對金融機構辦理不動產抵押貸款業務規定的各類成數上限與寬限期</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">貸款類型</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">成數上限</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">寬限期</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${CBC_ROWS.map(([a, b, c]) => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal text-ink">${esc(a)}</th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] ${b === "7 成" ? "font-semibold text-orangeDeep" : "text-ink"}">${esc(b)}</td>
+            <td class="py-3.5 px-4 text-right text-[14px] text-inkSoft">${esc(c)}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      名下沒有房屋的首購族不在上述成數規範的限制內。「高價住宅」的認定門檻為鑑價與買賣金額取較低者，
+      台北市 7,000 萬元、新北市 6,000 萬元、其他地區（含高雄市）4,000 萬元。
+      換屋自住者另有協處措施：與承貸金融機構切結、自撥款日起 18 個月內出售原屋並清償原房貸、塗銷抵押權，
+      可不受成數上限與不得有寬限期的限制。
+      資料來源：<a href="${CBC_SOURCE}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:underline">中央銀行 2026 年 9 月 17 日理監事聯席會議決議新聞稿</a>。
+    </p>
+    <p class="mt-5 font-mono text-[13px]">
+      <a href="../../notes/cbc-second-home-loan-70.html" class="text-orangeDeep hover:underline mr-4">第二戶 7 成，高雄實際差多少 →</a>
+      <a href="../../notes/mortgage-grace-period-when-not-to-use.html" class="text-orangeDeep hover:underline">什麼情況不要用寬限期 →</a>
+    </p>
+  </section>`;
+}
+
 export function buildTools(hasBuyers, market = null) {
   const d = market?.updatedAt ? String(market.updatedAt).slice(0, 10) : "";
   const note = d ? `資料更新於 <time datetime="${d}">${d}</time>。` : "";
@@ -234,7 +289,9 @@ export function buildTools(hasBuyers, market = null) {
     /* 學區工具是全站點擊最多的頁面，但原本不連任何社區頁；
        把查完學區的人接到社區行情，同時讓社區頁拿到內部連結。 */
     /* 四個工具頁都接上生活圈的實際行情與自備款；學區工具另外接社區清單。 */
-    const relatedHtml = (t.slug === "school-zone" ? schoolZoneRelated("../../") : "") + budget;
+    const needsCbc = t.slug === "mortgage" || t.slug === "qingan";
+    const relatedHtml = (t.slug === "school-zone" ? schoolZoneRelated("../../") : "")
+      + (needsCbc ? cbcRulesBlock() : "") + budget;
     const html = buildTool({ ...t, relatedHtml, calcScript: calc(t.slug) }, hasBuyers);
     writeFileSync(path.join(dir, "index.html"), html, "utf-8");
     console.log("[產生]", `tools/${t.slug}/index.html`);
