@@ -238,7 +238,8 @@ ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</scri
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
 </style>
 </head>
-<body class="font-sans text-ink">`;
+<body class="font-sans text-ink">
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-ink focus:text-white focus:px-4 focus:py-2 focus:rounded-sm">跳到主要內容</a>`;
 }
 
 /* ---------- 社群 icon ---------- */
@@ -289,7 +290,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
   return `<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
   <div class="${width} mx-auto px-6 h-[68px] flex items-center justify-between">
     <a href="${depth === 0 ? "#top" : up + "index.html"}" class="flex items-center gap-3 shrink-0 mr-6">
-      <img src="${up}assets/logo-icon.png" alt="" class="w-9 h-9 object-contain" />
+      <img src="${up}assets/logo-icon.png" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
       <span class="leading-tight">
         <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
         <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
