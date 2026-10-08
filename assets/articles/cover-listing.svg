@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">委託銷售契約　兩種選擇</text>
+
+  <rect x="120" y="146" width="440" height="330" fill="#FD7305" fill-opacity="0.85"/>
+  <text x="340" y="212" font-family="'Noto Sans TC',sans-serif" font-size="38" font-weight="700" fill="#FFFFFF" text-anchor="middle">專任委託</text>
+  <g font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#FFFFFF">
+    <text x="160" y="276">✕　不能同時委託多家</text>
+    <text x="160" y="330">✕　不能自己找買方成交</text>
+    <text x="160" y="384">○　仲介投入通常較高</text>
+    <text x="160" y="438">○　市場上只有一個開價</text>
+  </g>
+
+  <rect x="640" y="146" width="440" height="330" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2"/>
+  <text x="860" y="212" font-family="'Noto Sans TC',sans-serif" font-size="38" font-weight="700" fill="#16191D" text-anchor="middle">一般委託</text>
+  <g font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#16191D">
+    <text x="680" y="276">○　可以同時委託多家</text>
+    <text x="680" y="330">○　可以自己找買方</text>
+    <text x="680" y="384">✕　仲介投入通常較分散</text>
+    <text x="680" y="438">✕　多家開價可能不一致</text>
+  </g>
+
+  <path d="M120 536 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="592" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">專任期間內自行出售或另委他人</text>
+  <text x="120" y="648" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#B85400">視為受託人已完成仲介，報酬全額付清</text>
+  <text x="120" y="692" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">內政部不動產委託銷售契約書範本 第十一條</text>
+
+  <path d="M120 722 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="770" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">簽約前要確認的 7 件事</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">成屋買賣定型化契約　建物現況確認書</text>
+  <text x="120" y="168" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="700" fill="#16191D">賣方要逐項勾選的 <tspan fill="#B85400">19 項</tspan></text>
+
+  <g font-family="'Noto Sans TC',sans-serif" font-size="25" fill="#16191D">
+    <rect x="120" y="222" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 234 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="244">違建、增建、加建</text>
+    <rect x="120" y="274" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 286 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="296">滲漏水及處理方式</text>
+    <rect x="120" y="326" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 338 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="348">輻射屋檢測</text>
+    <rect x="120" y="378" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 390 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="400">海砂屋氯離子檢測</text>
+    <rect x="120" y="430" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 442 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="452">非自然死亡事件</text>
+    <rect x="120" y="482" width="24" height="24" fill="none" stroke="#FD7305" stroke-width="3"/>
+    <path d="M126 494 l5 6 l11 -13" fill="none" stroke="#FD7305" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="164" y="504">積欠管理費</text>
+    <text x="164" y="556" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">⋯ 共 19 項</text>
+  </g>
+
+  <rect x="660" y="214" width="420" height="300" fill="#FFFFFF" stroke="#FD7305" stroke-width="3"/>
+  <text x="870" y="266" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#B85400" text-anchor="middle">2026 / 4 / 1 起新制</text>
+  <g font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#16191D">
+    <text x="692" y="324">項次 6　海砂屋檢測標準修正</text>
+    <text x="692" y="382">項次 9　用戶加壓受水設備</text>
+    <text x="692" y="440">項次 19　太陽光電發電設備</text>
+  </g>
+  <text x="870" y="486" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">兩項新增、一項修正</text>
+
+  <path d="M120 596 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="654" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">多講最多是價格上反映</text>
+  <text x="120" y="704" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#B85400">少講可能是解約或求償</text>
+</svg>

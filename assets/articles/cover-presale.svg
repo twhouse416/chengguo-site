@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">10 個社區　預售 → 成屋　單價中位數變化（萬／坪）</text>
+
+  <path d="M600 140 V636" stroke="#16191D" stroke-width="2" stroke-dasharray="8 8"/>
+  <text x="600" y="672" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">持平</text>
+
+  <g font-family="'IBM Plex Mono',monospace" font-size="21">
+    <text x="120" y="182" fill="#16191D">京城馥之森</text>
+    <rect x="600" y="162" width="300" height="26" fill="#FD7305" fill-opacity="0.9"/>
+    <text x="920" y="182" font-weight="700" fill="#B85400">+10.4</text>
+
+    <text x="120" y="230" fill="#16191D">美樹香榭</text>
+    <rect x="600" y="210" width="40" height="26" fill="#FD7305" fill-opacity="0.6"/>
+    <text x="660" y="230" fill="#B85400">+1.4</text>
+
+    <text x="120" y="278" fill="#16191D">皇苑御之苑</text>
+    <rect x="600" y="258" width="32" height="26" fill="#FD7305" fill-opacity="0.6"/>
+    <text x="652" y="278" fill="#B85400">+1.1</text>
+
+    <text x="120" y="326" fill="#16191D">美術白天鵝</text>
+    <rect x="600" y="306" width="6" height="26" fill="#FD7305" fill-opacity="0.6"/>
+    <text x="626" y="326" fill="#737A83">+0.2</text>
+
+    <text x="120" y="374" fill="#16191D">仰德美術館</text>
+    <text x="616" y="374" fill="#737A83">0.0</text>
+
+    <text x="120" y="422" fill="#16191D">遠雄PARK16</text>
+    <rect x="597" y="402" width="3" height="26" fill="#16191D" fill-opacity="0.3"/>
+    <text x="548" y="422" fill="#737A83" text-anchor="end">−0.1</text>
+
+    <text x="120" y="470" fill="#16191D">惟美術</text>
+    <rect x="594" y="450" width="6" height="26" fill="#16191D" fill-opacity="0.3"/>
+    <text x="548" y="470" fill="#737A83" text-anchor="end">−0.2</text>
+
+    <text x="120" y="518" fill="#16191D">潤隆樹禾苑</text>
+    <rect x="511" y="498" width="89" height="26" fill="#16191D" fill-opacity="0.45"/>
+    <text x="480" y="518" fill="#16191D" text-anchor="end">−3.1</text>
+
+    <text x="120" y="566" fill="#16191D">森美樹</text>
+    <rect x="482" y="546" width="118" height="26" fill="#16191D" fill-opacity="0.55"/>
+    <text x="452" y="566" fill="#16191D" text-anchor="end">−4.1</text>
+
+    <text x="120" y="614" fill="#16191D">青海LINE</text>
+    <rect x="427" y="594" width="173" height="26" fill="#16191D" fill-opacity="0.7"/>
+    <text x="397" y="614" font-weight="700" fill="#16191D" text-anchor="end">−6.0</text>
+  </g>
+
+  <path d="M120 702 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="754" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D">10 個裡有 <tspan fill="#B85400">5 個</tspan> 交屋後比預售便宜</text>
+</svg>
