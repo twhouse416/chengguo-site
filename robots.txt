@@ -4,4 +4,49 @@ Allow: /
 # 後台不需要被搜尋引擎收錄
 Disallow: /admin/
 
+# AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /admin/
+
 Sitemap: https://k7.com.tw/sitemap.xml
