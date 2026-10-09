@@ -752,6 +752,15 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
       sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube],
       description: "深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區10年以上，累計服務件數超過150件。提供區域房價分析、免費房屋估價、售屋策略規劃、首購購屋建議與換屋規劃。",
       knowsLanguage: "zh-TW",
+      /* 營業時間與地圖連結：Google 商家檔案與 AI 在回答「附近的房仲幾點開門」
+         這類在地問題時會讀這兩個欄位。營業日若不是全週，改下面的 dayOfWeek。
+         另可再加 geo（經緯度），需要實際座標才填，不要用推估的。 */
+      openingHoursSpecification: [{
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "09:00", closes: "21:00",
+      }],
+      hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(BRAND.legalName + " " + BRAND.addressShort)}`,
       hasOfferCatalog: {
         "@type": "OfferCatalog", name: "服務項目",
         itemListElement: [

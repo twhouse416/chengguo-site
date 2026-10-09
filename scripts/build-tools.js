@@ -18,7 +18,34 @@ import { AREAS } from "./build-areas.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const calc = slug => readFileSync(path.join(__dirname, `tools/${slug}.calc.js`), "utf-8");
+/* 計算器原始碼是 JSX，瀏覽器看不懂。
+ * 以前的做法是把 @babel/standalone 一起載進頁面、在瀏覽器裡即時編譯，
+ * 代價是使用者要等一個很大的腳本下載完、編譯完，計算器才會出現。
+ * 改成建置時就編譯好、直接內嵌編譯後的 JS，頁面就不必再載 Babel。
+ *
+ * @babel/core 找不到時不讓整個建置掛掉（例如有人在沒跑 npm ci 的環境下手動建置），
+ * 改成原樣輸出並回報，頁面會退回舊的瀏覽器端編譯模式。
+ */
+let babel = null;
+try {
+  babel = (await import("@babel/core")).default;
+} catch {
+  console.warn("[警告] 找不到 @babel/core，工具頁改用瀏覽器端編譯（請先跑 npm ci）");
+}
+
+function calc(slug) {
+  const src = readFileSync(path.join(__dirname, `tools/${slug}.calc.js`), "utf-8");
+  if (!babel) return { code: src, precompiled: false };
+  const { code } = babel.transformSync(src, {
+    presets: [["@babel/preset-react", { runtime: "classic" }]],
+    filename: `${slug}.calc.js`,
+    compact: false,
+    comments: false,
+    babelrc: false,
+    configFile: false,
+  });
+  return { code, precompiled: true };
+}
 
 export const TOOLS = [
   /* ---------- 01 學區查詢 ---------- */

@@ -318,25 +318,25 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
            視覺上用 sr-only 藏起來，因為上方的 h2 與摘要句已經講過同樣的事。 */""}
       <caption class="sr-only">${esc(c.name || "本社區")}實價登錄成交紀錄${span ? `（${span}）` : ""}，共 ${deals.length} 筆，欄位為成交日期、類型、移轉層次、格局、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）</caption>
       <thead>
-        <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
-          <th scope="col" class="text-left font-normal py-3 px-4">成交日期</th>
-          <th scope="col" class="text-left font-normal py-3 px-4">類型</th>
-          <th scope="col" class="text-left font-normal py-3 px-4">樓層</th>
-          <th scope="col" class="text-left font-normal py-3 px-4">格局</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">坪數</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">單價</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">總價</th>
+        <tr class="dl-head">
+          <th scope="col" class="dl-th">成交日期</th>
+          <th scope="col" class="dl-th">類型</th>
+          <th scope="col" class="dl-th">樓層</th>
+          <th scope="col" class="dl-th">格局</th>
+          <th scope="col" class="dl-th-r">坪數</th>
+          <th scope="col" class="dl-th-r">單價</th>
+          <th scope="col" class="dl-th-r">總價</th>
         </tr>
       </thead>
       <tbody>
-        ${shown.map(d => `<tr class="border-b border-line last:border-0">
-          <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
-          <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="block font-mono text-[11px] text-ink bg-tint border border-orange/40 rounded-sm px-1 mt-1 inline-block">店面</span>` : ""}</td>
-          <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
-          <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
-          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
-          <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
-          <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+        ${shown.map(d => `<tr class="dl-row">
+          <td class="dl-date">${fmtDate(d.date)}</td>
+          <td class="dl-kind ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="dl-tag">店面</span>` : ""}</td>
+          <td class="dl-cell">${esc(d.floor || "—")}${d.unit ? `<span class="dl-sub">${esc(d.unit)}</span>` : ""}</td>
+          <td class="dl-cell">${esc(d.layout || "—")}</td>
+          <td class="dl-num">${d.ping || "—"}</td>
+          <td class="dl-num-em">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
+          <td class="dl-num">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
         </tr>`).join("\n        ")}
       </tbody>
     </table>
@@ -350,25 +350,25 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     <div class="overflow-x-auto border border-line rounded-sm bg-surface mt-3">
       <table class="w-full text-[15px] min-w-[640px]">
         <thead>
-          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
-            <th class="text-left font-normal py-3 px-4">成交日期</th>
-            <th class="text-left font-normal py-3 px-4">類型</th>
-            <th class="text-left font-normal py-3 px-4">樓層</th>
-            <th class="text-left font-normal py-3 px-4">格局</th>
-            <th class="text-right font-normal py-3 px-4">坪數</th>
-            <th class="text-right font-normal py-3 px-4">單價</th>
-            <th class="text-right font-normal py-3 px-4">總價</th>
+          <tr class="dl-head">
+            <th class="dl-th">成交日期</th>
+            <th class="dl-th">類型</th>
+            <th class="dl-th">樓層</th>
+            <th class="dl-th">格局</th>
+            <th class="dl-th-r">坪數</th>
+            <th class="dl-th-r">單價</th>
+            <th class="dl-th-r">總價</th>
           </tr>
         </thead>
         <tbody>
-          ${rest.map(d => `<tr class="border-b border-line last:border-0">
-            <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${fmtDate(d.date)}</td>
-            <td class="py-3.5 px-4 text-[14px] ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="block font-mono text-[11px] text-ink bg-tint border border-orange/40 rounded-sm px-1 mt-1 inline-block">店面</span>` : ""}</td>
-            <td class="py-3.5 px-4 text-inkSoft">${esc(d.floor || "—")}${d.unit ? `<span class="block font-mono text-[12px] text-inkFaint">${esc(d.unit)}</span>` : ""}</td>
-            <td class="py-3.5 px-4 text-inkSoft">${esc(d.layout || "—")}</td>
-            <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.ping || "—"}</td>
-            <td class="py-3.5 px-4 text-right font-mono font-semibold text-ink">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
-            <td class="py-3.5 px-4 text-right font-mono text-inkSoft">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+          ${rest.map(d => `<tr class="dl-row">
+            <td class="dl-date">${fmtDate(d.date)}</td>
+            <td class="dl-kind ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}${d.use === "店面" ? `<span class="dl-tag">店面</span>` : ""}</td>
+            <td class="dl-cell">${esc(d.floor || "—")}${d.unit ? `<span class="dl-sub">${esc(d.unit)}</span>` : ""}</td>
+            <td class="dl-cell">${esc(d.layout || "—")}</td>
+            <td class="dl-num">${d.ping || "—"}</td>
+            <td class="dl-num-em">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
+            <td class="dl-num">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
           </tr>`).join("\n          ")}
         </tbody>
       </table>
@@ -420,7 +420,7 @@ function relatedBlocks(c, groups) {
             <span class="font-mono text-[12px] text-inkFaint block">${esc(o.meta)}</span>
             <span class="text-[16px] font-bold tracking-tight">${esc(o.name)}</span>
           </span>
-          <span class="font-mono text-[12px] text-orangeDeep shrink-0">→</span>
+          <span class="cc-go">→</span>
         </a>`).join("\n        ")}
       </div>
     </div>`).join("\n    ")}
@@ -912,7 +912,7 @@ function areaHub(groups, dealsMap) {
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">${items.length}</span> 個社區<span class="mx-1.5">・</span>成交 ${total.toLocaleString("en-US")} 筆
             </div>
-            <span class="font-mono text-[12px] text-orangeDeep shrink-0">看清單 →</span>
+            <span class="cc-go">看清單 →</span>
           </div>
         </a>
         ${slug ? `<a href="../areas/${slug}/index.html" class="border-t border-line px-7 py-4 font-mono text-[13px] text-orangeDeep hover:bg-tint transition flex items-center justify-between gap-3">
@@ -1222,25 +1222,25 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
       const hay = [c.name, ...(c.aliases || []), c.area, c.district, c.address]
         .filter(Boolean).join(" ");
       return `<a href="${c.slug}.html" data-card data-name="${esc(hay)}" data-deals="${deals.length}" data-price="${Math.round(mid * 10) / 10}"
-      class="border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col">
-      <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(c.area)}・${esc(c.district)}</div>
-      <h3 class="text-[21px] font-bold tracking-tight mt-1 mb-3">${esc(c.name)}</h3>
-      <p data-summary class="text-[15px] text-inkSoft leading-[1.85] flex-1">${esc(c.summary)}</p>
-      <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-4">
+      class="cc-card">
+      <div class="cc-eyebrow">${esc(c.area)}・${esc(c.district)}</div>
+      <h3 class="cc-name">${esc(c.name)}</h3>
+      <p data-summary class="cc-sum">${esc(c.summary)}</p>
+      <div class="cc-foot">
         ${prices.length ? `<div>
-          <span class="font-mono text-[12px] text-inkFaint">單價範圍</span>
-          <span class="font-mono text-[20px] font-semibold text-orangeDeep ml-2">${prices[0]}–${prices[prices.length - 1]}</span>
-          <span class="font-mono text-[12px] text-inkSoft ml-1">萬/坪</span>
+          <span class="cc-eyebrow">單價範圍</span>
+          <span class="cc-price">${prices[0]}–${prices[prices.length - 1]}</span>
+          <span class="cc-unit">萬/坪</span>
           ${/* 成交筆數：排序選單有「成交筆數多到少」，卡片上看不到筆數的話，
                 使用者不知道為什麼是這個順序。少於 LOW_SAMPLE 筆的另外標記——
                 三、五筆算出來的單價範圍，看起來跟三百筆的一樣可靠，那是誤導。 */""}
-          <div class="mt-1 font-mono text-[12px] text-inkFaint">
+          <div class="cc-meta">
             成交 ${deals.length} 筆${deals.length < LOW_SAMPLE
               ? `<span class="text-orangeDeep ml-1.5" title="成交筆數少，單價範圍的參考性有限">・樣本少</span>`
               : ""}
           </div>
         </div>` : `<span class="font-mono text-[13px] text-inkFaint">成交資料整理中</span>`}
-        <span class="font-mono text-[12px] text-orangeDeep shrink-0">查看 →</span>
+        <span class="cc-go">查看 →</span>
       </div>
     </a>`;
     }).join("\n    ")}

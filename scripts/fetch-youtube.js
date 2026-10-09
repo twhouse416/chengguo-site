@@ -12,6 +12,35 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
+
+/* 封面縮圖用的影像處理。sharp 是原生套件，萬一安裝環境有問題也不該讓
+   影片同步整個失敗——拿不到就略過壓縮，沿用原圖。 */
+const POSTER_MAX_W = 900;
+const POSTER_QUALITY = 76;
+async function shrinkPoster(file) {
+  let sharp;
+  try {
+    ({ default: sharp } = await import("sharp"));
+  } catch {
+    console.warn("[提示] 找不到 sharp，封面圖維持原始大小（首頁 LCP 會慢一些）");
+    return;
+  }
+  try {
+    const before = statSync(file).size;
+    const meta = await sharp(file, { failOn: "none" }).metadata();
+    if (meta.width <= POSTER_MAX_W) return;
+    const buf = await sharp(file, { failOn: "none" }).rotate()
+      .resize({ width: POSTER_MAX_W })
+      .jpeg({ quality: POSTER_QUALITY, progressive: true, mozjpeg: true })
+      .toBuffer();
+    if (buf.length < before) {
+      writeFileSync(file, buf);
+      console.log(`[封面] 已壓縮 ${meta.width}px/${(before / 1024).toFixed(0)}KB → ${POSTER_MAX_W}px/${(buf.length / 1024).toFixed(0)}KB`);
+    }
+  } catch (e) {
+    console.warn("[提示] 封面圖壓縮失敗，沿用原圖：" + e.message);
+  }
+}
 import { execSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -202,6 +231,14 @@ async function main() {
       } catch {}
     }
     if (!ok) console.warn("[警告] 主視覺封面圖下載失敗，首頁會改用 YouTube 的縮圖網址");
+
+    /* YouTube 給的 maxresdefault 是 1280px、約 300KB，而這張圖是首頁的 LCP
+       （最大內容繪製）元素——也就是決定「首頁看起來多快」的那一張。
+       版面上最寬只用到約 600px，縮到 900px 就足夠涵蓋高解析螢幕，
+       檔案大約剩三分之一。在這裡做而不是在建置時做，是因為這個檔案
+       由本腳本產生、也只有 update-videos 這個流程會提交 assets/videos。
+       （試過另外產 WebP，同畫質下反而比 mozjpeg 的 JPEG 大，所以不做。） */
+    if (ok) await shrinkPoster(out);
   }
 
   const visible = merged.filter(v => !v.hidden).length;

@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 成交紀錄表格的共用樣式
+   ------------------------------------------------
+   社區頁的逐筆成交最多 300 筆、每筆 7 格，等於同一串 Tailwind class
+   會在 HTML 裡重複兩千多次。美術白天鵝那一頁 419KB 裡就有 207KB 是
+   class 屬性，真正的文字只有 31KB。
+   把這些重複的組合收斂成幾個短類別，樣式完全不變，但頁面小非常多。
+   改動這裡要同步 scripts/build-communities.js 的表格 markup。 */
+@layer components {
+  .dl-row    { @apply border-b border-line last:border-0; }
+  .dl-head   { @apply border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint; }
+  .dl-th     { @apply text-left font-normal py-3 px-4; }
+  .dl-th-r   { @apply text-right font-normal py-3 px-4; }
+  .dl-date   { @apply py-3.5 px-4 font-mono text-[14px] text-inkSoft; }
+  .dl-kind   { @apply py-3.5 px-4 text-[14px]; }
+  .dl-cell   { @apply py-3.5 px-4 text-inkSoft; }
+  .dl-num    { @apply py-3.5 px-4 text-right font-mono text-inkSoft; }
+  .dl-num-em { @apply py-3.5 px-4 text-right font-mono font-semibold text-ink; }
+  .dl-sub    { @apply block font-mono text-[12px] text-inkFaint; }
+  .dl-tag    { @apply block font-mono text-[11px] text-ink bg-tint border border-orange/40 rounded-sm px-1 mt-1 inline-block; }
+
+  /* 社區列表卡片：253 張卡重複同一組 class，列表頁 423KB 裡有 146KB 是 class。 */
+  .cc-card   { @apply border border-line rounded-sm bg-surface p-7 hover:border-orange hover:bg-tint transition flex flex-col; }
+  .cc-eyebrow{ @apply font-mono text-[12px] tracking-wider text-inkFaint; }
+  .cc-name   { @apply text-[21px] font-bold tracking-tight mt-1 mb-3; }
+  .cc-sum    { @apply text-[15px] text-inkSoft leading-[1.85] flex-1; }
+  .cc-foot   { @apply mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-4; }
+  .cc-price  { @apply font-mono text-[20px] font-semibold text-orangeDeep ml-2; }
+  .cc-unit   { @apply font-mono text-[12px] text-inkSoft ml-1; }
+  .cc-meta   { @apply mt-1 font-mono text-[12px] text-inkFaint; }
+  .cc-go     { @apply font-mono text-[12px] text-orangeDeep shrink-0; }
+}

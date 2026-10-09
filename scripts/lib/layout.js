@@ -188,8 +188,27 @@ export const AUTO_NOTE = `<!--
 -->`;
 
 /* ---------- head ---------- */
+/* 搜尋結果的中文摘要大約顯示 80 字就被截斷，寫再長也只是被切掉，
+   而且切在哪裡由 Google 決定，不如自己收尾。
+   這裡在句號／頓號等自然停頓處收尾，找不到停頓點才硬切並加刪節號。
+   注意：只影響 <meta description>，頁面上看得到的文案不受影響。 */
+const DESC_MAX = 100;   // 上限
+const DESC_MIN = 60;    // 收尾點不能早於這裡，否則摘要太短沒資訊量
+export function clampDesc(s) {
+  const t = String(s || "").replace(/\s+/g, " ").trim();
+  if ([...t].length <= DESC_MAX) return t;
+  const cut = [...t].slice(0, DESC_MAX).join("");
+  const stop = Math.max(
+    cut.lastIndexOf("。"), cut.lastIndexOf("！"), cut.lastIndexOf("？"),
+    cut.lastIndexOf("；"), cut.lastIndexOf("，"), cut.lastIndexOf("、"),
+  );
+  if (stop >= DESC_MIN) return cut.slice(0, stop + 1).replace(/[，、；]$/, "。");
+  return cut.replace(/[，、；。]$/, "") + "⋯";
+}
+
 export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [], noindex = false }) {
   const up = "../".repeat(depth);
+  description = clampDesc(description);
   return `${AUTO_NOTE}
 <!DOCTYPE html>
 <html lang="zh-Hant">

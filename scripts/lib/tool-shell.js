@@ -169,12 +169,21 @@ export function buildTool(o, hasBuyers = false) {
   </nav>
 </main>
 
+${/* JSX 已在建置時編譯完成（scripts/build-tools.js），所以不必再載 @babel/standalone。
+      載入順序與過去一致：React、ReactDOM 先執行，計算器才執行。
+      （內嵌 script 加 defer 沒有作用，會比 defer 的外部腳本先跑，React 會是 undefined，
+        所以這裡刻意不加 defer。）
+      precompiled 為 false 代表建置環境缺 @babel/core，才退回瀏覽器端編譯。 */""}
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+${o.calcScript.precompiled
+    ? `<script>
+${o.calcScript.code}
+</script>`
+    : `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-${o.calcScript}
-</script>`,
+${o.calcScript.code}
+</script>`}`,
     footer({ depth: 2, hasBuyers }),
   ].join("\n");
 }
