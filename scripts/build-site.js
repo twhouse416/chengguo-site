@@ -238,7 +238,7 @@ function build404() {
       depth: 0,
       noindex: true,
     }),
-    header({ depth: 0, hasBuyers: false }),
+    header({ depth: 0, hasBuyers: false, isHome: false }),
     `<main class="max-w-3xl mx-auto px-6 py-24">
   <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">404</div>
   <h1 class="display text-[32px] md:text-[40px]">找不到這個頁面</h1>
@@ -250,7 +250,7 @@ function build404() {
       ["社區行情", "communities/index.html", "各社區的實價登錄逐筆成交、規格與學區"],
       ["購屋知識", "notes/index.html", "稅費、貸款、買賣時機的說明文章"],
       ["房貸試算", "tools/mortgage/index.html", "從月付金反推可負擔的總價"],
-      ["學區查詢", "tools/school-zone/index.html", "用門牌核對國小、國中學區"],
+      ["學區查詢", "tools/school-zone/index.html", "選行政區與里別，查國小、國中學區"],
     ].map(([t, href, d]) => `<a href="${href}" class="border border-line rounded-sm bg-surface p-6 hover:border-orange hover:bg-tint transition block">
       <div class="text-[18px] font-bold tracking-tight">${t}</div>
       <p class="mt-2 text-[15px] text-inkSoft leading-[1.85]">${d}</p>
@@ -261,7 +261,7 @@ function build404() {
     <a href="${BRAND.phoneHref}" class="text-orangeDeep hover:underline font-medium">${BRAND.phone}</a>
   </p>
 </main>`,
-    footer({ depth: 0, hasBuyers: false }),
+    footer({ depth: 0, hasBuyers: false, isHome: false }),
   ].join("\n");
   writeFileSync(path.join(ROOT, "404.html"), html, "utf-8");
   console.log("[產生] 404.html");

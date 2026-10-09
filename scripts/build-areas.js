@@ -557,7 +557,7 @@ function areaPage(area, ctx) {
     <h2 class="display text-[21px] mb-6">在${esc(area.name)}買賣前，可以先算的事</h2>
     <div class="grid sm:grid-cols-2 gap-5">
       ${[["房貸試算", "../../tools/mortgage/index.html", "從每月可負擔的還款金額反推總價與自備款"],
-         ["學區查詢", "../../tools/school-zone/index.html", "用實際門牌核對國小、國中學區"],
+         ["學區查詢", "../../tools/school-zone/index.html", "選行政區與里別，查對應的國小、國中學區"],
          ["新青安試算", "../../tools/qingan/index.html", "資格條件、額度與利率補貼試算"],
          ["稅費概算", "../../tools/property-tax/index.html", "房地合一稅、土地增值稅與重購退稅"]]
         .map(([t, href, d]) => `<a href="${href}" class="border border-line rounded-sm bg-surface p-6 hover:border-orange hover:bg-tint transition block">
@@ -591,7 +591,7 @@ function areaPage(area, ctx) {
     <h2 class="display text-[21px] mb-4">依學區看${esc(area.name)}的社區</h2>
     <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
       括號內是本站社區資料中學區欄位登載為該校的社區數。學區以里、鄰劃分，
-      社區名稱不是依據，實際歸屬請用學區查詢工具核對門牌。
+      社區名稱不是依據，實際歸屬請用學區查詢工具核對該戶所在的里別。
     </p>
     <p class="text-[16px] text-ink leading-[2.2]">
       ${rows.map(([n, v]) => `<a href="../../schools/${v.slug}/index.html" class="inline-block mr-4 text-orangeDeep hover:underline">${esc(n)}<span class="font-mono text-[13px] text-inkFaint ml-1">（${v.n}）</span></a>`).join("")}

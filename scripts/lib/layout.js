@@ -264,10 +264,13 @@ export function socialLinks(variant = "light", size = "md") {
 /* ---------- Header ----------
    depth：0 = 根目錄，1 = notes/ videos/，2 = tools/xxx/
    hasBuyers：沒有買方需求時不顯示該項目
+   isHome：這一頁「本身就是首頁」嗎。預設用 depth 推斷，但 404.html 也在根目錄
+           卻不是首頁，若沿用推斷，#services 這類錨點會指向 404 自己而整組失效，
+           所以 404 要明確傳 isHome: false。
 */
-export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
+export function header({ depth = 0, hasBuyers = false, compact = false, isHome = depth === 0 } = {}) {
   const up = "../".repeat(depth);
-  const home = depth === 0 ? "" : `${up}index.html`;
+  const home = isHome ? "" : `${up}index.html`;
   const nav = [
     [`${home}#services`, "服務項目"],
     [`${home}#areas`, "生活圈行情"],
@@ -289,7 +292,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false } = {}) {
 
   return `<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
   <div class="${width} mx-auto px-6 h-[68px] flex items-center justify-between">
-    <a href="${depth === 0 ? "#top" : up + "index.html"}" class="flex items-center gap-3 shrink-0 mr-6">
+    <a href="${isHome ? "#top" : up + "index.html"}" class="flex items-center gap-3 shrink-0 mr-6">
       <img src="${up}assets/logo-icon.png" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
       <span class="leading-tight">
         <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
@@ -566,9 +569,9 @@ function lineFab() {
 </script>`;
 }
 
-export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
+export function footer({ depth = 0, hasBuyers = false, compact = false, isHome = depth === 0 } = {}) {
   const up = "../".repeat(depth);
-  const home = depth === 0 ? "" : `${up}index.html`;
+  const home = isHome ? "" : `${up}index.html`;
   const width = compact ? "max-w-3xl" : "max-w-6xl";
   const links = [
     [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${up}about/index.html`, "關於團隊"],

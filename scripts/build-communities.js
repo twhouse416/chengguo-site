@@ -775,7 +775,7 @@ ${videoSection(c)}
       </div>
       ${c.school.note ? `<p class="text-[15px] text-orangeDeep leading-[1.9] mt-6 pt-6 border-t border-line">${esc(c.school.note)}</p>` : ""}
       <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[13px]">
-        <a href="../tools/school-zone/index.html" class="text-orangeDeep hover:underline">用學區查詢工具核對門牌 →</a>
+        <a href="../tools/school-zone/index.html" class="text-orangeDeep hover:underline">用學區查詢工具核對里別 →</a>
         ${[c.school.primary, c.school.junior].filter(Boolean)
           .map(n => ({ n, s: schoolSlugOf(n) })).filter(x => x.s)
           .map(x => `<a href="../schools/${x.s}/index.html" class="text-orangeDeep hover:underline">${esc(x.n)}學區的其他社區 →</a>`).join("\n        ")}

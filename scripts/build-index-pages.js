@@ -362,12 +362,13 @@ function schoolPage(name, items, ctx) {
     [`${name}學區有哪些社區？`,
       `本站收錄的社區中，學區欄位登載為${name}的有 ${items.length} 個：${items.map(c => c.name).join("、")}。`
       + `完整清單在本頁下方表格。但這只是本站的整理結果，不是官方依據——`
-      + `高雄市的學區以里、鄰劃分，正式歸屬請用本站的學區查詢工具輸入實際門牌核對，`
+      + `高雄市的學區以里、鄰劃分，正式歸屬請用本站的學區查詢工具選擇該戶所在的行政區與里別核對，`
       + `並以入學當年度教育局及學校的公告為準。`],
     [`怎麼確認某一戶是不是${name}學區？`,
       `要看那一戶所在的「里」與「鄰」，不是看社區名稱或路名。同一條路的單號側與雙號側可能分屬不同學校，`
       + `同一個社區跨鄰時也可能一部分在學區內、一部分不在。`
-      + `建議用本站的學區查詢工具輸入完整門牌查詢，再向學校或區公所確認。`
+      + `那一戶的門牌屬於哪一個里，可以在戶籍資料或內政部戶政司的門牌查詢服務查到，`
+      + `查到里別之後再用本站的學區查詢工具對應學校，最後向學校或區公所確認。`
       + `學區每學年可能調整，簽約前再確認一次最保險。`],
     ...(capped ? [[`${name}是總量管制學校嗎？設籍就一定能讀嗎？`,
       `本站的社區資料中，${name}被標示為總量管制學校。總量管制表示該校容量已接近上限、名額有限，`
@@ -436,9 +437,9 @@ function schoolPage(name, items, ctx) {
     <p class="text-[16px] text-ink leading-[1.9] max-w-3xl">
       <strong class="font-bold">這一頁不是學區的正式依據。</strong>
       表格是本站社區資料裡「學區」欄位的整理結果，官方依據是下方的里鄰劃分原文。
-      請用學區查詢工具輸入你要看的實際門牌核對，並以入學當年度教育局及學校的公告為準。
+      請用學區查詢工具核對你要看的那一戶所在的里別，並以入學當年度教育局及學校的公告為準。
     </p>
-    <a href="../../tools/school-zone/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">用門牌查學區 →</a>
+    <a href="../../tools/school-zone/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">用里別查學區 →</a>
   </div>
 
   <section class="mt-14">
