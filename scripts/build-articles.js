@@ -261,7 +261,7 @@ function pageHtml(a, others, hasBuyers) {
     </div>
   </section>` : ""}
 </main>`,
-    footer({ depth: 1, hasBuyers, compact: true }),
+    footer({ depth: 1, hasBuyers }),
   ].join("\n");
 }
 

@@ -175,6 +175,6 @@ export function buildTool(o, hasBuyers = false) {
 <script type="text/babel">
 ${o.calcScript}
 </script>`,
-    footer({ depth: 2, hasBuyers, compact: true }),
+    footer({ depth: 2, hasBuyers }),
   ].join("\n");
 }

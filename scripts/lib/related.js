@@ -42,6 +42,10 @@ const ARTICLE_SLUG_ALIAS = {
 };
 const artHref = slug => (ARTICLE_SLUG_ALIAS[slug] || slug) + ".html";
 
+/* 這幾個分類的讀者多半是屋主，文章結尾直接給估價入口。
+   買方向的文章不放，對他們來說估價不是下一步。 */
+const SELLER_TAGS = new Set(["賣房", "換屋", "稅務"]);
+
 /* 依文章主題挑對應的試算工具。讀完文章的人下一步多半是想自己算一次。 */
 const TOOL_BY_TAG = {
   "賣房": [["房地合一稅試算", "tools/property-tax/"], ["房貸試算", "tools/mortgage/"]],
@@ -84,6 +88,13 @@ export function articleNext(article, up = "../") {
       自己算一次：${tools.map(([n, href]) => `<a href="${up}${href}" class="text-orangeDeep hover:underline mr-4">${esc(n)} →</a>`).join("")}
       <a href="${up}communities/" class="text-orangeDeep hover:underline">社區行情 →</a>
     </p>
+    ${SELLER_TAGS.has(article.tag) ? `<div class="mt-8 bg-tint border-l-2 border-orange px-6 py-5">
+      <p class="text-[16px] leading-[1.95] text-ink">
+        <strong class="font-bold">想知道你那一戶實際落在什麼區間？</strong>
+        我們用同社區的逐筆實價登錄成交，挑樓層、坪數與車位條件相近的來比，並說明判斷依據。不收費，也不需要先簽委託。
+      </p>
+      <a href="#estimate" class="inline-flex items-center mt-4 px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">免費估價 →</a>
+    </div>` : ""}
   </section>`;
 }
 

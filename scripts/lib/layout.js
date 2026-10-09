@@ -356,8 +356,13 @@ export function contactForm() {
     </div>`;
   }
 
-  return `<div class="border border-white/15 rounded-sm p-7">
-  <h3 class="text-[18px] font-bold text-white">留下聯絡方式，我們回電給你</h3>
+  return `<div id="estimate" class="border border-white/15 rounded-sm p-7 scroll-mt-24">
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orange uppercase mb-2">Free Valuation</div>
+  <h3 class="text-[18px] font-bold text-white">免費估價，也可以只是先問</h3>
+  <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
+    我們用你那一戶所在社區的逐筆實價登錄成交，挑樓層、坪數與車位條件相近的來比，抓出合理的價格區間，並說明判斷依據。
+    <strong class="text-white/80">不收費，也不需要先簽委託。</strong>
+  </p>
   <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
     不方便講電話也沒關係，填一下需求，我們會挑你方便的時段聯絡。
   </p>
@@ -406,6 +411,38 @@ export function contactForm() {
           ${["都可以", "上午 9-12 點", "下午 1-6 點", "晚上 6-9 點", "假日"]
             .map(o => `<option value="${o}" class="text-ink">${o}</option>`).join("")}
         </select>
+      </div>
+    </div>
+
+    <!-- 需求類型選「想先估價」或「我要賣房」時才展開。
+         估價要的是社區、樓層、坪數與車位，不先問，就得再來回一輪，
+         每多一次來回就流失一批人。 -->
+    <div id="cf-estimate-fields" hidden class="border-l-2 border-orange/60 pl-5 space-y-4 pt-1">
+      <p class="text-[13px] leading-[1.8] text-white/50">
+        下面四欄填了，我們回電時就能直接給你區間；不確定的可以留空。
+      </p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="${LABEL_CLS}" for="cf-comm">社區名稱或地址</label>
+          <input id="cf-comm" name="社區或地址" maxlength="60" class="${FIELD_CLS}" placeholder="例如：美術白天鵝 / 美術東四路690號" />
+        </div>
+        <div>
+          <label class="${LABEL_CLS}" for="cf-floor">樓層／總樓層</label>
+          <input id="cf-floor" name="樓層" maxlength="20" class="${FIELD_CLS}" placeholder="例如：12／24" />
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="${LABEL_CLS}" for="cf-ping">權狀坪數</label>
+          <input id="cf-ping" name="權狀坪數" maxlength="20" class="${FIELD_CLS}" placeholder="例如：38.5 坪" />
+        </div>
+        <div>
+          <label class="${LABEL_CLS}" for="cf-park">車位</label>
+          <select id="cf-park" name="車位" class="${FIELD_CLS}">
+            ${["未選擇", "有．平面", "有．機械", "沒有車位", "不確定"]
+              .map(o => `<option value="${o}" class="text-ink">${o}</option>`).join("")}
+          </select>
+        </div>
       </div>
     </div>
 
@@ -608,6 +645,32 @@ export function footer({ depth = 0, hasBuyers = false, compact = false } = {}) {
 
     var status = document.getElementById("cf-status");
     var submit = document.getElementById("cf-submit");
+
+    /* 需求類型選到估價或賣房時，展開估價需要的欄位。
+       先問社區、樓層、坪數與車位，回電時就能直接給區間，
+       不用再來回一輪。帶 #estimate 進站的也直接幫他展開。 */
+    (function () {
+      var type = document.getElementById("cf-type");
+      var extra = document.getElementById("cf-estimate-fields");
+      if (!type || !extra) return;
+      var fields = extra.querySelectorAll("input, select, textarea");
+      function sync() {
+        var v = type.value;
+        var on = (v === "想先估價" || v === "我要賣房" || v === "換屋規劃");
+        if (on) extra.removeAttribute("hidden");
+        else extra.setAttribute("hidden", "");
+        /* 收合時把欄位停用，買方的詢問信就不會多出四個空欄位 */
+        for (var i = 0; i < fields.length; i++) fields[i].disabled = !on;
+      }
+      type.addEventListener("change", sync);
+      /* 從文章或其他頁面連 #estimate 過來的，預設就是要估價 */
+      if (location.hash === "#estimate") {
+        type.value = "想先估價";
+        var box = document.getElementById("estimate");
+        if (box) setTimeout(function () { box.scrollIntoView({ block: "start" }); }, 60);
+      }
+      sync();
+    })();
     var modal = document.getElementById("cf-privacy");
     var agreed = false;          // 這次工作階段是否已同意告知事項
     var pendingSubmit = false;   // 是否因為要看告知事項而暫停送出
