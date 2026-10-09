@@ -37,15 +37,18 @@ jobs:
           path: data/community-deals.json
           retention-days: 7
 
+      - name: 安裝建置相依套件
+        # 必須在 build-site.js 之前：工具頁的 JSX 由 @babel/core 在建置時編譯，
+        # 沒先裝好的話會退回瀏覽器端編譯（頁面仍可用，但會多載一個很大的腳本）。
+        run: npm ci --no-audit --no-fund
+
       - name: 重新建置全站
         run: node scripts/build-site.js
 
       - name: 編譯 Tailwind CSS
         # 掃描剛產生的 HTML，把用到的 class 編成 assets/tailwind.css。
         # 一定要在 build-site.js 之後跑，否則掃到的是上一版的 HTML。
-        run: |
-          npm ci --no-audit --no-fund
-          npm run css
+        run: npm run css
 
       - name: 提交結果
         # 提交與推送統一交給 scripts/git-push-retry.sh：
