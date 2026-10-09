@@ -20,6 +20,13 @@ import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead } from "./
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
+
+/* 摘要用的單價範圍只取近三年，詳見 communityPage 內的說明 */
+const RANGE_SINCE = (() => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 3);
+  return d.toISOString().slice(0, 10);
+})();
 const OUT_DIR = path.join(ROOT, "communities");
 
 /* ---------- 社區介紹影片 ----------
@@ -226,9 +233,16 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     </div>`;
   }
 
-  /* 單價範圍只算住家，店面單價本來就高一截，混進來會讓人誤判住家行情 */
+  /* 單價範圍只算住家，店面單價本來就高一截，混進來會讓人誤判住家行情。
+     期間限近三年：資料池回補到 2012 年後，成交橫跨十四年，
+     把 2012 年的價格和 2026 年並列成一個「範圍」會讓人嚴重低估現在的行情
+     （例如捷運城品全期間是 5.6–47.1 萬，近三年是 12.7–47.1 萬）。
+     逐筆成交表格仍然完整呈現所有年份，範圍只是摘要，取近三年才有參考價值。
+     不用近一年是因為單一社區一年內往往只有個位數成交，範圍會失真。 */
   const homes = deals.filter(d => d.use !== "店面");
-  const prices = homes.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  const recentHomes = homes.filter(d => String(d.date || "") >= RANGE_SINCE);
+  const prices = (recentHomes.length >= 3 ? recentHomes : homes)
+    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
   const low = prices[0], high = prices[prices.length - 1];
   const shops = deals.length - homes.length;
 
@@ -1211,7 +1225,10 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
     <div class="mt-6 grid md:grid-cols-2 gap-6" data-grid>
     ${g.items.map(c => {
       const deals = dealsMap[c.slug] || [];
-      const prices = deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+      /* 卡片上的單價範圍同樣限近三年，理由見社區頁的說明 */
+      const recent = deals.filter(d => String(d.date || "") >= RANGE_SINCE);
+      const prices = (recent.length >= 3 ? recent : deals)
+        .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
       /* 排序與搜尋用的資料：搜尋比對社區名、別名、生活圈與地址；
          排序只用可靠的欄位（成交筆數、單價中位數），屋齡與戶數在規格表裡是
          自由文字（「店舖9戶／住宅769戶」這種），解析容易出錯，不拿來排序。 */

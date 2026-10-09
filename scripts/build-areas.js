@@ -178,9 +178,28 @@ function marketBlock(areaMarket) {
    我這區現在行情多少、我的社區好不好賣、我家落在什麼位置。
    數字全部由該區的實際成交算出來，所以每一區的內容都不一樣，
    不會變成四頁雷同的樣板。 */
+/* 價格水準只看近一年
+   ------------------------------------------------
+   資料池回補到 2012 年之後，成交紀錄橫跨十四年。拿全期間算中位數會嚴重失真：
+   美術館特區 2012 年的中位數是 18.3 萬、2024 年因新成屋交屋潮衝到 45.3 萬、
+   2025 與 2026 回到 36 萬附近。全期間混在一起算出來是 26.2 萬，
+   比近一年的 36.3 萬低了快三成——這一區標題寫著「有房子要賣？」，
+   屋主照這個數字訂價會直接少賣幾百萬。
+   所以價格水準（單價、總價、坪數）一律只取近一年，與首頁行情的「近四季」一致。
+   例外是下面的「同社區內部價差」與「年周轉率」：那兩個衡量的是離散度與換手頻率，
+   不是價格水準，樣本需要拉長才穩定，各自有自己的期間說明。 */
+function sinceISO(months) {
+  const d = new Date();
+  d.setMonth(d.getMonth() - months);
+  return d.toISOString().slice(0, 10);
+}
+const PRICE_WINDOW_MONTHS = 12;
+
 function sellerBlock(area, items, dealsMap) {
+  const since = sinceISO(PRICE_WINDOW_MONTHS);
   const homes = items.flatMap(c => (dealsMap[c.slug] || [])
-    .filter(d => d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150));
+    .filter(d => d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150
+      && String(d.date || "") >= since));
   if (homes.length < 50) return "";
 
   const q = (arr, p) => arr.length ? arr[Math.min(arr.length - 1, Math.floor(arr.length * p))] : 0;
@@ -209,10 +228,10 @@ function sellerBlock(area, items, dealsMap) {
 
   const f1 = n => n.toFixed(1);
   const rows = [
-    ["住家成交單價中位數", `${f1(q(up, 0.5))} 萬元／坪`],
-    ["單價常見區間（Q1–Q3）", `${f1(q(up, 0.25))} – ${f1(q(up, 0.75))} 萬元／坪`],
-    ...(tp.length ? [["總價中位數", `${Math.round(q(tp, 0.5)).toLocaleString("en-US")} 萬元`]] : []),
-    ...(pingArr.length ? [["成交坪數中位數", `${f1(q(pingArr, 0.5))} 坪`]] : []),
+    ["住家成交單價中位數（近一年）", `${f1(q(up, 0.5))} 萬元／坪`],
+    ["單價常見區間（近一年 Q1–Q3）", `${f1(q(up, 0.25))} – ${f1(q(up, 0.75))} 萬元／坪`],
+    ...(tp.length ? [["總價中位數（近一年）", `${Math.round(q(tp, 0.5)).toLocaleString("en-US")} 萬元`]] : []),
+    ...(pingArr.length ? [["成交坪數中位數（近一年）", `${f1(q(pingArr, 0.5))} 坪`]] : []),
     ...(spreads.length >= 3 ? [["同社區內部價差中位數", `${f1(q(spreads, 0.5))} 萬元／坪`]] : []),
     ...(turn.length >= 3 ? [["社區年周轉率中位數", `${f1(q(turn, 0.5))}%（100 戶約成交 ${(q(turn, 0.5)).toFixed(1)} 戶／年）`]] : []),
   ];
