@@ -1624,24 +1624,21 @@
   </nav>
 </main>
 
+
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="text/babel">
-
-const { useState, useEffect, useMemo } = React;
-
+<script>
+const {
+  useState,
+  useEffect,
+  useMemo
+} = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:0797669977"
 };
-
-/* 官方原文裡「全里為○○國中學區」這種寫法，會被誤抓成里名「全里」，
-   這幾個詞不是里，要排除。 */
 const NOT_VILLAGE = ["全里", "各里", "該里", "本里", "此里", "上里"];
-
-/* 從官方學區原文抽出里名：里名前必須是分隔符或字串開頭 */
 function extractVillages(zone) {
   const out = [];
   const re = /(^|[^\u4e00-\u9fff])([\u4e00-\u9fff]{2,3}里)/g;
@@ -1651,157 +1648,117 @@ function extractVillages(zone) {
   }
   return out;
 }
-
-/* 沒有 stage 的舊資料一律當國小，避免升級時漏掉 */
 const stageOf = e => e.stage || "國民小學";
 const STAGES = ["國民小學", "國民中學"];
-
-/* 把符合的里名在原文中標起來 */
-function Highlight({ text, term }) {
-  if (!term) return <>{text}</>;
+function Highlight({
+  text,
+  term
+}) {
+  if (!term) return React.createElement(React.Fragment, null, text);
   const parts = text.split(term);
-  return (
-    <>
-      {parts.map((p, i) => (
-        <React.Fragment key={i}>
-          {p}
-          {i < parts.length - 1 && <mark>{term}</mark>}
-        </React.Fragment>
-      ))}
-    </>
-  );
+  return React.createElement(React.Fragment, null, parts.map((p, i) => React.createElement(React.Fragment, {
+    key: i
+  }, p, i < parts.length - 1 && React.createElement("mark", null, term))));
 }
-
 function Calculator() {
-
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [district, setDistrict] = useState("");
   const [village, setVillage] = useState("");
-
   useEffect(() => {
-    fetch(`../../data/school-zones.json?t=${Date.now()}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => setError(true));
+    fetch(`../../data/school-zones.json?t=${Date.now()}`).then(r => r.json()).then(setData).catch(() => setError(true));
   }, []);
-
   const districts = useMemo(() => {
     if (!data) return [];
     return [...new Set(data.entries.map(e => e.zoneDistrict))];
   }, [data]);
-
   const villages = useMemo(() => {
     if (!data || !district) return [];
     const set = new Set();
-    data.entries
-      .filter(e => e.zoneDistrict === district)
-      .forEach(e => extractVillages(e.zone).forEach(v => set.add(v)));
+    data.entries.filter(e => e.zoneDistrict === district).forEach(e => extractVillages(e.zone).forEach(v => set.add(v)));
     return [...set].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   }, [data, district]);
-
   const results = useMemo(() => {
     if (!data || !district || !village) return [];
-    return data.entries.filter(
-      e => e.zoneDistrict === district && e.zone.includes(village)
-    );
+    return data.entries.filter(e => e.zoneDistrict === district && e.zone.includes(village));
   }, [data, district, village]);
-  return (
-    <>
-{/* 查詢區 */}
-        <div className="mt-8 bg-surface border border-line rounded-sm p-7">
-          <div className="grid sm:grid-cols-2 gap-6">
-            <label className="block">
-              <span className="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">行政區</span>
-              <select
-                className="w-full border border-line rounded-sm px-4 py-3 text-[16px] bg-surface"
-                value={district}
-                onChange={e => { setDistrict(e.target.value); setVillage(""); }}>
-                <option value="">請選擇</option>
-                {districts.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">
-                里別{district && `（${villages.length} 個）`}
-              </span>
-              <select
-                className="w-full border border-line rounded-sm px-4 py-3 text-[16px] bg-surface disabled:bg-paper disabled:text-inkFaint"
-                value={village}
-                disabled={!district}
-                onChange={e => setVillage(e.target.value)}>
-                <option value="">{district ? "請選擇" : "請先選行政區"}</option>
-                {villages.map(v => <option key={v} value={v}>{v}</option>)}
-              </select>
-            </label>
-          </div>
-
-          {error && (
-            <p className="mt-6 text-[15px] text-orangeDeep">學區資料讀取失敗，請重新整理頁面再試一次。</p>
-          )}
-          {!error && !data && (
-            <p className="mt-6 font-mono text-[13px] text-inkFaint">讀取學區資料中…</p>
-          )}
-        </div>
-
-        {/* 結果 */}
-        {village && (
-          <section className="mt-10">
-            <h2 className="display text-[20px] mb-1">
-              {district}{village}　對應學區
-            </h2>
-            <p className="text-[15px] text-inkSoft mb-6">
-              共 {results.length} 筆，含國小與國中。請對照原文確認你的「鄰」別是否落在範圍內。
-            </p>
-
-            {STAGES.map(stage => {
-              const group = results.filter(r => stageOf(r) === stage);
-              return (
-                <div key={stage} className="mb-8 last:mb-0">
-                  <div className="font-mono text-[13px] tracking-wider text-orangeDeep mb-3">
-                    {stage}　{group.length} 筆
-                  </div>
-                  {group.length === 0 ? (
-                    <p className="text-[15px] text-inkSoft">這個里在本資料中沒有對應的{stage}紀錄。</p>
-                  ) : (
-            <div className="space-y-4">
-              {group.map((r, i) => (
-                <article key={i} className="bg-surface border border-line rounded-sm p-6">
-                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
-                    <h3 className="text-[19px] font-bold tracking-tight">{r.school}</h3>
-                    {r.schoolDistrict !== district && (
-                      <span className="font-mono text-[12px] text-orangeDeep border border-orange/40 rounded-sm px-2 py-0.5">
-                        校址位於 {r.schoolDistrict}
-                      </span>
-                    )}
-                  </div>
-                  <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-2">官方學區原文</div>
-                  <p className="text-[15px] leading-[1.95] text-inkSoft">
-                    <Highlight text={r.zone} term={village} />
-                  </p>
-                </article>
-              ))}
-            </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {results.length > 1 && (
-              <p className="mt-5 text-[15px] text-inkSoft leading-[1.9]">
-                查到多筆，通常代表這個里被切分成不同鄰、分屬不同學校，或屬於「自由學區」可自行選擇。
-                請依原文的鄰別範圍判斷，不確定時建議直接向學校或區公所確認。
-              </p>
-            )}
-          </section>
-        )}
-    </>
-  );
+  return React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "mt-8 bg-surface border border-line rounded-sm p-7"
+  }, React.createElement("div", {
+    className: "grid sm:grid-cols-2 gap-6"
+  }, React.createElement("label", {
+    className: "block"
+  }, React.createElement("span", {
+    className: "block font-mono text-[12px] tracking-wider text-inkFaint mb-2"
+  }, "\u884C\u653F\u5340"), React.createElement("select", {
+    className: "w-full border border-line rounded-sm px-4 py-3 text-[16px] bg-surface",
+    value: district,
+    onChange: e => {
+      setDistrict(e.target.value);
+      setVillage("");
+    }
+  }, React.createElement("option", {
+    value: ""
+  }, "\u8ACB\u9078\u64C7"), districts.map(d => React.createElement("option", {
+    key: d,
+    value: d
+  }, d)))), React.createElement("label", {
+    className: "block"
+  }, React.createElement("span", {
+    className: "block font-mono text-[12px] tracking-wider text-inkFaint mb-2"
+  }, "\u91CC\u5225", district && `（${villages.length} 個）`), React.createElement("select", {
+    className: "w-full border border-line rounded-sm px-4 py-3 text-[16px] bg-surface disabled:bg-paper disabled:text-inkFaint",
+    value: village,
+    disabled: !district,
+    onChange: e => setVillage(e.target.value)
+  }, React.createElement("option", {
+    value: ""
+  }, district ? "請選擇" : "請先選行政區"), villages.map(v => React.createElement("option", {
+    key: v,
+    value: v
+  }, v))))), error && React.createElement("p", {
+    className: "mt-6 text-[15px] text-orangeDeep"
+  }, "\u5B78\u5340\u8CC7\u6599\u8B80\u53D6\u5931\u6557\uFF0C\u8ACB\u91CD\u65B0\u6574\u7406\u9801\u9762\u518D\u8A66\u4E00\u6B21\u3002"), !error && !data && React.createElement("p", {
+    className: "mt-6 font-mono text-[13px] text-inkFaint"
+  }, "\u8B80\u53D6\u5B78\u5340\u8CC7\u6599\u4E2D\u2026")), village && React.createElement("section", {
+    className: "mt-10"
+  }, React.createElement("h2", {
+    className: "display text-[20px] mb-1"
+  }, district, village, "\u3000\u5C0D\u61C9\u5B78\u5340"), React.createElement("p", {
+    className: "text-[15px] text-inkSoft mb-6"
+  }, "\u5171 ", results.length, " \u7B46\uFF0C\u542B\u570B\u5C0F\u8207\u570B\u4E2D\u3002\u8ACB\u5C0D\u7167\u539F\u6587\u78BA\u8A8D\u4F60\u7684\u300C\u9130\u300D\u5225\u662F\u5426\u843D\u5728\u7BC4\u570D\u5167\u3002"), STAGES.map(stage => {
+    const group = results.filter(r => stageOf(r) === stage);
+    return React.createElement("div", {
+      key: stage,
+      className: "mb-8 last:mb-0"
+    }, React.createElement("div", {
+      className: "font-mono text-[13px] tracking-wider text-orangeDeep mb-3"
+    }, stage, "\u3000", group.length, " \u7B46"), group.length === 0 ? React.createElement("p", {
+      className: "text-[15px] text-inkSoft"
+    }, "\u9019\u500B\u91CC\u5728\u672C\u8CC7\u6599\u4E2D\u6C92\u6709\u5C0D\u61C9\u7684", stage, "\u7D00\u9304\u3002") : React.createElement("div", {
+      className: "space-y-4"
+    }, group.map((r, i) => React.createElement("article", {
+      key: i,
+      className: "bg-surface border border-line rounded-sm p-6"
+    }, React.createElement("div", {
+      className: "flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3"
+    }, React.createElement("h3", {
+      className: "text-[19px] font-bold tracking-tight"
+    }, r.school), r.schoolDistrict !== district && React.createElement("span", {
+      className: "font-mono text-[12px] text-orangeDeep border border-orange/40 rounded-sm px-2 py-0.5"
+    }, "\u6821\u5740\u4F4D\u65BC ", r.schoolDistrict)), React.createElement("div", {
+      className: "font-mono text-[12px] tracking-wider text-inkFaint mb-2"
+    }, "\u5B98\u65B9\u5B78\u5340\u539F\u6587"), React.createElement("p", {
+      className: "text-[15px] leading-[1.95] text-inkSoft"
+    }, React.createElement(Highlight, {
+      text: r.zone,
+      term: village
+    }))))));
+  }), results.length > 1 && React.createElement("p", {
+    className: "mt-5 text-[15px] text-inkSoft leading-[1.9]"
+  }, "\u67E5\u5230\u591A\u7B46\uFF0C\u901A\u5E38\u4EE3\u8868\u9019\u500B\u91CC\u88AB\u5207\u5206\u6210\u4E0D\u540C\u9130\u3001\u5206\u5C6C\u4E0D\u540C\u5B78\u6821\uFF0C\u6216\u5C6C\u65BC\u300C\u81EA\u7531\u5B78\u5340\u300D\u53EF\u81EA\u884C\u9078\u64C7\u3002 \u8ACB\u4F9D\u539F\u6587\u7684\u9130\u5225\u7BC4\u570D\u5224\u65B7\uFF0C\u4E0D\u78BA\u5B9A\u6642\u5EFA\u8B70\u76F4\u63A5\u5411\u5B78\u6821\u6216\u5340\u516C\u6240\u78BA\u8A8D\u3002")));
 }
-
-ReactDOM.createRoot(document.getElementById("calc")).render(<Calculator />);
-
+ReactDOM.createRoot(document.getElementById("calc")).render(React.createElement(Calculator, null));
 </script>
 <a id="lineFab" href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
   aria-label="用 LINE 詢問"

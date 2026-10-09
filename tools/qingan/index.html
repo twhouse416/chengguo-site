@@ -313,40 +313,56 @@
   </nav>
 </main>
 
+
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="text/babel">
-
-const { useState, useMemo } = React;
-
+<script>
+const {
+  useState,
+  useMemo
+} = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:0797669977"
 };
-
-/* 房屋總價上限（萬元），依購屋所在縣市三級制 */
-const PRICE_CAPS = [
-  { name: "臺北市", cap: 3500 },
-  { name: "新北市", cap: 2500 },
-  { name: "新竹縣", cap: 2500 },
-  { name: "新竹市", cap: 2500 },
-  { name: "高雄市", cap: 2000 },
-  { name: "其他縣市", cap: 2000 },
-];
-
-/* 家庭狀況對應的貸款額度上限（萬元） */
-const QUOTAS = [
-  { key: "single", label: "一般首購", quota: 1000, note: "未符合下列婚育條件" },
-  { key: "newly",  label: "新婚 2 年內", quota: 1200, note: "申請日前 2 年內結婚" },
-  { key: "child",  label: "育有未成年子女", quota: 1500, note: "子女未滿 18 歲" },
-];
-
+const PRICE_CAPS = [{
+  name: "臺北市",
+  cap: 3500
+}, {
+  name: "新北市",
+  cap: 2500
+}, {
+  name: "新竹縣",
+  cap: 2500
+}, {
+  name: "新竹市",
+  cap: 2500
+}, {
+  name: "高雄市",
+  cap: 2000
+}, {
+  name: "其他縣市",
+  cap: 2000
+}];
+const QUOTAS = [{
+  key: "single",
+  label: "一般首購",
+  quota: 1000,
+  note: "未符合下列婚育條件"
+}, {
+  key: "newly",
+  label: "新婚 2 年內",
+  quota: 1200,
+  note: "申請日前 2 年內結婚"
+}, {
+  key: "child",
+  label: "育有未成年子女",
+  quota: 1500,
+  note: "子女未滿 18 歲"
+}];
 const fmt = n => Math.round(n).toLocaleString("zh-TW");
 const fmtW = n => (Math.round(n * 10) / 10).toLocaleString("zh-TW");
-
-/* 3+3 利息補貼退場：前3年補貼2碼，滿3年後每年減半碼，第7年起回復原利率 */
 function rateForYear(year, baseRate) {
   if (year <= 3) return baseRate - 0.5;
   if (year === 4) return baseRate - 0.375;
@@ -354,87 +370,106 @@ function rateForYear(year, baseRate) {
   if (year === 6) return baseRate - 0.125;
   return baseRate;
 }
-
-/* 逐月模擬：利率變動時，以當時餘額與剩餘期數重算月付 */
-function simulate({ loanWan, years, graceYears, baseRate }) {
+function simulate({
+  loanWan,
+  years,
+  graceYears,
+  baseRate
+}) {
   const P = loanWan * 10000;
   const n = years * 12;
   const g = Math.min(graceYears * 12, n - 1);
-
   let balance = P;
   let payment = 0;
   let prevRate = null;
   let totalInterest = 0;
   const phases = [];
-
   for (let m = 0; m < n; m++) {
     const year = Math.floor(m / 12) + 1;
     const rate = rateForYear(year, baseRate);
     const i = rate / 100 / 12;
     const inGrace = m < g;
-
     if (rate !== prevRate || m === g) {
       if (inGrace) {
         payment = balance * i;
       } else {
         const rem = n - m;
-        payment = i === 0 ? balance / rem : (balance * i) / (1 - Math.pow(1 + i, -rem));
+        payment = i === 0 ? balance / rem : balance * i / (1 - Math.pow(1 + i, -rem));
       }
-      phases.push({ startYear: year, startMonth: m, rate, payment, grace: inGrace });
+      phases.push({
+        startYear: year,
+        startMonth: m,
+        rate,
+        payment,
+        grace: inGrace
+      });
       prevRate = rate;
     }
-
     const interest = balance * i;
     totalInterest += interest;
     if (!inGrace) balance -= payment - interest;
   }
-
-  /* 合併相鄰且月付相同的階段 */
-  const merged = phases.filter((p, idx) =>
-    idx === 0 || Math.round(p.payment) !== Math.round(phases[idx - 1].payment) || p.grace !== phases[idx - 1].grace
-  );
-
-  return { P, totalInterest, totalPaid: P + totalInterest, phases: merged, n };
+  const merged = phases.filter((p, idx) => idx === 0 || Math.round(p.payment) !== Math.round(phases[idx - 1].payment) || p.grace !== phases[idx - 1].grace);
+  return {
+    P,
+    totalInterest,
+    totalPaid: P + totalInterest,
+    phases: merged,
+    n
+  };
 }
-
-function Field({ label, hint, children }) {
-  return (
-    <label className="block">
-      <span className="block font-mono text-[12px] tracking-wider text-inkFaint mb-2">{label}</span>
-      {children}
-      {hint && <span className="block text-[13px] text-inkFaint mt-1.5">{hint}</span>}
-    </label>
-  );
+function Field({
+  label,
+  hint,
+  children
+}) {
+  return React.createElement("label", {
+    className: "block"
+  }, React.createElement("span", {
+    className: "block font-mono text-[12px] tracking-wider text-inkFaint mb-2"
+  }, label), children, hint && React.createElement("span", {
+    className: "block text-[13px] text-inkFaint mt-1.5"
+  }, hint));
 }
-
-function NumInput({ value, onChange, suffix, step = 1, min = 0 }) {
-  return (
-    <div className="flex items-center border border-line rounded-sm bg-surface focus-within:border-orange">
-      <input type="number" inputMode="decimal" step={step} min={min}
-        className="w-full px-4 py-3 text-[17px] font-mono bg-transparent outline-none"
-        value={value}
-        onChange={e => onChange(e.target.value === "" ? "" : Number(e.target.value))} />
-      {suffix && <span className="px-4 text-[14px] text-inkFaint shrink-0">{suffix}</span>}
-    </div>
-  );
+function NumInput({
+  value,
+  onChange,
+  suffix,
+  step = 1,
+  min = 0
+}) {
+  return React.createElement("div", {
+    className: "flex items-center border border-line rounded-sm bg-surface focus-within:border-orange"
+  }, React.createElement("input", {
+    type: "number",
+    inputMode: "decimal",
+    step: step,
+    min: min,
+    className: "w-full px-4 py-3 text-[17px] font-mono bg-transparent outline-none",
+    value: value,
+    onChange: e => onChange(e.target.value === "" ? "" : Number(e.target.value))
+  }), suffix && React.createElement("span", {
+    className: "px-4 text-[14px] text-inkFaint shrink-0"
+  }, suffix));
 }
-
-function Check({ ok, children, detail }) {
-  return (
-    <li className="flex gap-3 py-3 border-b border-line last:border-0">
-      <span className={`font-mono text-[13px] shrink-0 mt-0.5 ${ok ? "text-pass" : "text-fail"}`}>
-        {ok ? "通過" : "不符"}
-      </span>
-      <span className="flex-1">
-        <span className="block text-[15px]">{children}</span>
-        {detail && <span className="block text-[13px] text-inkFaint mt-1 leading-relaxed">{detail}</span>}
-      </span>
-    </li>
-  );
+function Check({
+  ok,
+  children,
+  detail
+}) {
+  return React.createElement("li", {
+    className: "flex gap-3 py-3 border-b border-line last:border-0"
+  }, React.createElement("span", {
+    className: `font-mono text-[13px] shrink-0 mt-0.5 ${ok ? "text-pass" : "text-fail"}`
+  }, ok ? "通過" : "不符"), React.createElement("span", {
+    className: "flex-1"
+  }, React.createElement("span", {
+    className: "block text-[15px]"
+  }, children), detail && React.createElement("span", {
+    className: "block text-[13px] text-inkFaint mt-1 leading-relaxed"
+  }, detail)));
 }
-
 function Calculator() {
-
   const [age, setAge] = useState(35);
   const [income, setIncome] = useState(90);
   const [city, setCity] = useState("高雄市");
@@ -442,15 +477,12 @@ function Calculator() {
   const [family, setFamily] = useState("single");
   const [noHouse, setNoHouse] = useState(true);
   const [firstTime, setFirstTime] = useState(true);
-
   const [loan, setLoan] = useState(900);
   const [years, setYears] = useState(30);
   const [graceYears, setGraceYears] = useState(0);
   const [baseRate, setBaseRate] = useState(2.275);
-
   const cap = PRICE_CAPS.find(c => c.name === city)?.cap ?? 2000;
   const quota = QUOTAS.find(q => q.key === family)?.quota ?? 1000;
-
   const maxYearsByAge = Math.max(0, Math.min(40, 80 - age));
   const checks = {
     age: age >= 18 && age < 50,
@@ -458,191 +490,211 @@ function Calculator() {
     income: income <= 200,
     price: price <= cap,
     noHouse,
-    firstTime,
+    firstTime
   };
   const allPass = Object.values(checks).every(Boolean);
   const loanCapped = Math.min(loan, quota, price);
-
-  const sim = useMemo(
-    () => (loanCapped > 0 && years > 0 ? simulate({ loanWan: loanCapped, years, graceYears, baseRate }) : null),
-    [loanCapped, years, graceYears, baseRate]
-  );
-  return (
-    <>
-{/* 資格檢核 */}
-        <section className="mt-10">
-          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Step 1　資格檢核</h2>
-          <div className="grid lg:grid-cols-5 gap-8">
-            <div className="lg:col-span-2 bg-surface border border-line rounded-sm p-7 space-y-6 h-fit">
-              <Field label="申貸年齡" hint={`年齡＋貸款年限不得超過 80，你最長可貸 ${maxYearsByAge} 年`}>
-                <NumInput value={age} onChange={setAge} suffix="歲" />
-              </Field>
-
-              <Field label="本人年所得總額" hint="以借款人本人計算，不是夫妻合計">
-                <NumInput value={income} onChange={setIncome} suffix="萬" step={5} />
-              </Field>
-
-              <Field label="購屋所在縣市" hint={`總價上限 ${cap.toLocaleString()} 萬元`}>
-                <select className="w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface"
-                  value={city} onChange={e => setCity(e.target.value)}>
-                  {PRICE_CAPS.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-                </select>
-              </Field>
-
-              <Field label="房屋總價">
-                <NumInput value={price} onChange={setPrice} suffix="萬" step={10} />
-              </Field>
-
-              <Field label="家庭狀況" hint={`貸款額度上限 ${quota.toLocaleString()} 萬元`}>
-                <select className="w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface"
-                  value={family} onChange={e => setFamily(e.target.value)}>
-                  {QUOTAS.map(q => <option key={q.key} value={q.key}>{q.label}（{q.quota} 萬）</option>)}
-                </select>
-              </Field>
-
-              <div className="space-y-3 pt-2">
-                <label className="flex gap-3 items-start cursor-pointer">
-                  <input type="checkbox" checked={noHouse} onChange={e => setNoHouse(e.target.checked)} className="mt-0.5" />
-                  <span className="text-[15px] leading-snug">本人、配偶及未成年子女名下皆無自有住宅</span>
-                </label>
-                <label className="flex gap-3 items-start cursor-pointer">
-                  <input type="checkbox" checked={firstTime} onChange={e => setFirstTime(e.target.checked)} className="mt-0.5" />
-                  <span className="text-[15px] leading-snug">未曾申請過青安貸款（一生限貸一次）</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="lg:col-span-3">
-              <div className={`border rounded-sm p-7 ${allPass ? "bg-surface border-line" : "bg-surface border-fail/40"}`}>
-                <div className="flex items-baseline gap-3 mb-5">
-                  <span className={`display text-[22px] ${allPass ? "text-pass" : "text-fail"}`}>
-                    {allPass ? "初步符合資格" : "有條件未通過"}
-                  </span>
-                </div>
-                <ul>
-                  <Check ok={checks.age} detail="申貸時須年滿 18 歲且未滿 50 歲">
-                    年齡 {age} 歲
-                  </Check>
-                  <Check ok={checks.ageTerm} detail={`年齡 ${age} ＋ 年限 ${years} ＝ ${age + years}，不得超過 80`}>
-                    年齡加貸款年限
-                  </Check>
-                  <Check ok={checks.income} detail="借款人本人年所得總額不得超過 200 萬元">
-                    本人年所得 {income} 萬
-                  </Check>
-                  <Check ok={checks.price} detail={`${city}總價上限 ${cap.toLocaleString()} 萬元`}>
-                    房屋總價 {price} 萬
-                  </Check>
-                  <Check ok={checks.noHouse} detail="現在名下有沒有房，不是有沒有買過房">
-                    名下無自有住宅
-                  </Check>
-                  <Check ok={checks.firstTime} detail="需簽署自住切結，貸後會跨部會勾稽">
-                    一生限貸一次
-                  </Check>
-                </ul>
-                <p className="text-[14px] text-inkFaint leading-[1.85] mt-5 pt-5 border-t border-line">
-                  這裡只檢核方案明訂的門檻。實際能不能核貸、能貸多少成數，仍由銀行依物件條件與信用狀況審查。
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 月付試算 */}
-        <section className="mt-14">
-          <h2 className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Step 2　月付試算</h2>
-          <div className="grid lg:grid-cols-5 gap-8">
-            <div className="lg:col-span-2 bg-surface border border-line rounded-sm p-7 space-y-6 h-fit">
-              <Field label="貸款金額"
-                hint={loan > loanCapped ? `已自動下修為 ${fmtW(loanCapped)} 萬（受額度上限或總價限制）` : `額度上限 ${quota} 萬`}>
-                <NumInput value={loan} onChange={setLoan} suffix="萬" step={10} />
-              </Field>
-              <Field label="貸款年限" hint={`最長 40 年，且不得超過 ${maxYearsByAge} 年`}>
-                <NumInput value={years} onChange={setYears} suffix="年" min={1} />
-              </Field>
-              <Field label="寬限期" hint="最長 5 年，期內只繳息">
-                <NumInput value={graceYears} onChange={setGraceYears} suffix="年" min={0} />
-              </Field>
-              <Field label="補貼期滿後利率"
-                hint="一段式機動利率的原始水準。目前約 2.275%（郵儲基準 1.72% ＋ 0.555%），會隨升降息變動">
-                <NumInput value={baseRate} onChange={setBaseRate} suffix="%" step={0.005} />
-              </Field>
-            </div>
-
-            <div className="lg:col-span-3 space-y-6">
-              {sim && (
-                <>
-                  <div className="bg-surface border border-line rounded-sm p-7">
-                    <div className="font-mono text-[12px] tracking-wider text-inkFaint mb-1">起始月付（前 3 年補貼後）</div>
-                    <div className="font-mono text-[40px] font-semibold text-orangeDeep leading-none">
-                      {fmt(sim.phases[0].payment)}
-                      <span className="text-[15px] font-normal text-inkSoft ml-2">元 / 月</span>
-                    </div>
-                    <div className="font-mono text-[13px] text-inkSoft mt-2">
-                      年利率 {rateForYear(1, baseRate).toFixed(3)}%
-                      {sim.phases[0].grace && "・寬限期內只繳息"}
-                    </div>
-                  </div>
-
-                  <div className="bg-surface border border-line rounded-sm p-7">
-                    <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-1">
-                      月付變化
-                    </div>
-                    <p className="text-[14px] text-inkSoft leading-[1.8] mb-5">
-                      利息補貼採「3＋3」逐年退場，月付會分階段往上調。
-                    </p>
-                    <table className="w-full text-[15px]">
-                      <thead>
-                        <tr className="font-mono text-[12px] tracking-wider text-inkFaint border-b border-line">
-                          <th className="text-left pb-2 font-normal">期間</th>
-                          <th className="text-right pb-2 font-normal">年利率</th>
-                          <th className="text-right pb-2 font-normal">月付金</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sim.phases.map((p, i) => {
-                          const next = sim.phases[i + 1];
-                          const endYear = next ? next.startYear - 1 : years;
-                          return (
-                            <tr key={i} className="border-b border-line last:border-0">
-                              <td className="py-3">
-                                第 {p.startYear}{endYear > p.startYear ? `–${endYear}` : ""} 年
-                                {p.grace && <span className="text-[13px] text-inkFaint ml-2">寬限期</span>}
-                              </td>
-                              <td className="py-3 text-right font-mono text-inkSoft">{p.rate.toFixed(3)}%</td>
-                              <td className="py-3 text-right font-mono">{fmt(p.payment)}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="bg-surface border border-line rounded-sm p-7">
-                    <dl className="divide-y divide-line">
-                      {[
-                        ["實際貸款金額", `${fmtW(loanCapped)} 萬元`],
-                        ["自備款（總價 − 貸款）", `${fmtW(Math.max(0, price - loanCapped))} 萬元`],
-                        ["利息總額", `${fmt(sim.totalInterest)} 元`],
-                        ["本息合計", `${fmt(sim.totalPaid)} 元`],
-                      ].map(([k, v]) => (
-                        <div key={k} className="flex items-baseline justify-between py-3">
-                          <dt className="text-[15px] text-inkSoft">{k}</dt>
-                          <dd className="font-mono text-[17px]">{v}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </section>
-    </>
-  );
+  const sim = useMemo(() => loanCapped > 0 && years > 0 ? simulate({
+    loanWan: loanCapped,
+    years,
+    graceYears,
+    baseRate
+  }) : null, [loanCapped, years, graceYears, baseRate]);
+  return React.createElement(React.Fragment, null, React.createElement("section", {
+    className: "mt-10"
+  }, React.createElement("h2", {
+    className: "font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4"
+  }, "Step 1\u3000\u8CC7\u683C\u6AA2\u6838"), React.createElement("div", {
+    className: "grid lg:grid-cols-5 gap-8"
+  }, React.createElement("div", {
+    className: "lg:col-span-2 bg-surface border border-line rounded-sm p-7 space-y-6 h-fit"
+  }, React.createElement(Field, {
+    label: "\u7533\u8CB8\u5E74\u9F61",
+    hint: `年齡＋貸款年限不得超過 80，你最長可貸 ${maxYearsByAge} 年`
+  }, React.createElement(NumInput, {
+    value: age,
+    onChange: setAge,
+    suffix: "\u6B72"
+  })), React.createElement(Field, {
+    label: "\u672C\u4EBA\u5E74\u6240\u5F97\u7E3D\u984D",
+    hint: "\u4EE5\u501F\u6B3E\u4EBA\u672C\u4EBA\u8A08\u7B97\uFF0C\u4E0D\u662F\u592B\u59BB\u5408\u8A08"
+  }, React.createElement(NumInput, {
+    value: income,
+    onChange: setIncome,
+    suffix: "\u842C",
+    step: 5
+  })), React.createElement(Field, {
+    label: "\u8CFC\u5C4B\u6240\u5728\u7E23\u5E02",
+    hint: `總價上限 ${cap.toLocaleString()} 萬元`
+  }, React.createElement("select", {
+    className: "w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface",
+    value: city,
+    onChange: e => setCity(e.target.value)
+  }, PRICE_CAPS.map(c => React.createElement("option", {
+    key: c.name,
+    value: c.name
+  }, c.name)))), React.createElement(Field, {
+    label: "\u623F\u5C4B\u7E3D\u50F9"
+  }, React.createElement(NumInput, {
+    value: price,
+    onChange: setPrice,
+    suffix: "\u842C",
+    step: 10
+  })), React.createElement(Field, {
+    label: "\u5BB6\u5EAD\u72C0\u6CC1",
+    hint: `貸款額度上限 ${quota.toLocaleString()} 萬元`
+  }, React.createElement("select", {
+    className: "w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface",
+    value: family,
+    onChange: e => setFamily(e.target.value)
+  }, QUOTAS.map(q => React.createElement("option", {
+    key: q.key,
+    value: q.key
+  }, q.label, "\uFF08", q.quota, " \u842C\uFF09")))), React.createElement("div", {
+    className: "space-y-3 pt-2"
+  }, React.createElement("label", {
+    className: "flex gap-3 items-start cursor-pointer"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: noHouse,
+    onChange: e => setNoHouse(e.target.checked),
+    className: "mt-0.5"
+  }), React.createElement("span", {
+    className: "text-[15px] leading-snug"
+  }, "\u672C\u4EBA\u3001\u914D\u5076\u53CA\u672A\u6210\u5E74\u5B50\u5973\u540D\u4E0B\u7686\u7121\u81EA\u6709\u4F4F\u5B85")), React.createElement("label", {
+    className: "flex gap-3 items-start cursor-pointer"
+  }, React.createElement("input", {
+    type: "checkbox",
+    checked: firstTime,
+    onChange: e => setFirstTime(e.target.checked),
+    className: "mt-0.5"
+  }), React.createElement("span", {
+    className: "text-[15px] leading-snug"
+  }, "\u672A\u66FE\u7533\u8ACB\u904E\u9752\u5B89\u8CB8\u6B3E\uFF08\u4E00\u751F\u9650\u8CB8\u4E00\u6B21\uFF09")))), React.createElement("div", {
+    className: "lg:col-span-3"
+  }, React.createElement("div", {
+    className: `border rounded-sm p-7 ${allPass ? "bg-surface border-line" : "bg-surface border-fail/40"}`
+  }, React.createElement("div", {
+    className: "flex items-baseline gap-3 mb-5"
+  }, React.createElement("span", {
+    className: `display text-[22px] ${allPass ? "text-pass" : "text-fail"}`
+  }, allPass ? "初步符合資格" : "有條件未通過")), React.createElement("ul", null, React.createElement(Check, {
+    ok: checks.age,
+    detail: "\u7533\u8CB8\u6642\u9808\u5E74\u6EFF 18 \u6B72\u4E14\u672A\u6EFF 50 \u6B72"
+  }, "\u5E74\u9F61 ", age, " \u6B72"), React.createElement(Check, {
+    ok: checks.ageTerm,
+    detail: `年齡 ${age} ＋ 年限 ${years} ＝ ${age + years}，不得超過 80`
+  }, "\u5E74\u9F61\u52A0\u8CB8\u6B3E\u5E74\u9650"), React.createElement(Check, {
+    ok: checks.income,
+    detail: "\u501F\u6B3E\u4EBA\u672C\u4EBA\u5E74\u6240\u5F97\u7E3D\u984D\u4E0D\u5F97\u8D85\u904E 200 \u842C\u5143"
+  }, "\u672C\u4EBA\u5E74\u6240\u5F97 ", income, " \u842C"), React.createElement(Check, {
+    ok: checks.price,
+    detail: `${city}總價上限 ${cap.toLocaleString()} 萬元`
+  }, "\u623F\u5C4B\u7E3D\u50F9 ", price, " \u842C"), React.createElement(Check, {
+    ok: checks.noHouse,
+    detail: "\u73FE\u5728\u540D\u4E0B\u6709\u6C92\u6709\u623F\uFF0C\u4E0D\u662F\u6709\u6C92\u6709\u8CB7\u904E\u623F"
+  }, "\u540D\u4E0B\u7121\u81EA\u6709\u4F4F\u5B85"), React.createElement(Check, {
+    ok: checks.firstTime,
+    detail: "\u9700\u7C3D\u7F72\u81EA\u4F4F\u5207\u7D50\uFF0C\u8CB8\u5F8C\u6703\u8DE8\u90E8\u6703\u52FE\u7A3D"
+  }, "\u4E00\u751F\u9650\u8CB8\u4E00\u6B21")), React.createElement("p", {
+    className: "text-[14px] text-inkFaint leading-[1.85] mt-5 pt-5 border-t border-line"
+  }, "\u9019\u88E1\u53EA\u6AA2\u6838\u65B9\u6848\u660E\u8A02\u7684\u9580\u6ABB\u3002\u5BE6\u969B\u80FD\u4E0D\u80FD\u6838\u8CB8\u3001\u80FD\u8CB8\u591A\u5C11\u6210\u6578\uFF0C\u4ECD\u7531\u9280\u884C\u4F9D\u7269\u4EF6\u689D\u4EF6\u8207\u4FE1\u7528\u72C0\u6CC1\u5BE9\u67E5\u3002"))))), React.createElement("section", {
+    className: "mt-14"
+  }, React.createElement("h2", {
+    className: "font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4"
+  }, "Step 2\u3000\u6708\u4ED8\u8A66\u7B97"), React.createElement("div", {
+    className: "grid lg:grid-cols-5 gap-8"
+  }, React.createElement("div", {
+    className: "lg:col-span-2 bg-surface border border-line rounded-sm p-7 space-y-6 h-fit"
+  }, React.createElement(Field, {
+    label: "\u8CB8\u6B3E\u91D1\u984D",
+    hint: loan > loanCapped ? `已自動下修為 ${fmtW(loanCapped)} 萬（受額度上限或總價限制）` : `額度上限 ${quota} 萬`
+  }, React.createElement(NumInput, {
+    value: loan,
+    onChange: setLoan,
+    suffix: "\u842C",
+    step: 10
+  })), React.createElement(Field, {
+    label: "\u8CB8\u6B3E\u5E74\u9650",
+    hint: `最長 40 年，且不得超過 ${maxYearsByAge} 年`
+  }, React.createElement(NumInput, {
+    value: years,
+    onChange: setYears,
+    suffix: "\u5E74",
+    min: 1
+  })), React.createElement(Field, {
+    label: "\u5BEC\u9650\u671F",
+    hint: "\u6700\u9577 5 \u5E74\uFF0C\u671F\u5167\u53EA\u7E73\u606F"
+  }, React.createElement(NumInput, {
+    value: graceYears,
+    onChange: setGraceYears,
+    suffix: "\u5E74",
+    min: 0
+  })), React.createElement(Field, {
+    label: "\u88DC\u8CBC\u671F\u6EFF\u5F8C\u5229\u7387",
+    hint: "\u4E00\u6BB5\u5F0F\u6A5F\u52D5\u5229\u7387\u7684\u539F\u59CB\u6C34\u6E96\u3002\u76EE\u524D\u7D04 2.275%\uFF08\u90F5\u5132\u57FA\u6E96 1.72% \uFF0B 0.555%\uFF09\uFF0C\u6703\u96A8\u5347\u964D\u606F\u8B8A\u52D5"
+  }, React.createElement(NumInput, {
+    value: baseRate,
+    onChange: setBaseRate,
+    suffix: "%",
+    step: 0.005
+  }))), React.createElement("div", {
+    className: "lg:col-span-3 space-y-6"
+  }, sim && React.createElement(React.Fragment, null, React.createElement("div", {
+    className: "bg-surface border border-line rounded-sm p-7"
+  }, React.createElement("div", {
+    className: "font-mono text-[12px] tracking-wider text-inkFaint mb-1"
+  }, "\u8D77\u59CB\u6708\u4ED8\uFF08\u524D 3 \u5E74\u88DC\u8CBC\u5F8C\uFF09"), React.createElement("div", {
+    className: "font-mono text-[40px] font-semibold text-orangeDeep leading-none"
+  }, fmt(sim.phases[0].payment), React.createElement("span", {
+    className: "text-[15px] font-normal text-inkSoft ml-2"
+  }, "\u5143 / \u6708")), React.createElement("div", {
+    className: "font-mono text-[13px] text-inkSoft mt-2"
+  }, "\u5E74\u5229\u7387 ", rateForYear(1, baseRate).toFixed(3), "%", sim.phases[0].grace && "・寬限期內只繳息")), React.createElement("div", {
+    className: "bg-surface border border-line rounded-sm p-7"
+  }, React.createElement("div", {
+    className: "font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-1"
+  }, "\u6708\u4ED8\u8B8A\u5316"), React.createElement("p", {
+    className: "text-[14px] text-inkSoft leading-[1.8] mb-5"
+  }, "\u5229\u606F\u88DC\u8CBC\u63A1\u300C3\uFF0B3\u300D\u9010\u5E74\u9000\u5834\uFF0C\u6708\u4ED8\u6703\u5206\u968E\u6BB5\u5F80\u4E0A\u8ABF\u3002"), React.createElement("table", {
+    className: "w-full text-[15px]"
+  }, React.createElement("thead", null, React.createElement("tr", {
+    className: "font-mono text-[12px] tracking-wider text-inkFaint border-b border-line"
+  }, React.createElement("th", {
+    className: "text-left pb-2 font-normal"
+  }, "\u671F\u9593"), React.createElement("th", {
+    className: "text-right pb-2 font-normal"
+  }, "\u5E74\u5229\u7387"), React.createElement("th", {
+    className: "text-right pb-2 font-normal"
+  }, "\u6708\u4ED8\u91D1"))), React.createElement("tbody", null, sim.phases.map((p, i) => {
+    const next = sim.phases[i + 1];
+    const endYear = next ? next.startYear - 1 : years;
+    return React.createElement("tr", {
+      key: i,
+      className: "border-b border-line last:border-0"
+    }, React.createElement("td", {
+      className: "py-3"
+    }, "\u7B2C ", p.startYear, endYear > p.startYear ? `–${endYear}` : "", " \u5E74", p.grace && React.createElement("span", {
+      className: "text-[13px] text-inkFaint ml-2"
+    }, "\u5BEC\u9650\u671F")), React.createElement("td", {
+      className: "py-3 text-right font-mono text-inkSoft"
+    }, p.rate.toFixed(3), "%"), React.createElement("td", {
+      className: "py-3 text-right font-mono"
+    }, fmt(p.payment)));
+  })))), React.createElement("div", {
+    className: "bg-surface border border-line rounded-sm p-7"
+  }, React.createElement("dl", {
+    className: "divide-y divide-line"
+  }, [["實際貸款金額", `${fmtW(loanCapped)} 萬元`], ["自備款（總價 − 貸款）", `${fmtW(Math.max(0, price - loanCapped))} 萬元`], ["利息總額", `${fmt(sim.totalInterest)} 元`], ["本息合計", `${fmt(sim.totalPaid)} 元`]].map(([k, v]) => React.createElement("div", {
+    key: k,
+    className: "flex items-baseline justify-between py-3"
+  }, React.createElement("dt", {
+    className: "text-[15px] text-inkSoft"
+  }, k), React.createElement("dd", {
+    className: "font-mono text-[17px]"
+  }, v))))))))));
 }
-
-ReactDOM.createRoot(document.getElementById("calc")).render(<Calculator />);
-
+ReactDOM.createRoot(document.getElementById("calc")).render(React.createElement(Calculator, null));
 </script>
 <a id="lineFab" href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
   aria-label="用 LINE 詢問"
