@@ -13,7 +13,7 @@
 社區成交紀錄全部來自內政部不動產交易實價查詢服務網（https://plvr.land.moi.gov.tw/），
 該平台每月 1、11、21 日批次公告，本站於公告後更新。
 成交資料最後更新：2026-10-09
-目前收錄 253 個社區、14,289 筆成交紀錄。
+目前收錄 254 個社區、14,289 筆成交紀錄。
 
 社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）取自好房網、成家網、
 591、信義房屋、樂居等公開平台，頁面上會註明出處；同一項目有兩種記載時並列兩者，
@@ -33,15 +33,15 @@
   - 美術館特區：128 個社區
   - 農十六特區：72 個社區
   - 中都重劃區：18 個社區
-  - 瑞豐・巨蛋：35 個社區
+  - 瑞豐・巨蛋：36 個社區
 - 各生活圈的行情與社區一覽（含區域均價、常見單價區間、社區清單、路段分布、建商與完工年代）：
   - 美術館特區（高雄市鼓山區）：https://k7.com.tw/areas/art-museum/ ｜128 個社區、7,044 筆成交
   - 農十六特區（高雄市鼓山區）：https://k7.com.tw/areas/nong16/ ｜72 個社區、2,557 筆成交
-  - 瑞豐・巨蛋（高雄市左營區）：https://k7.com.tw/areas/ruifeng-arena/ ｜35 個社區、1,938 筆成交
+  - 瑞豐・巨蛋（高雄市左營區）：https://k7.com.tw/areas/ruifeng-arena/ ｜36 個社區、2,022 筆成交
   - 中都重劃區（高雄市三民區）：https://k7.com.tw/areas/zhongdu/ ｜18 個社區、2,666 筆成交
 - https://k7.com.tw/communities/<slug>.html ：單一社區頁，含實價登錄逐筆成交、社區規格、學區、常見問題
 - 建商頁（該建商在本站收錄範圍內的社區一覽）：
-  - 京城建設：https://k7.com.tw/developers/jingcheng/ ｜43 個社區
+  - 京城建設：https://k7.com.tw/developers/jingcheng/ ｜44 個社區
   - 興富發建設：https://k7.com.tw/developers/xingfufa/ ｜14 個社區
   - 皇苑建設：https://k7.com.tw/developers/huangyuan/ ｜11 個社區
   - 鼎宇建設：https://k7.com.tw/developers/dingyu/ ｜11 個社區
@@ -64,8 +64,8 @@
   - 中山國小：https://k7.com.tw/schools/zhongshan-es/ ｜126 個社區
   - 龍華國小：https://k7.com.tw/schools/longhua-es/ ｜70 個社區
   - 明華國中：https://k7.com.tw/schools/minghua-js/ ｜69 個社區
+  - 左營國中：https://k7.com.tw/schools/zuoying-js/ ｜27 個社區
   - 勝利國小：https://k7.com.tw/schools/shengli-es/ ｜26 個社區
-  - 左營國中：https://k7.com.tw/schools/zuoying-js/ ｜26 個社區
   - 三民國小：https://k7.com.tw/schools/sanmin-es/ ｜16 個社區
   - 鼓山高中國中部：https://k7.com.tw/schools/gushan-hs-js/ ｜11 個社區
   - 龍華國中：https://k7.com.tw/schools/longhua-js/ ｜8 個社區
