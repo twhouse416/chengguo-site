@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer , thumbOf, imgSize } from "./lib/layout.js";
-import { articleRelated } from "./lib/related.js";
+import { articleRelated, articleNext } from "./lib/related.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -246,6 +246,7 @@ function pageHtml(a, others, hasBuyers) {
   </section>
 
   ${articleRelated(a, "../")}
+  ${articleNext(a, "../")}
 
   ${others.length ? `<section class="mt-14 pt-8 border-t border-line">
     <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>

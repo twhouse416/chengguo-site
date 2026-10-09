@@ -25,6 +25,68 @@ export function loadCommunities() {
   return list.filter(c => c && c.slug && !c.draft);
 }
 
+/* 已發布的文章（草稿不列入） */
+export function loadArticles() {
+  try {
+    const raw = JSON.parse(readFileSync(path.join(ROOT, "data/articles.json"), "utf-8"));
+    const list = Array.isArray(raw) ? raw : (raw.articles || []);
+    return list.filter(a => a && a.slug && !a.draft);
+  } catch { return []; }
+}
+
+/* 文章網址的 slug 別名（與 build-articles.js 的 SLUG_ALIAS 一致）。
+   這裡只需要讀，所以用同一份對照表的副本，避免循環 import。 */
+const ARTICLE_SLUG_ALIAS = {
+  "高雄美術館買房攻略-房價-生活機能-建案與選屋重點一次看-高雄買房顧問澄果團隊": "meishuguan-buying-guide",
+  "為什麼我們專營高雄美術館特區": "why-we-focus-art-museum",
+};
+const artHref = slug => (ARTICLE_SLUG_ALIAS[slug] || slug) + ".html";
+
+/* 依文章主題挑對應的試算工具。讀完文章的人下一步多半是想自己算一次。 */
+const TOOL_BY_TAG = {
+  "賣房": [["房地合一稅試算", "tools/property-tax/"], ["房貸試算", "tools/mortgage/"]],
+  "貸款": [["房貸試算", "tools/mortgage/"], ["新青安試算", "tools/qingan/"]],
+  "首購": [["房貸試算", "tools/mortgage/"], ["新青安試算", "tools/qingan/"]],
+  "換屋": [["房地合一稅試算", "tools/property-tax/"], ["房貸試算", "tools/mortgage/"]],
+  "稅務": [["房地合一稅試算", "tools/property-tax/"]],
+  "選屋": [["學區查詢", "tools/school-zone/"], ["房貸試算", "tools/mortgage/"]],
+  "生活圈": [["學區查詢", "tools/school-zone/"], ["房貸試算", "tools/mortgage/"]],
+};
+
+/**
+ * 文章底部的「延伸閱讀」。
+ * 每一篇都要有——讀完之後沒有下一步，等於把人送回頁尾。
+ * 先挑同分類的其他文章（新的在前），不足三篇再用其他文章補，
+ * 後面再接上對應的試算工具。
+ */
+export function articleNext(article, up = "../") {
+  const all = loadArticles().filter(a => a.slug !== article.slug);
+  if (!all.length) return "";
+  const byDate = (x, y) => String(y.date || "").localeCompare(String(x.date || ""));
+  const same = all.filter(a => a.tag === article.tag).sort(byDate);
+  const rest = all.filter(a => a.tag !== article.tag).sort(byDate);
+  const picks = [...same, ...rest].slice(0, 3);
+  if (!picks.length) return "";
+
+  const tools = TOOL_BY_TAG[article.tag] || [["房貸試算", "tools/mortgage/"]];
+
+  return `<section class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">Next</div>
+    <h2 class="text-[19px] font-bold tracking-tight mb-6">接下來可以看這些</h2>
+    <div class="grid sm:grid-cols-3 gap-4">
+      ${picks.map(a => `<a href="${up}notes/${artHref(a.slug)}"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition block">
+        <span class="font-mono text-[12px] text-inkFaint block mb-1">${esc(a.tag || "")}</span>
+        <span class="text-[15px] font-bold tracking-tight leading-snug">${esc(a.title)}</span>
+      </a>`).join("\n      ")}
+    </div>
+    <p class="mt-6 font-mono text-[13px]">
+      自己算一次：${tools.map(([n, href]) => `<a href="${up}${href}" class="text-orangeDeep hover:underline mr-4">${esc(n)} →</a>`).join("")}
+      <a href="${up}communities/" class="text-orangeDeep hover:underline">社區行情 →</a>
+    </p>
+  </section>`;
+}
+
 /* 四大生活圈的名稱，用來判斷文章在講哪一區 */
 export const AREA_NAMES = ["美術館特區", "農十六特區", "瑞豐・巨蛋", "中都重劃區"];
 

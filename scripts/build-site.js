@@ -339,7 +339,16 @@ function main() {
   const videos = readJson("data/videos.json", { videos: [] });
   const deals = readJson("data/deals.json", { deals: [] });
 
-  const articles = (articlesData.articles || []).filter(a => !a.draft);
+  /* 文章一律依發布日期由新到舊排序。
+     原本是用 articles.json 的陣列順序，等於「先加入的排前面」——
+     列表頁打開看到的會是最舊的幾篇，最新、最強的反而在下半部。
+     同一天發布的維持原陣列順序（穩定排序），所以你在後台調整日期
+     就能控制列表頁的呈現順序。 */
+  const articles = (articlesData.articles || [])
+    .filter(a => !a.draft)
+    .map((a, i) => ({ a, i }))
+    .sort((x, y) => String(y.a.date || "").localeCompare(String(x.a.date || "")) || x.i - y.i)
+    .map(x => x.a);
   const hasBuyers = (buyers.buyers || []).some(b => !b.hidden);
 
   /* 首頁 */
