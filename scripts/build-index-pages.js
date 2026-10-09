@@ -167,7 +167,7 @@ function commTable(rows, captionText) {
           <th scope="col" class="text-left font-normal py-3 px-4">完工</th>
           <th scope="col" class="text-right font-normal py-3 px-4">戶數</th>
           <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">住家單價範圍</th>
+          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年 Q1–Q3</span></th>
         </tr>
       </thead>
       <tbody>
@@ -191,10 +191,25 @@ function commTable(rows, captionText) {
   </p>`;
 }
 
+/* 與生活圈頁的表格採同一套規則：單價只取近三年、用 Q1–Q3 而不是最低～最高。
+   資料池回補到 2012 年後，全期間會把十四年的價格混成一個數字；
+   而最低～最高會被親屬移轉、持分交易這類異常價拉開（蘭園畫世紀近三年
+   min-max 是 4.6–40.8，Q1–Q3 是 22.5–29.7）。
+   成交筆數仍為全部歷史的累計；近三年不足 3 筆者退回全期間。 */
+const STAT_SINCE = (() => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 3);
+  return d.toISOString().slice(0, 10);
+})();
+
 function statOf(c, dealsMap) {
   const deals = dealsMap[c.slug] || [];
-  const p = deals.filter(d => d.use !== "店面").map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
-  return { c, n: deals.length, low: p[0] || 0, high: p[p.length - 1] || 0,
+  const homes = deals.filter(d => d.use !== "店面");
+  const recent = homes.filter(d => String(d.date || "") >= STAT_SINCE);
+  const p = (recent.length >= 3 ? recent : homes)
+    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  const q = f => p.length ? p[Math.min(p.length - 1, Math.floor(p.length * f))] : 0;
+  return { c, n: deals.length, low: q(0.25), high: q(0.75),
            year: yearBuilt(c), units: unitCount(c) };
 }
 
@@ -268,7 +283,7 @@ function developerPage(name, items, ctx) {
   return [
     head({
       title: `${label}高雄社區一覽｜${items.length} 個社區實價登錄行情｜${BRAND.teamName}`,
-      description: `${label}在高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區的 ${items.length} 個社區，含完工年、戶數、實價登錄成交筆數與住家單價範圍。`,
+      description: `${label}在高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區的 ${items.length} 個社區，含完工年、戶數、實價登錄成交筆數與近三年住家單價區間。`,
       keywords: [`${label}`, `${label}高雄`, `${label}社區`, `${label}建案`, `${name}`, "高雄建商", "高雄社區實價登錄"].join(","),
       canonical: url, ogImage: `${SITE}/assets/logo-full.png`, depth: 2, jsonLd,
     }),
@@ -294,7 +309,7 @@ function developerPage(name, items, ctx) {
       <h2 class="display text-[23px]">社區一覽</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0">${items.length} 個社區・成交 ${dealTotal.toLocaleString("en-US")} 筆</span>
     </div>
-    ${commTable(rows, `${label}在高雄的 ${items.length} 個社區，欄位為社區名稱、生活圈、完工年、總戶數、實價登錄成交筆數、住家單價範圍`)}
+    ${commTable(rows, `${label}在高雄的 ${items.length} 個社區，欄位為社區名稱、生活圈、完工年、總戶數、實價登錄成交筆數（全部歷史）、近三年住家單價區間`)}
   </section>
 
   <section class="mt-16 pt-10 border-t-2 border-ink">
@@ -376,7 +391,7 @@ function schoolPage(name, items, ctx) {
       + `部分熱門學校還會要求一定的設籍期間。以就學為主要購屋考量的話，`
       + `務必在下訂之前直接向學校確認當學年度的實際狀況與設籍要求。`]] : []),
     [`${name}學區的社區行情大概多少？`,
-      `本頁下方的表格列出這 ${items.length} 個社區各自的實價登錄成交筆數與住家單價範圍。`
+      `本頁下方的表格列出這 ${items.length} 個社區各自的實價登錄成交筆數與近三年住家單價區間。`
       + `學區只是影響房價的其中一個因素，屋齡、生活圈、坪數與屋況的影響往往更大，`
       + `所以同一個學區內的社區價差可能很大，不宜把學區當成單一的價格依據。`
       + `建議點進個別社區頁看逐筆成交紀錄，挑條件接近的來比。`],
@@ -414,7 +429,7 @@ function schoolPage(name, items, ctx) {
   return [
     head({
       title: `${name}學區有哪些社區？${items.length} 個社區實價登錄行情｜${BRAND.teamName}`,
-      description: `學區登載為${name}的 ${items.length} 個高雄社區，含完工年、戶數、實價登錄成交筆數與住家單價範圍，並附高雄市${stage}學區劃分的官方里鄰原文。`,
+      description: `學區登載為${name}的 ${items.length} 個高雄社區，含完工年、戶數、實價登錄成交筆數與近三年住家單價區間，並附高雄市${stage}學區劃分的官方里鄰原文。`,
       keywords: [`${name}學區`, `${name}學區社區`, `${name}`, "高雄學區", `高雄${stage}學區`, "學區宅"].join(","),
       canonical: url, ogImage: `${SITE}/assets/logo-full.png`, depth: 2, jsonLd,
     }),
@@ -447,7 +462,7 @@ function schoolPage(name, items, ctx) {
       <h2 class="display text-[23px]">社區一覽</h2>
       <span class="font-mono text-[12px] text-inkFaint shrink-0">${items.length} 個社區・成交 ${dealTotal.toLocaleString("en-US")} 筆</span>
     </div>
-    ${commTable(rows, `學區登載為${name}的 ${items.length} 個社區，欄位為社區名稱、生活圈、完工年、總戶數、實價登錄成交筆數、住家單價範圍`)}
+    ${commTable(rows, `學區登載為${name}的 ${items.length} 個社區，欄位為社區名稱、生活圈、完工年、總戶數、實價登錄成交筆數（全部歷史）、近三年住家單價區間`)}
   </section>
 
   ${official.length ? `<section class="mt-16" id="official">

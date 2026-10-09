@@ -243,7 +243,13 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
   const recentHomes = homes.filter(d => String(d.date || "") >= RANGE_SINCE);
   const prices = (recentHomes.length >= 3 ? recentHomes : homes)
     .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
-  const low = prices[0], high = prices[prices.length - 1];
+  /* 用 Q1–Q3 而不是最低～最高：實價登錄裡本來就混有親屬移轉、持分交易，
+     一筆 4.6 萬就會把「範圍」拉成無意義的區間（蘭園畫世紀近三年 min-max 是
+     4.6–40.8，Q1–Q3 是 21.6–29.4）。25～75 百分位也是本站行情區一貫的呈現方式。
+     逐筆表格仍完整列出所有成交，含被標＊的異常價。 */
+  const pq = p => prices.length
+    ? prices[Math.min(prices.length - 1, Math.floor(prices.length * p))] : 0;
+  const low = pq(0.25), high = pq(0.75);
   const shops = deals.length - homes.length;
 
   /* 特殊交易的標記
@@ -288,7 +294,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     `${c.name || "本社區"}${c.address ? `（${c.address}）` : ""}目前收錄 ${deals.length} 筆實價登錄成交紀錄`,
     span ? `，期間 ${span}` : "",
     prices.length
-      ? `，住家單價 ${low} 至 ${high} 萬元／坪、中位 ${Math.round(mid * 10) / 10} 萬元／坪`
+      ? `，近三年住家單價常見區間 ${low} 至 ${high} 萬元／坪、中位 ${Math.round(mid * 10) / 10} 萬元／坪`
       : "",
     doors > 1 ? `，分布在 ${doors} 個門牌` : "",
     presale ? `，其中 ${presale} 筆為預售屋買賣` : "",
@@ -310,12 +316,12 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
       ${deals.length >= DEAL_CAP ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 ${DEAL_CAP} 筆）</span>` : ""}
     </div>
     ${prices.length ? `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年 Q1–Q3</span></span>
       <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">${low}–${high}</span>
       <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
       ${shops ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（另有 ${shops} 筆店面未計入）</span>` : ""}
     </div>` : `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價範圍</span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年 Q1–Q3</span></span>
       <span class="font-mono text-[13px] text-inkSoft ml-2">近期只有店面成交，無住家紀錄</span>
     </div>`}
     ${presale ? `<div>
@@ -1236,6 +1242,9 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
         ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
            : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
         : 0;
+      /* 卡片上的區間同樣用 Q1–Q3，理由見社區頁的說明 */
+      const pq = p => prices.length
+        ? prices[Math.min(prices.length - 1, Math.floor(prices.length * p))] : 0;
       const hay = [c.name, ...(c.aliases || []), c.area, c.district, c.address]
         .filter(Boolean).join(" ");
       return `<a href="${c.slug}.html" data-card data-name="${esc(hay)}" data-deals="${deals.length}" data-price="${Math.round(mid * 10) / 10}"
@@ -1245,8 +1254,8 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
       <p data-summary class="cc-sum">${esc(c.summary)}</p>
       <div class="cc-foot">
         ${prices.length ? `<div>
-          <span class="cc-eyebrow">單價範圍</span>
-          <span class="cc-price">${prices[0]}–${prices[prices.length - 1]}</span>
+          <span class="cc-eyebrow">單價區間 近三年</span>
+          <span class="cc-price">${pq(0.25)}–${pq(0.75)}</span>
           <span class="cc-unit">萬/坪</span>
           ${/* 成交筆數：排序選單有「成交筆數多到少」，卡片上看不到筆數的話，
                 使用者不知道為什麼是這個順序。少於 LOW_SAMPLE 筆的另外標記——

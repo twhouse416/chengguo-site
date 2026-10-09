@@ -276,14 +276,30 @@ function sellerBlock(area, items, dealsMap) {
   </section>`;
 }
 
+/* 表格裡的單價範圍與中位數同樣只取近三年。
+   資料池回補到 2012 年之後，全期間會把十四年的價格壓成一個數字——
+   阿曼十六全期間中位是 23.5 萬，近三年是 38.1 萬；市政總裁全期間範圍是
+   7.9–35.5 萬，那個 7.9 是十幾年前的紀錄，跟現在的行情無關。
+   成交筆數欄位維持全部歷史（那是資料厚度，不是價格水準）。
+   近三年不足 3 筆的社區退回全期間，避免數字變成空白。 */
+const TABLE_SINCE = (() => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 3);
+  return d.toISOString().slice(0, 10);
+})();
+
 function communityTable(items, dealsMap, areaName) {
   const rows = items.map(c => {
     const deals = dealsMap[c.slug] || [];
     const homes = deals.filter(d => d.use !== "店面");
-    const prices = homes.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+    const recent = homes.filter(d => String(d.date || "") >= TABLE_SINCE);
+    const prices = (recent.length >= 3 ? recent : homes)
+      .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
     return {
       c, n: deals.length,
-      low: prices[0] || 0, high: prices[prices.length - 1] || 0,
+      recentN: recent.length,
+      low: prices.length ? prices[Math.floor(prices.length * 0.25)] : 0,
+      high: prices.length ? prices[Math.min(prices.length - 1, Math.floor(prices.length * 0.75))] : 0,
       mid: r1(median(prices)),
       year: yearBuilt(c), units: unitCount(c),
     };
@@ -291,15 +307,15 @@ function communityTable(items, dealsMap, areaName) {
 
   return `<div class="overflow-x-auto border border-line rounded-sm bg-surface">
     <table class="w-full text-[15px] min-w-[680px]">
-      <caption class="sr-only">${esc(areaName)}社區一覽，共 ${items.length} 個社區，欄位為社區名稱、完工年、總戶數、實價登錄成交筆數、住家單價範圍（萬元／坪）、單價中位數</caption>
+      <caption class="sr-only">${esc(areaName)}社區一覽，共 ${items.length} 個社區，欄位為社區名稱、完工年、總戶數、實價登錄成交筆數（全部歷史）、近三年住家單價範圍（萬元／坪）、近三年單價中位數</caption>
       <thead>
         <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
           <th scope="col" class="text-left font-normal py-3 px-4">社區</th>
           <th scope="col" class="text-left font-normal py-3 px-4">完工</th>
           <th scope="col" class="text-right font-normal py-3 px-4">戶數</th>
           <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">住家單價範圍</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">中位</th>
+          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年 Q1–Q3</span></th>
+          <th scope="col" class="text-right font-normal py-3 px-4">中位<span class="block font-mono text-[11px] text-inkFaint">近三年</span></th>
         </tr>
       </thead>
       <tbody>
@@ -318,7 +334,8 @@ function communityTable(items, dealsMap, areaName) {
     </table>
   </div>
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
-    單價單位為萬元／坪，已排除店面成交（店面單價本來就高一截，混進來會讓人誤判住家行情）。
+    單價單位為萬元／坪，<strong class="font-bold text-inkSoft">區間與中位數只計算近三年的成交，且取 25～75 百分位</strong>（更早的價格與現在差距大；最低～最高容易被親屬移轉、持分交易這類異常價拉開；
+    近三年不足三筆者改以全部歷史計算）。成交筆數欄為全部歷史的累計。已排除店面成交（店面單價本來就高一截，混進來會讓人誤判住家行情）。
     標 <span class="text-orangeDeep">＊</span> 者成交筆數少於 12 筆，單價範圍的參考性有限，
     建議點進社區頁看逐筆紀錄，並搭配同路段的其他社區一起比。
   </p>`;
