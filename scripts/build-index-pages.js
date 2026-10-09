@@ -167,7 +167,7 @@ function commTable(rows, captionText) {
           <th scope="col" class="text-left font-normal py-3 px-4">完工</th>
           <th scope="col" class="text-right font-normal py-3 px-4">戶數</th>
           <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年 Q1–Q3</span></th>
+          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年</span></th>
         </tr>
       </thead>
       <tbody>
@@ -196,6 +196,32 @@ function commTable(rows, captionText) {
    而最低～最高會被親屬移轉、持分交易這類異常價拉開（蘭園畫世紀近三年
    min-max 是 4.6–40.8，Q1–Q3 是 22.5–29.7）。
    成交筆數仍為全部歷史的累計；近三年不足 3 筆者退回全期間。 */
+/* 摘要用的「一般成交」樣本：排除被標＊的特殊交易（親屬移轉、持分交易等）。
+   門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
+   樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
+function normalPrices(sorted) {
+  if (sorted.length < 5) return sorted;
+  const m = sorted.length % 2
+    ? sorted[(sorted.length - 1) / 2]
+    : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+  if (!(m > 0)) return sorted;
+  const out = sorted.filter(v => v >= m * 0.6 && v <= m * 1.6);
+  return out.length >= 3 ? out : sorted;
+}
+
+/* 摘要區間：樣本夠多才用 Q1–Q3，少的時候用最低～最高。
+   Q1–Q3 的用意是擋掉尾端的極端值，但樣本只有四、五筆時，
+   取 25/75 百分位等於直接丟掉最低與最高那一筆真實成交——
+   捷運城品排除特殊交易後剩 4 筆（35.4、41.7、42.6、47.1），
+   Q1–Q3 會顯示成 41.7–47.1，把 35.4 這筆真實成交藏起來，屋主會高估。
+   異常值已經在 normalPrices 擋掉了，小樣本直接用全距才完整。 */
+function summaryRange(normal) {
+  if (!normal.length) return [0, 0];
+  if (normal.length < 8) return [normal[0], normal[normal.length - 1]];
+  const at = f => normal[Math.min(normal.length - 1, Math.floor(normal.length * f))];
+  return [at(0.25), at(0.75)];
+}
+
 const STAT_SINCE = (() => {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 3);
@@ -206,10 +232,10 @@ function statOf(c, dealsMap) {
   const deals = dealsMap[c.slug] || [];
   const homes = deals.filter(d => d.use !== "店面");
   const recent = homes.filter(d => String(d.date || "") >= STAT_SINCE);
-  const p = (recent.length >= 3 ? recent : homes)
-    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
-  const q = f => p.length ? p[Math.min(p.length - 1, Math.floor(p.length * f))] : 0;
-  return { c, n: deals.length, low: q(0.25), high: q(0.75),
+  const p = normalPrices((recent.length >= 3 ? recent : homes)
+    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b));
+  const [lo, hi] = summaryRange(p);
+  return { c, n: deals.length, low: lo, high: hi,
            year: yearBuilt(c), units: unitCount(c) };
 }
 

@@ -282,6 +282,32 @@ function sellerBlock(area, items, dealsMap) {
    7.9–35.5 萬，那個 7.9 是十幾年前的紀錄，跟現在的行情無關。
    成交筆數欄位維持全部歷史（那是資料厚度，不是價格水準）。
    近三年不足 3 筆的社區退回全期間，避免數字變成空白。 */
+/* 摘要用的「一般成交」樣本：排除被標＊的特殊交易（親屬移轉、持分交易等）。
+   門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
+   樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
+function normalPrices(sorted) {
+  if (sorted.length < 5) return sorted;
+  const m = sorted.length % 2
+    ? sorted[(sorted.length - 1) / 2]
+    : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+  if (!(m > 0)) return sorted;
+  const out = sorted.filter(v => v >= m * 0.6 && v <= m * 1.6);
+  return out.length >= 3 ? out : sorted;
+}
+
+/* 摘要區間：樣本夠多才用 Q1–Q3，少的時候用最低～最高。
+   Q1–Q3 的用意是擋掉尾端的極端值，但樣本只有四、五筆時，
+   取 25/75 百分位等於直接丟掉最低與最高那一筆真實成交——
+   捷運城品排除特殊交易後剩 4 筆（35.4、41.7、42.6、47.1），
+   Q1–Q3 會顯示成 41.7–47.1，把 35.4 這筆真實成交藏起來，屋主會高估。
+   異常值已經在 normalPrices 擋掉了，小樣本直接用全距才完整。 */
+function summaryRange(normal) {
+  if (!normal.length) return [0, 0];
+  if (normal.length < 8) return [normal[0], normal[normal.length - 1]];
+  const at = f => normal[Math.min(normal.length - 1, Math.floor(normal.length * f))];
+  return [at(0.25), at(0.75)];
+}
+
 const TABLE_SINCE = (() => {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 3);
@@ -293,13 +319,12 @@ function communityTable(items, dealsMap, areaName) {
     const deals = dealsMap[c.slug] || [];
     const homes = deals.filter(d => d.use !== "店面");
     const recent = homes.filter(d => String(d.date || "") >= TABLE_SINCE);
-    const prices = (recent.length >= 3 ? recent : homes)
-      .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+    const prices = normalPrices((recent.length >= 3 ? recent : homes)
+      .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b));
     return {
       c, n: deals.length,
       recentN: recent.length,
-      low: prices.length ? prices[Math.floor(prices.length * 0.25)] : 0,
-      high: prices.length ? prices[Math.min(prices.length - 1, Math.floor(prices.length * 0.75))] : 0,
+      low: summaryRange(prices)[0], high: summaryRange(prices)[1],
       mid: r1(median(prices)),
       year: yearBuilt(c), units: unitCount(c),
     };
@@ -314,7 +339,7 @@ function communityTable(items, dealsMap, areaName) {
           <th scope="col" class="text-left font-normal py-3 px-4">完工</th>
           <th scope="col" class="text-right font-normal py-3 px-4">戶數</th>
           <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
-          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年 Q1–Q3</span></th>
+          <th scope="col" class="text-right font-normal py-3 px-4">住家單價區間<span class="block font-mono text-[11px] text-inkFaint">近三年</span></th>
           <th scope="col" class="text-right font-normal py-3 px-4">中位<span class="block font-mono text-[11px] text-inkFaint">近三年</span></th>
         </tr>
       </thead>
@@ -334,7 +359,7 @@ function communityTable(items, dealsMap, areaName) {
     </table>
   </div>
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
-    單價單位為萬元／坪，<strong class="font-bold text-inkSoft">區間與中位數只計算近三年的成交，且取 25～75 百分位</strong>（更早的價格與現在差距大；最低～最高容易被親屬移轉、持分交易這類異常價拉開；
+    單價單位為萬元／坪，<strong class="font-bold text-inkSoft">區間與中位數只計算近三年的成交，取 25～75 百分位，並已排除標＊的特殊交易</strong>（更早的價格與現在差距大；最低～最高容易被親屬移轉、持分交易拉開；
     近三年不足三筆者改以全部歷史計算）。成交筆數欄為全部歷史的累計。已排除店面成交（店面單價本來就高一截，混進來會讓人誤判住家行情）。
     標 <span class="text-orangeDeep">＊</span> 者成交筆數少於 12 筆，單價範圍的參考性有限，
     建議點進社區頁看逐筆紀錄，並搭配同路段的其他社區一起比。

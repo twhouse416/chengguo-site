@@ -22,6 +22,32 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 /* 摘要用的單價範圍只取近三年，詳見 communityPage 內的說明 */
+/* 摘要用的「一般成交」樣本：排除被標＊的特殊交易（親屬移轉、持分交易等）。
+   門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
+   樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
+function normalPrices(sorted) {
+  if (sorted.length < 5) return sorted;
+  const m = sorted.length % 2
+    ? sorted[(sorted.length - 1) / 2]
+    : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+  if (!(m > 0)) return sorted;
+  const out = sorted.filter(v => v >= m * 0.6 && v <= m * 1.6);
+  return out.length >= 3 ? out : sorted;
+}
+
+/* 摘要區間：樣本夠多才用 Q1–Q3，少的時候用最低～最高。
+   Q1–Q3 的用意是擋掉尾端的極端值，但樣本只有四、五筆時，
+   取 25/75 百分位等於直接丟掉最低與最高那一筆真實成交——
+   捷運城品排除特殊交易後剩 4 筆（35.4、41.7、42.6、47.1），
+   Q1–Q3 會顯示成 41.7–47.1，把 35.4 這筆真實成交藏起來，屋主會高估。
+   異常值已經在 normalPrices 擋掉了，小樣本直接用全距才完整。 */
+function summaryRange(normal) {
+  if (!normal.length) return [0, 0];
+  if (normal.length < 8) return [normal[0], normal[normal.length - 1]];
+  const at = f => normal[Math.min(normal.length - 1, Math.floor(normal.length * f))];
+  return [at(0.25), at(0.75)];
+}
+
 const RANGE_SINCE = (() => {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 3);
@@ -247,9 +273,21 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
      一筆 4.6 萬就會把「範圍」拉成無意義的區間（蘭園畫世紀近三年 min-max 是
      4.6–40.8，Q1–Q3 是 21.6–29.4）。25～75 百分位也是本站行情區一貫的呈現方式。
      逐筆表格仍完整列出所有成交，含被標＊的異常價。 */
-  const pq = p => prices.length
-    ? prices[Math.min(prices.length - 1, Math.floor(prices.length * p))] : 0;
-  const low = pq(0.25), high = pq(0.75);
+  /* 摘要再排除掉被標＊的特殊交易。
+     站上已經把「低於中位六成或高於一點六倍」的成交判定為親屬移轉、持分交易
+     這類非市場行情，卻又拿它們去算摘要區間，是自相矛盾的。
+     捷運城品近三年 8 筆裡有 3 筆被標＊，含在內是 18.8–42.6，
+     排除後是 35.4–42.6、中位 41.7，後者才是屋主真正該參考的數字。
+     門檻與逐筆表格的 ＊ 完全一致，樣本少於 5 筆時不排除（基準不可靠）。 */
+  const rawMid = prices.length
+    ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
+       : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
+    : 0;
+  const normal = (prices.length >= 5 && rawMid > 0)
+    ? prices.filter(v => v >= rawMid * 0.6 && v <= rawMid * 1.6)
+    : prices;
+  const [low, high] = summaryRange(normal);
+  const excluded = prices.length - normal.length;
   const shops = deals.length - homes.length;
 
   /* 特殊交易的標記
@@ -260,13 +298,15 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
      作法：跟同社區住家單價的中位數比，低於六成或高於一點六倍的標星號，
      並在表格下方說明可能的原因。只標記、不下定論——我們無從得知
      每一筆的實際情形，說死了反而不實在。 */
-  const mid = prices.length
-    ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
-       : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
+  /* 顯示用的中位數同樣取排除特殊交易後的樣本；
+     但 ＊ 的判定門檻仍用 rawMid，逐筆表格的標記不受影響。 */
+  const mid = normal.length
+    ? (normal.length % 2 ? normal[(normal.length - 1) / 2]
+       : (normal[normal.length / 2 - 1] + normal[normal.length / 2]) / 2)
     : 0;
   const isOutlier = d =>
-    d.use !== "店面" && d.unitPrice && mid > 0 && prices.length >= 5
-    && (d.unitPrice < mid * 0.6 || d.unitPrice > mid * 1.6);
+    d.use !== "店面" && d.unitPrice && rawMid > 0 && prices.length >= 5
+    && (d.unitPrice < rawMid * 0.6 || d.unitPrice > rawMid * 1.6);
   const outliers = deals.filter(isOutlier).length;
 
   /* 預設只列最近 100 筆，其餘收在展開區塊裡。
@@ -316,12 +356,12 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
       ${deals.length >= DEAL_CAP ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 ${DEAL_CAP} 筆）</span>` : ""}
     </div>
     ${prices.length ? `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年 Q1–Q3</span></span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}</span></span>
       <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">${low}–${high}</span>
       <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
       ${shops ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（另有 ${shops} 筆店面未計入）</span>` : ""}
     </div>` : `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年 Q1–Q3</span></span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}</span></span>
       <span class="font-mono text-[13px] text-inkSoft ml-2">近期只有店面成交，無住家紀錄</span>
     </div>`}
     ${presale ? `<div>
@@ -1242,9 +1282,9 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
         ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
            : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
         : 0;
-      /* 卡片上的區間同樣用 Q1–Q3，理由見社區頁的說明 */
-      const pq = p => prices.length
-        ? prices[Math.min(prices.length - 1, Math.floor(prices.length * p))] : 0;
+      /* 卡片上的區間同樣用 Q1–Q3，並排除標＊的特殊交易，理由見社區頁的說明 */
+      const np = normalPrices(prices);
+      const [cardLow, cardHigh] = summaryRange(np);
       const hay = [c.name, ...(c.aliases || []), c.area, c.district, c.address]
         .filter(Boolean).join(" ");
       return `<a href="${c.slug}.html" data-card data-name="${esc(hay)}" data-deals="${deals.length}" data-price="${Math.round(mid * 10) / 10}"
@@ -1255,7 +1295,7 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
       <div class="cc-foot">
         ${prices.length ? `<div>
           <span class="cc-eyebrow">單價區間 近三年</span>
-          <span class="cc-price">${pq(0.25)}–${pq(0.75)}</span>
+          <span class="cc-price">${cardLow}–${cardHigh}</span>
           <span class="cc-unit">萬/坪</span>
           ${/* 成交筆數：排序選單有「成交筆數多到少」，卡片上看不到筆數的話，
                 使用者不知道為什麼是這個順序。少於 LOW_SAMPLE 筆的另外標記——
