@@ -91,6 +91,13 @@
           "road": "華夏路",
           "from": 47,
           "to": 328
+        },
+        {
+          "road": "文忠路",
+          "from": 2,
+          "to": 8,
+          "parity": "even",
+          "district": "鼓山區"
         }
       ]
     },
