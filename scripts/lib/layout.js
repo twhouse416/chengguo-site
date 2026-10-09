@@ -299,16 +299,21 @@ export function header({ depth = 0, hasBuyers = false, compact = false, isHome =
         <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
       </span>
     </a>
-    ${compact ? "" : `<nav class="hidden xl:flex items-center gap-5 text-[15px] text-inkSoft whitespace-nowrap">
+    ${compact ? "" : `<nav class="hidden xl:flex items-center gap-3 text-[15px] text-inkSoft whitespace-nowrap">
       ${nav.map(([h, l]) => `<a href="${h}" class="hover:text-ink transition">${l}</a>`).join("\n      ")}
       ${listingLink}
     </nav>`}
+    ${/* 這一列的寬度預算：max-w-6xl 扣掉左右 px-6 之後，內容寬只有 1104px。
+          原本 logo＋導覽列＋社群圖示＋LINE＋電話鈕要 1264px，超出 160px，
+          在 1280–1400px 的螢幕會讓整頁橫向捲動、橘色電話鈕被切掉。
+          解法：社群圖示移出 header（頁尾與手機選單仍然有），導覽列 gap-5→gap-3，
+          兩顆按鈕 px-6/px-5→px-4，合計 1088px，留 16px 餘裕。
+          之後要在這一列加東西，先確認加完不超過 1104px。 */""}
     <div class="hidden ${compact ? "sm" : "xl"}:flex items-center gap-4 shrink-0">
-      ${compact ? "" : socialLinks("light", "sm")}
       ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer"
-        class="inline-flex items-center gap-1.5 px-5 py-3 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition whitespace-nowrap">
+        class="inline-flex items-center gap-1.5 px-4 py-3 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition whitespace-nowrap">
         ${LINE_ICON.replace("CLS", "w-5 h-5")}LINE 諮詢</a>` : ""}
-      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 ${BRAND.phone}</a>
+      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-4 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 ${BRAND.phone}</a>
     </div>
     ${compact ? "" : `<button id="menuBtn" aria-label="開啟選單" aria-expanded="false"
       class="xl:hidden w-9 h-9 flex items-center justify-center border border-line rounded-sm">
