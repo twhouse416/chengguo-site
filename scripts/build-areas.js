@@ -28,7 +28,7 @@ import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, head, header, footer, sectionHead } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
-import { devSlugOf, schoolSlugOf } from "./build-index-pages.js";
+import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -173,6 +173,90 @@ function marketBlock(areaMarket) {
 /* ---------- 社區清單表格 ----------
    用真的 <table>：AI 引擎解析 HTML 表格比解析一堆卡片 <div> 準確得多，
    而且一百多個社區用表格比卡片好掃。 */
+/* 生活圈的「屋主估價」區塊。
+   這一段的目的跟上面的買方內容不同：它要回答屋主的三個問題——
+   我這區現在行情多少、我的社區好不好賣、我家落在什麼位置。
+   數字全部由該區的實際成交算出來，所以每一區的內容都不一樣，
+   不會變成四頁雷同的樣板。 */
+function sellerBlock(area, items, dealsMap) {
+  const homes = items.flatMap(c => (dealsMap[c.slug] || [])
+    .filter(d => d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150));
+  if (homes.length < 50) return "";
+
+  const q = (arr, p) => arr.length ? arr[Math.min(arr.length - 1, Math.floor(arr.length * p))] : 0;
+  const up = homes.map(d => d.unitPrice).sort((a, b) => a - b);
+  const tp = homes.map(d => d.totalPrice).filter(Boolean).sort((a, b) => a - b);
+  const pingArr = homes.map(d => d.ping).filter(Boolean).sort((a, b) => a - b);
+
+  /* 社區內部價差：各社區自己的 Q1–Q3，再取中位數。
+     屋主最常見的誤判就是拿鄰居的成交價當自己的開價依據。 */
+  const spreads = items.map(c => {
+    const v = (dealsMap[c.slug] || [])
+      .filter(d => d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150)
+      .map(d => d.unitPrice).sort((a, b) => a - b);
+    return v.length >= 20 ? q(v, 0.75) - q(v, 0.25) : null;
+  }).filter(x => x !== null).sort((a, b) => a - b);
+
+  /* 年周轉率：近三年成屋成交 ÷ 總戶數。排除 2021 年後完工的交屋潮。 */
+  const turn = items.map(c => {
+    const u = unitCount(c);
+    const y = yearBuilt(c);
+    if (!u || u < 30 || !y || Number(String(y).slice(0, 4)) > 2020) return null;
+    const n = (dealsMap[c.slug] || [])
+      .filter(d => d.kind === "成屋" && d.use !== "店面" && String(d.date || "") >= "2023-01-01").length;
+    return n >= 3 ? n / u / 3 * 100 : null;
+  }).filter(x => x !== null).sort((a, b) => a - b);
+
+  const f1 = n => n.toFixed(1);
+  const rows = [
+    ["住家成交單價中位數", `${f1(q(up, 0.5))} 萬元／坪`],
+    ["單價常見區間（Q1–Q3）", `${f1(q(up, 0.25))} – ${f1(q(up, 0.75))} 萬元／坪`],
+    ...(tp.length ? [["總價中位數", `${Math.round(q(tp, 0.5)).toLocaleString("en-US")} 萬元`]] : []),
+    ...(pingArr.length ? [["成交坪數中位數", `${f1(q(pingArr, 0.5))} 坪`]] : []),
+    ...(spreads.length >= 3 ? [["同社區內部價差中位數", `${f1(q(spreads, 0.5))} 萬元／坪`]] : []),
+    ...(turn.length >= 3 ? [["社區年周轉率中位數", `${f1(q(turn, 0.5))}%（100 戶約成交 ${(q(turn, 0.5)).toFixed(1)} 戶／年）`]] : []),
+  ];
+
+  return `<section class="mt-16" id="valuation">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Free Valuation</div>
+    <h2 class="display text-[23px] mb-4">在${esc(area.name)}有房子要賣？先看這幾個數字</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      下面的數字全部由${esc(area.name)}的 ${items.length} 個社區、${homes.length.toLocaleString("en-US")} 筆住家成交算出來，
+      是你訂價時的參考底線。但要先說清楚：<strong class="font-bold text-ink">區域中位數不是你的開價</strong>，
+      你的樓層、坪數、車位與屋況都會把它拉開。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[480px]">
+        <caption class="sr-only">${esc(area.name)}的住家成交單價、總價、坪數、同社區價差與周轉率</caption>
+        <tbody>
+          ${rows.map(([k, v]) => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal text-inkSoft">${esc(k)}</th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${esc(v)}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    ${spreads.length >= 3 ? `<p class="text-[15px] text-inkSoft leading-[1.9] mt-4 max-w-3xl">
+      注意「同社區內部價差」那一列：在${esc(area.name)}，同一個社區的成交單價上下差了
+      ${f1(q(spreads, 0.5))} 萬元／坪。以 40 坪換算是總價差
+      ${Math.round(q(spreads, 0.5) * 40).toLocaleString("en-US")} 萬元。
+      所以鄰居賣多少，不等於你賣得到多少——要挑樓層、坪數與車位條件相近的那幾筆來比。
+    </p>` : ""}
+    <p class="mt-5 font-mono text-[13px]">
+      <a href="../../notes/how-to-price-your-home-kaohsiung.html" class="text-orangeDeep hover:underline mr-4">開價怎麼訂 →</a>
+      <a href="../../notes/home-selling-costs-taiwan.html" class="text-orangeDeep hover:underline mr-4">賣房要付哪些錢 →</a>
+      <a href="../../notes/community-turnover-kaohsiung.html" class="text-orangeDeep hover:underline">社區一年成交幾戶 →</a>
+    </p>
+    <div class="mt-7 bg-tint border-l-2 border-orange px-6 py-5">
+      <p class="text-[16px] leading-[1.95] text-ink">
+        <strong class="font-bold">想知道你那一戶的實際區間？</strong>
+        把社區、樓層、坪數與車位條件給我們，用同社區的逐筆成交比給你看，並說明判斷依據。不收費，也不需要先簽委託。
+      </p>
+      <a href="#estimate" class="inline-flex items-center mt-4 px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">免費估價 →</a>
+    </div>
+  </section>`;
+}
+
 function communityTable(items, dealsMap, areaName) {
   const rows = items.map(c => {
     const deals = dealsMap[c.slug] || [];
@@ -493,10 +577,13 @@ function areaPage(area, ctx) {
 
   <!-- 學區 -->
   ${(() => {
+    /* 用 schoolNames 正規化：資料裡「龍華國小」「市立龍華國小」
+       「市立鼓山區龍華國小」是同一所，並列寫法（龍華國小／勝利國小）
+       也要拆開。不正規化的話同一所學校會被拆成好幾列。 */
     const m = new Map();
-    items.forEach(c => [c.school?.primary, c.school?.junior].filter(Boolean).forEach(x => {
-      const sl = schoolSlugOf(x);
-      if (sl) m.set(x, { slug: sl, n: (m.get(x)?.n || 0) + 1 });
+    items.forEach(c => schoolNames(c).forEach(n => {
+      const sl = schoolSlugOf(n);
+      if (sl) m.set(n, { slug: sl, n: (m.get(n)?.n || 0) + 1 });
     }));
     const rows = [...m.entries()].sort((a, b) => b[1].n - a[1].n);
     if (!rows.length) return "";
@@ -511,6 +598,8 @@ function areaPage(area, ctx) {
     </p>
   </section>`;
   })()}
+
+  ${sellerBlock(area, items, dealsMap)}
 
   <!-- 其他生活圈 -->
   <section class="mt-16">
@@ -534,6 +623,7 @@ function areaPage(area, ctx) {
     </p>
     <div class="mt-6 flex flex-wrap gap-4">
       <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+      <a href="#estimate" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white/10 transition">我是屋主，想估價 →</a>
       ${BRAND.lineUrl ? `<a href="${BRAND.lineUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white/10 transition">用 LINE 問</a>` : ""}
     </div>
   </section>

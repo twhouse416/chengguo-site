@@ -327,7 +327,10 @@ function developerPage(name, items, ctx) {
       同一家建商不同年代的案子，屋況與管委會運作差很多。
       澄果團隊在這幾個生活圈長期成交，可以告訴你各社區目前的實際市況與該注意的地方。
     </p>
-    <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+      <a href="#estimate" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">我是屋主，想估價 →</a>
+    </div>
   </section>
 </main>`,
     footer({ depth: 2, hasBuyers }),
@@ -487,7 +490,10 @@ function schoolPage(name, items, ctx) {
       學區牽涉到鄰別與設籍時間，社區跨鄰的狀況也不少。
       把你在看的物件門牌給我們，澄果團隊直接幫你查清楚。
     </p>
-    <a href="${BRAND.phoneHref}" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+      <a href="#estimate" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">我是屋主，想估價 →</a>
+    </div>
   </section>
 </main>`,
     footer({ depth: 2, hasBuyers }),
