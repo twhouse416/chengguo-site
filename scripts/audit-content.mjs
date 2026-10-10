@@ -129,6 +129,25 @@ const turn = communities.map(c => {
 push("周轉率合格社區", turn.length, 199);
 push("周轉率中位 %", med(turn), 2.3);
 
+// 預售 vs 成屋
+const pr = [];
+for (const c of communities) {
+  const ds = homesOf(c);
+  const pre = ds.filter(d => d.kind === "預售").map(d => d.unitPrice);
+  const fin = ds.filter(d => d.kind === "成屋").map(d => d.unitPrice);
+  if (pre.length >= 3 && fin.length >= 3) pr.push(med(fin) - med(pre));
+}
+push("預售／成屋可配對社區", pr.length, 10, 0.15);
+push("成屋−預售 中位差（萬）", Math.abs(med(pr)), 0.05, 2);   // 接近 0，用絕對值比
+
+/* 有表格且表格含行情數字，卻沒寫統計基準 */
+const SITEY = /(本站|收錄的|個社區|筆成交|單價中位|成交單價|萬／坪)/;
+for (const a of articles) {
+  const t = (a.blocks || []).filter(b => b.type === "table");
+  if (!t.length || a.statsBasis) continue;
+  if (t.some(x => SITEY.test(JSON.stringify(x)))) fail(`${a.slug}：表格含站上行情數字，卻沒有 statsBasis`);
+}
+
 for (const { name, got, want, tol } of checks) {
   const g = Math.round(got * 100) / 100;
   const drift = want ? Math.abs(g - want) / want : 0;
@@ -211,6 +230,13 @@ if (BUILT) {
     }
   }
   if (!brace && !nan && !ld && !dead) ok(`掃描 ${files.length} 個檔案：無殘留變數、無 NaN、JSON-LD 全可解析、無死連結`);
+}
+
+/* ---------- F 目錄 hub 頁 ---------- */
+console.log("\n【F】目錄是否有 index（缺少時該網址會 404）");
+for (const d of ["tools", "developers", "schools", "areas", "communities", "notes", "videos", "about"]) {
+  if (!fs.existsSync(path.join(ROOT, d))) continue;
+  if (!fs.existsSync(path.join(ROOT, d, "index.html"))) warn(`/${d}/ 沒有 index.html——使用者或 AI 直接輸入這個網址會 404`);
 }
 
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
