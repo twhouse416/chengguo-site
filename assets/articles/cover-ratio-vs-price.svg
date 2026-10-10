@@ -3,32 +3,32 @@
 
   <text x="120" y="80" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">不分年代：看起來公設比越高越貴</text>
   <g>
-    <rect x="120" y="186" width="90"  height="60"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <rect x="236" y="162" width="90"  height="84"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <rect x="352" y="140" width="90"  height="106" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <rect x="468" y="133" width="90"  height="113" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <text x="165" y="172" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">19.8</text>
-    <text x="281" y="148" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">24.1</text>
-    <text x="397" y="126" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">30.6</text>
+    <rect x="120" y="208" width="90"  height="38"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="236" y="193" width="90"  height="53"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="352" y="172" width="90"  height="74"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="468" y="133" width="90"  height="113"  fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="165" y="194" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">19.1</text>
+    <text x="281" y="179" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">22.7</text>
+    <text x="397" y="158" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">27.8</text>
     <text x="513" y="119" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D" text-anchor="middle">37.0</text>
     <path d="M120 246 H568" stroke="#16191D" stroke-width="2"/>
-    <path d="M150 196 L500 136" stroke="#C9C6C0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M150 198 L500 123" stroke="#C9C6C0" stroke-width="4" stroke-linecap="round"/>
   </g>
 
   <text x="660" y="80" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#B85400">固定在 2005–2014 完工：平了</text>
   <g>
-    <rect x="660" y="140" width="90"  height="106" fill="#FD7305" fill-opacity="0.85"/>
-    <rect x="776" y="144" width="90"  height="102" fill="#FD7305" fill-opacity="0.85"/>
-    <rect x="892" y="145" width="90"  height="101" fill="#FD7305" fill-opacity="0.85"/>
-    <rect x="1008" y="143" width="90" height="103" fill="#FD7305" fill-opacity="0.85"/>
-    <text x="705"  y="126" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">32.8</text>
-    <text x="821"  y="130" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">31.8</text>
-    <text x="937"  y="131" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">31.6</text>
-    <text x="1053" y="129" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">32.2</text>
+    <rect x="660" y="156" width="90"  height="90" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="776" y="166" width="90"  height="80" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="892" y="167" width="90"  height="79" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="1008" y="161" width="90"  height="85" fill="#FD7305" fill-opacity="0.85"/>
+    <text x="705"  y="142" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">31.6</text>
+    <text x="821"  y="152" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">29.2</text>
+    <text x="937"  y="153" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">28.9</text>
+    <text x="1053"  y="147" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#B85400" text-anchor="middle">30.4</text>
     <path d="M660 246 H1108" stroke="#16191D" stroke-width="2"/>
-    <path d="M690 196 H1078" stroke="#C9C6C0" stroke-width="4" stroke-linecap="round" stroke-dasharray="14 10"/>
+    <path d="M690 148 H1078" stroke="#C9C6C0" stroke-width="4" stroke-linecap="round" stroke-dasharray="14 10"/>
   </g>
-  <text x="120" y="288" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">公設比 15–19 ‥ 35–39%　單價中位（萬／坪）</text>
+  <text x="120" y="288" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">公設比 19以下 ‥ 35–39%　單價中位（萬／坪）</text>
   <text x="660" y="288" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">公設比 20–24 ‥ 35–39%　單價中位（萬／坪）</text>
 
   <path d="M120 356 H1080" stroke="#DEDCD7" stroke-width="2"/>
@@ -37,10 +37,10 @@
 
   <rect x="120" y="542" width="500" height="112" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2"/>
   <text x="370" y="594" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83" text-anchor="middle">公設比 × 完工年　相關係數</text>
-  <text x="370" y="638" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#B85400" text-anchor="middle">r = 0.821</text>
+  <text x="370" y="638" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#B85400" text-anchor="middle">r = 0.823</text>
 
-  <text x="672" y="590" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">10,302 筆住家成交</text>
-  <text x="672" y="634" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">227 個社區的公設比</text>
+  <text x="672" y="590" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">11,535 筆住家成交</text>
+  <text x="672" y="634" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">229 個社區的公設比</text>
 
   <path d="M120 700 H1080" stroke="#DEDCD7" stroke-width="2"/>
   <text x="120" y="754" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">同年代之間比較才有意義　｜　不要用公設比殺價</text>

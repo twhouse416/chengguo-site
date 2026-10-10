@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
   <rect width="1200" height="800" fill="#F4F4F2"/>
-  <text x="120" y="104" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">208 個高雄社區　年周轉率（近 3 年成屋成交 ÷ 總戶數）</text>
+  <text x="120" y="104" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">199 個高雄社區　年周轉率（近 3 年成屋成交 ÷ 總戶數）</text>
 
-  <!-- 100 戶方格，塗 3 格 -->
+  <!-- 100 戶方格，塗 2 格 -->
   <g>
     <text x="120" y="176" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D">一個 100 戶的社區，一年大約成交——</text>
   </g>
   <g>
     <rect x="120" y="212" width="28" height="28" fill="#FD7305"/>
     <rect x="156" y="212" width="28" height="28" fill="#FD7305"/>
-    <rect x="192" y="212" width="28" height="28" fill="#FD7305"/>
+    
     <g fill="#16191D" fill-opacity="0.1">
-      <rect x="228" y="212" width="28" height="28"/><rect x="264" y="212" width="28" height="28"/>
+      <rect x="192" y="212" width="28" height="28"/><rect x="228" y="212" width="28" height="28"/><rect x="264" y="212" width="28" height="28"/>
       <rect x="300" y="212" width="28" height="28"/><rect x="336" y="212" width="28" height="28"/>
       <rect x="372" y="212" width="28" height="28"/><rect x="408" y="212" width="28" height="28"/>
       <rect x="444" y="212" width="28" height="28"/>
@@ -27,24 +27,24 @@
       <rect x="408" y="284" width="28" height="28"/><rect x="444" y="284" width="28" height="28"/>
     </g>
   </g>
-  <text x="520" y="268" font-family="'Noto Sans TC',sans-serif" font-size="68" font-weight="700" fill="#B85400">3 戶</text>
-  <text x="520" y="310" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">年周轉率中位數 2.9%</text>
+  <text x="520" y="268" font-family="'Noto Sans TC',sans-serif" font-size="68" font-weight="700" fill="#B85400">2–3 戶</text>
+  <text x="520" y="310" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">年周轉率中位數 2.3%</text>
 
   <path d="M120 372 H1080" stroke="#DEDCD7" stroke-width="2"/>
-  <text x="120" y="424" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">但範圍差將近 20 倍</text>
+  <text x="120" y="424" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">但範圍差 16 倍</text>
 
   <g font-family="'IBM Plex Mono',monospace" font-size="23">
     <text x="120" y="486" fill="#737A83">最低</text>
-    <rect x="260" y="464" width="22" height="28" fill="#16191D" fill-opacity="0.25"/>
-    <text x="310" y="486" fill="#16191D">0.7%　約 7 年才成交 1 戶</text>
+    <rect x="260" y="464" width="19" height="28" fill="#16191D" fill-opacity="0.25"/>
+    <text x="307" y="486" fill="#16191D">0.6%　約 8 年才成交 1 戶</text>
 
     <text x="120" y="546" fill="#737A83">中位</text>
-    <rect x="260" y="524" width="92" height="28" fill="#FD7305" fill-opacity="0.8"/>
-    <text x="380" y="546" fill="#16191D">2.9%</text>
+    <rect x="260" y="524" width="73" height="28" fill="#FD7305" fill-opacity="0.8"/>
+    <text x="361" y="546" fill="#16191D">2.3%</text>
 
     <text x="120" y="606" fill="#737A83">最高</text>
-    <rect x="260" y="584" width="422" height="28" fill="#16191D" fill-opacity="0.25"/>
-    <text x="710" y="606" fill="#16191D">13.3%　一年成交 13 戶</text>
+    <rect x="260" y="584" width="289" height="28" fill="#16191D" fill-opacity="0.25"/>
+    <text x="577" y="606" fill="#16191D">9.1%　一年成交 9 戶</text>
   </g>
 
   <path d="M120 660 H1080" stroke="#DEDCD7" stroke-width="2"/>

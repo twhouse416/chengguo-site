@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
   <rect width="1200" height="800" fill="#F4F4F2"/>
-  <text x="120" y="110" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">整理 253 個社區、10,302 筆成交踩過的坑</text>
+  <text x="120" y="110" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">整理 255 個社區、26,276 筆成交踩過的坑</text>
 
   <g font-family="'Noto Sans TC',sans-serif" font-size="28" fill="#16191D">
     <text x="120" y="196" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#FD7305">01</text>
@@ -24,9 +24,9 @@
 
   <g>
     <rect x="120" y="528" width="330" height="48" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <text x="470" y="562" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#16191D">住家 33.5 萬／坪</text>
+    <text x="470" y="562" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#16191D">住家 25.9 萬／坪</text>
     <rect x="120" y="596" width="648" height="48" fill="#FD7305" fill-opacity="0.85"/>
-    <text x="788" y="630" font-family="'IBM Plex Mono',monospace" font-size="25" font-weight="700" fill="#B85400">店面 65.8 萬／坪</text>
+    <text x="788" y="630" font-family="'IBM Plex Mono',monospace" font-size="25" font-weight="700" fill="#B85400">店面 60.0 萬／坪</text>
   </g>
   <text x="120" y="684" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">店面在「建物型態」欄位一樣登記為住宅大樓</text>
 
