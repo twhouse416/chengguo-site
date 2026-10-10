@@ -620,7 +620,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false, isHome =
     return `${lineFab()}
 <footer class="border-t border-line">
   <div class="${width} mx-auto px-6 py-8 font-mono text-[12px] text-inkFaint flex flex-wrap gap-x-6 gap-y-2 justify-between">
-    <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
+    <span>© ${new Date().getFullYear()} ${BRAND.legalName}　統一編號 ${BRAND.taxId}</span>
     <span class="flex flex-wrap gap-x-6 gap-y-2">
       <a href="${BRAND.officialSite}" target="_blank" rel="noopener noreferrer" class="text-orangeDeep hover:text-orange">看在售物件 ↗</a>
       <a href="${up}index.html" class="hover:text-orangeDeep">回首頁</a>
@@ -669,7 +669,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false, isHome =
 
   <div class="border-t border-white/10">
     <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
-      <span>© ${new Date().getFullYear()} ${BRAND.legalName}</span>
+      <span>© ${new Date().getFullYear()} ${BRAND.legalName}　統一編號 ${BRAND.taxId}　${BRAND.franchiseName}</span>
       <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
     </div>
   </div>
