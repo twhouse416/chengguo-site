@@ -32,6 +32,7 @@ import { buildAreas } from "./build-areas.js";
 import { buildIndexPages, devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
 import { devName } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
+import { buildHubs } from "./build-hubs.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -93,6 +94,11 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
     { loc: `${SITE}/tools/qingan/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/tools/property-tax/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
     { loc: `${SITE}/about/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    /* 四個彙整頁 */
+    { loc: `${SITE}/tools/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    ...(areas.length ? [{ loc: `${SITE}/areas/`, lastmod: maxDate(areas.map(a => areaLast[a.slug])), priority: "0.8", freq: "weekly" }] : []),
+    ...((indexPages.schools || []).length ? [{ loc: `${SITE}/schools/`, lastmod: maxDate(Object.values(schoolLast)), priority: "0.7", freq: "monthly" }] : []),
+    ...((indexPages.developers || []).length ? [{ loc: `${SITE}/developers/`, lastmod: maxDate(Object.values(devLast)), priority: "0.7", freq: "monthly" }] : []),
     ...(hasDeals ? [{ loc: `${SITE}/deals/`, lastmod: dealsUpdated, priority: "0.7", freq: "weekly" }] : []),
     ...(communities.length ? [{ loc: `${SITE}/communities/`, lastmod: allCommunityLast, priority: "0.8", freq: "weekly" }] : []),
     /* 生活圈頁的優先度給到 0.9：它是「美術館特區房價」這類主要關鍵字的落地頁，
@@ -417,6 +423,15 @@ function main() {
 
   /* 建商頁與學區頁：長尾落地頁，只在社區數達門檻時產生 */
   const indexPages = buildIndexPages({ hasBuyers });
+
+  /* 四個彙整頁：/areas/ /schools/ /developers/ /tools/
+     原本這些網址沒有 index.html，直接輸入會 404。彙整頁同時是「完整清單」型內容，
+     AI 搜尋引擎容易引用，也把內部連結分配給底下的子頁。 */
+  const cdHub = readJson("data/community-deals.json", { deals: {} });
+  buildHubs({
+    areas, communities, dealsMap: cdHub.deals || {}, indexPages, hasBuyers,
+    dataUpdated: String(cdHub.updatedAt || "").slice(0, 10),
+  });
 
   /* 關於團隊頁：不動產屬 YMYL 領域，Google 對 E-E-A-T 的要求高，
      團隊資訊需要一個可以被連結、被引用的獨立頁面。 */

@@ -598,9 +598,12 @@ export function footer({ depth = 0, hasBuyers = false, compact = false, isHome =
   const home = isHome ? "" : `${up}index.html`;
   const width = compact ? "max-w-3xl" : "max-w-6xl";
   const links = [
-    [`${home}#services`, "服務項目"], [`${home}#areas`, "生活圈行情"], [`${up}about/index.html`, "關於團隊"],
-    [`${home}#tools`, "試算工具"], [`${up}notes/index.html`, "知識文章"], [`${up}videos/index.html`, "影片"],
-    [`${up}deals/index.html`, "近期成交"],
+    [`${home}#services`, "服務項目"],
+    /* 首頁用錨點直接捲到該段；其他頁面指向彙整頁，順便給 /areas/ 與 /tools/ 內部連結 */
+    [isHome ? "#areas" : `${up}areas/index.html`, "生活圈行情"], [`${up}about/index.html`, "關於團隊"],
+    [isHome ? "#tools" : `${up}tools/index.html`, "試算工具"], [`${up}notes/index.html`, "知識文章"],
+    [`${up}videos/index.html`, "影片"], [`${up}deals/index.html`, "近期成交"],
+    [`${up}schools/index.html`, "學區總覽"], [`${up}developers/index.html`, "建商總覽"],
     ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
     [`${home}#faq`, "常見問題"],
   ];
