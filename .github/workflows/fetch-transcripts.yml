@@ -1,0 +1,45 @@
+name: 擷取影片逐字稿
+
+# 只手動觸發。自動字幕一定有錯字，不該自動流到網站上，
+# 所以這個流程只負責「抓下來」，抓完要人工校對，確認後才會被用在頁面上。
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "重抓全部（已校對的仍然保留）"
+        type: boolean
+        default: false
+      videoId:
+        description: "只抓指定影片 ID（留空代表全部）"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 安裝 yt-dlp
+        run: python3 -m pip install -U --quiet yt-dlp
+
+      - name: 擷取字幕
+        run: |
+          ARGS=""
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          if [ -n "${{ inputs.videoId }}" ]; then ARGS="$ARGS --id=${{ inputs.videoId }}"; fi
+          node scripts/fetch-transcripts.js $ARGS
+
+      - name: 有變動就提交
+        # 刻意只提交逐字稿檔案，不重建網站：
+        # 未校對的自動字幕不應該出現在線上。
+        run: |
+          bash scripts/git-push-retry.sh "擷取影片逐字稿 $(date +'%Y-%m-%d %H:%M')" \
+            data/video-transcripts.json
