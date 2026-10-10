@@ -7,7 +7,7 @@
  */
 
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize } from "./lib/layout.js";
-import { webSlug } from "./build-articles.js";
+import { webSlug, fillStats } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
 import { isoDate } from "./build-communities.js";
 
@@ -49,7 +49,7 @@ export function buildNotesIndex({ articles, hasBuyers }) {
   return [
     head({
       title: "知識文章｜台灣房屋 澄果團隊",
-      description: "高雄買房賣房知識文章：買方看新青安3.0門檻、自備款、公設比與屋齡對房價的影響；賣方看開價怎麼訂、稅費與淨到手、建物現況告知與委託簽約。數據取自本站整理的253個社區、10,302筆實價登錄成交。",
+      description: fillStats("高雄買房賣房知識文章：買方看新青安3.0門檻、自備款、公設比與屋齡對房價的影響；賣方看開價怎麼訂、稅費與淨到手、建物現況告知與委託簽約。數據取自本站整理的{{社區數}}個社區、{{成交筆數}}筆實價登錄成交。"),
       keywords: "高雄買房知識,新青安3.0,房地合一稅,重購退稅,換屋規劃,美術館特區,農十六,中都重劃區",
       canonical: `${SITE}/notes/`,
       ogImage: `${SITE}/assets/area-01-artmuseum.jpg`,
@@ -65,7 +65,7 @@ export function buildNotesIndex({ articles, hasBuyers }) {
   <h1 class="display text-[30px] md:text-[36px]">知識文章</h1>
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
     買房、賣房、換屋最常卡住的幾個問題，我們用自己整理的實價登錄資料回答——
-    253 個社區、10,302 筆成交。內容會隨法規與市場變動更新，發布日期標在每篇文章上。
+    ${fillStats("{{社區數}} 個社區、{{成交筆數}} 筆成交")}。內容會隨法規與市場變動更新，發布日期標在每篇文章上。
     要賣房的話，下面的「賣房」分類有訂價、稅費與委託簽約的完整說明。
   </p>
   <div class="mt-6 h-px bg-line"></div>
