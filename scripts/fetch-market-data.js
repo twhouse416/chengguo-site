@@ -307,6 +307,14 @@ function collectCommunityDeals(records) {
         totalPrice: Math.round((parseFloat(r["總價元"]) || 0) / 10000),  // 萬元
         layout: rooms ? `${rooms}房${halls ? halls + "廳" : ""}${baths ? baths + "衛" : ""}` : "",
         parking: (r["車位類別"] || "").trim(),
+        /* 車位總價：內政部有揭露時才有值（約六成），單位萬元。
+           ⚠️ 這是該筆交易「所有車位」的合計，實價登錄不揭露車位數量，
+              所以大坪數戶別的金額常常是兩個以上車位的總和。
+              社區頁顯示時會對可能含多個車位的情況加標記。 */
+        parkingPrice: (() => {
+          const v = Math.round((parseFloat(r["車位總價元"]) || 0) / 10000);
+          return v > 0 ? v : null;
+        })(),
         kind: r.__presale ? "預售" : "成屋",
     /* 店面判定見 lib/shop-use.js：主要用途符合「且」移轉層次在一樓才算。
        社區頁逐筆列出時保留店面成交（對想買店面的人有價值），但標示清楚，

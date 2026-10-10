@@ -328,6 +328,13 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
   const SHOW = 100;
   const shown = deals.slice(0, SHOW);
   const rest = deals.slice(SHOW);
+  /* 車位價格欄只在資料已經帶有 parkingPrice 時才出現。
+     行情資料更新前舊的 community-deals.json 沒有這個欄位，
+     那時整欄不顯示，而不是顯示一整排「未揭露」誤導人。 */
+  const showPk = hasParkingData(deals);
+  const pkDisclosed = deals.filter(d => d.parking && d.parkingPrice).length;
+  const pkHidden = deals.filter(d => d.parking && !d.parkingPrice).length;
+  const pkMulti = deals.filter(multiParking).length;
   const presale = deals.filter(d => d.kind === "預售").length;
   const span = deals.length
     ? `${fmtDate(deals[deals.length - 1].date)}－${fmtDate(deals[0].date)}`
@@ -389,7 +396,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     <table class="w-full text-[15px] min-w-[640px]">
       ${/* caption 是給機器看的表格標題：AI 解析 HTML 表格時靠它判斷這張表在講什麼。
            視覺上用 sr-only 藏起來，因為上方的 h2 與摘要句已經講過同樣的事。 */""}
-      <caption class="sr-only">${esc(c.name || "本社區")}實價登錄成交紀錄${span ? `（${span}）` : ""}，共 ${deals.length} 筆，欄位為成交日期、類型、移轉層次、格局、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）</caption>
+      <caption class="sr-only">${esc(c.name || "本社區")}實價登錄成交紀錄${span ? `（${span}）` : ""}，共 ${deals.length} 筆，欄位為成交日期、類型、移轉層次、格局、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）${showPk ? "、車位總價（萬元）" : ""}</caption>
       <thead>
         <tr class="dl-head">
           <th scope="col" class="dl-th">成交日期</th>
@@ -399,6 +406,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
           <th scope="col" class="dl-th-r">坪數</th>
           <th scope="col" class="dl-th-r">單價</th>
           <th scope="col" class="dl-th-r">總價</th>
+          ${showPk ? `<th scope="col" class="dl-th-r">車位</th>` : ""}
         </tr>
       </thead>
       <tbody>
@@ -410,6 +418,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
           <td class="dl-num">${d.ping || "—"}</td>
           <td class="dl-num-em">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
           <td class="dl-num">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+          ${showPk ? parkingCell(d) : ""}
         </tr>`).join("\n        ")}
       </tbody>
     </table>
@@ -431,6 +440,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
             <th class="dl-th-r">坪數</th>
             <th class="dl-th-r">單價</th>
             <th class="dl-th-r">總價</th>
+            ${showPk ? `<th class="dl-th-r">車位</th>` : ""}
           </tr>
         </thead>
         <tbody>
@@ -442,6 +452,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
             <td class="dl-num">${d.ping || "—"}</td>
             <td class="dl-num-em">${d.unitPrice}${isOutlier(d) ? `<span class="text-orangeDeep font-normal" title="與本社區一般成交價差距較大，可能為特殊交易，詳見表格下方說明">＊</span>` : ""}</td>
             <td class="dl-num">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+            ${showPk ? parkingCell(d) : ""}
           </tr>`).join("\n          ")}
         </tbody>
       </table>
@@ -459,11 +470,48 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     想知道某一筆的實際情形，可以問我們，我們幫你查。
   </p>` : ""}
 
+  ${showPk && pkMulti ? `<p class="text-[14px] text-inkSoft leading-[1.9] mt-4 border-l-2 border-orange pl-4">
+    <span class="text-orangeDeep font-bold">⁺</span>
+    標記的 ${pkMulti} 筆，車位金額<strong class="text-ink font-bold">可能是兩個以上車位的合計</strong>。
+    實價登錄只揭露車位總價，不揭露車位數量，大坪數的戶別常常一次配兩個以上。
+    要比對單一車位的價格，建議挑坪數規模相近的成交。
+  </p>` : ""}
+
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
-    單價單位為萬元／坪，總價單位為萬元。含車位的交易，單價會被車位價格拉低，
-    比對時請留意坪數與格局是否相近。標示「預售」者為預售屋買賣，交屋時間與成屋不同。
+    單價單位為萬元／坪，總價單位為萬元${showPk ? "，車位為該筆交易所有車位的總價（萬元）" : ""}。
+    ${showPk ? `車位價格只有部分成交會單獨揭露（本社區 ${pkDisclosed} 筆有、${pkHidden} 筆未揭露）。
+    <strong class="text-inkSoft font-bold">有揭露的那幾筆，單價已經是扣掉車位後的金額</strong>；
+    標示「未揭露」的，車位價含在總價裡，單價也含著車位，兩者不宜直接比。` :
+    `含車位的交易，單價會被車位價格拉低，比對時請留意坪數與格局是否相近。`}
+    標示「預售」者為預售屋買賣，交屋時間與成屋不同。
     已排除實價登錄上標示解約的紀錄。資料來源為內政部不動產交易實價查詢服務網。
+    ${showPk ? `車位價格的完整分析見<a href="../notes/parking-space-price-kaohsiung.html" class="text-orangeDeep hover:underline">高雄車位值多少錢</a>。` : ""}
   </p>`;
+}
+
+
+/* ---------- 車位價格欄 ----------
+   實價登錄的「車位總價元」只有約六成的成交會單獨揭露，而且是該筆交易所有車位的
+   合計、不揭露數量。所以這一欄有三種狀態，缺一不可：
+     有金額        → 直接顯示（可能含多個車位時加 ⁺）
+     有車位沒金額  → 顯示「未揭露」，因為空白會被誤讀成「沒有車位」
+     沒有車位      → 「—」
+   資料還沒更新到有 parkingPrice 欄位之前，整欄不顯示（見 hasParkingData）。 */
+function hasParkingData(deals) {
+  return deals.some(d => d.parkingPrice !== undefined);
+}
+/* 可能含多個車位：金額偏高，或建物坪數大到一般會配兩個車位 */
+function multiParking(d) {
+  return d.parkingPrice > 400 || (d.parkingPrice && d.ping > 60);
+}
+function parkingCell(d) {
+  if (!d.parking) return `<td class="dl-num text-inkFaint">—</td>`;
+  if (!d.parkingPrice) {
+    return `<td class="dl-num text-inkFaint" title="這筆的車位價格沒有單獨揭露，已包含在總價裡">未揭露</td>`;
+  }
+  const mark = multiParking(d)
+    ? `<span class="text-orangeDeep font-normal" title="金額可能是兩個以上車位的合計，詳見表格下方說明">⁺</span>` : "";
+  return `<td class="dl-num">${d.parkingPrice.toLocaleString("zh-TW")}${mark}</td>`;
 }
 
 /* ---------- 相關社區：三組交叉連結 ----------
@@ -738,6 +786,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
         "成交日期", "交易類型", "移轉層次", "總樓層數",
         "建物移轉總面積（坪）", "建物現況格局", "單價（萬元／坪）",
         "總價（萬元）", "車位類別",
+        ...(deals.some(d => d.parkingPrice !== undefined) ? ["車位總價（萬元，該筆交易所有車位的合計）"] : []),
       ],
       about: { "@type": "ApartmentComplex", name: c.name, url },
     });
