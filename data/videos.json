@@ -71,8 +71,10 @@
       "titleShown": "巨蛋捷運質感明亮大二房平車 - 聯上美學館",
       "descShown": "✪ 台　灣　房　屋　澄　果　團　隊 ✪",
       "category": "",
-      "hidden": false,
-      "order": null
+      "hidden": true,
+      "order": null,
+      "autoHidden": true,
+      "missingSince": "2026-10-10"
     },
     {
       "videoId": "VYmFRpy_oQ0",
@@ -257,7 +259,19 @@
       "category": "",
       "hidden": false,
       "order": null
+    },
+    {
+      "videoId": "4VmkkBB5BSs",
+      "title": "高雄美術館冷知識  #高雄買房",
+      "desc": "還知道那些高美館的冷知識嗎?歡迎留言告訴我~！",
+      "published": "2024-12-13",
+      "thumb": "https://i1.ytimg.com/vi/4VmkkBB5BSs/hqdefault.jpg",
+      "titleShown": "高雄美術館冷知識  #高雄買房",
+      "descShown": "還知道那些高美館的冷知識嗎?歡迎留言告訴我~！",
+      "category": "",
+      "hidden": false,
+      "order": null
     }
   ],
-  "updatedAt": "2026-10-09T22:06:40.127Z"
+  "updatedAt": "2026-10-10T11:43:35.545Z"
 }
