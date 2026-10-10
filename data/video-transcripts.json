@@ -1,5 +1,160 @@
 {
-  "updatedAt": "2026-10-10T08:44:03.124Z",
+  "updatedAt": "2026-10-10T08:49:37.175Z",
   "transcripts": {},
-  "note": "自動字幕未經校對，reviewed 為 true 的才是人工確認過的版本；只有 reviewed 的會被用在網站上。"
+  "note": "自動字幕未經校對，reviewed 為 true 的才是人工確認過的版本；只有 reviewed 的會被用在網站上。",
+  "diagnostics": [
+    {
+      "videoId": "3qUxgCEUs4Y",
+      "title": "美術館 社區大樓介紹 - 本業建設 艾美館",
+      "error": "ERROR: [youtube] 3qUxgCEUs4Y: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 3qUxgCEUs4Y: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "fwKCZS4KnO0",
+      "title": "駁二輕軌旁大面寬靜謐車墅",
+      "error": "ERROR: [youtube] fwKCZS4KnO0: Private video",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] fwKCZS4KnO0: Private video"
+    },
+    {
+      "videoId": "1-3wV5pHWsQ",
+      "title": "馬卡綠園道 馬爾地夫景觀三房車位 #美術館 #澄果團隊 #台灣房屋 #房仲 #馬",
+      "error": "ERROR: [youtube] 1-3wV5pHWsQ: Private video",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 1-3wV5pHWsQ: Private video"
+    },
+    {
+      "videoId": "4MErCZOl7MA",
+      "title": "巨蛋捷運質感明亮大二房平車 - 聯上美學館",
+      "error": "ERROR: [youtube] 4MErCZOl7MA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 4MErCZOl7MA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "VYmFRpy_oQ0",
+      "title": "後驛捷運旁 棋琴22重奏 二房平車",
+      "error": "ERROR: [youtube] VYmFRpy_oQ0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] VYmFRpy_oQ0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "32QmV2VBVUw",
+      "title": "[澄果大小事 - 新青安還能使用嗎? 有誰適合?] #台灣房屋 #房地產 #美術",
+      "error": "ERROR: [youtube] 32QmV2VBVUw: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 32QmV2VBVUw: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "GcN6FWznwio",
+      "title": "[澄果大小事 - 買房除了頭期款，還需要負擔什麼費用?]",
+      "error": "ERROR: [youtube] GcN6FWznwio: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] GcN6FWznwio: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "ZQxf84jxEmY",
+      "title": "美術館、農十六 - 買房找 澄果商耕團隊",
+      "error": "ERROR: [youtube] ZQxf84jxEmY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] ZQxf84jxEmY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "n9OHlHFyUBo",
+      "title": "「層峰之上的私藏府邸，以建築之名，定義豪宅典範」",
+      "error": "ERROR: [youtube] n9OHlHFyUBo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] n9OHlHFyUBo: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "4CbIq8b-Wes",
+      "title": "美術館特區介紹",
+      "error": "ERROR: [youtube] 4CbIq8b-Wes: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 4CbIq8b-Wes: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "PwREa5nEAw0",
+      "title": "澄果團隊【螢光茶語-雲上山旅】#嘉義",
+      "error": "ERROR: [youtube] PwREa5nEAw0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] PwREa5nEAw0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "C_TYRr_tMdQ",
+      "title": "【信心、堅持、合作】#高雄買房  #house  #不動產 #買房",
+      "error": "ERROR: [youtube] C_TYRr_tMdQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] C_TYRr_tMdQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "WHGUbQx8Hh8",
+      "title": "2025年1月21日",
+      "error": "ERROR: [youtube] WHGUbQx8Hh8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] WHGUbQx8Hh8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "ClIXhNL6o7M",
+      "title": "【房屋買賣可以不用履保？】#不動產 #買房 #高雄買房 #house",
+      "error": "ERROR: [youtube] ClIXhNL6o7M: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] ClIXhNL6o7M: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "2yW4VwimB5Y",
+      "title": "🎥✨【2024澄果聖誕活動精華回顧！】#聖誕節",
+      "error": "ERROR: [youtube] 2yW4VwimB5Y: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 2yW4VwimB5Y: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "lXz7JCG1AeY",
+      "title": "【購屋流程五步驟】#不動產 #買房  #house #高雄買房",
+      "error": "ERROR: [youtube] lXz7JCG1AeY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] lXz7JCG1AeY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "VOzBodWQDG0",
+      "title": "【果然冷知識】輕軌充電 #冷知識 #高雄輕軌 #輕軌 #高雄 #高雄買房",
+      "error": "ERROR: [youtube] VOzBodWQDG0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] VOzBodWQDG0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "7IvMmTHQtUI",
+      "title": "【什麼是精耕？澄果團隊教你！】#高雄買房 #house #房仲 #台灣房屋",
+      "error": "ERROR: [youtube] 7IvMmTHQtUI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 7IvMmTHQtUI: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    },
+    {
+      "videoId": "59wcs0DePyU",
+      "title": "【買房筆記】五個買房關鍵 #房地產 #高雄買房",
+      "error": "ERROR: [youtube] 59wcs0DePyU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho",
+      "availableLangs": [],
+      "hasAnySubs": false,
+      "probeError": "ERROR: [youtube] 59wcs0DePyU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#ho"
+    }
+  ],
+  "ytdlpVersion": "2026.08.19"
 }
