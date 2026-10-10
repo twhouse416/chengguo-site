@@ -33,6 +33,7 @@ import { buildIndexPages, devSlugOf, schoolSlugOf, schoolNames } from "./build-i
 import { devName } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
 import { buildHubs } from "./build-hubs.js";
+import { buildFaq } from "./build-faq.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -96,6 +97,7 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
     { loc: `${SITE}/about/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
     /* 四個彙整頁 */
     { loc: `${SITE}/tools/`, lastmod: STATIC_CONTENT_DATE, priority: "0.7", freq: "monthly" },
+    { loc: `${SITE}/faq/`, lastmod: articlesLast, priority: "0.8", freq: "weekly" },
     ...(areas.length ? [{ loc: `${SITE}/areas/`, lastmod: maxDate(areas.map(a => areaLast[a.slug])), priority: "0.8", freq: "weekly" }] : []),
     ...((indexPages.schools || []).length ? [{ loc: `${SITE}/schools/`, lastmod: maxDate(Object.values(schoolLast)), priority: "0.7", freq: "monthly" }] : []),
     ...((indexPages.developers || []).length ? [{ loc: `${SITE}/developers/`, lastmod: maxDate(Object.values(devLast)), priority: "0.7", freq: "monthly" }] : []),
@@ -432,6 +434,9 @@ function main() {
     areas, communities, dealsMap: cdHub.deals || {}, indexPages, hasBuyers,
     dataUpdated: String(cdHub.updatedAt || "").slice(0, 10),
   });
+
+  /* 常見問題彙整頁：把各篇文章的 FAQ 集中成一個可被直接引用的入口 */
+  buildFaq({ articles, hasBuyers, dataUpdated: String(cdHub.updatedAt || "").slice(0, 10) });
 
   /* 關於團隊頁：不動產屬 YMYL 領域，Google 對 E-E-A-T 的要求高，
      團隊資訊需要一個可以被連結、被引用的獨立頁面。 */

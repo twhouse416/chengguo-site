@@ -296,7 +296,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false, isHome =
     [`${up}communities/index.html`, "社區行情"],
     [`${home}#tools`, "試算工具"],
     ...(hasBuyers ? [[`${home}#buyers`, "買方需求"]] : []),
-    [`${home}#faq`, "常見問題"],
+    [isHome ? "#faq" : `${up}faq/index.html`, "常見問題"],
     [`${up}notes/index.html`, "知識文章"],
     [`${up}videos/index.html`, "影片"],
   ];
