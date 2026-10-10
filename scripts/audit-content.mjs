@@ -148,35 +148,18 @@ for (const a of articles) {
   if (t.some(x => SITEY.test(JSON.stringify(x)))) fail(`${a.slug}：表格含站上行情數字，卻沒有 statsBasis`);
 }
 
-/* 車位：車位總價只在生活圈資料池裡（community-deals.json 沒有保留這個欄位），
-   所以要另外讀 data/area-deals/*.json。這組數字支撐「高雄車位值多少錢」那一篇。 */
-try {
-  const poolDir = path.join(ROOT, "data/area-deals");
-  const pk = { flat: [], mech: [], withKind: 0, disclosed: 0 };
-  for (const f of fs.readdirSync(poolDir).filter(x => x.endsWith(".json"))) {
-    const d = JSON.parse(fs.readFileSync(path.join(poolDir, f), "utf-8"));
-    const ix = Object.fromEntries(d.columns.map((c, i) => [c, i]));
-    for (const r of d.rows) {
-      const roc = String(r[ix["交易年月日"]] || "");
-      if (roc.length < 6) continue;
-      const ym = `${+roc.slice(0, -4) + 1911}-${roc.slice(-4, -2)}`;
-      if (ym < "2020-01") continue;
-      const kind = r[ix["車位類別"]] || "";
-      const price = (+r[ix["車位總價元"]] || 0) / 10000;
-      const ping = (+r[ix["建物移轉總面積平方公尺"]] || 0) * 0.3025;
-      if (kind) pk.withKind++;
-      if (kind && price > 0) pk.disclosed++;
-      if (!(price > 0) || ping < 25 || ping > 60) continue;
-      if (kind === "坡道平面") pk.flat.push(price);
-      if (kind === "坡道機械") pk.mech.push(price);
-    }
-  }
-  push("車位揭露率 %", pk.disclosed / Math.max(1, pk.withKind) * 100, 61, 0.05);
-  push("坡道平面車位中位（萬）", med(pk.flat), 195);
-  push("坡道機械車位中位（萬）", med(pk.mech), 100);
-  push("坡道平面樣本數", pk.flat.length, 4354);
-} catch (e) {
-  warn(`車位指標無法計算：${e.message}`);
+/* 車位：行情更新後 community-deals.json 已帶 parkingPrice，
+   所以改用與其他指標同一份資料計算，不再讀生活圈資料池。 */
+{
+  const pkAll = communities.flatMap(c => (dealsMap[c.slug] || [])
+    .filter(d => d.use !== "店面" && String(d.date || "") >= SINCE));
+  const kind = pkAll.filter(d => d.parking);
+  const val = kind.filter(d => d.parkingPrice);
+  const typ = val.filter(d => d.ping >= 25 && d.ping <= 60);
+  push("車位揭露率 %", kind.length ? val.length / kind.length * 100 : 0, 53, 0.05);
+  push("坡道平面車位中位（萬）", med(typ.filter(d => d.parking === "坡道平面").map(d => d.parkingPrice)), 200);
+  push("坡道機械車位中位（萬）", med(typ.filter(d => d.parking === "坡道機械").map(d => d.parkingPrice)), 105);
+  push("坡道平面樣本數", typ.filter(d => d.parking === "坡道平面").length, 2630);
 }
 
 for (const { name, got, want, tol } of checks) {
