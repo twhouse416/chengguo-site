@@ -5,25 +5,25 @@
   <g>
     <rect x="120" y="190" width="585" height="76" fill="#FD7305" fill-opacity="0.85"/>
     <text x="150" y="238" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#FFFFFF">坡道平面</text>
-    <text x="735" y="240" font-family="'IBM Plex Mono',monospace" font-size="38" font-weight="700" fill="#B85400">195 萬</text>
-    <text x="960" y="240" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">4,354 筆</text>
+    <text x="735" y="240" font-family="'IBM Plex Mono',monospace" font-size="38" font-weight="700" fill="#B85400">200 萬</text>
+    <text x="960" y="240" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">2,630 筆</text>
 
-    <rect x="120" y="306" width="300" height="76" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="120" y="306" width="307" height="76" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
     <text x="150" y="354" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">坡道機械</text>
-    <text x="450" y="356" font-family="'IBM Plex Mono',monospace" font-size="38" font-weight="700" fill="#16191D">100 萬</text>
-    <text x="960" y="356" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">589 筆</text>
+    <text x="457" y="356" font-family="'IBM Plex Mono',monospace" font-size="38" font-weight="700" fill="#16191D">105 萬</text>
+    <text x="960" y="356" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">487 筆</text>
   </g>
   <path d="M120 416 H1080" stroke="#16191D" stroke-width="2"/>
   <text x="120" y="454" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">長度即價格比例　｜　資料為內政部實價登錄有單獨揭露車位總價的成交</text>
 
   <text x="120" y="536" font-family="'Noto Sans TC',sans-serif" font-size="34" font-weight="700" fill="#16191D">差 <tspan fill="#B85400">1.9 倍</tspan>，而且價格區間幾乎不重疊</text>
-  <text x="120" y="584" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">機械的 Q3 138 萬　＜　平面的 Q1 170 萬</text>
+  <text x="120" y="584" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">機械的 Q3 138 萬　＜　平面的 Q1 180 萬</text>
 
   <path d="M120 630 H1080" stroke="#DEDCD7" stroke-width="2"/>
   <rect x="120" y="664" width="420" height="88" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2"/>
   <text x="330" y="702" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">車位占總價中位數</text>
   <text x="330" y="738" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#B85400" text-anchor="middle">12%</text>
 
-  <text x="592" y="700" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">另有 39% 的車位沒有單獨揭露價格</text>
+  <text x="592" y="700" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">另有 47% 的車位沒有單獨揭露價格</text>
   <text x="592" y="738" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">直接包在總價裡，查不到</text>
 </svg>
