@@ -365,5 +365,30 @@ for (const d of ["tools", "developers", "schools", "areas", "communities", "note
   if (!fs.existsSync(path.join(ROOT, d, "index.html"))) warn(`/${d}/ 沒有 index.html——使用者或 AI 直接輸入這個網址會 404`);
 }
 
+/* ---------- I 產出是否會被提交 ---------- */
+/* build-site.js 產生的頂層目錄，必須出現在 build-site.yml 的提交清單裡。
+   漏掉的話頁面會在本機與 CI 產生、卻永遠不會進 repo，也就永遠不會上線——
+   /faq/ 就這樣消失了兩輪才被發現。 */
+console.log("\n【I】建置產出 vs workflow 提交清單");
+{
+  const wf = path.join(ROOT, ".github/workflows/build-site.yml");
+  if (!fs.existsSync(wf)) warn("找不到 .github/workflows/build-site.yml，略過");
+  else {
+    const y = fs.readFileSync(wf, "utf-8");
+    const m = y.match(/git-push-retry\.sh[^\n]*\n([\s\S]*?)(?:\n\s*\n|$)/);
+    const listed = new Set((m ? m[1] : "").split(/[\s\\]+/).filter(Boolean)
+      .map(x => x.replace(/\/.*$/, "")));
+    /* 建置會產生的頂層目錄：有 index.html 而且不是原始碼或資料夾 */
+    const SKIP = new Set(["node_modules", ".git", ".github", "scripts", "data", "config", "src", "admin", "assets"]);
+    const made = fs.readdirSync(ROOT, { withFileTypes: true })
+      .filter(e => e.isDirectory() && !SKIP.has(e.name) && !e.name.startsWith("."))
+      .filter(e => fs.existsSync(path.join(ROOT, e.name, "index.html")))
+      .map(e => e.name);
+    const missing = made.filter(d => !listed.has(d));
+    if (missing.length) missing.forEach(d => fail(`/${d}/ 有產出但不在 build-site.yml 的提交清單裡——頁面不會上線`));
+    else ok(`${made.length} 個產出目錄都在提交清單裡（${made.join("、")}）`);
+  }
+}
+
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
 process.exit(FAIL ? 1 : 0);

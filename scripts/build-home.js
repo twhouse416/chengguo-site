@@ -760,21 +760,6 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
       parentOrganization: { "@type": "Organization", name: BRAND.franchiseBrand, url: BRAND.franchiseBrandUrl },
       foundingDate: BRAND.foundingYear,
       numberOfEmployees: { "@type": "QuantitativeValue", value: BRAND.teamSize },
-      /* 具名的執業經紀人：不動產是特許行業，Google 的 YMYL 評估與 AI 引擎
-         都在找「這個建議背後有沒有具執照的專業人員」。團隊署名不變，
-         這裡只是把法定的執業資格掛上去。 */
-      employee: {
-        "@type": "Person",
-        name: BRAND.agentName,
-        jobTitle: "不動產經紀人",
-        worksFor: { "@type": "Organization", name: BRAND.legalName },
-        hasCredential: {
-          "@type": "EducationalOccupationalCredential",
-          credentialCategory: "不動產經紀人證書",
-          identifier: BRAND.agentLicense,
-          recognizedBy: { "@type": "GovernmentOrganization", name: BRAND.agentLicenseAuthority },
-        },
-      },
       knowsAbout: [
         "高雄市鼓山區美術館特區房價", "高雄市鼓山區農十六特區房價",
         "高雄市左營區瑞豐巨蛋生活圈房價", "高雄市三民區中都重劃區房價",
