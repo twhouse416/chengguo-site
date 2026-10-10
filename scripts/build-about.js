@@ -147,7 +147,9 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
   <section class="mt-14">
     <h2 class="display text-[23px] mb-6">聯絡與門市資訊</h2>
     <dl class="border-t border-line">
-      ${[["公司全名", BRAND.legalName], ["品牌", BRAND.teamName], ["地址", BRAND.address],
+      ${[["公司全名", BRAND.legalName], ["統一編號", BRAND.taxId],
+         ["加盟店全名", BRAND.franchiseName], ["加盟品牌", BRAND.franchiseBrand],
+         ["品牌", BRAND.teamName], ["地址", BRAND.address],
          ["電話", BRAND.phone], ["服務區域", "高雄市鼓山區、左營區、三民區（美術館特區、農十六特區、瑞豐巨蛋生活圈、中都重劃區）"]]
         .map(([k, v]) => `<div class="flex flex-wrap justify-between gap-4 py-4 border-b border-line">
         <dt class="text-[15px] text-inkFaint shrink-0">${esc(k)}</dt>

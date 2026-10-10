@@ -26,6 +26,12 @@ export const SITE = (CONFIG.siteUrl || "https://twhouse416.github.io/chengguo-si
 export const BRAND = {
   teamName: "台灣房屋 澄果團隊",
   legalName: "澄果資產有限公司",
+  /* 法人與加盟身分：不動產是特許行業，統一編號與加盟店全名是可被查證的實體錨點，
+     Google 與 AI 引擎用它們確認「這是真實存在、可追溯的公司」。 */
+  taxId: "91072050",
+  franchiseName: "台灣房屋美術青海特許加盟店",
+  franchiseBrand: "台灣房屋",
+  franchiseBrandUrl: "https://www.twhg.com.tw/",
   address: "804 高雄市鼓山區青海路416號",
   addressShort: "鼓山區青海路416號",
   phone: "07-9766977",

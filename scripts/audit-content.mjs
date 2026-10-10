@@ -188,6 +188,120 @@ for (const a of articles) {
 }
 if (!c2) ok("FAQ 數字都能在同篇表格裡找到");
 
+/* ---------- G 跨篇比較宣稱 ---------- */
+/* 文章裡的「哪一區最便宜／最貴」這類排序宣稱，過去只能靠人讀出來。
+   這裡把四區的四個指標實際算一次，再掃描每一段文字的斷言。
+   判定方式：在一個句子裡找到最高／最低這類詞之後，取「離它最近的生活圈名」
+   當主詞，再比對該區在該指標上是不是真的最高／最低。
+   取最近者是必要的——「瑞豐與農十六並列四區最低」這種句子有兩個區名，
+   只有最靠近的那個才是被宣稱的對象。 */
+console.log("\n【G】四區比較宣稱 vs 實際排序");
+const AREAS = ["美術館特區", "農十六特區", "瑞豐・巨蛋", "中都重劃區"];
+const ALIAS = { "美術館特區": ["美術館特區", "美術館"], "農十六特區": ["農十六特區", "農十六"],
+                "瑞豐・巨蛋": ["瑞豐・巨蛋", "瑞豐巨蛋", "瑞豐"], "中都重劃區": ["中都重劃區", "中都"] };
+const areaStat = {};
+for (const a of AREAS) {
+  const key = a.replace(/特區|重劃區|・巨蛋/g, "");
+  const list = communities.filter(c => String(c.area || "").includes(key));
+  const ds = list.flatMap(homesOf);
+  areaStat[a] = { 單價: med(ds.map(d => d.unitPrice)), 總價: med(ds.map(d => d.totalPrice).filter(Boolean)),
+                  坪數: med(ds.map(d => d.ping).filter(Boolean)), 公設比: med(list.map(ratioOf).filter(v => v !== null)) };
+}
+const METRICS = { 單價: /單價|每坪|萬／坪/, 總價: /總價|門檻/, 坪數: /坪數/, 公設比: /公設比/ };
+const rankOf = m => {
+  const vs = AREAS.map(a => [a, areaStat[a][m]]).sort((x, y) => x[1] - y[1]);
+  return { min: vs.filter(v => v[1] === vs[0][1]).map(v => v[0]),
+           max: vs.filter(v => v[1] === vs[3][1]).map(v => v[0]) };
+};
+/* 把一篇文章攤成「真正的句子」，不要拿 JSON 字串硬切 */
+function sentencesOf(a) {
+  const out = [];
+  /* 分號也要斷句：「…是四大生活圈最高；總價…美術館最高」是兩個獨立宣稱 */
+  const push = t => String(t || "").split(/[。！？；\n]/).forEach(x => x.trim() && out.push(x.trim()));
+  push(a.title); push(a.summary); push(a.statsBasis);
+  (a.blocks || []).forEach(b => {
+    push(b.text);
+    (b.items || []).forEach(push);
+    (b.rows || []).forEach(r => r.forEach(push));
+  });
+  (a.faq || []).forEach(f => { push(f.q); push(f.a); });
+  return out;
+}
+const LOW = /(最低|最便宜|最親民|最少|最小)/g;
+const HIGH = /(最高|最貴|最大)/g;
+let gBad = 0, gSeen = 0;
+for (const a of articles) {
+  for (const raw of sentencesOf(a)) {
+    const sent = raw.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\*\*/g, "");
+    for (const [kind, re] of [["min", LOW], ["max", HIGH]]) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(sent))) {
+        /* 指標也要取「離這個最高／最低詞最近的那一個」。
+           一句話裡可能同時有單價與總價，用第一個出現的會判錯。 */
+        let metric = null, metricD = 1e9;
+        for (const k of Object.keys(METRICS)) {
+          const re2 = new RegExp(METRICS[k].source, "g");
+          let mm;
+          while ((mm = re2.exec(sent))) {
+            const d = Math.abs(mm.index - m.index);
+            if (d < metricD) { metricD = d; metric = k; }
+          }
+        }
+        if (!metric || metricD > 30) continue;
+        /* 找出這個宣稱的主詞。規則有三層，由強到弱：
+           1. 句首 12 字內出現的生活圈名 → 它就是主詞（「瑞豐・巨蛋略高，可能跟它總價門檻最低…」）
+           2. 句子裡有「並列」→ 代表多區共享極值，只要其中一個對就算對
+           3. 否則取離最高／最低詞最近的區名
+           括號內容先拿掉，「四區最低（與農十六並列）」的括號會把主詞判錯。 */
+        const flat = sent.replace(/（[^）]*）/g, "");
+        const mentioned = AREAS.filter(area => ALIAS[area].some(al => flat.includes(al)));
+        if (!mentioned.length) continue;
+        const r = rankOf(metric);
+        let best = null, bestD = 1e9;
+        for (const area of AREAS) {
+          for (const al of ALIAS[area]) {
+            let i = -1;
+            while ((i = flat.indexOf(al, i + 1)) >= 0) {
+              if (i < 12 && (!best || bestD === 1e9)) { best = area; bestD = 0; }
+              const d = Math.abs(i - m.index);
+              if (bestD !== 0 && d < bestD) { bestD = d; best = area; }
+            }
+          }
+        }
+        if (!best || bestD > 30) continue;
+        gSeen++;
+        if (/並列/.test(flat) ? !mentioned.some(x => r[kind].includes(x)) : !r[kind].includes(best)) {
+          fail(`${a.slug}：宣稱「${best}」的${metric}${kind === "min" ? "最低" : "最高"}，實際是 ${r[kind].join("、")}`);
+          fail(`    句子：${sent.slice(0, 70)}`);
+          gBad++;
+        }
+      }
+    }
+  }
+}
+if (!gBad) ok(`四區的最高／最低宣稱與實際排序一致（檢查 ${gSeen} 句）`);
+for (const m of Object.keys(METRICS)) {
+  const r = rankOf(m);
+  ok(`${m}：最低 ${r.min.join("、")}／最高 ${r.max.join("、")}（${AREAS.map(x => `${x.slice(0, 3)} ${areaStat[x][m].toFixed(1)}`).join("、")}）`);
+}
+
+/* ---------- H 事實用語一致 ---------- */
+/* 同一件事在站上必須只有一種說法。這些是踩過的坑，寫死成規則。 */
+console.log("\n【H】固定事實的用語");
+const BANNED = [
+  [/每日自動更新|每天自動更新|資料每日更新/, "實價登錄不是每日更新，內政部是每月 1、11、21 日批次公告"],
+  [/內政部於\s*2、12、22|內政部每月\s*2、12、22/, "2、12、22 是本站的更新日，內政部的公告日是 1、11、21"],
+];
+let hBad = 0;
+for (const a of articles) {
+  const text = JSON.stringify(a, null, 0);
+  for (const [re, why] of BANNED) {
+    if (re.test(text)) { fail(`${a.slug}：${why}`); hBad++; }
+  }
+}
+if (!hBad) ok("更新頻率的說法全站一致（內政部 1、11、21 公告）");
+
 /* ---------- D 資料品質 ---------- */
 console.log("\n【D】資料品質");
 const DIRTY = /(樂居|好房網|成家網|591|信義房屋|記載|另記|頁面標示|鄰近|「)/;

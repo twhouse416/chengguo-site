@@ -750,6 +750,20 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
       areaServed: ["高雄市鼓山區美術館特區", "高雄市鼓山區農十六特區", "高雄市左營區瑞豐巨蛋生活圈", "高雄市三民區中都重劃區"]
         .map(n => ({ "@type": "Place", name: n })),
       sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube],
+      /* 統一編號：法人在台灣唯一且可查證的識別碼。
+         加盟店全名與品牌：讓搜尋引擎把這個團隊接到「台灣房屋」這個既有實體上，
+         而不是當成一家查無來歷的小公司。 */
+      alternateName: BRAND.franchiseName,
+      identifier: { "@type": "PropertyValue", propertyID: "統一編號", value: BRAND.taxId },
+      vatID: BRAND.taxId,
+      brand: { "@type": "Brand", name: BRAND.franchiseBrand, url: BRAND.franchiseBrandUrl },
+      parentOrganization: { "@type": "Organization", name: BRAND.franchiseBrand, url: BRAND.franchiseBrandUrl },
+      knowsAbout: [
+        "高雄市鼓山區美術館特區房價", "高雄市鼓山區農十六特區房價",
+        "高雄市左營區瑞豐巨蛋生活圈房價", "高雄市三民區中都重劃區房價",
+        "內政部不動產交易實價登錄判讀", "高雄市國民中小學學區劃分",
+        "房地合一稅與重購退稅", "新青安貸款資格與額度", "中古屋與新成屋的選屋評估",
+      ],
       description: "深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區10年以上，累計服務件數超過150件。提供區域房價分析、免費房屋估價、售屋策略規劃、首購購屋建議與換屋規劃。",
       knowsLanguage: "zh-TW",
       /* 座標、營業時間與地圖連結：Google 商家檔案與 AI 在回答「附近的房仲」
