@@ -180,7 +180,7 @@ function commTable(rows, captionText) {
           <td class="py-3.5 px-4 font-mono text-[14px] text-inkSoft">${r.year || "—"}</td>
           <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${r.units || "—"}</td>
           <td class="py-3.5 px-4 text-right font-mono text-[14px] ${r.n < 12 ? "text-inkFaint" : "text-ink"}">${r.n}${r.n > 0 && r.n < 12 ? `<span class="text-orangeDeep" title="成交筆數少於 12 筆，行情參考性有限">＊</span>` : ""}</td>
-          <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.low ? `${r.low}–${r.high}` : "—"}</td>
+          <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.low ? `${r.low}–${r.high}` : "—"}${r.fellBack ? `<span class="text-orangeDeep" title="近三年成交不足三筆，改用全部歷史計算">⁺</span>` : ""}${!r.fellBack && r.usable < 5 ? `<span class="text-inkFaint" title="近三年可用成交僅 ${r.usable} 筆，參考性有限">˙</span>` : ""}</td>
         </tr>`).join("\n        ")}
       </tbody>
     </table>
@@ -200,13 +200,16 @@ function commTable(rows, captionText) {
    門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
    樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
 function normalPrices(sorted) {
-  if (sorted.length < 5) return sorted;
+  /* 門檻訂在 3 筆：原本訂 5 筆，導致只有三、四筆的社區完全不排除異常，
+     區間變成「博源新家大廈 5.7–30.7」「貝多芬 8–33.9」這種沒有意義的數字。
+     三筆時中位數雖然只是中間那一筆，但拿來擋掉低於六成的親屬移轉仍然有效。 */
+  if (sorted.length < 3) return sorted;
   const m = sorted.length % 2
     ? sorted[(sorted.length - 1) / 2]
     : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
   if (!(m > 0)) return sorted;
   const out = sorted.filter(v => v >= m * 0.6 && v <= m * 1.6);
-  return out.length >= 3 ? out : sorted;
+  return out.length >= 2 ? out : sorted;
 }
 
 /* 摘要區間：樣本夠多才用 Q1–Q3，少的時候用最低～最高。
@@ -232,10 +235,11 @@ function statOf(c, dealsMap) {
   const deals = dealsMap[c.slug] || [];
   const homes = deals.filter(d => d.use !== "店面");
   const recent = homes.filter(d => String(d.date || "") >= STAT_SINCE);
+  const fellBack = recent.length < 3 && homes.length > 0;
   const p = normalPrices((recent.length >= 3 ? recent : homes)
     .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b));
   const [lo, hi] = summaryRange(p);
-  return { c, n: deals.length, low: lo, high: hi,
+  return { c, n: deals.length, low: lo, high: hi, fellBack, usable: p.length,
            year: yearBuilt(c), units: unitCount(c) };
 }
 

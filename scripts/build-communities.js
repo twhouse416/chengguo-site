@@ -26,13 +26,16 @@ const ROOT = path.resolve(__dirname, "..");
    門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
    樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
 function normalPrices(sorted) {
-  if (sorted.length < 5) return sorted;
+  /* 門檻訂在 3 筆：原本訂 5 筆，導致只有三、四筆的社區完全不排除異常，
+     區間變成「博源新家大廈 5.7–30.7」「貝多芬 8–33.9」這種沒有意義的數字。
+     三筆時中位數雖然只是中間那一筆，但拿來擋掉低於六成的親屬移轉仍然有效。 */
+  if (sorted.length < 3) return sorted;
   const m = sorted.length % 2
     ? sorted[(sorted.length - 1) / 2]
     : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
   if (!(m > 0)) return sorted;
   const out = sorted.filter(v => v >= m * 0.6 && v <= m * 1.6);
-  return out.length >= 3 ? out : sorted;
+  return out.length >= 2 ? out : sorted;
 }
 
 /* 摘要區間：樣本夠多才用 Q1–Q3，少的時候用最低～最高。
@@ -267,8 +270,18 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
      不用近一年是因為單一社區一年內往往只有個位數成交，範圍會失真。 */
   const homes = deals.filter(d => d.use !== "店面");
   const recentHomes = homes.filter(d => String(d.date || "") >= RANGE_SINCE);
-  const prices = (recentHomes.length >= 3 ? recentHomes : homes)
-    .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  /* 近三年不足三筆時退回全部歷史——但標籤必須跟著改。
+     原本不論有沒有退回都寫「近三年」，29 個社區因此標錯：
+     例如串本春天顯示「近三年 17.9–20.7」，實際是 2012–2024 的資料。 */
+  const usedSet = recentHomes.length >= 3 ? recentHomes : homes;
+  const rangeFellBack = recentHomes.length < 3 && homes.length > 0;
+  const usedDates = usedSet.map(d => d.date).filter(Boolean).sort();
+  const rangeLabel = rangeFellBack
+    ? (usedDates.length
+        ? `${usedDates[0].slice(0, 4)}–${usedDates[usedDates.length - 1].slice(0, 4)} 全期間`
+        : "全期間")
+    : "近三年";
+  const prices = usedSet.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
   /* 用 Q1–Q3 而不是最低～最高：實價登錄裡本來就混有親屬移轉、持分交易，
      一筆 4.6 萬就會把「範圍」拉成無意義的區間（蘭園畫世紀近三年 min-max 是
      4.6–40.8，Q1–Q3 是 21.6–29.4）。25～75 百分位也是本站行情區一貫的呈現方式。
@@ -283,8 +296,8 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     ? (prices.length % 2 ? prices[(prices.length - 1) / 2]
        : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2)
     : 0;
-  const normal = (prices.length >= 5 && rawMid > 0)
-    ? prices.filter(v => v >= rawMid * 0.6 && v <= rawMid * 1.6)
+  const normal = (prices.length >= 3 && rawMid > 0)
+    ? (p => p.length >= 2 ? p : prices)(prices.filter(v => v >= rawMid * 0.6 && v <= rawMid * 1.6))
     : prices;
   const [low, high] = summaryRange(normal);
   const excluded = prices.length - normal.length;
@@ -305,7 +318,7 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
        : (normal[normal.length / 2 - 1] + normal[normal.length / 2]) / 2)
     : 0;
   const isOutlier = d =>
-    d.use !== "店面" && d.unitPrice && rawMid > 0 && prices.length >= 5
+    d.use !== "店面" && d.unitPrice && rawMid > 0 && prices.length >= 3
     && (d.unitPrice < rawMid * 0.6 || d.unitPrice > rawMid * 1.6);
   const outliers = deals.filter(isOutlier).length;
 
@@ -356,12 +369,12 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
       ${deals.length >= DEAL_CAP ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（僅收錄最近 ${DEAL_CAP} 筆）</span>` : ""}
     </div>
     ${prices.length ? `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}</span></span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">${rangeLabel}${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}${normal.length < 5 ? "，僅 " + normal.length + " 筆" : ""}</span></span>
       <span class="font-mono text-[24px] font-semibold text-orangeDeep ml-2">${low}–${high}</span>
       <span class="font-mono text-[13px] text-inkSoft ml-1">萬/坪</span>
       ${shops ? `<span class="font-mono text-[12px] text-inkFaint ml-1">（另有 ${shops} 筆店面未計入）</span>` : ""}
     </div>` : `<div>
-      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">近三年${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}</span></span>
+      <span class="font-mono text-[12px] text-inkFaint">住家單價區間<span class="ml-1">${rangeLabel}${excluded ? "，已排除 " + excluded + " 筆特殊交易" : ""}${normal.length < 5 ? "，僅 " + normal.length + " 筆" : ""}</span></span>
       <span class="font-mono text-[13px] text-inkSoft ml-2">近期只有店面成交，無住家紀錄</span>
     </div>`}
     ${presale ? `<div>
