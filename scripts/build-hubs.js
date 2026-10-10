@@ -107,7 +107,7 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
       rows.map(r => `${r.name}單價中位數 ${r.up.toFixed(1)} 萬／坪、總價中位數 ${nf(Math.round(r.tp))} 萬`).join("；")
       + "。以上取 2020 年 1 月起的住家成交紀錄計算，已排除店面與解約紀錄。"],
     ["這些數字多久更新一次？",
-      "內政部於每月 2、12、22 日公告實價登錄，本站在公告後自動更新，所以行情會隨新成交累積變動。各頁都標示成交資料的更新日期。"],
+      "內政部於每月 1、11、21 日批次公告實價登錄，本站於公告隔日自動更新，所以行情會隨新成交累積變動。各頁都標示成交資料的更新日期。"],
   ];
   const items = rows.map(r => ({ name: r.name, url: `${SITE}/areas/${r.slug}/` }));
   return shell({
