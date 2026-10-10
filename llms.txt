@@ -60,12 +60,12 @@
   - 振美建設：https://k7.com.tw/developers/zhenmei/ ｜3 個社區
   - 嵩豐建設：https://k7.com.tw/developers/songfeng/ ｜3 個社區
 - 學區頁（學區欄位登載為該校的社區一覽，含官方里鄰劃分原文）：
-  - 七賢國中：https://k7.com.tw/schools/qixian-js/ ｜127 個社區
-  - 中山國小：https://k7.com.tw/schools/zhongshan-es/ ｜126 個社區
+  - 中山國小：https://k7.com.tw/schools/zhongshan-es/ ｜129 個社區
+  - 七賢國中：https://k7.com.tw/schools/qixian-js/ ｜129 個社區
+  - 明華國中：https://k7.com.tw/schools/minghua-js/ ｜72 個社區
   - 龍華國小：https://k7.com.tw/schools/longhua-es/ ｜71 個社區
-  - 明華國中：https://k7.com.tw/schools/minghua-js/ ｜70 個社區
+  - 勝利國小：https://k7.com.tw/schools/shengli-es/ ｜27 個社區
   - 左營國中：https://k7.com.tw/schools/zuoying-js/ ｜27 個社區
-  - 勝利國小：https://k7.com.tw/schools/shengli-es/ ｜26 個社區
   - 三民國小：https://k7.com.tw/schools/sanmin-es/ ｜16 個社區
   - 鼓山高中國中部：https://k7.com.tw/schools/gushan-hs-js/ ｜11 個社區
   - 龍華國中：https://k7.com.tw/schools/longhua-js/ ｜8 個社區
