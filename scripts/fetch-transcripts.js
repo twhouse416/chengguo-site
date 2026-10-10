@@ -29,6 +29,33 @@ const OUT = path.join(ROOT, "data/video-transcripts.json");
 /* 字幕語言的偏好順序：繁中 → 中文 → 簡中（簡中會轉不了繁，但有總比沒有好，
    人工校對時一併處理）→ 英文自動翻譯當最後手段 */
 const LANGS = ["zh-Hant", "zh-TW", "zh", "zh-Hans", "zh-CN"];
+/* 下載時用萬用字元，避免實際語言代碼是 zh-Hant-TW、zh-orig 這類變體而漏掉。
+   挑選時再依上面的偏好順序決定用哪一軌。 */
+const SUB_LANGS = "zh.*,cmn.*,en.*";
+
+/* yt-dlp 失敗時真正有用的是 stderr，不是「Command failed」。
+   第一版沒印出來，導致 19 支全失敗卻查不出原因，這裡一律帶出來。 */
+function errText(e) {
+  const err = [e.stderr, e.stdout].map(x => (x ? x.toString() : "")).join("\n");
+  const line = err.split("\n").map(x => x.trim())
+    .find(x => /ERROR|WARNING|Sign in|bot|unavailable|private|not available/i.test(x));
+  return (line || String(e.message).split("\n")[0]).slice(0, 180);
+}
+
+/* 這支影片到底有哪些字幕軌？診斷用，結果會寫進 JSON，
+   因為我們不一定看得到 Actions 的日誌。 */
+function listSubs(videoId) {
+  try {
+    const out = execFileSync("yt-dlp", ["--list-subs", "--no-warnings", "--skip-download",
+      `https://www.youtube.com/watch?v=${videoId}`],
+      { stdio: ["ignore", "pipe", "pipe"], timeout: 90000 }).toString();
+    const langs = [...out.matchAll(/^([\w-]+)\s+\S+\s+vtt/gm)].map(m => m[1]);
+    const has = /Available (automatic captions|subtitles)/.test(out);
+    return { langs: [...new Set(langs)], hasAny: has || langs.length > 0, raw: out.slice(0, 400) };
+  } catch (e) {
+    return { langs: [], hasAny: false, error: errText(e) };
+  }
+}
 
 function readJson(p, fallback) {
   try { return JSON.parse(readFileSync(p, "utf-8")); } catch { return fallback; }
@@ -63,16 +90,33 @@ export function vttToText(vtt) {
     .trim();
 }
 
-function fetchOne(videoId, tmp) {
-  execFileSync("yt-dlp", [
-    "--skip-download",
-    "--write-subs", "--write-auto-subs",
-    "--sub-langs", LANGS.join(","),
-    "--sub-format", "vtt",
-    "--no-warnings",
-    "-o", path.join(tmp, "%(id)s.%(ext)s"),
-    `https://www.youtube.com/watch?v=${videoId}`,
-  ], { stdio: ["ignore", "pipe", "pipe"], timeout: 120000 });
+/* YouTube 常擋資料中心 IP（GitHub Actions 就是），回「Sign in to confirm you're not a bot」。
+   換一個 player client 通常就過得去，所以依序試幾種，哪一種成功記在診斷裡。 */
+const CLIENTS = ["", "youtube:player_client=android", "youtube:player_client=ios", "youtube:player_client=tv"];
+
+function fetchOne(videoId, tmp, note) {
+  let lastErr = null;
+  for (const client of CLIENTS) {
+    const args = [
+      "--skip-download",
+      "--write-subs", "--write-auto-subs",
+      "--sub-langs", SUB_LANGS,
+      "--sub-format", "vtt",
+      "--no-warnings",
+      ...(client ? ["--extractor-args", client] : []),
+      "-o", path.join(tmp, "%(id)s.%(ext)s"),
+      `https://www.youtube.com/watch?v=${videoId}`,
+    ];
+    try {
+      execFileSync("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"], timeout: 120000 });
+      if (note) note.client = client || "default";
+      lastErr = null;
+      break;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  if (lastErr) throw lastErr;
 
   const files = readdirSync(tmp).filter(f => f.startsWith(videoId) && f.endsWith(".vtt"));
   if (!files.length) return null;
@@ -104,15 +148,21 @@ export function fetchTranscripts({ force = false, only = "" } = {}) {
   });
   console.log(`[逐字稿] 影片 ${videos.length} 支，這次要抓 ${targets.length} 支`);
 
+  const diagnostics = [];
   const tmp = mkdtempSync(path.join(os.tmpdir(), "yt-subs-"));
   let okN = 0, noneN = 0;
   try {
     for (const v of targets) {
       try {
-        const got = fetchOne(v.videoId, tmp);
+        const note = {};
+        const got = fetchOne(v.videoId, tmp, note);
         if (!got) {
           noneN++;
+          const probe = listSubs(v.videoId);
+          diagnostics.push({ videoId: v.videoId, title: v.title.slice(0, 40),
+            error: "下載成功但沒有產生 vtt", availableLangs: probe.langs, hasAnySubs: probe.hasAny });
           console.log(`  －  ${v.videoId}  沒有可用字幕　${v.title.slice(0, 28)}`);
+          if (probe.langs.length) console.log(`       可用字幕軌：${probe.langs.join(", ")}`);
           continue;
         }
         store.transcripts[v.videoId] = {
@@ -120,6 +170,7 @@ export function fetchTranscripts({ force = false, only = "" } = {}) {
           auto: true,
           reviewed: false,
           chars: got.text.length,
+          client: note.client || "default",
           fetchedAt: new Date().toISOString().slice(0, 10),
           text: got.text,
         };
@@ -127,7 +178,14 @@ export function fetchTranscripts({ force = false, only = "" } = {}) {
         console.log(`  ✓  ${v.videoId}  ${got.lang}　${got.text.length} 字　${v.title.slice(0, 28)}`);
       } catch (e) {
         noneN++;
-        console.log(`  ✗  ${v.videoId}  抓取失敗：${String(e.message).split("\n")[0].slice(0, 80)}`);
+        const why = errText(e);
+        const probe = listSubs(v.videoId);
+        diagnostics.push({ videoId: v.videoId, title: v.title.slice(0, 40),
+          error: why, availableLangs: probe.langs, hasAnySubs: probe.hasAny,
+          probeError: probe.error || undefined });
+        console.log(`  ✗  ${v.videoId}  ${why}`);
+        if (probe.langs.length) console.log(`       可用字幕軌：${probe.langs.join(", ")}`);
+        else console.log(`       這支影片沒有任何字幕軌${probe.error ? "（查詢也失敗：" + probe.error + "）" : ""}`);
       }
     }
   } finally {
@@ -135,6 +193,12 @@ export function fetchTranscripts({ force = false, only = "" } = {}) {
   }
 
   store.updatedAt = new Date().toISOString();
+  /* 診斷寫進檔案：Actions 的日誌不一定看得到，但這個檔案會進 repo。 */
+  store.diagnostics = diagnostics;
+  store.ytdlpVersion = (() => {
+    try { return execFileSync("yt-dlp", ["--version"], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim(); }
+    catch { return ""; }
+  })();
   store.note = "自動字幕未經校對，reviewed 為 true 的才是人工確認過的版本；只有 reviewed 的會被用在網站上。";
   writeFileSync(OUT, JSON.stringify(store, null, 2) + "\n", "utf-8");
   const reviewed = Object.values(store.transcripts).filter(t => t.reviewed).length;
