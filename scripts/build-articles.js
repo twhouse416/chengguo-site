@@ -26,13 +26,104 @@ const OUT_DIR = path.join(ROOT, "notes");
 const today = new Date().toISOString().slice(0, 10);
 
 /* ---------- 區塊轉 HTML ---------- */
+/* ---------- 站台統計的自動代入 ----------
+ * 文章裡的「N 個社區、N 筆成交」如果寫死，資料一長就會對不上——
+ * 2026/10 回補資料池之後，成交從 10,302 筆變成 26,276 筆，
+ * 七篇文章裡 51 處計數全部過期，而且沒有任何機制會發現。
+ *
+ * 作法：文章內文寫 {{社區數}}、{{成交筆數}}、{{資料更新日}}，
+ * 建置時代入當下的真實數字，之後永遠不會再錯。
+ * 衍生統計（單價中位數、百分比）無法這樣處理——那些跟解讀文字綁在一起，
+ * 數字變了文案也要改——改用 statsBasis 標明統計基準，見 basisNote()。
+ */
+let STATS = { communityCount: 0, dealTotal: 0, dataUpdated: "", areas: [] };
+export function setArticleStats(s) { STATS = { ...STATS, ...s }; }
+
+const nf = n => Number(n || 0).toLocaleString("en-US");
+export function fillStats(text) {
+  return String(text || "")
+    .replace(/\{\{\s*社區數\s*\}\}/g, () => nf(STATS.communityCount))
+    .replace(/\{\{\s*成交筆數\s*\}\}/g, () => nf(STATS.dealTotal))
+    .replace(/\{\{\s*資料更新日\s*\}\}/g, () => STATS.dataUpdated || "")
+    .replace(/\{\{\s*有公設比社區數\s*\}\}/g, () => nf(STATS.ratioCount))
+    /* 生活圈層級：{{瑞豐社區數}}、{{瑞豐成交筆數}}，四個生活圈都可用 */
+    .replace(/\{\{\s*([^}\s]+?)(社區數|成交筆數)\s*\}\}/g, (whole, key, kind) => {
+      const a = (STATS.areas || []).find(x => x.key.includes(key) || key.includes(x.key));
+      if (!a) return whole;
+      return nf(kind === "社區數" ? a.communities : a.deals);
+    });
+}
+
+/* 把整份文章物件裡的 {{...}} 一次代入。
+   之前是逐個出口呼叫 fillStats，結果漏掉相關文章區塊、文章列表、llms.txt——
+   那些地方會渲染「別篇」的標題與摘要，於是 {{ }} 又跑出來。
+   正確的做法是在載入文章之後就把資料代乾淨，所有下游自然都對。 */
+export function fillArticleStats(node) {
+  if (typeof node === "string") return fillStats(node);
+  if (Array.isArray(node)) return node.map(fillArticleStats);
+  if (node && typeof node === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(node)) out[k] = fillArticleStats(v);
+    return out;
+  }
+  return node;
+}
+
+/* 統計基準：文章可在 statsBasis 填寫這份分析用的資料範圍與基準日。
+   有填就在內文最前面顯示，讓讀者知道數字是對哪一份快照成立的。 */
+function basisNote(a) {
+  if (!a.statsBasis) return "";
+  return `<p class="text-[14px] text-inkFaint leading-[1.9] mb-8 pb-6 border-b border-line">
+    <strong class="font-bold text-inkSoft">統計基準</strong>：${esc(fillStats(a.statsBasis))}
+  </p>`;
+}
+
+/* 建置時的過期檢查：文章若寫死了看起來像「全站計數」的數字，
+   而且跟現況差距超過一成，就在日誌示警。寧可吵一點，也不要安靜地錯。 */
+export function checkStaleCounts(articles) {
+  /* 只檢查「宣稱是全站範圍」的計數。文章裡大量出現的子集數字
+     （瑞豐 35 個社區、1,010 筆成交）是正確的，不能一起抓進來示警，
+     否則警告會被雜訊淹沒而失去作用。
+     判準：數字前方 14 字內出現 本站／全站／站上／收錄 這類全域字眼，
+     且中間沒有生活圈、建商、學區之類的限定詞（「本站收錄的瑞豐 35 個社區」是對的）。 */
+  const SCOPE = "(?:本站|全站|站上|收錄|本網站)";
+  const warn = [];
+  articles.filter(a => !a.draft).forEach(a => {
+    const text = JSON.stringify(a);
+    [[new RegExp(SCOPE + "[^，。！？]{0,14}?([\\d,]{4,})\\s*筆", "g"), STATS.dealTotal, "筆成交"],
+     [new RegExp(SCOPE + "[^，。！？]{0,14}?(\\d{2,4})\\s*個社區", "g"), STATS.communityCount, "個社區"]]
+      .forEach(([re, now, label]) => {
+        for (const m of text.matchAll(re)) {
+          /* 句子裡若指名生活圈，就跟該生活圈的數字比，不要跟全站比——
+             「本站收錄的瑞豐 35 個社區」要對照瑞豐的 37，不是全站的 255。 */
+          const areaHit = (STATS.areas || []).find(x => m[0].includes(x.key));
+          const base = areaHit ? (label === "個社區" ? areaHit.communities : areaHit.deals) : now;
+          const scope = areaHit ? areaHit.key : "全站";
+          if (/建設|國小|國中/.test(m[0])) continue;
+          const v = Number(String(m[1]).replace(/,/g, ""));
+          if (!v || !base) continue;
+          if (Math.abs(v - base) / base > 0.1) {
+            warn.push(`${a.slug}：寫死「${m[1]} ${label}」，${scope}現況 ${nf(base)}`);
+          }
+        }
+      });
+  });
+  const uniq = [...new Set(warn)];
+  if (uniq.length) {
+    console.warn(`[提醒] ${uniq.length} 處文章計數與現況差距超過一成（數字若是指某個生活圈，請自行對照該區）：`);
+    uniq.slice(0, 15).forEach(w => console.warn("        " + w));
+    if (uniq.length > 15) console.warn(`        … 另 ${uniq.length - 15} 處`);
+  }
+  return uniq;
+}
+
 function blockHtml(b, fallbackAlt = "") {
   switch (b.type) {
     case "h":
-      return `<h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">${esc(b.text)}</h2>`;
+      return `<h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">${esc(fillStats(b.text))}</h2>`;
 
     case "p": {
-      const paras = String(b.text || "").split(/\n\s*\n|\n/).map(t => t.trim()).filter(Boolean);
+      const paras = fillStats(b.text).split(/\n\s*\n|\n/).map(t => t.trim()).filter(Boolean);
       return `<div class="mb-8">${paras
         .map(t => `<p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">${rich(t)}</p>`)
         .join("")}</div>`;
@@ -42,27 +133,27 @@ function blockHtml(b, fallbackAlt = "") {
       return `<ul class="mb-9 space-y-4">${(b.items || [])
         .map((it, i) => `<li class="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
           <span class="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">${String(i + 1).padStart(2, "0")}</span>
-          <span>${rich(it)}</span></li>`)
+          <span>${rich(fillStats(it))}</span></li>`)
         .join("")}</ul>`;
 
     case "table":
       return `<div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
         <thead><tr class="border-b border-line bg-paper">${(b.head || [])
-          .map((h, i) => `<th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 ${i === 0 ? "text-left" : "text-right"}">${esc(h)}</th>`)
+          .map((h, i) => `<th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 ${i === 0 ? "text-left" : "text-right"}">${esc(fillStats(h))}</th>`)
           .join("")}</tr></thead>
         <tbody>${(b.rows || [])
           .map(row => `<tr class="border-b border-line last:border-0">${row
-            .map((c, j) => `<td class="py-3.5 px-4 leading-relaxed ${j === 0 ? "text-left text-ink" : "text-right text-inkSoft"}">${rich(c)}</td>`)
+            .map((c, j) => `<td class="py-3.5 px-4 leading-relaxed ${j === 0 ? "text-left text-ink" : "text-right text-inkSoft"}">${rich(fillStats(c))}</td>`)
             .join("")}</tr>`)
           .join("")}</tbody></table></div>`;
 
     case "note":
       return `<div class="mb-9 bg-tint border-l-2 border-orange px-6 py-5">
-        <p class="text-[16px] leading-[1.95] text-orangeDeep">${rich(b.text)}</p></div>`;
+        <p class="text-[16px] leading-[1.95] text-orangeDeep">${rich(fillStats(b.text))}</p></div>`;
 
     case "quote":
       return `<blockquote class="my-14 py-7 border-y-2 border-ink">
-        <p class="display text-[20px] md:text-[22px] leading-[1.6]">${esc(b.text)}</p></blockquote>`;
+        <p class="display text-[20px] md:text-[22px] leading-[1.6]">${esc(fillStats(b.text))}</p></blockquote>`;
 
     case "image":
       return `<figure class="my-12">
@@ -85,8 +176,8 @@ function jsonLd(a) {
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: a.title,
-      description: a.summary,
+      headline: fillStats(a.title),
+      description: fillStats(a.summary),
       image: [img],
       datePublished: a.date,
       dateModified: a.updated || a.date,
@@ -129,7 +220,7 @@ function jsonLd(a) {
       "@type": "FAQPage",
       mainEntity: a.faq.map(f => ({
         "@type": "Question",
-        name: f.q,
+        name: fillStats(f.q),
         acceptedAnswer: { "@type": "Answer", text: f.a },
       })),
     });
@@ -147,7 +238,7 @@ function pageHtml(a, others, hasBuyers) {
   return [
     head({
       title: `${a.title}｜${BRAND.teamName}`,
-      description: a.summary,
+      description: fillStats(a.summary),
       keywords: a.keywords?.length ? a.keywords.join("、") : "",
       canonical: url, ogImage: img, ogType: "article", depth: 1,
       extra: `<meta property="article:published_time" content="${a.date}" />
@@ -184,7 +275,7 @@ function pageHtml(a, others, hasBuyers) {
         : ""}
     </div>
     <h1 class="display text-[28px] md:text-[34px]">${esc(a.title)}</h1>
-    <p class="mt-5 text-[17px] text-inkSoft leading-[1.95]">${esc(a.summary)}</p>
+    <p class="mt-5 text-[17px] text-inkSoft leading-[1.95]">${esc(fillStats(a.summary))}</p>
     ${stale ? `<div class="mt-7 bg-tint border-l-2 border-orange px-6 py-5">
       <p class="text-[16px] leading-[1.95] text-orangeDeep">
         本文最後更新於 ${fmtDate(a.updated || a.date)}。房市與法規變動快，部分內容可能已不是最新狀況，建議來電向我們確認。
@@ -192,6 +283,7 @@ function pageHtml(a, others, hasBuyers) {
     ${a.cover ? `<img src="../${esc(a.cover)}" alt="${esc(a.coverAlt || a.title)}"${imgSize(a.cover)}
       class="w-full h-auto rounded-sm border border-line bg-surface mt-8" />` : ""}
     <div class="mt-10">
+      ${basisNote(a)}
       ${(a.blocks || []).filter(visible).map(b => blockHtml(b, a.title)).join("\n      ")}
     </div>
   </article>
@@ -201,7 +293,7 @@ function pageHtml(a, others, hasBuyers) {
     <h2 class="display text-[23px] mb-8">常見問題</h2>
     <div class="space-y-6">
       ${a.faq.map(f => `<div class="border-l-2 border-line pl-6">
-        <h3 class="text-[17px] font-bold leading-snug mb-3">${esc(f.q)}</h3>
+        <h3 class="text-[17px] font-bold leading-snug mb-3">${esc(fillStats(f.q))}</h3>
         <p class="text-[16px] leading-[1.95] text-inkSoft">${esc(f.a)}</p></div>`).join("\n      ")}
     </div>
   </section>` : ""}

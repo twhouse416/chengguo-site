@@ -25,7 +25,7 @@ import { fileURLToPath } from "node:url";
 import { SITE, BRAND, head, header, footer } from "./lib/layout.js";
 import { buildHome } from "./build-home.js";
 import { buildNotesIndex, buildVideosIndex, buildDealsIndex } from "./build-pages.js";
-import { buildArticles, webSlug } from "./build-articles.js";
+import { buildArticles, webSlug, setArticleStats, checkStaleCounts, fillArticleStats } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
 import { buildAreas } from "./build-areas.js";
@@ -344,11 +344,35 @@ function main() {
      列表頁打開看到的會是最舊的幾篇，最新、最強的反而在下半部。
      同一天發布的維持原陣列順序（穩定排序），所以你在後台調整日期
      就能控制列表頁的呈現順序。 */
-  const articles = (articlesData.articles || [])
+  const _cfg = readJson("data/communities.json", { communities: [] });
+  const _cd = readJson("data/community-deals.json", { deals: {} });
+  setArticleStats({
+    communityCount: (_cfg.communities || []).filter(c => !c.draft).length,
+    dealTotal: Object.values(_cd.deals || {}).reduce((a, b) => a + b.length, 0),
+    dataUpdated: (_cd.updatedAt || "").slice(0, 10),
+    /* 查得到公設比的社區數：公設比那篇要用，隨社區增減自動更新 */
+    ratioCount: (_cfg.communities || []).filter(c => !c.draft
+      && (c.specs || []).some(x => /公設比/.test(x[0]) && /[\d.]+\s*%/.test(String(x[1])))).length,
+    /* 生活圈層級的計數，讓文章可用 {{瑞豐社區數}} 這類變數，
+       過期檢查也能用正確的分母比對 */
+    areas: ["美術館特區", "農十六特區", "瑞豐", "中都"].map(key => {
+      const list = (_cfg.communities || []).filter(c => !c.draft && String(c.area || "").includes(key.replace("特區", "")));
+      return {
+        key,
+        communities: list.length,
+        deals: list.reduce((n, c) => n + (_cd.deals?.[c.slug] || []).filter(d => d.use !== "店面").length, 0),
+      };
+    }),
+  });
+
+  /* 代入統計變數要在排序與分發之前做一次就好——首頁卡片、文章列表、
+     相關文章區塊、llms.txt 都讀同一份資料，代乾淨了下游全部跟著對。 */
+  const articles = fillArticleStats((articlesData.articles || [])
     .filter(a => !a.draft)
     .map((a, i) => ({ a, i }))
     .sort((x, y) => String(y.a.date || "").localeCompare(String(x.a.date || "")) || x.i - y.i)
-    .map(x => x.a);
+    .map(x => x.a));
+  checkStaleCounts(articlesData.articles || []);
   const hasBuyers = (buyers.buyers || []).some(b => !b.hidden);
 
   /* 首頁 */
@@ -362,7 +386,8 @@ function main() {
     buildNotesIndex({ articles, hasBuyers }), "utf-8");
   console.log("[產生] notes/index.html");
 
-  /* 各篇文章 */
+  /* 各篇文章。先把站台統計交給 build-articles，內文的 {{社區數}}、{{成交筆數}}
+     才會代入當下的真實數字；接著跑一次過期檢查，文章若還寫死舊計數會示警。 */
   buildArticles({ articles, hasBuyers });
 
   /* 影片專區 */

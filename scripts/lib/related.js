@@ -11,6 +11,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { fillArticleStats } from "../build-articles.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { esc } from "./layout.js";
@@ -30,7 +31,9 @@ export function loadArticles() {
   try {
     const raw = JSON.parse(readFileSync(path.join(ROOT, "data/articles.json"), "utf-8"));
     const list = Array.isArray(raw) ? raw : (raw.articles || []);
-    return list.filter(a => a && a.slug && !a.draft);
+    /* 這裡是獨立讀檔，所以也要自己代入 {{社區數}} 這類統計變數——
+       相關文章卡片顯示的是「別篇」的標題與摘要，漏了就會露出 {{ }}。 */
+    return fillArticleStats(list.filter(a => a && a.slug && !a.draft));
   } catch { return []; }
 }
 
