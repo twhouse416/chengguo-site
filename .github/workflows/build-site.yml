@@ -35,9 +35,13 @@ jobs:
         run: npm run css
 
       - name: 有變動就提交
+        # ⚠️ 這一行列出的路徑就是會被提交的全部內容。
+        #    build-site.js 新增一個頂層目錄時，一定要同步加進來，
+        #    否則頁面會產生但永遠不會上線（faq/ 就踩過一次）。
+        #    scripts/audit-content.mjs 的【I】會自動比對這份清單。
         # 提交與推送統一交給 scripts/git-push-retry.sh：
         # 兩個流程同時跑而被擋下來時，它會以遠端最新為底重做這一筆，
         # 不做合併，所以不會像舊寫法那樣卡在未合併狀態一路失敗到底。
         run: |
           bash scripts/git-push-retry.sh "全站重新建置 $(date +'%Y-%m-%d %H:%M')" \
-            index.html 404.html about notes videos tools communities areas developers schools deals sitemap.xml robots.txt llms.txt assets/tailwind.css
+            index.html 404.html about notes videos tools communities areas developers schools faq deals sitemap.xml robots.txt llms.txt assets/tailwind.css
