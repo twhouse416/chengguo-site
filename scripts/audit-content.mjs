@@ -153,6 +153,22 @@ for (const a of articles) {
 }
 if (!cWarn) ok("導言數字都能在同篇表格裡找到");
 
+/* ---------- C2 FAQ ↔ 表格 ---------- */
+console.log("\n【C2】FAQ 數字 vs 同篇表格");
+let c2 = 0;
+for (const a of articles) {
+  const tables = (a.blocks || []).filter(b => b.type === "table");
+  if (!tables.length || !(a.faq || []).length) continue;
+  const tableNums = new Set(tables.flatMap(t => t.rows.flat()).join(" ").match(NUM) || []);
+  const faqText = a.faq.map(f => f.q + " " + f.a).join(" ");
+  /* FAQ 常直接引用表格裡的行情值；凡是「數字＋單位」卻在表格找不到的，都要人工看一眼 */
+  const claims = [...new Set((faqText.match(/\d[\d,]*\.\d+\s*(?:萬|％|%|坪)/g) || [])
+    .map(x => x.replace(/\s*(?:萬|％|%|坪)$/, "")))];
+  const orphan = claims.filter(n => !tableNums.has(n));
+  if (orphan.length) { warn(`${a.slug}：FAQ 有、表格沒有的行情數字 → ${orphan.join(" ")}`); c2++; }
+}
+if (!c2) ok("FAQ 數字都能在同篇表格裡找到");
+
 /* ---------- D 資料品質 ---------- */
 console.log("\n【D】資料品質");
 const DIRTY = /(樂居|好房網|成家網|591|信義房屋|記載|另記|頁面標示|鄰近|「)/;
