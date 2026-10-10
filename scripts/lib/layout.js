@@ -32,6 +32,13 @@ export const BRAND = {
   franchiseName: "台灣房屋美術青海特許加盟店",
   franchiseBrand: "台灣房屋",
   franchiseBrandUrl: "https://www.twhg.com.tw/",
+  foundingYear: "2009",
+  teamSize: 13,
+  /* 不動產經紀業依法須置經紀人並揭示其證書。證書屬個人，字號含發證縣市與年度，
+     可在內政部地政司的系統查證，是這個產業最硬的信任憑證。 */
+  agentName: "邱秀琴",
+  agentLicense: "(109)屏縣字第000147號",
+  agentLicenseAuthority: "屏東縣政府",
   address: "804 高雄市鼓山區青海路416號",
   addressShort: "鼓山區青海路416號",
   phone: "07-9766977",
