@@ -698,7 +698,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
   }
 
   /* ---------- Dataset：把實價登錄表格標成資料集 ----------
-     這是全站最有價值的差異化資產——253 個社區、一萬多筆一手成交紀錄。
+     這是全站最有價值的差異化資產——兩百多個社區、兩萬多筆一手成交紀錄。
      AI 引擎對有 Dataset 標記的資料特別願意引用，因為可以確認
      來源（內政部）、涵蓋範圍（哪個門牌、哪段期間）與更新時間。
      沒有這個標記，同一張表只是「一堆 <td>」。 */
@@ -712,11 +712,20 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
       url: `${url}#deals`,
       temporalCoverage: `${dates[0]}/${dates[dates.length - 1]}`,
       spatialCoverage: { "@type": "Place", name: c.address },
+      /* creator 的 @type 只能是 Person 或 Organization。
+         原本寫 GovernmentOrganization（schema.org 認、但 Google 的 Dataset
+         驗證器不認），Search Console 會報「欄位的物件類型無效」。
+         改用 Organization，政府機關的語意用 additionalType 保留。 */
       creator: {
-        "@type": "GovernmentOrganization",
+        "@type": "Organization",
+        additionalType: "https://schema.org/GovernmentOrganization",
         name: "內政部不動產交易實價查詢服務網",
         url: "https://plvr.land.moi.gov.tw/",
       },
+      /* 來源資料依政府資料開放授權條款第 1 版釋出，允許加值利用與商業使用，
+         本站的彙整成果沿用同一授權並標示出處。license 是 Google Dataset
+         的建議欄位，缺少會在 Search Console 報「欄位未填」。 */
+      license: "https://data.gov.tw/license",
       publisher: {
         "@type": "Organization",
         name: BRAND.legalName,
@@ -735,7 +744,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
   }
 
   /* ---------- 自備款 FAQ 去樣板化 ----------
-     253 個社區頁的「買 XX 要準備多少自備款」答案高度相似（都是貸款八成、
+     各社區頁的「買 XX 要準備多少自備款」答案高度相似（都是貸款八成、
      自備兩成、仲介費代書費規費契稅），Google 可能判定為樣板內容而降低價值。
      這裡在原本的答案前面補一句用該社區實際成交總價中位數算出來的金額，
      每一頁的數字都不一樣，而且對讀者實際有用得多。

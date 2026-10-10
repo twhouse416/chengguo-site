@@ -490,11 +490,14 @@ function areaPage(area, ctx) {
       url,
       temporalCoverage: `${dates[0]}/${dates[dates.length - 1]}`,
       spatialCoverage: { "@type": "Place", name: `高雄市${area.district}${area.name}` },
+      /* creator 的 @type 只能是 Person 或 Organization（見 build-communities.js 的說明） */
       creator: {
-        "@type": "GovernmentOrganization",
+        "@type": "Organization",
+        additionalType: "https://schema.org/GovernmentOrganization",
         name: "內政部不動產交易實價查詢服務網",
         url: "https://plvr.land.moi.gov.tw/",
       },
+      license: "https://data.gov.tw/license",
       publisher: { "@type": "Organization", name: BRAND.legalName, url: `${SITE}/` },
       isAccessibleForFree: true,
       inLanguage: "zh-TW",

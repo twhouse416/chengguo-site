@@ -219,7 +219,19 @@ if (BUILT) {
     if (/\{\{[^}]*\}\}/.test(s) && !rel.startsWith("tools/")) { fail(`${rel}：殘留 {{ }}`); brace++; }
     if (/>(\s*)(NaN|undefined)(\s*)</.test(s)) { fail(`${rel}：輸出 NaN/undefined`); nan++; }
     for (const m of s.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
-      try { JSON.parse(m[1]); } catch { fail(`${rel}：JSON-LD 無法解析`); ld++; }
+      let parsed;
+      try { parsed = JSON.parse(m[1]); } catch { fail(`${rel}：JSON-LD 無法解析`); ld++; continue; }
+      /* Google 對 Dataset 的要求比 schema.org 嚴：creator 只收 Person／Organization
+         （GovernmentOrganization 會被判「物件類型無效」），license 是建議欄位。
+         這兩項原本要等 Search Console 回報才知道，改成建置時就擋下來。 */
+      for (const o of (Array.isArray(parsed) ? parsed : [parsed])) {
+        if (o?.["@type"] !== "Dataset") continue;
+        const ct = o.creator?.["@type"];
+        if (ct && !["Person", "Organization"].includes(ct)) {
+          fail(`${rel}：Dataset 的 creator 型別「${ct}」Google 不接受，只能是 Person 或 Organization`); ld++;
+        }
+        if (!o.license) { fail(`${rel}：Dataset 缺少 license 欄位`); ld++; }
+      }
     }
     if (rel.endsWith(".html")) {
       for (const m of s.matchAll(/href="((?!https?:|#|tel:|mailto:|javascript:)[^"]+)"/g)) {
