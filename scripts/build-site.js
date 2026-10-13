@@ -34,6 +34,7 @@ import { devName } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
 import { buildHubs } from "./build-hubs.js";
 import { buildFaq } from "./build-faq.js";
+import { buildBuyerIntake } from "./build-buyer-intake.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -152,11 +153,12 @@ function buildRobots() {
   const txt = `User-agent: *
 Allow: /
 
-# 後台不需要被搜尋引擎收錄
+# 後台與內部表單不需要被搜尋引擎收錄
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 # AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
-${AI_ANSWER_BOTS.map(b => `User-agent: ${b}\nAllow: /\nDisallow: /admin/\n`).join("\n")}
+${AI_ANSWER_BOTS.map(b => `User-agent: ${b}\nAllow: /\nDisallow: /admin/\nDisallow: /buyer-intake/\n`).join("\n")}
 Sitemap: ${SITE}/sitemap.xml
 `;
   writeFileSync(path.join(ROOT, "robots.txt"), txt, "utf-8");
@@ -447,6 +449,10 @@ function main() {
     dealTotal: Object.values(cd.deals || {}).reduce((a, b) => a + b.length, 0),
     dataUpdated: String(cd.updatedAt || "").slice(0, 10),
   });
+
+  /* 買方需求回報頁：內部用，只有拿到網址的人開得到。
+     刻意不進 sitemap、不進 llms.txt、不在導覽列，robots.txt 另外擋。 */
+  buildBuyerIntake({ communities });
 
   /* 網站地圖、robots.txt、llms.txt、404 */
   const cdForMap = readJson("data/community-deals.json", { deals: {} });
