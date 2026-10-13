@@ -62,6 +62,11 @@ const COMMUNITY_PATH = "data/communities.json";
 const DEALS_PATH = "data/deals.json";
 const DEALS_IMG_DIR = "assets/deals";
 
+/* 業務回報買方需求的表單網址（scripts/build-buyer-intake.js 產生的那一頁）。
+   那一頁不在導覽列、不在 sitemap、搜尋引擎也不收，所以網址只寫在這裡。
+   用 location.origin 組，換網域時不必再改。 */
+const INTAKE_URL = `${location.origin}/buyer-intake/`;
+
 /* ---------- 工具 ---------- */
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
@@ -1954,6 +1959,30 @@ function App() {
               <div className="flex gap-2">
                 <Btn variant="outline" size="sm" onClick={() => loadBuyers(token.trim(), repo.trim())}>重新載入</Btn>
                 <Btn onClick={publishBuyers} disabled={bBusy}>{bBusy ? "儲存中…" : "儲存並發布"}</Btn>
+              </div>
+            </div>
+
+            {/* 業務回報表單的網址。那一頁刻意沒有被導覽列、sitemap 或搜尋引擎收錄，
+                所以忘記網址時唯一找得回來的地方就是這裡。 */}
+            <div className="bg-surface border border-line rounded-sm px-6 py-5 mb-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">業務回報表單</p>
+                  <p className="text-[15px] text-inkSoft leading-[1.9]">
+                    把這個網址給團隊成員，在外面收到買方需求時直接用手機填，送出後會寄到團隊信箱，
+                    再回到這一頁建檔上架。
+                  </p>
+                  <p className="font-mono text-[15px] text-ink mt-3 break-all">{INTAKE_URL}</p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Btn variant="outline" size="sm"
+                    onClick={async () => {
+                      try { await navigator.clipboard.writeText(INTAKE_URL); flash("pass", "網址已複製"); }
+                      catch { flash("fail", "複製失敗，請手動選取上面的網址"); }
+                    }}>複製網址</Btn>
+                  <Btn variant="outline" size="sm"
+                    onClick={() => window.open(INTAKE_URL, "_blank", "noopener")}>開啟</Btn>
+                </div>
               </div>
             </div>
 
