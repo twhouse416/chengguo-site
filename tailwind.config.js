@@ -28,6 +28,11 @@ module.exports = {
         ink: "#16191D", inkSoft: "#474D55", inkFaint: "#737A83",
         paper: "#F4F4F2", surface: "#FFFFFF", line: "#DEDCD7",
         orange: "#FD7305", orangeDeep: "#B85400", tint: "#FCEFE3",
+        /* 工具頁的通過／不符狀態色。
+           原本 scripts/tools/*.calc.js 就在用 text-pass / text-fail / border-fail，
+           但這裡沒定義，Tailwind 不會產生對應的 class，
+           結果「通過」和「不符」完全同色。2026-10 補上。 */
+        pass: "#1C7C4A", fail: "#B4232A",
       },
       fontFamily: {
         sans: ['"Noto Sans TC"', "sans-serif"],

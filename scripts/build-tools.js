@@ -158,7 +158,7 @@ export const TOOLS = [
     pageTitle: "房地合一稅試算｜稅率級距、自住優惠與重購退稅",
     description: "房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。",
     keywords: "房地合一稅,房地合一稅試算,自住優惠400萬,重購退稅,土地漲價總數額,賣房稅費,高雄賣房",
-    intro: "賣房前先抓出稅負。輸入買賣價格、必要費用與持有期間，再依情況勾選自住優惠或換屋重購退稅，看看最後要繳多少。",
+    intro: "賣房前先抓出稅負。輸入買價、賣價、必要費用與持有年數，工具會自動判斷落在哪個稅率級距，並把四個級距與自住優惠的稅額一次並列比較；離級距邊界不遠時也會提醒再持有幾個月可以少繳多少。",
     warn: "本工具僅供初步估算。實際稅額涉及取得方式、土地漲價總數額、費用認列與各項優惠的適用認定，個案差異大，請以國稅局核定為準，或洽專業地政士、會計師。",
     notes: [
       "適用範圍：105 年 1 月 1 日以後取得的房地，於 110 年 7 月 1 日以後交易者，適用房地合一稅 2.0。",
@@ -167,10 +167,13 @@ export const TOOLS = [
       "因調職、非自願離職等財政部公告的非自願性因素而在 5 年內交易者，可維持 20% 稅率，本工具未納入此情形。",
       "繼承取得的房地，成本以房屋評定現值與土地公告現值認定，通常遠低於市價，帳面獲利會被放大，實際稅負可能遠高於預期。",
       "無論賺賠，都須於所有權移轉登記日次日起 30 日內申報。預售屋則自簽約日次日起算。",
+      "持有年數以「2 年以內」含滿 2 年的方式判斷級距，超過才落到下一級。繼承或受贈取得者，持有期間可併計前手的持有時間。",
+      "試算的結果完全取決於你填的賣出價。不確定行情的話，建議先看同社區的逐筆成交紀錄再回來試算。",
       "本工具不會蒐集或傳送你輸入的任何資料，全部在瀏覽器本機計算。",
     ],
     sourceName: "財政部稅務入口網",
     sourceUrl: "https://www.etax.nat.gov.tw/",
+    sources: [["財政部南區國稅局｜輕鬆看懂房地合一稅 2.0（個人篇）", "https://www.ntbsa.gov.tw/singlehtml/cb4bed2c1b084c06a6a24c62cb25aa9e?cntId=5c153f94b1a74e3ba025d23833a8fa4e"]],
     faq: [
       ["房地合一稅怎麼算？",
        "課稅所得 =（成交價 − 取得成本 − 必要費用 − 土地漲價總數額），再依持有期間套用稅率：2年以內45%、超過2年未逾5年35%、超過5年未逾10年20%、超過10年15%。符合自住條件者，課稅所得400萬元以下免稅、超過部分課10%。"],
@@ -184,6 +187,11 @@ export const TOOLS = [
        "賣掉舊屋繳了房地合一稅之後，在期限內買了新屋自住，可以按比例把稅退回來。新舊屋移轉登記日間隔須在2年以內，先買後賣或先賣後買都適用。新屋價格大於或等於舊屋售價可全額退還，較低則按比例退還。要注意退稅後新屋有5年閉鎖期，不得出租、營業或再移轉。"],
       ["持有多久賣比較划算？",
        "單就稅率來看，持有愈久稅率愈低。以課稅所得420萬元為例：2年內要繳189萬、超過10年只要63萬；若符合自住滿6年的優惠，更只要2萬元。但實際決策還要考慮市場行情與你的資金規劃，不能只看稅。"],
+    ],
+    related: [
+      ["房地合一稅 2.0 完整試算：持有幾年、稅率多少、怎麼報？", "../../notes/property-tax-2-0-complete-guide.html"],
+      ["重購退稅怎麼申請？換屋順序與期限", "../../notes/repurchase-tax-refund-order.html"],
+      ["賣房要付哪些錢？淨到手怎麼算", "../../notes/home-selling-costs-taiwan.html"],
     ],
     ctaTitle: "賣之前，先把稅算進去",
     ctaBody: "差幾個月成交，稅率可能就跨一個級距；換屋的順序也會影響能不能退稅。把你的持有時間與換屋計畫告訴我們，澄果團隊幫你把時程和數字一起排出來。",
@@ -306,6 +314,21 @@ function cbcRulesBlock() {
   </section>`;
 }
 
+/* 工具頁延伸閱讀：把工具接到對應的文章。
+   工具頁只有計算器與 Notes，讀者算完之後沒有下一步；
+   文章把制度講完整，兩邊互相指才形成完整的主題群組。 */
+function articleLinksBlock(related) {
+  if (!related?.length) return "";
+  return `<section class="mt-16">
+    <h2 class="display text-[23px] mb-4">延伸閱讀</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      ${related.map(([t, u]) => `<a href="${u}" class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="text-[16px] font-bold tracking-tight leading-snug block">${esc(t)}</span>
+        <span class="block font-mono text-[12px] text-orangeDeep mt-2">閱讀文章 →</span></a>`).join("\n      ")}
+    </div>
+  </section>`;
+}
+
 export function buildTools(hasBuyers, market = null) {
   const d = market?.updatedAt ? String(market.updatedAt).slice(0, 10) : "";
   const note = d ? `資料更新於 <time datetime="${d}">${d}</time>。` : "";
@@ -318,7 +341,7 @@ export function buildTools(hasBuyers, market = null) {
     /* 四個工具頁都接上生活圈的實際行情與自備款；學區工具另外接社區清單。 */
     const needsCbc = t.slug === "mortgage" || t.slug === "qingan";
     const relatedHtml = (t.slug === "school-zone" ? schoolZoneRelated("../../") : "")
-      + (needsCbc ? cbcRulesBlock() : "") + budget;
+      + (needsCbc ? cbcRulesBlock() : "") + budget + articleLinksBlock(t.related);
     const html = buildTool({ ...t, relatedHtml, calcScript: calc(t.slug) }, hasBuyers);
     writeFileSync(path.join(dir, "index.html"), html, "utf-8");
     console.log("[產生]", `tools/${t.slug}/index.html`);

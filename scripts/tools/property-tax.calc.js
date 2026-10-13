@@ -7,18 +7,29 @@ const BRAND = {
   phoneHref: "tel:0797669977",
 };
 
-/* 房地合一稅 2.0 稅率級距（境內居住者個人） */
+/* 房地合一稅 2.0 稅率級距（境內居住者個人）
+   upTo 是該級距的持有年數上限；超過上限就落到下一級。
+   資料來源：財政部南區國稅局「輕鬆看懂房地合一稅 2.0」。 */
 const BRACKETS = [
-  { key: "u2",   label: "2 年以內",        rate: 45 },
-  { key: "2to5", label: "超過 2 年未逾 5 年", rate: 35 },
-  { key: "5to10",label: "超過 5 年未逾 10 年",rate: 20 },
-  { key: "o10",  label: "超過 10 年",       rate: 15 },
+  { key: "u2",   label: "2 年以內",         rate: 45, upTo: 2 },
+  { key: "2to5", label: "超過 2 年未逾 5 年",  rate: 35, upTo: 5 },
+  { key: "5to10",label: "超過 5 年未逾 10 年", rate: 20, upTo: 10 },
+  { key: "o10",  label: "超過 10 年",        rate: 15, upTo: Infinity },
 ];
+
+/* 持有年數 → 級距。「2 年以內」含滿 2 年，所以用 <= 判斷。 */
+function bracketOf(years) {
+  return BRACKETS.find(b => years <= b.upTo) || BRACKETS[BRACKETS.length - 1];
+}
 
 const SELF_USE_EXEMPT = 400; // 自住免稅額（萬元）
 const SELF_USE_RATE = 10;    // 自住超額部分稅率
 
-const fmtW = n => (Math.round(n * 100) / 100).toLocaleString("zh-TW");
+const fmtW = n => {
+  const v = Math.round(n * 100) / 100;
+  /* 站內其他地方的負數都用全形減號，這裡統一 */
+  return v < 0 ? "−" + Math.abs(v).toLocaleString("zh-TW") : v.toLocaleString("zh-TW");
+};
 
 function Field({ label, hint, children }) {
   return (
@@ -60,13 +71,15 @@ function Calculator() {
   const [buy, setBuy] = useState(1000);
   const [fee, setFee] = useState(50);
   const [landGain, setLandGain] = useState(30);
-  const [holding, setHolding] = useState("2to5");
+  const [years, setYears] = useState(3);
 
   const [selfUse, setSelfUse] = useState(false);
   const [repurchase, setRepurchase] = useState(false);
   const [newPrice, setNewPrice] = useState(1200);
 
-  const bracket = BRACKETS.find(b => b.key === holding);
+  const yrs = Number(years) >= 0 ? Number(years) : 0;
+  const bracket = bracketOf(yrs);
+  const holding = bracket.key;
 
   const r = useMemo(() => {
     const income = sell - buy - fee - landGain;   // 課稅所得
@@ -86,7 +99,21 @@ function Calculator() {
     const ratio = repurchase && sell > 0 ? Math.min(1, newPrice / sell) : 0;
     const refund = tax * ratio;
     return { income, taxable, rate, tax, refund, ratio, final: tax - refund, loss: false };
-  }, [sell, buy, fee, landGain, holding, selfUse, repurchase, newPrice, bracket]);
+  }, [sell, buy, fee, landGain, selfUse, repurchase, newPrice, bracket]);
+  /* 下一個級距還差幾個月、少繳多少。用來提醒級距邊界。 */
+  const next = useMemo(() => {
+    if (selfUse || bracket.upTo === Infinity) return null;
+    const i = BRACKETS.indexOf(bracket);
+    const nb = BRACKETS[i + 1];
+    const gapYears = bracket.upTo - yrs;
+    if (gapYears < 0 || gapYears > 1.5) return null;   // 離邊界太遠就不提醒
+    /* 級距是「超過」才跨，所以剛好滿 N 年時剩的不是幾個月，而是「再過一天」。
+       寫成「再持有 1 個月」會誤導，這種情況分開講。 */
+    const months = gapYears <= 0 ? 0 : Math.max(1, Math.ceil(gapYears * 12));
+    const saving = r.loss ? 0 : r.income * (bracket.rate - nb.rate) / 100;
+    return { months, at: bracket.upTo, rate: nb.rate, saving };
+  }, [selfUse, bracket, yrs, r]);
+
   return (
     <>
 <div className="mt-10 grid lg:grid-cols-5 gap-8">
@@ -111,12 +138,24 @@ function Calculator() {
                 <NumInput value={landGain} onChange={setLandGain} suffix="萬" step={1} />
               </Field>
 
-              <Field label="持有期間">
-                <select className="w-full border border-line rounded-sm px-4 py-3 text-[17px] bg-surface"
-                  value={holding} onChange={e => setHolding(e.target.value)} disabled={selfUse}>
-                  {BRACKETS.map(b => <option key={b.key} value={b.key}>{b.label}（{b.rate}%）</option>)}
-                </select>
+              <Field label="持有年數" hint="從取得日到出售日，可填小數（例如 2.5 年）。繼承或受贈取得可併計前手持有期間。">
+                <NumInput value={years} onChange={setYears} suffix="年" step={0.5} />
               </Field>
+
+              <div className="bg-paper border border-line rounded-sm px-4 py-3">
+                <span className="font-mono text-[12px] text-inkFaint">持有 {fmtW(yrs)} 年　落在</span>
+                <span className="block text-[15px] mt-1">
+                  {bracket.label}　<strong className="font-semibold text-orangeDeep">稅率 {bracket.rate}%</strong>
+                </span>
+                {next && (
+                  <span className="block text-[13px] text-inkSoft mt-2 leading-relaxed">
+                    {next.months === 0
+                      ? <>級距是「超過」才跨，<strong className="font-semibold text-ink">只要持有超過 {fmtW(next.at)} 年</strong>就降到 {next.rate}%</>
+                      : <>再持有 <strong className="font-semibold text-ink">{next.months} 個月</strong>（超過 {fmtW(next.at)} 年）就降到 {next.rate}%</>}
+                    {next.saving > 0 && <>，以目前的課稅所得估算，稅額少 <strong className="font-semibold text-orangeDeep">{fmtW(next.saving)} 萬</strong></>}。
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="bg-surface border border-line rounded-sm p-7 space-y-5">
@@ -125,7 +164,10 @@ function Calculator() {
               <label className="flex gap-3 items-start cursor-pointer">
                 <input type="checkbox" checked={selfUse} onChange={e => setSelfUse(e.target.checked)} className="mt-0.5" />
                 <span>
-                  <span className="block text-[15px] leading-snug">符合自住房地優惠</span>
+                  <span className="block text-[15px] leading-snug">符合自住房地優惠
+                    {selfUse && yrs < 6 &&
+                      <span className="font-mono text-[12px] text-fail ml-2">持有年數未滿 6 年</span>}
+                  </span>
                   <span className="block text-[13px] text-inkFaint mt-1 leading-relaxed">
                     本人、配偶或未成年子女設籍、持有並居住連續滿 6 年，期間無出租或營業使用，
                     且前 6 年內未曾使用過此優惠。
@@ -207,14 +249,15 @@ function Calculator() {
                   )}
                 </div>
 
-                {/* 情境比較 */}
-                {!selfUse && (
+                {/* 情境比較：四種稅率一次並列，自住優惠也放進來比 */}
+                {(
                   <div className="bg-surface border border-line rounded-sm p-7">
                     <div className="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-1">
                       不同持有期間比較
                     </div>
                     <p className="text-[14px] text-inkSoft leading-[1.8] mb-5">
-                      同樣的獲利，多持有一段時間，稅負差距可能很大。
+                      同樣的課稅所得 {fmtW(r.income)} 萬元，四個級距的稅額差距如下。
+                      目前的持有年數落在<strong className="font-medium text-ink">{bracket.label}</strong>。
                     </p>
                     <table className="w-full text-[15px]">
                       <thead>
@@ -227,14 +270,21 @@ function Calculator() {
                       <tbody>
                         {BRACKETS.map(b => (
                           <tr key={b.key}
-                            className={`border-b border-line last:border-0 ${b.key === holding ? "bg-tint" : ""}`}>
-                            <td className="py-3">{b.label}</td>
+                            className={`border-b border-line last:border-0 ${!selfUse && b.key === holding ? "bg-tint" : ""}`}>
+                            <td className="py-3">
+                              {b.label}
+                              {!selfUse && b.key === holding &&
+                                <span className="font-mono text-[12px] text-orangeDeep ml-2">← 你的情況</span>}
+                            </td>
                             <td className="py-3 text-right font-mono text-inkSoft">{b.rate}%</td>
                             <td className="py-3 text-right font-mono">{fmtW(r.income * b.rate / 100)} 萬</td>
                           </tr>
                         ))}
-                        <tr className="border-t-2 border-ink">
-                          <td className="py-3">符合自住優惠</td>
+                        <tr className={`border-t-2 border-ink ${selfUse ? "bg-tint" : ""}`}>
+                          <td className="py-3">
+                            符合自住優惠（滿 6 年）
+                            {selfUse && <span className="font-mono text-[12px] text-orangeDeep ml-2">← 你的情況</span>}
+                          </td>
                           <td className="py-3 text-right font-mono text-inkSoft">10%</td>
                           <td className="py-3 text-right font-mono text-pass">
                             {fmtW(Math.max(0, r.income - SELF_USE_EXEMPT) * SELF_USE_RATE / 100)} 萬
@@ -244,6 +294,21 @@ function Calculator() {
                     </table>
                   </div>
                 )}
+
+                <div className="bg-paper border border-line rounded-sm p-7">
+                  <div className="display text-[19px] mb-2">賣價填多少才接近行情？</div>
+                  <p className="text-[15px] text-inkSoft leading-[1.9]">
+                    試算的結果完全取決於你填的賣出價。與其猜，不如直接看同社區最近實際成交多少——
+                    本站收錄高雄四大生活圈的社區逐筆成交紀錄，日期、坪數、樓層、格局、車位都列出來。
+                  </p>
+                  <p className="mt-5 font-mono text-[13px] leading-[2.2]">
+                    <a href="../../communities/index.html" className="text-orangeDeep hover:underline mr-4">社區成交行情總覽 →</a>
+                    <a href="../../areas/art-museum/index.html" className="text-orangeDeep hover:underline mr-4">美術館特區 →</a>
+                    <a href="../../areas/nong16/index.html" className="text-orangeDeep hover:underline mr-4">農十六特區 →</a>
+                    <a href="../../areas/ruifeng-arena/index.html" className="text-orangeDeep hover:underline mr-4">瑞豐・巨蛋 →</a>
+                    <a href="../../areas/zhongdu/index.html" className="text-orangeDeep hover:underline">中都重劃區 →</a>
+                  </p>
+                </div>
 
                 {repurchase && (
                   <div className="bg-surface border border-orange/30 rounded-sm p-7">

@@ -184,6 +184,41 @@ for (const a of articles) {
   push("4 房單價中位", med(rooms(4).map(d=>d.unitPrice)), 31.3);
 }
 
+/* 備註欄：支撐「實價登錄的備註欄怎麼看」。
+   這篇的全部論點都建立在「同社區同年份對照」上，所以要盯的是
+   控制後的兩個比值，不是原始的 +12.9%——原始值本來就是年份造成的。 */
+{
+  const DEC = /裝潢|裝修|傢俱|家俱|家具/;
+  const KIN = /親友|親屬|親等|二親|三親|關係人/;
+  const resale = c => homesOf(c).filter(d => d.kind === "成屋");
+  const pool = communities.flatMap(resale);
+  const noted = pool.filter(d => String(d.note || "").trim()).length;
+  push("備註欄 成屋樣本", pool.length, 10841);
+  push("有備註比率 %", pool.length ? noted / pool.length * 100 : 0, 38.7);
+  push("含裝潢傢俱筆數", pool.filter(d => DEC.test(d.note || "")).length, 1508);
+  push("親友交易筆數", pool.filter(d => KIN.test(d.note || "")).length, 377);
+  /* 同社區同年份對照：有註記 ≥1 筆、無備註 ≥2 筆才算一格 */
+  const cells = re => {
+    const rs = [];
+    for (const c of communities) {
+      const g = {};
+      for (const d of resale(c)) (g[String(d.date).slice(0, 4)] ||= []).push(d);
+      for (const y of Object.keys(g)) {
+        const A = g[y].filter(d => re.test(d.note || "")).map(d => d.unitPrice);
+        const B = g[y].filter(d => !String(d.note || "").trim()).map(d => d.unitPrice);
+        if (A.length >= 1 && B.length >= 2) rs.push(med(A) / med(B));
+      }
+    }
+    return rs;
+  };
+  const dc = cells(DEC), kc = cells(KIN);
+  push("裝潢 同社區同年份對照格數", dc.length, 440, 0.08);
+  push("裝潢 同社區同年份 %", (med(dc) - 1) * 100, 2.3, 0.35);
+  push("親友 同社區同年份對照格數", kc.length, 199, 0.08);
+  push("親友 同社區同年份 %", Math.abs((med(kc) - 1) * 100), 17.5, 0.12);
+  push("親友 偏低格數", kc.filter(x => x < 1).length, 168, 0.08);
+}
+
 for (const { name, got, want, tol } of checks) {
   const g = Math.round(got * 100) / 100;
   const drift = want ? Math.abs(g - want) / want : 0;
@@ -423,6 +458,63 @@ console.log("\n【I】建置產出 vs workflow 提交清單");
     const missing = made.filter(d => !listed.has(d));
     if (missing.length) missing.forEach(d => fail(`/${d}/ 有產出但不在 build-site.yml 的提交清單裡——頁面不會上線`));
     else ok(`${made.length} 個產出目錄都在提交清單裡（${made.join("、")}）`);
+  }
+}
+
+/* ---------- J 自訂色票是否真的存在 ---------- */
+/* Tailwind 只會為「掃得到、而且有定義」的 class 產生 CSS。
+   程式碼裡寫了 text-pass / border-fail，但 tailwind.config.js 沒定義這個色票時，
+   不會有任何錯誤——class 照樣輸出到 HTML，只是沒有樣式，
+   「通過」和「不符」就長得一模一樣。新青安與房地合一稅兩個工具頁曾經就是這樣。 */
+console.log("\n【J】自訂色票 class 是否在 tailwind.config.js 有定義");
+{
+  const cfgPath = path.join(ROOT, "tailwind.config.js");
+  if (!fs.existsSync(cfgPath)) warn("找不到 tailwind.config.js，略過");
+  else {
+    const cfg = fs.readFileSync(cfgPath, "utf-8");
+    const colorsBlock = cfg.match(/colors:\s*\{([\s\S]*?)\n\s*\}/);
+    const defined = new Set((colorsBlock ? colorsBlock[1] : "")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .match(/([A-Za-z][A-Za-z0-9]*)\s*:/g)?.map(x => x.replace(/\s*:$/, "")) || []);
+    /* Tailwind 內建的色票名與功能名都不必在 config 裡定義 */
+    const BUILTIN = new Set(["inherit", "current", "transparent", "black", "white",
+      "slate", "gray", "zinc", "neutral", "stone", "red", "orange", "amber", "yellow", "lime",
+      "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "violet", "purple",
+      "fuchsia", "pink", "rose"]);
+    /* 掃原始碼：text-xxx / bg-xxx / border-xxx / fill-xxx / ring-xxx，
+       排除帶單位或數字的（text-[16px]、border-2、bg-opacity-50 之類） */
+    const srcFiles = [];
+    (function walk(dir) {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (e.name === "node_modules" || e.name.startsWith(".")) continue;
+        const f = path.join(dir, e.name);
+        if (e.isDirectory()) walk(f);
+        else if (/\.(js|mjs)$/.test(e.name)) srcFiles.push(f);
+      }
+    })(path.join(ROOT, "scripts"));
+    /* 只掃 class / className 屬性裡的字，不要掃整個檔案——
+       border-radius:、text-align:、text-anchor= 這些 CSS／SVG 屬性名
+       長得跟 Tailwind 的色票 class 一樣，掃全文會生出一堆假警報。 */
+    const bad = new Map();
+    for (const f of srcFiles) {
+      const txt = fs.readFileSync(f, "utf-8");
+      for (const attr of txt.matchAll(/\bclass(?:Name)?=(?:"([^"]*)"|\{`([^`]*)`\}|`([^`]*)`)/g)) {
+        const cls = attr[1] || attr[2] || attr[3] || "";
+        for (const m of cls.matchAll(/(?:^|[\s:[("'])(?:text|bg|border|fill|ring|decoration|outline|divide|from|via|to)-([a-zA-Z][a-zA-Z0-9]*)(?![\w-])/g)) {
+          const name = m[1];
+          if (defined.has(name) || BUILTIN.has(name)) continue;
+          /* 這些是 Tailwind 的功能性後綴，不是色票 */
+          if (/^(left|right|center|justify|start|end|top|bottom|xs|sm|md|lg|xl|solid|dashed|dotted|double|none|hidden|collapse|separate|fixed|local|scroll|repeat|cover|contain|clip|border|padding|content|auto|balance|pretty|wrap|nowrap|ellipsis|opacity|dense|y|x|t|b|l|r|offset|inset|width|color|style)$/.test(name)) continue;
+          if (!bad.has(name)) bad.set(name, new Set());
+          bad.get(name).add(path.relative(ROOT, f));
+        }
+      }
+    }
+    if (bad.size) {
+      for (const [name, files] of bad) {
+        fail(`色票「${name}」在 tailwind.config.js 沒有定義，class 會輸出但沒有樣式（出現在 ${[...files].join("、")}）`);
+      }
+    } else ok(`掃描 ${srcFiles.length} 個原始檔：所有自訂色票 class 都有定義（${[...defined].join("、")}）`);
   }
 }
 

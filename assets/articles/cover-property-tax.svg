@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="88" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">房地合一稅 2.0　境內居住者個人　課稅所得 300 萬元試算</text>
+
+  <g>
+    <rect x="300" y="150" width="540" height="46" fill="#B85400" fill-opacity="0.9"/>
+    <rect x="300" y="220" width="420" height="46" fill="#FD7305" fill-opacity="0.8"/>
+    <rect x="300" y="290" width="240" height="46" fill="#16191D" fill-opacity="0.18" stroke="#16191D" stroke-width="2"/>
+    <rect x="300" y="360" width="180" height="46" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="300" y="430" width="8" height="46" fill="#1C7C4A"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="120" y="180">2 年以內</text>
+      <text x="120" y="250">2–5 年</text>
+      <text x="120" y="320">5–10 年</text>
+      <text x="120" y="390">超過 10 年</text>
+      <text x="120" y="460">自住滿 6 年</text>
+      <text x="860" y="180" font-weight="700" fill="#B85400">45%　135 萬</text>
+      <text x="740" y="250" font-weight="700">35%　105 萬</text>
+      <text x="560" y="320">20%　60 萬</text>
+      <text x="500" y="390" font-weight="700">15%　45 萬</text>
+      <text x="328" y="460" font-weight="700" fill="#1C7C4A">10%　0 元（400 萬免稅額內）</text>
+    </g>
+  </g>
+  <text x="120" y="528" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">長度為應納稅額　｜　買入 1,000 萬、賣出 1,400 萬、必要費用 70 萬、土地漲價總數額 30 萬</text>
+
+  <path d="M120 572 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="628" font-family="'Noto Sans TC',sans-serif" font-size="32" font-weight="700" fill="#16191D">同一筆 300 萬獲利，稅金差 90 萬</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">
+    <text x="120" y="680">級距邊界是「超過」不是「滿」：持有剛好滿 2 年，仍適用 <tspan fill="#B85400" font-weight="700">45%</tspan></text>
+    <text x="120" y="720">不論賺賠，都須於移轉登記日次日起 <tspan fill="#B85400" font-weight="700">30 日內</tspan>申報</text>
+  </g>
+  <path d="M120 748 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="784" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">資料來源：財政部南區國稅局「輕鬆看懂房地合一稅 2.0（個人篇）」、財政部稅務入口網</text>
+</svg>

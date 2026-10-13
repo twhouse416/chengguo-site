@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="88" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">高雄四大生活圈　2020 年起 10,841 筆成屋成交　38.7% 有備註</text>
+
+  <text x="120" y="162" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">備註欄「含裝潢傢俱」vs 無備註　單價中位數比較</text>
+  <g>
+    <rect x="120" y="196" width="500" height="44" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="120" y="266" width="90" height="44" fill="#FD7305" fill-opacity="0.85"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="640" y="225" font-weight="700">+12.9%</text>
+      <text x="230" y="295" font-weight="700" fill="#B85400">+2.3%</text>
+      <text x="760" y="225" fill="#737A83">同社區對照</text>
+      <text x="330" y="295" fill="#737A83">同社區 + 同年份對照</text>
+    </g>
+  </g>
+  <text x="120" y="350" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">固定年份後差距幾乎消失　｜　含裝潢的成交 53% 落在 2023–24 年，無備註的 49% 落在 2020–21 年</text>
+
+  <path d="M120 392 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="446" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">備註欄「親友間交易」vs 無備註</text>
+  <g>
+    <rect x="120" y="480" width="420" height="44" fill="#B85400" fill-opacity="0.85"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20">
+      <text x="560" y="509" font-weight="700" fill="#B85400">−17.5%</text>
+      <text x="700" y="509" fill="#737A83">同社區 + 同年份對照　168／199 格方向一致</text>
+    </g>
+  </g>
+  <text x="120" y="568" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">377 筆　占全部成交 3.5%　｜　不是行情，判讀時應剔除</text>
+
+  <path d="M120 612 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="668" font-family="'Noto Sans TC',sans-serif" font-size="32" font-weight="700" fill="#16191D">含裝潢貴 13% 是假的，親友交易低 18% 是真的</text>
+  <text x="120" y="722" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">剔除親友交易後，164 個滿 10 筆社區裡有 <tspan fill="#B85400" font-weight="700">76 個</tspan>中位單價變動 1% 以上</text>
+  <text x="120" y="766" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">最大的一個差 27.6%　｜　資料來源：內政部不動產交易實價查詢服務網</text>
+</svg>
