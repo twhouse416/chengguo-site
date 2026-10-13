@@ -91,7 +91,6 @@ export function buildBuyerIntake({ communities = [] } = {}) {
     <input type="hidden" name="subject" value="澄果團隊｜買方需求待上架" />
     <input type="hidden" name="from_name" value="澄果團隊買方需求回報" />
     <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
-    <input type="hidden" id="bi-json" name="可直接貼進後台的 JSON" value="" />
 
     <label class="block">
       <span class="block text-[15px] font-medium text-ink mb-2">回報人<span class="text-fail ml-1">*</span></span>
@@ -128,6 +127,11 @@ export function buildBuyerIntake({ communities = [] } = {}) {
         class="w-full px-4 py-3 text-[16px] border border-line rounded-sm bg-surface outline-none focus:border-orange" />
       <span class="block text-[13px] text-inkFaint mt-1.5 leading-relaxed">格式 YYYY.MM，留空會自動帶今天的年月。</span>
     </label>
+
+    ${/* 這一欄要放在所有可讀欄位的後面：Web3Forms 的信件照欄位順序排，
+          擺前面的話整封信一打開就是一段 JSON，人要看的內容被推到下面去。
+          值也刻意不換行——HTML 信件會把每個換行變成一段，排版會散掉。 */""}
+    <input type="hidden" id="bi-json" name="後台貼上用（單行 JSON）" value="" />
 
     <div id="bi-warn" hidden class="border border-fail/40 bg-surface rounded-sm px-5 py-4 text-[15px] leading-[1.8]">
       <strong class="font-bold text-fail">送出前請先處理這幾個地方</strong>
@@ -168,7 +172,7 @@ export function buildBuyerIntake({ communities = [] } = {}) {
       <button type="submit" id="bi-submit"
         class="inline-flex items-center px-8 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">送出</button>
       <button type="button" id="bi-copy"
-        class="inline-flex items-center px-6 py-3.5 text-[15px] font-medium rounded-sm border border-line text-ink hover:border-orange transition">複製 JSON</button>
+        class="inline-flex items-center px-6 py-3.5 text-[15px] font-medium rounded-sm border border-line text-ink hover:border-orange transition">複製 JSON（後台貼上用）</button>
       <span id="bi-status" class="text-[14px] text-inkSoft leading-[1.8]"></span>
     </div>
   </form>
@@ -206,12 +210,19 @@ export function buildBuyerIntake({ communities = [] } = {}) {
     var d = new Date();
     return d.getFullYear() + "." + (d.getMonth() + 1 < 10 ? "0" : "") + (d.getMonth() + 1);
   }
+  /* 需求牆是原樣顯示這個字串，所以 2026/10、2026-10、2026.1 都先轉成 2026.10，
+     不然同一面牆上會出現三種寫法。 */
+  function normUpdated(v) {
+    var m = String(v || "").match(/^\\s*(\\d{4})\\s*[\\.\\-\\/年]\\s*(\\d{1,2})\\s*月?\\s*$/);
+    if (!m) return String(v || "").trim();
+    return m[1] + "." + (m[2].length < 2 ? "0" : "") + m[2];
+  }
   function entry() {
     return {
       area: el("bi-area").value.trim(),
       size: el("bi-size").value.trim(),
       budget: el("bi-budget").value.trim(),
-      updated: el("bi-updated").value.trim() || defaultUpdated(),
+      updated: normUpdated(el("bi-updated").value) || defaultUpdated(),
       notes: notesArr()
     };
   }
@@ -303,7 +314,7 @@ export function buildBuyerIntake({ communities = [] } = {}) {
       var sp = document.createElement("span"); sp.textContent = e.notes[i];
       li.appendChild(dot); li.appendChild(sp); ul.appendChild(li);
     }
-    el("bi-json").value = JSON.stringify(e, null, 2);
+    el("bi-json").value = JSON.stringify(e);   /* 信件用單行，排版才不會散 */
     renderWarn(scan());
   }
   form.addEventListener("input", sync);
@@ -337,8 +348,8 @@ export function buildBuyerIntake({ communities = [] } = {}) {
     if (r.hard.length) { say("還有要處理的地方，請看上面的提示。"); return; }
     if (r.soft.length && !softOk) { say("請先確認上面那幾個字不是社區名。"); return; }
 
-    if (!el("bi-updated").value.trim()) el("bi-updated").value = e.updated;
-    el("bi-json").value = JSON.stringify(e, null, 2);
+    el("bi-updated").value = e.updated;        /* 寫回正規化後的 YYYY.MM */
+    el("bi-json").value = JSON.stringify(e);
 
     submit.disabled = true; submit.textContent = "送出中…"; say("");
     fetch("https://api.web3forms.com/submit", {

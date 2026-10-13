@@ -628,6 +628,7 @@ function App() {
   const [vBusy, setVBusy] = useState(false);
   const [bdata, setBdata] = useState(null);
   const [bBusy, setBBusy] = useState(false);
+  const [bPaste, setBPaste] = useState("");        // 從回報信貼進來的 JSON
   const [cdata, setCdata] = useState(null);
   const [cBusy, setCBusy] = useState(false);
   const [cIdx, setCIdx] = useState(null);          // 正在編輯第幾個社區
@@ -997,6 +998,35 @@ function App() {
       flash("pass", `已合併：更新 ${updated} 個、新增 ${added} 個。記得按「儲存並發布」。`);
     };
     r.readAsText(f);
+  };
+
+  /* 把回報信裡的那段 JSON 轉成一筆需求。
+     只收需求牆真正會用到的五個欄位——回報人、買方指名的社區那些是內部資訊，
+     就算不小心貼進來也不會跟著上牆。 */
+  const addFromPaste = () => {
+    const raw = bPaste.trim();
+    if (!raw) { flash("fail", "請先貼上回報信裡的 JSON"); return; }
+    let o;
+    try { o = JSON.parse(raw); }
+    catch { flash("fail", "這段不是有效的 JSON，請確認是整段一起複製的（含開頭的 { 和結尾的 }）"); return; }
+    if (!o || typeof o !== "object" || Array.isArray(o)) { flash("fail", "格式不對，應該是一組 { } 的資料"); return; }
+
+    const str = v => (v == null ? "" : String(v).trim());
+    const area = str(o.area), size = str(o.size), budget = str(o.budget);
+    if (!area && !size && !budget) { flash("fail", "這段資料裡找不到區域、坪數或預算，請確認貼對了"); return; }
+
+    const notes = Array.isArray(o.notes)
+      ? o.notes.map(str).filter(Boolean)
+      : str(o.notes).split("\n").map(t => t.trim()).filter(Boolean);
+
+    /* 需求牆原樣顯示更新時間，2026/10 這種寫法先轉成 2026.10 */
+    const m = str(o.updated).match(/^(\d{4})[.\-\/年]?\s*(\d{1,2})月?$/);
+    const updated = m ? `${m[1]}.${m[2].padStart(2, "0")}` : (str(o.updated) || todayStr().slice(0, 7).replace("-", "."));
+
+    const entry = { id: `b-${Date.now()}`, area, size, budget, updated, notes };
+    setBdata({ ...bdata, buyers: [...(bdata?.buyers || []), entry] });
+    setBPaste("");
+    flash("pass", `已加入「${area || "（未填區域）"}」，請往上確認內容，再按「儲存並發布」。`);
   };
 
   const publishBuyers = async () => {
@@ -2089,6 +2119,23 @@ function App() {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* 從回報信把 JSON 貼進來，直接長出一筆需求，不必手動重打五個欄位。
+                    回報表單（/buyer-intake/）寄來的信最後一欄就是這段 JSON。 */}
+                <div className="bg-surface border border-line rounded-sm p-6 mt-6">
+                  <Label hint="貼上業務回報信裡「後台貼上用（單行 JSON）」那一段，按下方按鈕就會新增一筆">
+                    從回報信貼上
+                  </Label>
+                  <textarea rows={3} className={inputCls} value={bPaste}
+                    placeholder={'{"area":"美術館特區","size":"30–40 坪","budget":"1,300 萬內","updated":"2026.10","notes":["三房含平面車位","需電梯大樓"]}'}
+                    onChange={e => setBPaste(e.target.value)} />
+                  <div className="mt-3 flex flex-wrap gap-2 items-center">
+                    <Btn variant="outline" size="sm" onClick={addFromPaste}>加入列表</Btn>
+                    {bPaste.trim() && (
+                      <Btn variant="outline" size="sm" onClick={() => setBPaste("")}>清空</Btn>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-3">
