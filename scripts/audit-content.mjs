@@ -162,6 +162,28 @@ for (const a of articles) {
   push("坡道平面樣本數", typ.filter(d => d.parking === "坡道平面").length, 2630);
 }
 
+/* 樓高與房數：支撐「大樓蓋越高越貴嗎」與「買幾房最好」兩篇。
+   樓高那篇的重點是「固定屋齡後差距消失」，所以要盯的是控制後的兩個值，
+   不是原始的 8.6 萬價差。 */
+{
+  const CN = { 一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9 };
+  const flr = v => { const t = String(v||"").split("，")[0].replace(/[^0-9一二三四五六七八九十]/g,"");
+    if (!t) return null; if (/^\d+$/.test(t)) return +t;
+    const m = t.match(/^(.*?)十(.*)$/); if (m) return (m[1]?(CN[m[1]]||0):1)*10+(CN[m[2]]||0);
+    return CN[t] ?? null; };
+  const base = communities.flatMap(c => (dealsMap[c.slug]||[])
+    .filter(d => d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150 && String(d.date||"") >= SINCE)
+    .map(d => ({ ...d, year: yearOf(c) })));
+  const bandOf = d => { const n = flr(d.totalFloor); return !n ? null : n <= 12 ? "low" : n <= 20 ? "mid" : "high"; };
+  const newer = base.filter(d => (d.year||0) >= 2020);
+  push("2020後完工 13–20層 單價中位", med(newer.filter(d => bandOf(d)==="mid").map(d=>d.unitPrice)), 39.7);
+  push("2020後完工 21層以上 單價中位", med(newer.filter(d => bandOf(d)==="high").map(d=>d.unitPrice)), 37.6);
+  const rooms = n => base.filter(d => String(d.layout||"").startsWith(n + "房"));
+  push("3 房成交筆數", rooms(3).length, 5202);
+  push("1 房單價中位", med(rooms(1).map(d=>d.unitPrice)), 34.9);
+  push("4 房單價中位", med(rooms(4).map(d=>d.unitPrice)), 31.3);
+}
+
 for (const { name, got, want, tol } of checks) {
   const g = Math.round(got * 100) / 100;
   const drift = want ? Math.abs(g - want) / want : 0;
