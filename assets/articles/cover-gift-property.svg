@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="86" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">父母贈與房地給子女　子女將來出售時「可減除的成本」怎麼認定</text>
+
+  <text x="120" y="156" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">同一間房子，兩種成本認定</text>
+  <g>
+    <rect x="120" y="190" width="640" height="48" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2" stroke-dasharray="7 5"/>
+    <rect x="120" y="264" width="315" height="48" fill="#B85400" fill-opacity="0.9"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="780" y="220">誤以為是父母買價　<tspan font-weight="700">1,200 萬</tspan></text>
+      <text x="455" y="294" font-weight="700" fill="#B85400">實際認定　590 萬</text>
+    </g>
+  </g>
+  <text x="120" y="344" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">實際認定＝受贈時房屋評定現值＋公告土地現值，按物價指數調整，再加受贈時繳的契稅與土地增值稅</text>
+  <text x="120" y="374" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">成本少 610 萬　→　課稅所得多 610 萬　→　稅多繳約 122 萬（持有 6 年，20%）</text>
+
+  <path d="M120 396 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="450" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">財政部實際核定案例</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#16191D">
+    <text x="120" y="498">父母 102 年買入 <tspan font-weight="700">1,200 萬</tspan>　→　105 年贈與子女　→　113 年子女賣出 <tspan font-weight="700">1,100 萬</tspan></text>
+    <text x="120" y="540" fill="#737A83">比父母買價還低、看起來是賠錢賣　→　仍核定補稅 <tspan fill="#B85400" font-weight="700">10 萬元</tspan></text>
+  </g>
+
+  <path d="M120 580 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="636" font-family="'Noto Sans TC',sans-serif" font-size="32" font-weight="700" fill="#16191D">贈與稅免稅，不代表整體稅負比較低</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">
+    <text x="120" y="688">115 年贈與稅免稅額 <tspan fill="#B85400" font-weight="700">244 萬</tspan>／每位贈與人每年　｜　契稅 6%、土地增值稅由子女繳</text>
+    <text x="120" y="728">持有期間自受贈日重新起算，<tspan fill="#B85400" font-weight="700">不併計父母</tspan>的持有時間（配偶間贈與則可併計）</text>
+  </g>
+  <path d="M120 756 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="788" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">資料來源：財政部、財政部電子申報繳稅服務網　｜　高雄情境金額為說明用假設值</text>
+</svg>
