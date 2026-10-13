@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="88" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">不分年代：看起來越高越貴</text>
+  <g>
+    <rect x="120" y="200" width="110" height="105" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="262" y="177" width="110" height="128" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="404" y="164" width="110" height="141" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="175" y="188" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#16191D" text-anchor="middle">25.1</text>
+    <text x="317" y="165" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#16191D" text-anchor="middle">30.6</text>
+    <text x="459" y="152" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#16191D" text-anchor="middle">33.7</text>
+    <path d="M120 305 H560" stroke="#16191D" stroke-width="2"/>
+    <path d="M150 250 L500 180" stroke="#C9C6C0" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="120" y="344" font-family="'IBM Plex Mono',monospace" font-size="17" fill="#737A83">12層以下　13–20層　21層以上　單價中位（萬／坪）</text>
+
+  <text x="660" y="88" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#B85400">2020 年後完工：反過來了</text>
+  <g>
+    <rect x="700" y="139" width="150" height="166" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="900" y="148" width="150" height="157" fill="#FD7305" fill-opacity="0.45"/>
+    <text x="775" y="127" font-family="'IBM Plex Mono',monospace" font-size="24" font-weight="700" fill="#B85400" text-anchor="middle">39.7</text>
+    <text x="975" y="136" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#B85400" text-anchor="middle">37.6</text>
+    <path d="M660 305 H1080" stroke="#16191D" stroke-width="2"/>
+  </g>
+  <text x="660" y="344" font-family="'IBM Plex Mono',monospace" font-size="17" fill="#737A83">13–20層　　　　21層以上　　單價中位（萬／坪）</text>
+
+  <path d="M120 400 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="462" font-family="'Noto Sans TC',sans-serif" font-size="33" font-weight="700" fill="#16191D">差距來自屋齡，不是樓高</text>
+  <text x="120" y="512" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">12層以下完工年中位 2002　｜　21層以上 2021　｜　差 19 年</text>
+
+  <rect x="120" y="560" width="440" height="100" fill="#FFFFFF" stroke="#C9C6C0" stroke-width="2"/>
+  <text x="340" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83" text-anchor="middle">固定屋齡後的價差</text>
+  <text x="340" y="638" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#B85400" text-anchor="middle">8.6 萬 → 1.5 萬</text>
+  <text x="600" y="600" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">公設比：12層以下 28.1%</text>
+  <text x="600" y="638" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">　　　　21層以上 35.0%</text>
+  <path d="M120 700 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="754" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">同年代的大樓，樓高不帶價格資訊</text>
+</svg>
