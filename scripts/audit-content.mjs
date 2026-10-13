@@ -518,5 +518,42 @@ console.log("\n【J】自訂色票 class 是否在 tailwind.config.js 有定義"
   }
 }
 
+/* ---------- K 重複網址（/xxx/index.html） ---------- */
+/* 每個目錄頁都有兩個可到達的網址：/videos/ 與 /videos/index.html，
+   canonical 指向前者。只要站內還有連到後者的連結，Google 就會爬到它、
+   然後在 Search Console 歸到「替代頁面（有適當的標準標記）」——
+   不是錯誤，但會一直累積、而且那份報告的「驗證」永遠不會通過。
+   建置時有一道「內部連結改目錄形式」的處理，但它只掃 HTML 屬性，
+   掃不到 React 計算器編譯後塞進 <script> 裡的連結，所以這裡補驗一次。 */
+console.log("\n【K】是否還有連到 /xxx/index.html 的重複網址");
+if (BUILT) {
+  const hits = [];
+  const walk = dir => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name === "node_modules" || e.name.startsWith(".")) continue;
+      const f = path.join(dir, e.name);
+      if (e.isDirectory()) walk(f);
+      else if (e.name.endsWith(".html")) {
+        /* Babel 會把 JSX 文字裡的中文轉成 \uXXXX，但網址是 ASCII，直接掃原文即可 */
+        const txt = fs.readFileSync(f, "utf-8");
+        const rel = path.relative(ROOT, f);
+        /* notes/article.html 是舊網址的轉址殼，本身 noindex，裡面的 index.html
+           是 JS 的 fallback 目標、不是可被爬的連結，排除。 */
+        if (rel === "notes/article.html") continue;
+        for (const m of txt.matchAll(/["'(]([^"'()\s]*\/index\.html)(?:["'?#)])/g)) {
+          hits.push(`${rel} → ${m[1]}`);
+        }
+      }
+    }
+  };
+  walk(ROOT);
+  if (hits.length) {
+    for (const h of hits.slice(0, 20)) fail(`連到 /index.html 會製造重複網址：${h}`);
+    if (hits.length > 20) fail(`…另有 ${hits.length - 20} 處`);
+  } else ok("全站沒有連到 /xxx/index.html 的連結（含工具頁編譯後的 script）");
+} else {
+  warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
+}
+
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
 process.exit(FAIL ? 1 : 0);

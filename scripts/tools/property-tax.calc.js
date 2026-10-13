@@ -302,11 +302,11 @@ function Calculator() {
                     本站收錄高雄四大生活圈的社區逐筆成交紀錄，日期、坪數、樓層、格局、車位都列出來。
                   </p>
                   <p className="mt-5 font-mono text-[13px] leading-[2.2]">
-                    <a href="../../communities/index.html" className="text-orangeDeep hover:underline mr-4">社區成交行情總覽 →</a>
-                    <a href="../../areas/art-museum/index.html" className="text-orangeDeep hover:underline mr-4">美術館特區 →</a>
-                    <a href="../../areas/nong16/index.html" className="text-orangeDeep hover:underline mr-4">農十六特區 →</a>
-                    <a href="../../areas/ruifeng-arena/index.html" className="text-orangeDeep hover:underline mr-4">瑞豐・巨蛋 →</a>
-                    <a href="../../areas/zhongdu/index.html" className="text-orangeDeep hover:underline">中都重劃區 →</a>
+                    <a href="../../communities/" className="text-orangeDeep hover:underline mr-4">社區成交行情總覽 →</a>
+                    <a href="../../areas/art-museum/" className="text-orangeDeep hover:underline mr-4">美術館特區 →</a>
+                    <a href="../../areas/nong16/" className="text-orangeDeep hover:underline mr-4">農十六特區 →</a>
+                    <a href="../../areas/ruifeng-arena/" className="text-orangeDeep hover:underline mr-4">瑞豐・巨蛋 →</a>
+                    <a href="../../areas/zhongdu/" className="text-orangeDeep hover:underline">中都重劃區 →</a>
                   </p>
                 </div>
 
