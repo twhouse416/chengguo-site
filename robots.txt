@@ -1,52 +1,64 @@
 User-agent: *
 Allow: /
 
-# 後台不需要被搜尋引擎收錄
+# 後台與內部表單不需要被搜尋引擎收錄
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 # AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Claude-User
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Perplexity-User
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Bingbot
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: Amazonbot
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 User-agent: meta-externalagent
 Allow: /
 Disallow: /admin/
+Disallow: /buyer-intake/
 
 Sitemap: https://k7.com.tw/sitemap.xml
