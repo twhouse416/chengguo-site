@@ -85,6 +85,24 @@ function ld({ name, url, description, items, crumb }) {
 const faqLd = faq => ({ "@context": "https://schema.org", "@type": "FAQPage",
   mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) });
 
+/* 依社區 slug 清單算出成交筆數與單價中位數。
+   /schools/ 與 /developers/ 兩個彙整頁原本只寫「N 個社區」，
+   頁面本文卻宣稱「每一頁列出成交筆數與單價區間」——說到沒做到，
+   而且整頁純文字不到 900 字，Google 把 /schools/ 歸到
+   「已檢索－目前尚未建立索引」。這些數字建置時本來就算得出來，補上去。 */
+function statsOf(slugs, dealsMap) {
+  const ds = (slugs || []).flatMap(sg => (dealsMap[sg] || []).filter(d =>
+    d.use !== "店面" && d.unitPrice >= 3 && d.unitPrice <= 150 && String(d.date || "") >= SINCE));
+  return { deals: ds.length, up: med(ds.map(d => d.unitPrice)) };
+}
+/* 卡片第二行：N 個社區・2020 年起成交 N 筆・單價中位 N 萬 */
+function statLine(count, st) {
+  const bits = [`${count} 個社區`];
+  if (st.deals) bits.push(`2020 年起成交 ${nf(st.deals)} 筆`);
+  if (st.up) bits.push(`單價中位 ${st.up.toFixed(1)} 萬／坪`);
+  return bits.join("・");
+}
+
 /* ================= /areas/ ================= */
 function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
   const url = `${SITE}/areas/`;
@@ -106,6 +124,20 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
     ["四個生活圈的房價差多少？",
       rows.map(r => `${r.name}單價中位數 ${r.up.toFixed(1)} 萬／坪、總價中位數 ${nf(Math.round(r.tp))} 萬`).join("；")
       + "。以上取 2020 年 1 月起的住家成交紀錄計算，已排除店面與解約紀錄。"],
+    ["哪一個生活圈的單價最高、哪一個總價門檻最低？",
+      (() => {
+        const byUp = rows.filter(r => r.up).slice().sort((a, b) => b.up - a.up);
+        const byTp = rows.filter(r => r.tp).slice().sort((a, b) => a.tp - b.tp);
+        return `單價中位數最高的是${byUp[0].name}（${byUp[0].up.toFixed(1)} 萬／坪），最低的是${byUp[byUp.length - 1].name}（${byUp[byUp.length - 1].up.toFixed(1)} 萬／坪）；`
+          + `總價門檻最低的是${byTp[0].name}（中位 ${nf(Math.round(byTp[0].tp))} 萬），最高的是${byTp[byTp.length - 1].name}（中位 ${nf(Math.round(byTp[byTp.length - 1].tp))} 萬）。`
+          + `單價高不等於總價高——坪數結構的影響往往比單價還大。`;
+      })()],
+    ["哪一個生活圈的成交量最多？",
+      (() => {
+        const byD = rows.filter(r => r.deals).slice().sort((a, b) => b.deals - a.deals);
+        return byD.map(r => `${r.name} ${nf(r.deals)} 筆（${r.n} 個社區）`).join("、")
+          + "。成交筆數多代表可比的參考案例多，不論買方估價或賣方訂價都比較有依據。";
+      })()],
     ["這些數字多久更新一次？",
       "內政部於每月 1、11、21 日批次公告實價登錄，本站於公告隔日自動更新，所以行情會隨新成交累積變動。各頁都標示成交資料的更新日期。"],
   ];
@@ -114,7 +146,9 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
     eyebrow: "Areas", crumb: "生活圈", h1: "高雄四大生活圈",
     lead: esc(lead), hasBuyers, dataUpdated,
     body: grid(rows.map(r => card(`${r.slug}/index.html`, r.name,
-      `${r.n} 個社區・2020 年起成交 ${nf(r.deals)} 筆`,
+      `${r.n} 個社區・2020 年起成交 ${nf(r.deals)} 筆`
+      + (r.up ? `・單價中位 ${r.up.toFixed(1)} 萬／坪` : "")
+      + (r.tp ? `・總價中位 ${nf(Math.round(r.tp))} 萬` : ""),
       `單價中位 ${r.up.toFixed(1)} 萬／坪　總價中位 ${nf(Math.round(r.tp))} 萬`))),
     faq,
     meta: {
@@ -128,14 +162,16 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
 }
 
 /* ================= /schools/ ================= */
-function schoolsHub({ schools, hasBuyers, dataUpdated }) {
+function schoolsHub({ schools, dealsMap = {}, hasBuyers, dataUpdated }) {
   const url = `${SITE}/schools/`;
+  schools = schools.map(s => ({ ...s, st: statsOf(s.slugs, dealsMap) }));
   const es = schools.filter(s => /國小/.test(s.name)).sort((a, b) => b.count - a.count);
   const js = schools.filter(s => !/國小/.test(s.name)).sort((a, b) => b.count - a.count);
   const total = schools.reduce((n, s) => n + s.count, 0);
   const lead = `本站把收錄社區的學區欄位整理成 ${schools.length} 個學區頁（國小 ${es.length} 所、國中 ${js.length} 所），`
     + `每一頁列出該學區的社區清單、成交筆數與近三年單價區間，並附上官方學區劃分的里鄰原文。`
-    + `要先說清楚：高雄市的學區以「里」與「鄰」劃分，社區名稱不是依據，同一個社區跨鄰時不同門牌也可能分屬不同學校。`;
+    + `要先說清楚：高雄市的學區以「里」與「鄰」劃分，社區名稱不是依據，同一個社區跨鄰時不同門牌也可能分屬不同學校。`
+    + `底下每一所學校都標了對應社區數、2020 年起的成交筆數與單價中位數，可以先看量級再點進去看逐筆成交。`;
   const faq = [
     ["高雄的學區怎麼查才準？",
       "要看那一戶所在的里與鄰，不是看社區名稱或路名。先查門牌屬於哪一個里，再對應學區劃分表，最後向學校或區公所確認。本站的學區查詢工具可以用行政區與里別查到對應的國小與國中。"],
@@ -143,6 +179,14 @@ function schoolsHub({ schools, hasBuyers, dataUpdated }) {
       "不是。表格是本站社區資料裡「學區」欄位的整理結果，官方依據是各頁附的高雄市學區劃分一覽表原文。正式歸屬請以入學當年度教育局及學校的公告為準。"],
     ["為什麼有些學校沒有專頁？",
       "學區頁只替收錄社區數達 3 個以上的學校建立，數量太少的學校不另外開頁，避免用單一社區代表整個學區。該社區的學區資訊仍會寫在它自己的社區頁上。"],
+    [`收錄社區最多的學區是哪幾個？`,
+      `以本站收錄的社區數排序，國小是${es.slice(0, 3).map(x => `${x.name}（${x.count} 個社區、2020 年起成交 ${nf(x.st.deals)} 筆、單價中位 ${x.st.up.toFixed(1)} 萬／坪）`).join("、")}；`
+      + `國中是${js.slice(0, 3).map(x => `${x.name}（${x.count} 個社區、2020 年起成交 ${nf(x.st.deals)} 筆、單價中位 ${x.st.up.toFixed(1)} 萬／坪）`).join("、")}。`
+      + `社區數多代表本站的樣本多、行情比較有依據，不代表學校排名。`],
+    ["不同學區的房價差多少？",
+      `以本站收錄社區的成交資料看，${[...es, ...js].filter(x => x.st.up).sort((a, b) => b.st.up - a.st.up).slice(0, 1).map(x => `單價中位數最高的是 ${x.name} 學區的 ${x.st.up.toFixed(1)} 萬／坪`)[0]}，`
+      + `${[...es, ...js].filter(x => x.st.up).sort((a, b) => a.st.up - b.st.up).slice(0, 1).map(x => `最低的是 ${x.name} 學區的 ${x.st.up.toFixed(1)} 萬／坪`)[0]}。`
+      + `但這個差距主要反映的是生活圈與屋齡結構，不是學校本身的溢價——同一個學區裡不同社區的差距，往往比學區之間還大。`],
     ["總量管制學校是什麼意思？",
       "表示該校容量已接近上限、名額有限，即使戶籍設在學區內仍可能需要抽籤或改分發到鄰近學校，部分學校還會要求一定的設籍期間。以就學為主要購屋考量時，務必在下訂前直接向學校確認。"],
   ];
@@ -152,7 +196,7 @@ function schoolsHub({ schools, hasBuyers, dataUpdated }) {
       <span class="font-mono text-[12px] text-inkFaint shrink-0">${arr.length} 所</span>
     </div>
     <p class="text-[15px] text-inkFaint leading-[1.9] mt-3">${esc(note)}</p>
-    ${grid(arr.map(s => card(`${s.slug}/index.html`, s.name, `${s.count} 個社區`, "")))}
+    ${grid(arr.map(s => card(`${s.slug}/index.html`, s.name, statLine(s.count, s.st), "")))}
   </section>`;
   const items = schools.map(s => ({ name: s.name, url: `${SITE}/schools/${s.slug}/` }));
   return shell({
@@ -179,18 +223,23 @@ function schoolsHub({ schools, hasBuyers, dataUpdated }) {
 }
 
 /* ================= /developers/ ================= */
-function developersHub({ developers, hasBuyers, dataUpdated }) {
+function developersHub({ developers, dealsMap = {}, hasBuyers, dataUpdated }) {
   const url = `${SITE}/developers/`;
-  const rows = developers.slice().sort((a, b) => b.count - a.count);
+  const rows = developers.map(d => ({ ...d, st: statsOf(d.slugs, dealsMap) }))
+    .sort((a, b) => b.count - a.count);
   const total = rows.reduce((n, d) => n + d.count, 0);
   const lead = `本站收錄社區的建設公司中，有 ${rows.length} 家在四大生活圈推案 3 個社區以上，合計 ${total} 個社區。`
     + `每一頁列出該建商在本站收錄的作品、完工年、戶數與實價登錄成交行情，`
-    + `可以用來比較同一家建商不同年代、不同生活圈的案子。`;
+    + `可以用來比較同一家建商不同年代、不同生活圈的案子。`
+    + `底下每一家都標了社區數、2020 年起的成交筆數與單價中位數，可以先看量級再點進去看逐筆成交。`;
   const faq = [
     ["為什麼要看建商？",
       "同一家建商的案子在格局規劃、用料與公設配置上往往有延續性，看過它早期的案子，對新案的實際使用狀況會比較有概念。不過建商只是參考之一，屋齡、生活圈、樓層與屋況的影響通常更直接。"],
     ["建商名稱怎麼認定？",
       "以社區規格表的「建設公司」欄位為準，資料取自好房網、成家網、591、信義房屋、樂居等公開平台並於社區頁註明出處。同一集團不同公司名稱、或兩個平台記載不一致時，社區頁會並列說明。"],
+    [`本站收錄最多社區的建商是哪幾家？`,
+      `${rows.slice(0, 5).map(d => `${d.name}（${d.count} 個社區、2020 年起成交 ${nf(d.st.deals)} 筆）`).join("、")}。`
+      + `這是本站收錄範圍內的數字，只涵蓋美術館特區、農十六特區、瑞豐・巨蛋與中都重劃區，不等於該建商在高雄的總推案量。`],
     ["為什麼有些建商沒有專頁？",
       `建商頁只替本站收錄 3 個社區以上的建商建立，少於 3 個不另外開頁，避免用單一個案代表一家公司。該社區的建商資訊仍會寫在它自己的社區頁上。`],
   ];
@@ -198,7 +247,7 @@ function developersHub({ developers, hasBuyers, dataUpdated }) {
   return shell({
     eyebrow: "Developers", crumb: "建商", h1: "高雄建商總覽",
     lead: esc(lead), hasBuyers, dataUpdated,
-    body: grid(rows.map(d => card(`${d.slug}/index.html`, d.name, `${d.count} 個社區`, ""))),
+    body: grid(rows.map(d => card(`${d.slug}/index.html`, d.name, statLine(d.count, d.st), ""))),
     faq,
     meta: {
       title: `高雄建商總覽｜${rows.length} 家建設公司的社區與實價登錄行情｜${BRAND.teamName}`,
@@ -220,6 +269,13 @@ function toolsHub({ hasBuyers }) {
       "不用。四個工具都在瀏覽器裡計算，不會把你輸入的數字送到任何伺服器，也不需要註冊或留下聯絡方式。"],
     ["試算結果可以直接拿去跟銀行談嗎？",
       "試算是估算，用來抓量級與比較方案。實際的貸款成數、利率與年限由銀行依個人條件核定，稅額則以稅捐稽徵機關的核定為準，簽約前請以正式文件為準。"],
+    ["四個工具分別在算什麼？",
+      "學區查詢：選行政區與里別，查出對應的國小與國中學區，並標示總量管制與自由學區。"
+      + "房貸試算：輸入總價、成數、年限與利率，算出月付金、總利息與收入負擔比，可加入寬限期。"
+      + "新青安 3.0 試算：檢核年齡、所得與房屋總價三道門檻，並算出利息補貼「3＋3」逐年退場後月付金的變化。"
+      + "房地合一稅試算：輸入買價、賣價、必要費用與持有年數，自動判斷稅率級距，並把四個級距加上自住優惠的稅額並列比較。"],
+    ["算完之後要去哪裡看實際行情？",
+      "本站收錄高雄四大生活圈的社區逐筆實價登錄成交紀錄，日期、坪數、樓層、格局與車位都列出來。房貸與新青安兩個工具頁底下也附了四個生活圈近一年的常見總價與自備款推算，可以直接對照。"],
     ["學區查詢的資料從哪裡來？",
       "依高雄市 115 學年度國民小學、國民中學學區劃分一覽表逐字轉錄，未經改寫，目前收錄鼓山區、左營區與三民區。學區以里、鄰劃分，工具查到里，鄰別請對照頁面上的原文。"],
   ];
@@ -245,8 +301,8 @@ export function buildHubs({ areas = [], communities = [], dealsMap = {},
                             hasBuyers = false, dataUpdated = "" } = {}) {
   const out = [
     ["areas", areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated })],
-    ["schools", schoolsHub({ schools: indexPages.schools || [], hasBuyers, dataUpdated })],
-    ["developers", developersHub({ developers: indexPages.developers || [], hasBuyers, dataUpdated })],
+    ["schools", schoolsHub({ schools: indexPages.schools || [], dealsMap, hasBuyers, dataUpdated })],
+    ["developers", developersHub({ developers: indexPages.developers || [], dealsMap, hasBuyers, dataUpdated })],
     ["tools", toolsHub({ hasBuyers })],
   ];
   out.forEach(([dir, html]) => {

@@ -555,5 +555,29 @@ if (BUILT) {
   warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
 }
 
+/* ---------- L 彙整頁的內容量 ---------- */
+/* 彙整頁的本體是連結清單，純文字很容易不到 1,000 字。
+   Google 對這種頁面的處理是「已檢索－目前尚未建立索引」：爬了，但判斷不值得收。
+   /schools/ 在 2026-10 就是這樣掉出索引的（當時 816 字），
+   而 /areas/、/developers/、/tools/ 當時比它還薄，只是還沒輪到。
+   門檻設 1,000 字：低於這個數就提醒，不當成錯誤——要補什麼是內容判斷，不是機械規則。 */
+console.log("\n【L】彙整頁的內容量（太薄會被 Google 歸為「已檢索－尚未建立索引」）");
+if (BUILT) {
+  const MIN = 1000;
+  const HUBS = ["areas", "schools", "developers", "tools", "notes", "communities", "videos", "faq"];
+  let thin = 0;
+  for (const d of HUBS) {
+    const f = path.join(ROOT, d, "index.html");
+    if (!fs.existsSync(f)) continue;
+    const html = fs.readFileSync(f, "utf-8");
+    const m = html.match(/<main[\s\S]*?<\/main>/);
+    const text = (m ? m[0] : html).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (text.length < MIN) { warn(`/${d}/ 的 main 純文字只有 ${text.length} 字（建議 ${MIN} 字以上），容易被判定為內容不足`); thin++; }
+  }
+  if (!thin) ok(`${HUBS.filter(d => fs.existsSync(path.join(ROOT, d, "index.html"))).length} 個彙整頁的內容量都在門檻以上`);
+} else {
+  warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
+}
+
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
 process.exit(FAIL ? 1 : 0);

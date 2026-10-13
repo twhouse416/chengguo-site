@@ -550,6 +550,11 @@ function schoolPage(name, items, ctx) {
 function cleanStale(dir, keep) {
   if (!existsSync(dir)) return;
   readdirSync(dir).forEach(f => {
+    /* index.html 是這個目錄的彙整頁（由 build-hubs.js 產生），不是子頁，
+       不能當成「已不再符合門檻」刪掉。原本每次建置都會先刪掉再被重建，
+       只因為 buildHubs 排在 buildIndexPages 後面才沒出事——
+       建置順序一改，/schools/ 與 /developers/ 就會無聲消失。 */
+    if (f === "index.html") return;
     if (!keep.has(f)) {
       rmSync(path.join(dir, f), { recursive: true, force: true });
       console.log("[移除] 已不再符合門檻：", path.join(path.basename(dir), f));
@@ -619,7 +624,8 @@ export function buildIndexPages({ hasBuyers = false } = {}) {
 
   console.log(`[完成] 共產生 ${devs.length} 個建商頁、${schools.length} 個學區頁`);
   return {
-    developers: devs.map(([name, items]) => ({ slug: devSlug(name), name: devLabel(name), count: items.length })),
-    schools: schools.map(([name, items]) => ({ slug: schoolSlug(name), name, count: items.length })),
+    /* slugs 給 build-hubs.js 用，讓彙整頁也能算出成交筆數與單價中位數 */
+    developers: devs.map(([name, items]) => ({ slug: devSlug(name), name: devLabel(name), count: items.length, slugs: items.map(c => c.slug) })),
+    schools: schools.map(([name, items]) => ({ slug: schoolSlug(name), name, count: items.length, slugs: items.map(c => c.slug) })),
   };
 }
