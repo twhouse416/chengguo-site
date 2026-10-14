@@ -10,15 +10,15 @@
     <rect x="600" y="162" width="300" height="26" fill="#FD7305" fill-opacity="0.9"/>
     <text x="920" y="182" font-weight="700" fill="#B85400">+10.4</text>
 
-    <text x="120" y="230" fill="#16191D">美樹香榭</text>
-    <rect x="600" y="210" width="40" height="26" fill="#FD7305" fill-opacity="0.6"/>
-    <text x="660" y="230" fill="#B85400">+1.4</text>
+    <text x="120" y="230" fill="#16191D">皇苑御之苑</text>
+    <rect x="600" y="210" width="52" height="26" fill="#FD7305" fill-opacity="0.6"/>
+    <text x="672" y="230" fill="#B85400">+1.8</text>
 
-    <text x="120" y="278" fill="#16191D">皇苑御之苑</text>
-    <rect x="600" y="258" width="32" height="26" fill="#FD7305" fill-opacity="0.6"/>
-    <text x="652" y="278" fill="#B85400">+1.1</text>
+    <text x="120" y="278" fill="#16191D">美術白天鵝</text>
+    <rect x="600" y="258" width="6" height="26" fill="#FD7305" fill-opacity="0.6"/>
+    <text x="626" y="278" fill="#737A83">+0.2</text>
 
-    <text x="120" y="326" fill="#16191D">美術白天鵝</text>
+    <text x="120" y="326" fill="#16191D">美樹香榭</text>
     <rect x="600" y="306" width="6" height="26" fill="#FD7305" fill-opacity="0.6"/>
     <text x="626" y="326" fill="#737A83">+0.2</text>
 
@@ -33,13 +33,13 @@
     <rect x="594" y="450" width="6" height="26" fill="#16191D" fill-opacity="0.3"/>
     <text x="548" y="470" fill="#737A83" text-anchor="end">−0.2</text>
 
-    <text x="120" y="518" fill="#16191D">潤隆樹禾苑</text>
-    <rect x="511" y="498" width="89" height="26" fill="#16191D" fill-opacity="0.45"/>
-    <text x="480" y="518" fill="#16191D" text-anchor="end">−3.1</text>
+    <text x="120" y="518" fill="#16191D">森美樹</text>
+    <rect x="525" y="498" width="75" height="26" fill="#16191D" fill-opacity="0.45"/>
+    <text x="495" y="518" fill="#16191D" text-anchor="end">−2.6</text>
 
-    <text x="120" y="566" fill="#16191D">森美樹</text>
-    <rect x="482" y="546" width="118" height="26" fill="#16191D" fill-opacity="0.55"/>
-    <text x="452" y="566" fill="#16191D" text-anchor="end">−4.1</text>
+    <text x="120" y="566" fill="#16191D">潤隆樹禾苑</text>
+    <rect x="502" y="546" width="98" height="26" fill="#16191D" fill-opacity="0.5"/>
+    <text x="472" y="566" fill="#16191D" text-anchor="end">−3.4</text>
 
     <text x="120" y="614" fill="#16191D">青海LINE</text>
     <rect x="427" y="594" width="173" height="26" fill="#16191D" fill-opacity="0.7"/>
