@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="84" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">繼承取得的房地　出售時適用哪一段稅率，看的是「被繼承人」</text>
+
+  <text x="120" y="148" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">課稅所得 900 萬，四個級距差 270 萬</text>
+  <g>
+    <rect x="300" y="182" width="540" height="44" fill="#B85400" fill-opacity="0.9"/>
+    <rect x="300" y="240" width="420" height="44" fill="#FD7305" fill-opacity="0.8"/>
+    <rect x="300" y="298" width="240" height="44" fill="#16191D" fill-opacity="0.18" stroke="#16191D" stroke-width="2"/>
+    <rect x="300" y="356" width="180" height="44" fill="#1C7C4A" fill-opacity="0.75"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="120" y="211">2 年以內</text><text x="860" y="211" font-weight="700" fill="#B85400">45%　405 萬</text>
+      <text x="120" y="269">2–5 年</text><text x="740" y="269">35%　315 萬</text>
+      <text x="120" y="327">5–10 年</text><text x="560" y="327">20%　180 萬</text>
+      <text x="120" y="385">超過 10 年</text><text x="500" y="385" font-weight="700" fill="#1C7C4A">15%　135 萬</text>
+    </g>
+  </g>
+  <text x="120" y="440" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">持有期間可併計被繼承人持有的時間，連續繼承還能把歷次都加起來　→　落在 15% 的機會比一般交易高</text>
+
+  <path d="M120 478 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="532" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">真正的風險：一間房子可能有三種結果</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+    <text x="120" y="578">父遺留 1/4　　　<tspan fill="#737A83">舊制，不適用房地合一稅</tspan></text>
+    <text x="120" y="618">連續繼承 1/4　　<tspan font-weight="700">自 91 年起算　超過 10 年　15%</tspan></text>
+    <text x="120" y="658">母受贈 1/2　　　<tspan font-weight="700" fill="#B85400">自 106 年起算　5–10 年　20%</tspan></text>
+  </g>
+  <text x="120" y="700" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">持分來源不同，制度與稅率就不同——賣之前先把每一份持分查清楚（財政部實例）</text>
+
+  <path d="M120 730 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="770" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">成本不是父母的買價，是繼承時現值按物價指數調整（舊制房屋自 115.7.15 起亦同）</text>
+  <text x="120" y="794" font-family="'IBM Plex Mono',monospace" font-size="17" fill="#737A83">依據：所得稅法第 14 條之 4 第 4 項、財政部台財稅字第 11204619060 號令、第 11504549440 號令</text>
+</svg>
