@@ -83,10 +83,10 @@ const checks = [];
 const push = (name, got, want, tol = 0.05) => checks.push({ name, got, want, tol });
 
 push("全站社區數（非草稿）", communities.length, communities.length, 0);
-push("2020起住家成交", all.length, 12029);
+push("2020起住家成交", all.length, 12066);
 push("有公設比社區", withRatio.length, 229, 0.05);
 push("公設比中位", med(withRatio.map(ratioOf)), 30.56);
-push("有公設比社區的成交樣本", withRatio.flatMap(homesOf).length, 11535);
+push("有公設比社區的成交樣本", withRatio.flatMap(homesOf).length, 11570);
 
 // 樓層溢價
 const CN = { 一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9 };
@@ -138,7 +138,7 @@ for (const c of communities) {
   if (pre.length >= 3 && fin.length >= 3) pr.push(med(fin) - med(pre));
 }
 push("預售／成屋可配對社區", pr.length, 10, 0.15);
-push("成屋−預售 中位差（萬）", Math.abs(med(pr)), 0.05, 2);   // 接近 0，用絕對值比
+push("成屋−預售 中位差（萬）", Math.abs(med(pr)), 0.08, 2);   // 接近 0，用絕對值比
 
 /* 有表格且表格含行情數字，卻沒寫統計基準 */
 const SITEY = /(本站|收錄的|個社區|筆成交|單價中位|成交單價|萬／坪)/;
@@ -159,7 +159,7 @@ for (const a of articles) {
   push("車位揭露率 %", kind.length ? val.length / kind.length * 100 : 0, 53, 0.05);
   push("坡道平面車位中位（萬）", med(typ.filter(d => d.parking === "坡道平面").map(d => d.parkingPrice)), 200);
   push("坡道機械車位中位（萬）", med(typ.filter(d => d.parking === "坡道機械").map(d => d.parkingPrice)), 105);
-  push("坡道平面樣本數", typ.filter(d => d.parking === "坡道平面").length, 2630);
+  push("坡道平面樣本數", typ.filter(d => d.parking === "坡道平面").length, 2648);
 }
 
 /* 樓高與房數：支撐「大樓蓋越高越貴嗎」與「買幾房最好」兩篇。
