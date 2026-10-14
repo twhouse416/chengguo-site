@@ -589,5 +589,51 @@ if (BUILT) {
   warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
 }
 
+/* ---------- M 文章的站內連入分布 ---------- */
+/* 原本 More 區塊取「最新三篇」、Next 區塊取「同分類最新三篇」，
+   所以站內連結幾乎由日期決定：最新的三篇各拿三十幾個連入，
+   有十二篇是零。文章一旦不是最新的，連入就歸零，
+   Google 與 AI 引擎也看不出哪幾篇屬於同一個主題群。
+   改成相關度排序之後，這一檢查負責確認沒有回到老樣子。 */
+console.log("\n【M】文章的站內連入（孤兒與過度集中）");
+if (BUILT) {
+  const dir = path.join(ROOT, "notes");
+  if (!fs.existsSync(dir)) warn("找不到 notes/，略過");
+  else {
+    const files = fs.readdirSync(dir).filter(f => f.endsWith(".html") && !["index.html", "article.html"].includes(f));
+    const inbound = new Map();
+    const real = [];
+    for (const f of files) {
+      const html = fs.readFileSync(path.join(dir, f), "utf-8");
+      /* 舊網址的轉跳殼是 noindex，不是真正的文章，不列入 */
+      if (/name="robots" content="noindex/.test(html.slice(0, 1200))) continue;
+      real.push(f);
+      inbound.set(decodeURIComponent(f.replace(/\.html$/, "")), 0);
+    }
+    for (const f of real) {
+      const html = fs.readFileSync(path.join(dir, f), "utf-8");
+      const m = html.match(/<main[\s\S]*?<\/main>/);
+      const main = m ? m[0] : html;
+      const self = decodeURIComponent(f.replace(/\.html$/, ""));
+      const seen = new Set();
+      for (const mm of main.matchAll(/href="([^"#?]+?)\.html"/g)) {
+        const t = decodeURIComponent(mm[1].split("/").pop());
+        if (t !== self && inbound.has(t) && !seen.has(t)) { seen.add(t); inbound.set(t, inbound.get(t) + 1); }
+      }
+    }
+    const orphans = [...inbound].filter(([, n]) => !n).map(([k]) => k);
+    if (orphans.length) orphans.forEach(o => fail(`文章「${o}」沒有任何站內連入——除了 sitemap 之外沒有路徑走到它`));
+    const vals = [...inbound.values()];
+    const max = Math.max(...vals), min = Math.min(...vals);
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    /* 單篇吃掉超過平均四倍，代表又回到「只連最新幾篇」的狀態 */
+    const hogs = [...inbound].filter(([, n]) => n > avg * 4);
+    hogs.forEach(([k, n]) => warn(`文章「${k}」拿到 ${n} 個站內連入（平均 ${avg.toFixed(1)}），連結過度集中`));
+    if (!orphans.length && !hogs.length) ok(`${vals.length} 篇文章都有站內連入（最少 ${min}、最多 ${max}、平均 ${avg.toFixed(1)}）`);
+  }
+} else {
+  warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
+}
+
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
 process.exit(FAIL ? 1 : 0);

@@ -60,6 +60,76 @@ const TOOL_BY_TAG = {
   "生活圈": [["學區查詢", "tools/school-zone/"], ["房貸試算", "tools/mortgage/"]],
 };
 
+/* ---------- 相關度排序 ----------
+ * 原本文章之間的連結幾乎都由「日期」決定：
+ *   build-articles.js 的 More 區塊取 published.slice(0,3)——32 篇文章每一頁連的都是同樣那三篇；
+ *   articleNext 取同分類最新三篇。
+ * 結果是最新的三篇各拿到三十幾個站內連入，其餘多半只有個位數，還有四篇完全沒人連入。
+ * 文章一旦不是最新的，連入就歸零，Google 與 AI 引擎也判斷不出哪幾篇是同一個主題。
+ *
+ * 改成以「主題相關度」排序：同分類、共同關鍵字、共同生活圈各給分，同分再比日期。
+ * 這樣每一頁連出去的對象都不一樣，而且是真的相關。
+ */
+export function relatedScore(a, b) {
+  let n = 0;
+  if (a.tag && a.tag === b.tag) n += 3;
+  const ka = new Set((a.keywords || []).map(x => String(x).trim()).filter(Boolean));
+  const kb = new Set((b.keywords || []).map(x => String(x).trim()).filter(Boolean));
+  for (const k of ka) if (kb.has(k)) n += 2;
+  /* 關鍵字不完全相同時，彼此包含也算（「房地合一稅」vs「房地合一稅試算」） */
+  for (const x of ka) for (const y of kb) {
+    if (x !== y && x.length >= 3 && y.length >= 3 && (x.includes(y) || y.includes(x))) { n += 1; break; }
+  }
+  const aa = new Set(areasMentioned(a));
+  for (const x of areasMentioned(b)) if (aa.has(x)) n += 2;
+  return n;
+}
+
+/* 依相關度挑 n 篇。完全沒有交集時仍以日期補滿，不讓區塊變空。 */
+export function pickRelated(article, all, n = 3) {
+  const byDate = (x, y) => String(y.date || "").localeCompare(String(x.date || ""));
+  return all
+    .filter(o => o.slug !== article.slug)
+    .map(o => ({ o, s: relatedScore(article, o) }))
+    .sort((x, y) => (y.s - x.s) || byDate(x.o, y.o))
+    .slice(0, n)
+    .map(x => x.o);
+}
+
+/* 確保每一篇都有人連入。
+ * 相關度排序不保證全覆蓋——冷門主題還是可能沒有任何一篇連過去。
+ * 這一步把孤兒文章塞進「與它最相關、而且還有名額」的那一篇裡，
+ * 取代該篇原本相關度最低的那一個，連結總數不變。 */
+export function coverOrphans(all, picksBySlug, n = 3) {
+  const inbound = new Map(all.map(a => [a.slug, 0]));
+  for (const [, picks] of picksBySlug) for (const o of picks) inbound.set(o.slug, (inbound.get(o.slug) || 0) + 1);
+  const orphans = all.filter(a => !inbound.get(a.slug));
+  for (const orphan of orphans) {
+    const host = all
+      .filter(h => h.slug !== orphan.slug && !(picksBySlug.get(h.slug) || []).some(x => x.slug === orphan.slug))
+      .map(h => ({ h, s: relatedScore(orphan, h) }))
+      .sort((x, y) => y.s - x.s)[0];
+    if (!host) continue;
+    const picks = picksBySlug.get(host.h.slug) || [];
+    /* 換掉這一篇裡與它最不相關的那個，而且不能換掉別人的唯一連入 */
+    let worst = -1, worstScore = Infinity;
+    for (let i = 0; i < picks.length; i++) {
+      if ((inbound.get(picks[i].slug) || 0) <= 1) continue;
+      const sc = relatedScore(host.h, picks[i]);
+      if (sc < worstScore) { worstScore = sc; worst = i; }
+    }
+    if (worst >= 0) {
+      inbound.set(picks[worst].slug, inbound.get(picks[worst].slug) - 1);
+      picks[worst] = orphan;
+    } else if (picks.length < n + 1) {
+      picks.push(orphan);
+    } else continue;
+    inbound.set(orphan.slug, 1);
+    picksBySlug.set(host.h.slug, picks);
+  }
+  return picksBySlug;
+}
+
 /**
  * 文章底部的「延伸閱讀」。
  * 每一篇都要有——讀完之後沒有下一步，等於把人送回頁尾。
@@ -69,10 +139,8 @@ const TOOL_BY_TAG = {
 export function articleNext(article, up = "../") {
   const all = loadArticles().filter(a => a.slug !== article.slug);
   if (!all.length) return "";
-  const byDate = (x, y) => String(y.date || "").localeCompare(String(x.date || ""));
-  const same = all.filter(a => a.tag === article.tag).sort(byDate);
-  const rest = all.filter(a => a.tag !== article.tag).sort(byDate);
-  const picks = [...same, ...rest].slice(0, 3);
+  /* 以相關度挑，不再只看日期與分類 */
+  const picks = pickRelated(article, all, 3);
   if (!picks.length) return "";
 
   const tools = TOOL_BY_TAG[article.tag] || [["房貸試算", "tools/mortgage/"]];

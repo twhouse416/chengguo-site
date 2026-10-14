@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer , thumbOf, imgSize } from "./lib/layout.js";
-import { articleRelated, articleNext } from "./lib/related.js";
+import { articleRelated, articleNext, pickRelated, coverOrphans } from "./lib/related.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -422,9 +422,20 @@ export function buildArticles({ articles, hasBuyers }) {
       }
     });
 
+  /* More 區塊原本是 published.slice(0,3)——每一頁連的都是同樣那三篇最新文章，
+     舊文章等於沒有任何站內連入。改成依主題相關度挑，再補一輪孤兒覆蓋，
+     讓每一篇至少被連到一次。 */
+  const picksBySlug = new Map(published.map(a => [a.slug, pickRelated(a, published, 3)]));
+  coverOrphans(published, picksBySlug, 3);
+  {
+    const inbound = new Map(published.map(a => [a.slug, 0]));
+    for (const [, picks] of picksBySlug) for (const o of picks) inbound.set(o.slug, inbound.get(o.slug) + 1);
+    const orphans = [...inbound].filter(([, n]) => !n).map(([k]) => k);
+    if (orphans.length) console.warn("[提示] 仍無站內連入的文章：", orphans.join("、"));
+  }
+
   published.forEach(a => {
-    const others = published.filter(o => o.slug !== a.slug).slice(0, 3);
-    writeFileSync(path.join(OUT_DIR, `${webSlug(a.slug)}.html`), pageHtml(a, others, hasBuyers), "utf-8");
+    writeFileSync(path.join(OUT_DIR, `${webSlug(a.slug)}.html`), pageHtml(a, picksBySlug.get(a.slug) || [], hasBuyers), "utf-8");
     console.log("[產生]", `notes/${webSlug(a.slug)}.html`);
   });
 
