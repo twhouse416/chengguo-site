@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="86" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">成交價 1,500 萬・核貸八成・買方仲介費 2%</text>
+  <text x="120" y="118" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">本站 12,066 筆住家成交的總價中位數為 1,475 萬，51% 落在 1,500 萬以下</text>
+
+  <text x="120" y="176" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">自備現金 341 萬怎麼組成</text>
+  <g>
+    <rect x="120" y="208" width="700" height="52" fill="#B85400" fill-opacity="0.9"/>
+    <rect x="820" y="208" width="70" height="52" fill="#FD7305" fill-opacity="0.85"/>
+    <rect x="890" y="208" width="26" height="52" fill="#16191D" fill-opacity="0.25"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">
+      <text x="140" y="241" fill="#FFFFFF" font-weight="700">頭期款 300 萬</text>
+      <text x="830" y="296" fill="#B85400" font-weight="700">仲介 30 萬</text>
+      <text x="880" y="330" fill="#737A83">稅費規費代書 11 萬</text>
+    </g>
+  </g>
+  <text x="120" y="376" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">頭期款之外還要再準備約 41 萬　≈　成交價的 3%　（裝潢、家電與交屋稅費分攤另計）</text>
+
+  <path d="M120 404 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="458" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">但真正打亂預算的是核貸成數</text>
+  <g>
+    <rect x="300" y="492" width="213" height="42" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <rect x="300" y="546" width="307" height="42" fill="#FD7305" fill-opacity="0.6"/>
+    <rect x="300" y="600" width="400" height="42" fill="#B85400" fill-opacity="0.9"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="120" y="520">核貸 八成</text><text x="533" y="520">頭期 300 萬　自備約 341 萬</text>
+      <text x="120" y="574">核貸 七成</text><text x="627" y="574" font-weight="700">頭期 450 萬　自備約 491 萬</text>
+      <text x="120" y="628">核貸 六成</text><text x="720" y="628" font-weight="700" fill="#B85400">頭期 600 萬　自備約 641 萬</text>
+    </g>
+  </g>
+  <text x="120" y="684" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">成數掉一成 ＝ 多 150 萬，比全部交易費用加起來還多</text>
+
+  <path d="M120 716 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="764" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">先問能貸多少，再決定看什麼價位</text>
+</svg>
