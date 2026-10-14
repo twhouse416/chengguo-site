@@ -325,7 +325,17 @@ for (const a of articles) {
            2. 句子裡有「並列」→ 代表多區共享極值，只要其中一個對就算對
            3. 否則取離最高／最低詞最近的區名
            括號內容先拿掉，「四區最低（與農十六並列）」的括號會把主詞判錯。 */
-        const flat = sent.replace(/（[^）]*）/g, "");
+        /* 去括號時同步記下「flat 第 j 個字元原本在 sent 的哪一格」。
+           少了這張對照表，i 是 flat 座標、m.index 是 sent 座標，
+           兩套座標相減會把主詞判給錯的區——只要「最低」前面出現過括號就會發生。 */
+        let flat = "", pos = [], depth = 0;
+        for (let k = 0; k < sent.length; k++) {
+          const ch = sent[k];
+          if (ch === "（") { depth++; continue; }
+          if (ch === "）") { if (depth) depth--; continue; }
+          if (depth) continue;
+          flat += ch; pos.push(k);
+        }
         const mentioned = AREAS.filter(area => ALIAS[area].some(al => flat.includes(al)));
         if (!mentioned.length) continue;
         const r = rankOf(metric);
@@ -335,7 +345,7 @@ for (const a of articles) {
             let i = -1;
             while ((i = flat.indexOf(al, i + 1)) >= 0) {
               if (i < 12 && (!best || bestD === 1e9)) { best = area; bestD = 0; }
-              const d = Math.abs(i - m.index);
+              const d = Math.abs(pos[i] - m.index);   // 換回 sent 座標再比
               if (bestD !== 0 && d < bestD) { bestD = d; best = area; }
             }
           }
