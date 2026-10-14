@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="84" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">土地增值稅　一般稅率 20／30／40% 三級累進　符合自用住宅用地改用 10% 單一稅率</text>
+
+  <text x="120" y="150" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#16191D">一生一次，四個條件</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+    <text x="120" y="198">① 房屋為本人、配偶或直系親屬所有，且已在該地<tspan fill="#B85400" font-weight="700">辦竣戶籍登記</tspan></text>
+    <text x="120" y="240">② 出售前 <tspan fill="#B85400" font-weight="700">1 年</tspan>內無出租或供營業使用（公益出租、包租代管也算出租）</text>
+    <text x="120" y="282">③ 都市土地 300 ㎡（約 90.75 坪）、非都市 700 ㎡（約 211.75 坪）以內</text>
+    <text x="120" y="324">④ 一人一生 1 次為限</text>
+  </g>
+  <text x="120" y="372" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">一生一次<tspan fill="#B85400" font-weight="700">沒有</tspan>「名下不得有其他房屋」的限制，也<tspan fill="#B85400" font-weight="700">沒有</tspan>設籍滿 6 年的要求——那些是一生一屋的條件</text>
+
+  <path d="M120 410 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="462" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#16191D">最容易卡住的是前兩關</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20">
+    <text x="120" y="510" fill="#16191D"><tspan font-weight="700">戶籍</tspan>　住了十幾年但戶籍留在父母家　→　賣之前還來得及遷</text>
+    <text x="120" y="552" fill="#16191D"><tspan font-weight="700">出租</tspan>　出售前一年內出租過　→　<tspan fill="#B85400" font-weight="700">遷戶籍也補救不了，只能等</tspan></text>
+    <text x="120" y="594" fill="#737A83">財政部例示：租約 114.7.1 期滿 → 一生一次要等 115.7.1、一生一屋要等 119.7.1 之後才能賣</text>
+  </g>
+
+  <path d="M120 632 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="686" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">用過一次還有一生一屋，但面積只剩一半</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">
+    <text x="120" y="730">都市土地 <tspan fill="#16191D">300 ㎡</tspan> → <tspan fill="#B85400" font-weight="700">150 ㎡</tspan>　｜　另需持有土地滿 6 年、設籍並持有自用住宅連續滿 6 年</text>
+    <text x="120" y="768">出售前 5 年內無出租營業　｜　出售時名下無其他房屋　｜　次數無上限</text>
+  </g>
+</svg>
