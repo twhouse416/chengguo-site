@@ -1,73 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
   <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="84" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">換屋買方：先買後賣的新屋算第 2 戶　成數上限 7 成、不得有寬限期</text>
 
-  <!-- 標題 -->
-  <text x="120" y="140" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="900"
-        fill="#16191D" letter-spacing="-1">先買，還是先賣？</text>
-  <text x="120" y="188" font-family="'IBM Plex Mono',monospace" font-size="24"
-        fill="#B85400" letter-spacing="4">TRADE UP PLANNING</text>
-
-  <!-- 中央分隔線 -->
-  <path d="M600 260 V690" stroke="#DEDCD7" stroke-width="2"/>
-
-  <!-- 左：先買後賣 -->
+  <text x="120" y="150" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">一張切結書，頭期款差 167 萬</text>
   <g>
-    <text x="180" y="300" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700"
-          fill="#16191D">先買後賣</text>
+    <rect x="300" y="186" width="470" height="48" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="2" stroke-dasharray="7 5"/>
+    <rect x="300" y="252" width="313" height="48" fill="#B85400" fill-opacity="0.9"/>
+    <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+      <text x="120" y="216">未切結</text><text x="790" y="216" font-weight="700">頭期 500.4 萬（貸 7 成）</text>
+      <text x="120" y="282">有切結</text><text x="633" y="282" font-weight="700" fill="#B85400">頭期 333.6 萬（貸 8 成）</text>
+    </g>
+  </g>
+  <text x="120" y="334" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">切結：第 2 戶貸款撥款日起 18 個月內售出原屋、完成移轉登記、清償原貸款並塗銷抵押權</text>
+  <text x="120" y="362" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">做到的話不受成數上限，也可以有寬限期　（以 1,668 萬的三房計算）</text>
 
-    <!-- 順序方塊 -->
-    <rect x="180" y="336" width="150" height="64" fill="#FD7305"/>
-    <text x="255" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
-          fill="#FFFFFF" text-anchor="middle">買新屋</text>
-    <path d="M348 368 H392" stroke="#C9C6C0" stroke-width="2.5"/>
-    <path d="M380 358 L392 368 L380 378" stroke="#C9C6C0" stroke-width="2.5"
-          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="404" y="336" width="150" height="64" fill="#FFFFFF" stroke="#16191D" stroke-width="2"/>
-    <text x="479" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
-          fill="#16191D" text-anchor="middle">賣舊屋</text>
+  <path d="M120 398 H1080" stroke="#DEDCD7" stroke-width="2"/>
 
-    <!-- 壓力指示 -->
-    <text x="180" y="466" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">資金壓力</text>
-    <rect x="180" y="484" width="374" height="14" fill="#DEDCD7"/>
-    <rect x="180" y="484" width="300" height="14" fill="#FD7305"/>
-
-    <text x="180" y="556" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">居住彈性</text>
-    <rect x="180" y="574" width="374" height="14" fill="#DEDCD7"/>
-    <rect x="180" y="574" width="330" height="14" fill="#16191D" fill-opacity="0.75"/>
-
-    <text x="180" y="650" font-family="'Noto Sans TC',sans-serif" font-size="21" fill="#474D55">
-      不必急著搬，但可能同時揹兩筆貸款
-    </text>
+  <text x="120" y="450" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">三個時鐘同時在跑，起算點都不一樣</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+    <text x="120" y="498"><tspan font-weight="700">18 個月</tspan>　切結出售　　自第 2 戶貸款<tspan fill="#B85400">撥款日</tspan>起算　　管成數與寬限期</text>
+    <text x="120" y="540"><tspan font-weight="700">2 年　　</tspan>　重購退稅　　新舊屋<tspan fill="#B85400">移轉登記日</tspan>的間隔　管房地合一稅能不能退</text>
+    <text x="120" y="582"><tspan font-weight="700">6 年　　</tspan>　自住優惠　　舊屋<tspan fill="#B85400">設籍並居住</tspan>起算　　管 400 萬免稅額與 10%</text>
   </g>
 
-  <!-- 右：先賣後買 -->
-  <g>
-    <text x="660" y="300" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700"
-          fill="#16191D">先賣後買</text>
-
-    <rect x="660" y="336" width="150" height="64" fill="#FFFFFF" stroke="#16191D" stroke-width="2"/>
-    <text x="735" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
-          fill="#16191D" text-anchor="middle">賣舊屋</text>
-    <path d="M828 368 H872" stroke="#C9C6C0" stroke-width="2.5"/>
-    <path d="M860 358 L872 368 L860 378" stroke="#C9C6C0" stroke-width="2.5"
-          fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="884" y="336" width="150" height="64" fill="#FD7305"/>
-    <text x="959" y="378" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700"
-          fill="#FFFFFF" text-anchor="middle">買新屋</text>
-
-    <text x="660" y="466" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">資金壓力</text>
-    <rect x="660" y="484" width="374" height="14" fill="#DEDCD7"/>
-    <rect x="660" y="484" width="140" height="14" fill="#FD7305"/>
-
-    <text x="660" y="556" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">居住彈性</text>
-    <rect x="660" y="574" width="374" height="14" fill="#DEDCD7"/>
-    <rect x="660" y="574" width="150" height="14" fill="#16191D" fill-opacity="0.75"/>
-
-    <text x="660" y="650" font-family="'Noto Sans TC',sans-serif" font-size="21" fill="#474D55">
-      手上有現金，但可能需要短期過渡
-    </text>
+  <path d="M120 622 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="676" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">換屋的缺口，比屋主想的大</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">
+    <text x="120" y="724">2 房 933 萬 → 3 房 1,668 萬　差 <tspan fill="#B85400" font-weight="700">735 萬</tspan>　｜　3 房 → 4 房 2,500 萬　差 <tspan fill="#B85400" font-weight="700">832 萬</tspan></text>
+    <text x="120" y="760">本站 12,066 筆住家成交的總價中位數　｜　這還沒算仲介費、稅與規費</text>
   </g>
-
-  <text x="120" y="730" font-family="'IBM Plex Mono',monospace" font-size="20"
-        fill="#737A83" letter-spacing="2">台灣房屋 澄果團隊</text>
+  <path d="M120 780 H1080" stroke="#DEDCD7" stroke-width="2"/>
 </svg>
