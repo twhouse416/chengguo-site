@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="84" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">「不要問太多家，聯徵會被查壞」——這句話是誤解</text>
+
+  <text x="120" y="152" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">30 天內的新業務查詢，只計 1 次</text>
+  <g>
+    <g font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">
+      <text x="120" y="208" fill="#737A83">同一個月內問 5 家銀行</text>
+    </g>
+    <g>
+      <circle cx="130" cy="246" r="13" fill="#B85400" fill-opacity="0.9"/>
+      <circle cx="176" cy="246" r="13" fill="#B85400" fill-opacity="0.9"/>
+      <circle cx="222" cy="246" r="13" fill="#B85400" fill-opacity="0.9"/>
+      <circle cx="268" cy="246" r="13" fill="#B85400" fill-opacity="0.9"/>
+      <circle cx="314" cy="246" r="13" fill="#B85400" fill-opacity="0.9"/>
+      <path d="M352 246 H420" stroke="#737A83" stroke-width="2"/>
+      <path d="M408 238 L420 246 L408 254" fill="none" stroke="#737A83" stroke-width="2"/>
+      <circle cx="452" cy="246" r="18" fill="#1C7C4A" fill-opacity="0.85"/>
+      <text x="492" y="253" font-family="'IBM Plex Mono',monospace" font-size="21" font-weight="700" fill="#1C7C4A">評分模型只當成 1 筆信用需求</text>
+    </g>
+  </g>
+  <text x="120" y="310" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">聯徵中心原文：「為避免比價造成評分下降，僅將最近一年內每 30 天的新業務查詢皆視為同一筆信用需求」</text>
+  <text x="120" y="340" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">要避免的不是「問很多家」，而是拖長時間、斷斷續續地到處問——超過 30 天就另計一次</text>
+
+  <path d="M120 380 H1080" stroke="#DEDCD7" stroke-width="2"/>
+
+  <text x="120" y="434" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#16191D">而且不是所有查詢都算</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">
+    <text x="120" y="480"><tspan fill="#B85400" font-weight="700">會進評分</tspan>　新業務申請（申請授信／貸款）</text>
+    <text x="120" y="520" fill="#737A83">不進評分　身分確認、原有業務往來、公開資訊、依法令規定、新開存款戶</text>
+    <text x="120" y="560" fill="#737A83">不進評分　當事人自行查詢（記在另一張表 S2）</text>
+  </g>
+
+  <path d="M120 600 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="654" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">紀錄各留多久</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">
+    <text x="120" y="700">查詢紀錄 <tspan fill="#16191D" font-weight="700">1 年</tspan>　｜　逾期、催收 <tspan fill="#16191D" font-weight="700">清償起 3 年</tspan>　｜　呆帳 <tspan fill="#16191D" font-weight="700">轉銷起最長 5 年</tspan></text>
+    <text x="120" y="740">個人信用評分 <tspan fill="#16191D" font-weight="700">200–800 分</tspan>，但有七種情形會「暫時無法評分」</text>
+    <text x="120" y="778" font-size="18">資料來源：財團法人金融聯合徵信中心　｜　聯徵資料消除 ≠ 債務消失，銀行仍可能保有內部紀錄</text>
+  </g>
+</svg>

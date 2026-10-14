@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="84" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">房貸送件一定會附謄本——這六欄你在簽約前就看得到</text>
+
+  <text x="120" y="148" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#16191D">建物謄本三部分，六個該看的欄位</text>
+
+  <g>
+    <rect x="120" y="182" width="960" height="150" fill="none" stroke="#DEDCD7" stroke-width="2"/>
+    <rect x="120" y="182" width="170" height="150" fill="#FCEFE3"/>
+    <text x="146" y="214" font-family="'IBM Plex Mono',monospace" font-size="20" font-weight="700" fill="#B85400">標示部</text>
+    <g font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">
+      <text x="316" y="216">① 主要用途　　　是不是「住家用」</text>
+      <text x="316" y="252">② 建築完成日期　屋齡的唯一正式依據</text>
+      <text x="316" y="288">③ 面積　　　　　主建物／附屬建物／共有部分</text>
+      <text x="316" y="320">④ 其他登記事項　增建、未登記建物、既有違建</text>
+    </g>
+  </g>
+  <g>
+    <rect x="120" y="348" width="960" height="60" fill="none" stroke="#DEDCD7" stroke-width="2"/>
+    <rect x="120" y="348" width="170" height="60" fill="#FCEFE3"/>
+    <text x="134" y="385" font-family="'IBM Plex Mono',monospace" font-size="20" font-weight="700" fill="#B85400">所有權部</text>
+    <text x="316" y="385" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">⑤ 權利範圍　　　「全部」是完整產權，分數是持分</text>
+  </g>
+  <g>
+    <rect x="120" y="424" width="960" height="60" fill="none" stroke="#DEDCD7" stroke-width="2"/>
+    <rect x="120" y="424" width="170" height="60" fill="#FCEFE3"/>
+    <text x="128" y="461" font-family="'IBM Plex Mono',monospace" font-size="19" font-weight="700" fill="#B85400">他項權利部</text>
+    <text x="316" y="461" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">⑥ 權利種類　　　既有抵押權、是不是地上權（含存續期間）</text>
+  </g>
+
+  <text x="120" y="524" font-family="'IBM Plex Mono',monospace" font-size="18" fill="#737A83">第二類謄本一般民眾都可以申請，看屋階段就查得到　｜　資料來源：高雄市政府地政局「建物謄本導讀」</text>
+
+  <path d="M120 562 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="616" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#16191D">現場走一圈，回來對一次謄本</text>
+  <g font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">
+    <text x="120" y="664">夾層、頂樓加蓋、陽台外推的面積通常不在權狀裡——用權狀面積算單價會被高估</text>
+    <text x="120" y="704">本站 10,841 筆成屋成交，備註提到增建或夾層 <tspan fill="#B85400" font-weight="700">243 筆</tspan>、陽台外推 <tspan fill="#B85400" font-weight="700">279 筆</tspan>、地上權 <tspan fill="#B85400" font-weight="700">22 筆</tspan></text>
+  </g>
+  <path d="M120 734 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="776" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">本文只說謄本上寫了什麼、去哪裡查；銀行會怎麼認定，請直接問承貸銀行</text>
+</svg>
