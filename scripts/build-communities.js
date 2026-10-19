@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, orgRef } from "./lib/layout.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -589,6 +589,138 @@ function midPrice(deals) {
 }
 
 /* 組出三組相關社區。dealsMap 用來算價格帶。 */
+/* 比較表的「近三年」界線。與社區頁、學區頁、建商頁的 STAT_SINCE 同一套規則：
+   資料池回補到 2012 年後，全期間會把十四年的價格混成一個數字。 */
+const COMPARE_SINCE = (() => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 3);
+  return d.toISOString().slice(0, 10);
+})();
+
+/* ───────────────────────────────────────────────────────────
+   同區相近社區的並列比較
+   ───────────────────────────────────────────────────────────
+   「A 還是 B」是買方真正會搜、也最常問我們的問題，但站上原本
+   只有一排連結（relatedBlocks），沒有把數字放在同一張表上比。
+   做成社區頁裡的一個區塊而不是新網址：255 個社區兩兩配對會產生
+   三萬多個組合，那是網址爆炸；放在既有頁面上，等於 255 頁各自
+   多一張別人沒有的數字表。
+
+   挑選規則：同生活圈、完工年相差 8 年內、成交滿 10 筆（價格才有意義），
+   依「完工年相近」與「戶數規模相近」排序。湊不到 2 個就不顯示這一區塊。 */
+function comparePeers(c, list, dealsMap, n = 3) {
+  const myYear = Number(yearBuilt(c));
+  const myUnits = unitCount(c);
+  if (!myYear) return [];
+
+  const scored = list
+    .filter(o => o.slug !== c.slug && o.area === c.area)
+    .map(o => {
+      const y = Number(yearBuilt(o));
+      const u = unitCount(o);
+      const deals = (dealsMap[o.slug] || []).filter(d => d.use !== "店面");
+      if (!y || deals.length < 10) return null;
+      const dy = Math.abs(y - myYear);
+      if (dy > 8) return null;
+      /* 戶數規模差距用比值，不用差值——120 戶和 240 戶的差距
+         跟 500 戶和 620 戶的差距不是同一件事。 */
+      const ru = (myUnits && u) ? Math.abs(Math.log(u / myUnits)) : 0.6;
+      return { o, score: dy / 8 + ru };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.score - b.score);
+
+  return scored.slice(0, n).map(x => x.o);
+}
+
+function compareBlock(c, peers, dealsMap, since) {
+  if (peers.length < 2) return "";
+
+  const col = o => {
+    const deals = (dealsMap[o.slug] || []).filter(d => d.use !== "店面");
+    const recent = deals.filter(d => String(d.date || "") >= since)
+      .map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+    const used = recent.length >= 3 ? recent : deals.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+    const mid = used.length ? used[Math.floor(used.length / 2)] : null;
+    const ratio = String(specVal(o, "公設比")).match(/([\d.]+)\s*%/);
+    const fl = String(specVal(o, "樓層規劃")).match(/地上\s*(\d+)\s*層/);
+    return {
+      o,
+      self: o.slug === c.slug,
+      year: yearBuilt(o) || "",
+      units: unitCount(o),
+      floors: fl ? Number(fl[1]) : null,
+      ratio: ratio ? Number(ratio[1]) : null,
+      parking: String(specVal(o, "車位") || "").trim(),
+      mid: mid ? Math.round(mid * 10) / 10 : null,
+      n: deals.length,
+      fellBack: recent.length < 3 && deals.length > 0,
+    };
+  };
+
+  const cols = [col(c), ...peers.map(col)];
+  const rows = [
+    ["完工年", x => x.year || "—"],
+    ["總戶數", x => (x.units ? `${x.units.toLocaleString("en-US")} 戶` : "—")],
+    ["地上樓層", x => (x.floors ? `${x.floors} 層` : "—")],
+    ["公設比", x => (x.ratio !== null ? `${x.ratio}%` : "—")],
+    ["車位", x => (x.parking || "—")],
+    ["近三年單價中位", x => (x.mid !== null ? `${x.mid} 萬／坪${x.fellBack ? "⁺" : ""}` : "—")],
+    ["成交筆數", x => x.n.toLocaleString("en-US")],
+  ];
+
+  /* 導言裡直接把差異講出來，不要讓讀者自己從表格推——
+     這一段也是 AI 被問到「A 和 B 差在哪」時最可能引用的文字。 */
+  const withMid = cols.filter(x => x.mid !== null);
+  const hi = withMid.length > 1 ? withMid.reduce((m, x) => (x.mid > m.mid ? x : m), withMid[0]) : null;
+  const lo = withMid.length > 1 ? withMid.reduce((m, x) => (x.mid < m.mid ? x : m), withMid[0]) : null;
+  const me = cols[0];
+  const gap = (hi && lo && lo.mid) ? Math.round(((hi.mid - lo.mid) / lo.mid) * 100) : null;
+
+  const lead = [
+    `同樣在${c.area}、完工年相近、而且成交筆數夠的社區裡，和${c.name}條件最接近的是`,
+    `${peers.map(o => o.name).join("、")}。`,
+    (hi && lo && hi.o.slug !== lo.o.slug && gap !== null)
+      ? `這幾個社區裡近三年單價中位最高的是${hi.o.name}的 ${hi.mid} 萬／坪、最低的是${lo.o.name}的 ${lo.mid} 萬／坪，相差約 ${gap}%。`
+      : "",
+    me.mid !== null
+      ? `${c.name}本身是 ${me.mid} 萬／坪。`
+      : `${c.name}近三年的成交樣本不足，表格裡的單價改用全部歷史計算。`,
+    `但單價中位數只是起點——同一個社區內部光是樓層、面向與屋況造成的價差就可能超過社區之間的差距，`,
+    `真正要比的是你看的那一戶，不是整棟的中位數。`,
+  ].filter(Boolean).join("");
+
+  return `<section class="mt-14" id="compare">
+    <h2 class="display text-[23px] mb-4">${esc(c.name)}和同區相近社區的比較</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">${esc(lead)}</p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[620px]">
+        <caption class="sr-only">${esc(c.name)}與${esc(peers.map(o => o.name).join("、"))}的完工年、總戶數、樓層、公設比、車位與近三年單價中位數比較</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">項目</th>
+            ${cols.map(x => `<th scope="col" class="text-right font-normal py-3 px-4 ${x.self ? "text-orangeDeep" : ""}">
+              ${x.self ? esc(x.o.name) : `<a href="${x.o.slug}.html" class="hover:text-orangeDeep">${esc(x.o.name)}</a>`}
+              ${x.self ? '<span class="block text-[11px]">本頁</span>' : ""}
+            </th>`).join("\n            ")}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(([label, fn]) => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal">${esc(label)}</th>
+            ${cols.map(x => `<td class="py-3.5 px-4 text-right font-mono text-[14px] ${x.self ? "text-ink font-medium" : "text-inkSoft"}">${esc(String(fn(x)))}</td>`).join("")}
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      單價取近三年住家成交的中位數，已排除店面；標 ⁺ 者近三年不足三筆、改用全部歷史計算。
+      成交筆數為全部歷史的累計。規格取自各社區頁登載的公開平台資料，查不到的欄位留空。
+      挑選條件為同生活圈、完工年相差 8 年內、成交滿 10 筆。
+    </p>
+  </section>`;
+}
+
 export function relatedGroups(c, list, dealsMap) {
   const pool = list.filter(o => o.slug !== c.slug);
   const used = new Set();
@@ -647,7 +779,7 @@ export function relatedGroups(c, list, dealsMap) {
 }
 
 /* ---------- 單一社區頁 ---------- */
-function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
+function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = "") {
   const url = `${SITE}/communities/${c.slug}.html`;
 
   /* 成交總價中位數（含車位，與表格上的總價欄一致），用來把自備款 FAQ
@@ -707,14 +839,9 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
         }],
       } : {}),
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
-      /* 每一頁都帶上組織實體，不只首頁有 */
-      provider: {
-        "@type": "RealEstateAgent",
-        name: BRAND.teamName,
-        legalName: BRAND.legalName,
-        url: `${SITE}/`,
-        telephone: "+886-7-9766977",
-      },
+      /* 每一頁都帶上組織實體，不只首頁有。用 @id 參照首頁那份權威定義，
+         避免 255 個社區頁各自變成一個同名組織。 */
+      provider: orgRef(),
     },
     {
       "@context": "https://schema.org",
@@ -741,7 +868,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
       ...(c.video.date ? { uploadDate: isoDate(c.video.date) } : {}),
       embedUrl: `https://www.youtube.com/embed/${vid}`,
       contentUrl: `https://www.youtube.com/watch?v=${vid}`,
-      publisher: { "@type": "Organization", name: BRAND.teamName },
+      publisher: orgRef(),
     });
   }
 
@@ -774,11 +901,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "") {
          本站的彙整成果沿用同一授權並標示出處。license 是 Google Dataset
          的建議欄位，缺少會在 Search Console 報「欄位未填」。 */
       license: "https://data.gov.tw/license",
-      publisher: {
-        "@type": "Organization",
-        name: BRAND.legalName,
-        url: `${SITE}/`,
-      },
+      publisher: orgRef(),
       isAccessibleForFree: true,
       inLanguage: "zh-TW",
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
@@ -889,6 +1012,9 @@ ${videoSection(c)}
       </div>` : ""}
     </div>
   </section>` : ""}
+
+  <!-- 同區相近社區比較 -->
+  ${compare}
 
   <!-- 學區 -->
   ${c.school ? `<section class="mt-14">
@@ -1289,7 +1415,7 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
     inLanguage: "zh-TW",
     description: `高雄美術館特區、農十六特區、瑞豐・巨蛋與中都重劃區共 ${list.length} 個社區的實價登錄成交紀錄，合計 ${dealTotal} 筆。`,
     ...(dataUpdated ? { dateModified: dataUpdated } : {}),
-    publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
+    publisher: orgRef(),
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: list.length,
@@ -1441,7 +1567,9 @@ export function buildCommunities(hasBuyers) {
   list.forEach(c => {
     /* 相關社區：同路段、同建商、同價格帶三組（見 relatedGroups） */
     const others = relatedGroups(c, list, dealsMap);
-    const html = communityPage(c, dealsMap[c.slug] || [], others, hasBuyers, dataUpdated);
+    const peers = comparePeers(c, list, dealsMap, 3);
+    const compare = compareBlock(c, peers, dealsMap, COMPARE_SINCE);
+    const html = communityPage(c, dealsMap[c.slug] || [], others, hasBuyers, dataUpdated, compare);
     writeFileSync(path.join(OUT_DIR, `${c.slug}.html`), html, "utf-8");
     console.log("[產生]", `communities/${c.slug}.html`);
   });

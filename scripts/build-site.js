@@ -30,7 +30,7 @@ import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
 import { buildAreas } from "./build-areas.js";
 import { buildIndexPages, devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
-import { devName } from "./build-communities.js";
+import { devName, ytId } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
 import { buildHubs } from "./build-hubs.js";
 import { buildFaq } from "./build-faq.js";
@@ -121,13 +121,67 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
     })),
   ];
 
+  /* ── 影片擴充 ──
+     Google 影片搜尋只吃 video sitemap 擴充，頁面上的 VideoObject 結構化資料
+     對它不夠。影片頁與帶社區介紹影片的社區頁都掛上，讓這 15 支影片
+     多一個完全獨立的入口。
+     player_loc 用 youtube.com/embed/<id>：影片本身在 YouTube 上，
+     這裡宣告的是「這一頁嵌了這支影片」，不是宣告自己是來源。 */
+  const videoExt = {};
+  const addVideo = (loc, v) => {
+    if (!v?.id || !v?.title) return;
+    (videoExt[loc] || (videoExt[loc] = [])).push(v);
+  };
+  (ctx.videos || []).filter(v => !v.hidden && v.videoId).forEach(v => {
+    addVideo(`${SITE}/videos/`, {
+      id: v.videoId,
+      title: v.titleShown || v.title || "",
+      desc: v.descShown || v.desc || v.titleShown || v.title || "",
+      thumb: v.thumb || `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`,
+      date: v.published || "",
+    });
+  });
+  communities.forEach(c => {
+    const v = c.video;
+    if (!v?.id) return;
+    addVideo(`${SITE}/communities/${c.slug}.html`, {
+      id: ytId(v.id),
+      title: v.title || `${c.name} 社區介紹`,
+      desc: v.desc || `${c.name}（${c.address || ""}）的社區介紹影片。`,
+      thumb: `https://i.ytimg.com/vi/${ytId(v.id)}/hqdefault.jpg`,
+      date: v.date || "",
+    });
+  });
+
+  const xmlEsc = s => String(s || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+  /* Google 對 video:description 的上限是 2048 字元，title 是 100 */
+  const clip = (s, n) => { const t = String(s || "").trim(); return t.length > n ? t.slice(0, n - 1) + "…" : t; };
+
+  const videoBlock = loc => (videoExt[loc] || []).map(v => `
+    <video:video>
+      <video:thumbnail_loc>${xmlEsc(v.thumb)}</video:thumbnail_loc>
+      <video:title>${xmlEsc(clip(v.title, 100))}</video:title>
+      <video:description>${xmlEsc(clip(v.desc, 2048))}</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/${xmlEsc(v.id)}</video:player_loc>
+      ${v.date ? `<video:publication_date>${xmlEsc(v.date)}</video:publication_date>` : ""}
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>`).join("");
+
+  const nVideoUrls = Object.keys(videoExt).length;
+  const nVideos = Object.values(videoExt).reduce((n, a) => n + a.length, 0);
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${pages.map(p => `  <url>
     <loc>${p.loc}</loc>
     <lastmod>${p.lastmod || today}</lastmod>
     <changefreq>${p.freq}</changefreq>
-    <priority>${p.priority}</priority>
+    <priority>${p.priority}</priority>${videoBlock(p.loc)}
   </url>`).join("\n")}
 </urlset>
 `;
@@ -411,7 +465,7 @@ function main() {
   if (dealCount > 0) {
     mkdirSync(path.join(ROOT, "deals"), { recursive: true });
     writeFileSync(path.join(ROOT, "deals/index.html"),
-      buildDealsIndex({ deals, hasBuyers }), "utf-8");
+      buildDealsIndex({ deals, hasBuyers, market }), "utf-8");
     console.log("[產生] deals/index.html");
   }
 
@@ -461,6 +515,7 @@ function main() {
     videosUpdated: maxDate((videos.videos || []).map(v => v.published)),
     dealsUpdated: maxDate((deals.deals || []).map(d => d.date || d.createdAt)) || String(deals.updatedAt || "").slice(0, 10),
     marketUpdated: String(market?.updatedAt || cdForMap.updatedAt || "").slice(0, 10),
+    videos: videos.videos || [],
   });
   buildRobots();
   const communityDeals = readJson("data/community-deals.json", { deals: {} });

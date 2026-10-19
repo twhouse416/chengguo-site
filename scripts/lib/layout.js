@@ -47,6 +47,25 @@ export const BRAND = {
   lineUrl: CONFIG.lineUrl || "",
 };
 
+/* ───────────────────────────────────────────────────────────
+   實體識別碼（@id）
+   ───────────────────────────────────────────────────────────
+   原本每一頁都各自宣告一個 RealEstateAgent／Organization，而且都沒有 @id。
+   對搜尋引擎與 AI 引擎來說，沒有 @id 的節點是「這一頁上的某個同名組織」，
+   所以 300 多頁等於 300 多個不同的「澄果團隊」，首頁那份寫得最完整的
+   （統編、座標、營業時間、sameAs、獎項）無法被其他頁共享。
+
+   作法：首頁那一份掛上 ORG_ID 當權威定義，其他頁面一律用 orgRef() 參照，
+   讓全站的組織節點收斂成同一個實體。2026-10 補上。 */
+export const ORG_ID = `${SITE}/#organization`;
+
+/* 參照首頁的組織實體。name／url 留著是為了讓單頁獨立看也讀得懂
+   （schema.org 允許 @id 參照節點同時帶少量重複欄位），
+   但權威資料一律以首頁那份為準。 */
+export function orgRef(extra = {}) {
+  return { "@id": ORG_ID, "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/`, ...extra };
+}
+
 /* 圖片尺寸表：建置時由 scripts/optimize-images.js 產生。
    把 width/height 寫進 <img>，瀏覽器在圖片載入前就知道要留多少空間，
    版面不會在載入過程往下跳（Core Web Vitals 的 CLS）。

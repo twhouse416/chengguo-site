@@ -17,7 +17,7 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, ORG_ID, orgRef } from "./lib/layout.js";
 import { AWARDS, HIGHLIGHTS, FACTS } from "./build-home.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,7 +50,7 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
       mainEntity: {
         "@type": "RealEstateAgent",
-        "@id": `${SITE}/#organization`,
+        "@id": ORG_ID,
         name: BRAND.teamName,
         legalName: BRAND.legalName,
         url: `${SITE}/`,

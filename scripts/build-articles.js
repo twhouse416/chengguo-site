@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer , thumbOf, imgSize } from "./lib/layout.js";
+import { SITE, BRAND, esc, rich, fmtDate, visible, head, header, footer , thumbOf, imgSize, orgRef } from "./lib/layout.js";
 import { articleRelated, articleNext, pickRelated, coverOrphans } from "./lib/related.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -183,24 +183,10 @@ function jsonLd(a) {
       dateModified: a.updated || a.date,
       inLanguage: "zh-TW",
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
-      author: {
-        "@type": "Organization",
-        name: BRAND.teamName,
-        url: BRAND.officialSite,
-        telephone: BRAND.phone,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "鼓山區青海路416號",
-          addressLocality: "高雄市",
-          postalCode: "804",
-          addressCountry: "TW",
-        },
-      },
-      publisher: {
-        "@type": "Organization",
-        name: BRAND.legalName,
-        logo: { "@type": "ImageObject", url: `${SITE}/assets/logo-full.png` },
-      },
+      /* 作者與發布者都是同一個組織實體（團隊級作者，不放個人姓名）。
+         用 orgRef() 參照首頁的 @id，而不是每篇再宣告一份。 */
+      author: orgRef(),
+      publisher: orgRef(),
       ...(a.keywords?.length ? { keywords: a.keywords.join(", ") } : {}),
     },
     {

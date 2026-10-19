@@ -14,7 +14,7 @@
  * 但所有文字內容都在 HTML 裡，不執行 JS 也讀得到。
  */
 
-import { SITE, BRAND, esc, head, header, footer } from "./layout.js";
+import { SITE, BRAND, esc, head, header, footer, orgRef } from "./layout.js";
 
 /**
  * @param {object} o
@@ -53,15 +53,7 @@ export function buildTool(o, hasBuyers = false) {
       inLanguage: "zh-TW",
       description: o.description,
       offers: { "@type": "Offer", price: "0", priceCurrency: "TWD" },
-      provider: {
-        "@type": "RealEstateAgent",
-        name: BRAND.teamName,
-        telephone: "+886-7-9766977",
-        address: {
-          "@type": "PostalAddress", streetAddress: BRAND.addressShort,
-          addressLocality: "高雄市", postalCode: "804", addressCountry: "TW",
-        },
-      },
+      provider: orgRef(),
     },
     {
       "@context": "https://schema.org",

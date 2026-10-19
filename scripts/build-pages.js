@@ -6,7 +6,7 @@
  * 即使爬蟲不執行 JS，內容仍完整可讀。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize, orgRef } from "./lib/layout.js";
 import { webSlug, fillStats } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
 import { isoDate } from "./build-communities.js";
@@ -265,13 +265,48 @@ export function buildVideosIndex({ videos, hasBuyers }) {
 
 
 /* ================= 賀成交列表 ================= */
-export function buildDealsIndex({ deals, hasBuyers }) {
+export function buildDealsIndex({ deals, hasBuyers, market }) {
   const all = (deals?.deals || []).filter(d => !d.hidden && d.img);
 
   /* 依區域分組，讓訪客一眼看出我們在哪些區域成交 */
   const byArea = {};
   all.forEach(d => { (byArea[d.area] || (byArea[d.area] = [])).push(d); });
   const areas = Object.keys(byArea);
+
+  /* 原本這一頁只有圖片與一句說明，可讀文字 262 字，
+     卻被全站每一頁連過來、也在 sitemap 裡——全站連入最多的頁是全站最薄的頁。
+     下面補的是本來就有的資料（賀成交分區筆數 × 該區近一年行情）
+     與團隊自己的作業流程說明，不替任何一筆成交補上沒有的數字。 */
+  const AREA_SLUG = {
+    "美術館特區": "art-museum", "農十六特區": "nong16",
+    "瑞豐・巨蛋": "ruifeng-arena", "中都重劃區": "zhongdu",
+  };
+  const mkt = new Map((market?.areas || []).map(a => [a.name, a]));
+  const dist = areas.map(area => {
+    const m = mkt.get(area) || {};
+    const ele = (m.types || []).find(t => t.key === "elevator") || m;
+    return {
+      area, count: byArea[area].length,
+      slug: AREA_SLUG[area] || "",
+      unit: ele.avgPricePerPing || 0,
+      total: ele.medianTotalPrice || 0,
+      sample: ele.sampleSize || 0,
+    };
+  }).sort((a, b) => b.count - a.count);
+
+  const dealFaq = [
+    ["賀成交為什麼不寫成交價？",
+      "成交價要等內政部實價登錄公告之後才是公開資訊，公告前揭露會動到屋主與買方的隱私；"
+      + "而且單看一筆價格沒有意義，要和同社區、同樓層、同屋況的紀錄放在一起比才看得出貴或便宜。"
+      + "想看數字的話，本站每一個社區頁都有該社區的逐筆實價登錄成交紀錄，那是官方公告後的資料，比任何一張賀成交圖都完整。"],
+    ["這些成交都是澄果團隊自己經手的嗎？",
+      "是。這一頁只放團隊實際成交的案件，不收錄同業案件，也不把同一筆成交重複計算。"
+      + "目前列出 " + all.length + " 筆，分布在" + dist.map(d => `${d.area}（${d.count} 筆）`).join("、") + "。"],
+    ["我手上的房子，怎麼知道現在值多少？",
+      "先看你的社區頁——本站收錄的社區都有逐筆成交紀錄與近三年單價區間，可以先抓出自己的位置。"
+      + "但逐筆紀錄不會告訴你樓層、面向、屋況與車位條件造成的差距，這部分需要實際看過房子才估得準。"
+      + "澄果團隊的估價不收費，也不需要先簽委託。"],
+  ];
 
   /* 這一頁的 dateModified 取最新一筆成交的日期：
      賀成交是持續累積的內容，讓搜尋引擎知道它有在更新。 */
@@ -291,7 +326,14 @@ export function buildDealsIndex({ deals, hasBuyers }) {
     url: `${SITE}/deals/`,
     inLanguage: "zh-TW",
     ...(latest ? { dateModified: String(latest).slice(0, 10) } : {}),
-    publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
+    publisher: orgRef(),
+  }, {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: dealFaq.map(([q, a]) => ({
+      "@type": "Question", name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
   }];
 
   return [
@@ -325,6 +367,98 @@ export function buildDealsIndex({ deals, hasBuyers }) {
       ${byArea[area].map(d => dealCard(d, 1)).join("\n      ")}
     </div>
   </section>`).join("")}
+
+  ${dist.length ? `<section class="mt-16 pt-10 border-t-2 border-ink">
+    <h2 class="display text-[23px] mb-4">成交分布與各區行情</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      左邊是本頁列出的成交筆數，右邊是該生活圈近一年電梯住宅的實價登錄行情。
+      兩者不是同一件事——賀成交是團隊的服務紀錄，行情是整個生活圈的市場數字，
+      放在一起只是讓你知道這些成交是在什麼價位帶的區域裡完成的。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[560px]">
+        <caption class="sr-only">澄果團隊賀成交的生活圈分布，以及各生活圈近一年電梯住宅的單價中位數、總價中位數與樣本數</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">生活圈</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">本頁成交</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">單價中位<span class="block font-mono text-[11px] text-inkFaint">近一年</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">總價中位</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">行情樣本</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${dist.map(d => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal">
+              ${d.slug
+                ? `<a href="../areas/${d.slug}/index.html" class="text-ink hover:text-orangeDeep font-medium">${esc(d.area)}</a>`
+                : `<span class="font-medium">${esc(d.area)}</span>`}
+            </th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${d.count} 筆</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${d.unit ? `${d.unit} 萬／坪` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${d.total ? `${d.total.toLocaleString("en-US")} 萬` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkFaint">${d.sample || "—"}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      行情取自內政部不動產交易實價查詢服務網，近一年電梯住宅（住宅大樓＋華廈）的中位數，已排除店面成交。
+      ${market?.updatedAt ? `資料更新於 ${String(market.updatedAt).slice(0, 10)}。` : ""}
+    </p>
+  </section>` : ""}
+
+  <section class="mt-16">
+    <h2 class="display text-[23px] mb-4">一筆成交是怎麼談成的</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      圖上看到的是結果，過程大致是這四段。寫出來不是為了講流程有多專業，
+      而是因為大部分屋主在簽委託之前並不知道這幾個環節會決定最後拿到多少。
+    </p>
+    <div class="border-t border-line">
+      ${[
+        ["訂價",
+          "先把同社區的逐筆實價登錄成交攤開，挑樓層、坪數、車位條件接近的來比，而不是拿整棟的平均或鄰居口頭講的數字當依據。"
+          + "同一個社區的價差中位數就有三成，比錯對象會從第一天就偏掉。"],
+        ["開價與上架",
+          "開價是訂價加上預留的議價空間，空間留多少取決於這個社區的成交頻率——一年成交十幾戶的社區和兩三年才成交一戶的社區，策略不一樣。"],
+        ["帶看與回報",
+          "每一組看完的反應都要回報給屋主，包括嫌的地方。看了十組沒有出價，問題通常不在買方。"],
+        ["議價與簽約",
+          "買方出價之後要處理的是價格之外的條件：交屋時間、貸款成數不足的處理、傢俱與裝潢的歸屬、稅費負擔。"
+          + "這些談不清楚，簽約後才會變成糾紛。"],
+      ].map(([t, d], i) => `<div class="border-b border-line py-6">
+        <div class="flex items-baseline gap-4">
+          <span class="font-mono text-[13px] text-orangeDeep shrink-0">0${i + 1}</span>
+          <div>
+            <h3 class="text-[17px] font-bold tracking-tight">${esc(t)}</h3>
+            <p class="mt-2 text-[16px] text-inkSoft leading-[1.95] max-w-3xl">${esc(d)}</p>
+          </div>
+        </div>
+      </div>`).join("\n      ")}
+    </div>
+    <p class="text-[15px] text-inkSoft leading-[1.9] mt-6 max-w-3xl">
+      訂價那一段的數字依據，寫在
+      <a href="../notes/how-to-price-your-home-kaohsiung.html" class="text-orangeDeep hover:underline">賣房開價怎麼訂</a>
+      與
+      <a href="../notes/community-turnover-kaohsiung.html" class="text-orangeDeep hover:underline">你的社區一年成交幾戶</a>
+      這兩篇；稅費與淨到手的算法在
+      <a href="../notes/home-selling-costs-taiwan.html" class="text-orangeDeep hover:underline">賣房要付哪些錢</a>。
+    </p>
+  </section>
+
+  <section class="mt-16 pt-10 border-t-2 border-ink">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <h2 class="display text-[23px] mb-8">關於賀成交的常見問題</h2>
+    <div class="border-t border-line">
+      ${dealFaq.map(([q, a]) => `<details class="border-b border-line group">
+        <summary class="w-full flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="text-[17px] font-bold leading-snug tracking-tight group-hover:text-orangeDeep transition">${esc(q)}</h3>
+          <span class="faq-plus font-mono text-[20px] text-orangeDeep shrink-0 leading-none mt-1 transition-transform">＋</span>
+        </summary>
+        <p class="text-[16px] text-inkSoft leading-[2] pb-7 pr-12">${esc(a)}</p>
+      </details>`).join("\n      ")}
+    </div>
+  </section>
 
   <section class="mt-16 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">下一個，換你的房子</h2>

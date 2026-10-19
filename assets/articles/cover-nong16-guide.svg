@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="104" font-family="'Noto Sans TC',sans-serif" font-size="38" font-weight="700" fill="#16191D">農十六特區　單價中位數逐年走勢</text>
+  <text x="120" y="152" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">萬元／坪　｜　電梯住宅成屋　｜　內政部實價登錄</text>
+  <text x="1080" y="152" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#B85400">2012 → 2026　＋106%</text>
+
+  <path d="M120 520 H1080" stroke="#16191D" stroke-width="2"/>
+    <rect x="132.2" y="376.8" width="39.7" height="143.2" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="152.0" y="364.8" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">16.9</text>
+  <rect x="196.2" y="351.4" width="39.7" height="168.6" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="216.0" y="339.4" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">19.9</text>
+  <rect x="260.2" y="340.4" width="39.7" height="179.6" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="280.0" y="328.4" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">21.2</text>
+  <rect x="324.2" y="323.4" width="39.7" height="196.6" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="344.0" y="311.4" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">23.2</text>
+  <rect x="388.2" y="340.4" width="39.7" height="179.6" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="408.0" y="328.4" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">21.2</text>
+  <rect x="452.2" y="346.3" width="39.7" height="173.7" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="472.0" y="334.3" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">20.5</text>
+  <rect x="516.2" y="341.2" width="39.7" height="178.8" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="536.0" y="329.2" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">21.1</text>
+  <rect x="580.2" y="333.6" width="39.7" height="186.4" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="600.0" y="321.6" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">22.0</text>
+  <rect x="644.2" y="328.5" width="39.7" height="191.5" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="664.0" y="316.5" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">22.6</text>
+  <rect x="708.2" y="313.3" width="39.7" height="206.7" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="728.0" y="301.3" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">24.4</text>
+  <rect x="772.2" y="255.7" width="39.7" height="264.3" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="792.0" y="243.7" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">31.2</text>
+  <rect x="836.2" y="239.6" width="39.7" height="280.4" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="856.0" y="227.6" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">33.1</text>
+  <rect x="900.2" y="228.6" width="39.7" height="291.4" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="920.0" y="216.6" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">34.4</text>
+  <rect x="964.2" y="226.0" width="39.7" height="294.0" fill="#16191D" fill-opacity="0.14" stroke="#16191D" stroke-width="1.5"/>
+  <text x="984.0" y="214.0" font-size="19" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#474D55">34.7</text>
+  <rect x="1028.2" y="225.2" width="39.7" height="294.8" fill="#FD7305" fill-opacity="0.9"/>
+  <text x="1048.0" y="213.2" font-size="19" font-weight="700" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#B85400">34.8</text>
+    <text x="152.0" y="554" font-size="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#737A83">2012</text>
+  <text x="408.0" y="554" font-size="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#737A83">2016</text>
+  <text x="664.0" y="554" font-size="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#737A83">2020</text>
+  <text x="920.0" y="554" font-size="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#737A83">2024</text>
+  <text x="1048.0" y="554" font-size="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" fill="#737A83">2026</text>
+
+  <path d="M120 606 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">
+    <text x="120" y="588">16.9</text>
+    <text x="1046" y="588" text-anchor="end">34.8</text>
+  </g>
+  <text x="120" y="664" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">四區唯一高點就在最新一年，沒有從高點回落</text>
+  <text x="120" y="712" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">總價中位 1,220 萬四區最低　｜　坪數中位 40.2 坪　｜　41 個社區完工於 2000–2009</text>
+</svg>

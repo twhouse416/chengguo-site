@@ -16,7 +16,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, orgRef } from "./lib/layout.js";
 import { yearBuilt, unitCount, twDate } from "./build-communities.js";
 import { TOOLS } from "./build-tools.js";
 
@@ -72,7 +72,7 @@ function ld({ name, url, description, items, crumb }) {
   return [
     { "@context": "https://schema.org", "@type": "CollectionPage",
       name, url, description, inLanguage: "zh-TW",
-      publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
+      publisher: orgRef(),
       mainEntity: { "@type": "ItemList", name, numberOfItems: items.length,
         itemListElement: items.map((x, i) => ({ "@type": "ListItem", position: i + 1, name: x.name, url: x.url })) } },
     { "@context": "https://schema.org", "@type": "BreadcrumbList",

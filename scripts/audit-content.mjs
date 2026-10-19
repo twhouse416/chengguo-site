@@ -47,6 +47,15 @@ const STATS = {
   ruifengCount: communities.filter(c => String(c.area || "").includes("瑞豐")).length,
   ruifengDeals: communities.filter(c => String(c.area || "").includes("瑞豐"))
     .reduce((n, c) => n + (dealsMap[c.slug] || []).filter(d => d.use !== "店面").length, 0),
+  /* 四個生活圈的通用計數，與 build-site.js 的 STATS.areas 同一套算法 */
+  areaStats: ["美術館特區", "農十六特區", "瑞豐", "中都"].map(key => {
+    const list = communities.filter(c => String(c.area || "").includes(key.replace("特區", "")));
+    return {
+      key,
+      communities: list.length,
+      deals: list.reduce((n, c) => n + (dealsMap[c.slug] || []).filter(d => d.use !== "店面").length, 0),
+    };
+  }),
 };
 
 /* ---------- A 封面圖 ↔ 文章 ---------- */
@@ -64,7 +73,16 @@ for (const a of articles) {
     .replace(/\{\{\s*成交筆數\s*\}\}/g, STATS.dealTotal.toLocaleString("en-US"))
     .replace(/\{\{\s*有公設比社區數\s*\}\}/g, String(STATS.ratioCount))
     .replace(/\{\{\s*瑞豐社區數\s*\}\}/g, String(STATS.ruifengCount))
-    .replace(/\{\{\s*瑞豐成交筆數\s*\}\}/g, STATS.ruifengDeals.toLocaleString("en-US"));
+    .replace(/\{\{\s*瑞豐成交筆數\s*\}\}/g, STATS.ruifengDeals.toLocaleString("en-US"))
+    /* 生活圈層級的變數原本只寫死瑞豐那兩個，所以其他生活圈的文章
+       （例如農十六那篇）用 {{農十六社區數}} 時，這裡代不進去，
+       封面圖上的數字會被誤判成「內文沒有」。改成和 build-articles.js
+       的 fillStats 同一套通用規則。2026-10 補上。 */
+    .replace(/\{\{\s*([^}\s]+?)(社區數|成交筆數)\s*\}\}/g, (whole, key, kind) => {
+      const a = (STATS.areaStats || []).find(x => x.key.includes(key) || key.includes(x.key));
+      if (!a) return whole;
+      return (kind === "社區數" ? a.communities : a.deals).toLocaleString("en-US");
+    });
   const missing = [...new Set(svgText.match(NUM) || [])]
     .filter(n => {
       const v = parseFloat(n.replace(/,/g, ""));
@@ -182,6 +200,38 @@ for (const a of articles) {
   push("3 房成交筆數", rooms(3).length, 5202);
   push("1 房單價中位", med(rooms(1).map(d=>d.unitPrice)), 34.9);
   push("4 房單價中位", med(rooms(4).map(d=>d.unitPrice)), 31.3);
+}
+
+/* 農十六特區：支撐「高雄農十六特區買房指南」。
+   那篇把四區對照、房型、總價帶與屋齡結構的數字都寫死在表格裡，
+   社區一旦增減或成交累積，表格就會和實況脫鉤。
+   這裡盯的是文章論點真正依賴的幾個數字——
+   「總價中位四區最低」與「單價只差 8%、總價差 27%」這兩句話是整篇的骨幹。 */
+{
+  const inArea = key => communities.filter(c => String(c.area || "").includes(key));
+  const n16 = inArea("農十六");
+  const art = inArea("美術館");
+  const n16h = n16.flatMap(homesOf);
+  const arth = art.flatMap(homesOf);
+  push("農十六社區數", n16.length, 72, 0.05);
+  push("農十六 2020起住家成交", n16h.length, 2340);
+  push("農十六 單價中位", med(n16h.map(d => d.unitPrice)), 30.0);
+  push("農十六 總價中位", med(n16h.map(d => d.totalPrice).filter(Boolean)), 1220);
+  push("農十六 坪數中位", med(n16h.map(d => d.ping).filter(Boolean)), 40.2);
+  push("農十六 公設比中位", med(n16.map(ratioOf).filter(v => v !== null)), 29.26);
+  /* 文章宣稱「單價只低 8%、總價低 27%」，兩個比值一起盯，
+     只盯單邊的話其中一句話走掉了也看不出來。 */
+  const uA = med(arth.map(d => d.unitPrice));
+  const uN = med(n16h.map(d => d.unitPrice));
+  const tA = med(arth.map(d => d.totalPrice).filter(Boolean));
+  const tN = med(n16h.map(d => d.totalPrice).filter(Boolean));
+  push("農十六 vs 美術館 單價低 %", uA ? (uA - uN) / uA * 100 : 0, 8, 0.25);
+  push("農十六 vs 美術館 總價低 %", tA ? (tA - tN) / tA * 100 : 0, 27, 0.15);
+  /* 「2000–2009 年完工的佔 41 個」與「2020 年以後只有 1 個」
+     是「四區裡屋齡跨度最大、近年幾乎沒新案」這個論點的依據 */
+  const era = (lo, hi) => n16.filter(c => { const y = yearOf(c); return y && y >= lo && y <= hi; }).length;
+  push("農十六 2000-2009 完工社區", era(2000, 2009), 41, 0.08);
+  push("農十六 2020後完工社區", era(2020, 2099), 1, 1);
 }
 
 /* 備註欄：支撐「實價登錄的備註欄怎麼看」。
@@ -574,7 +624,11 @@ if (BUILT) {
 console.log("\n【L】彙整頁的內容量（太薄會被 Google 歸為「已檢索－尚未建立索引」）");
 if (BUILT) {
   const MIN = 1000;
-  const HUBS = ["areas", "schools", "developers", "tools", "notes", "communities", "videos", "faq"];
+  /* 清單原本漏了 deals 與 about，所以 /deals/ 的 262 字從這個檢查底下溜過去——
+     而它是全站連入最多的頁（導覽列與頁尾每一頁都連）。
+     這個清單要和 build-site.js 實際產出的目錄一致，不要只列想得到的那幾個。
+     2026-10 補上 deals、about。 */
+  const HUBS = ["areas", "schools", "developers", "tools", "notes", "communities", "videos", "faq", "deals", "about"];
   let thin = 0;
   for (const d of HUBS) {
     const f = path.join(ROOT, d, "index.html");

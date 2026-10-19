@@ -25,10 +25,11 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, sectionHead } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
+import { yearly, byRooms, priceBands, roomLabel } from "./lib/area-stats.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -285,6 +286,208 @@ function sellerBlock(area, items, dealsMap) {
 /* 摘要用的「一般成交」樣本：排除被標＊的特殊交易（親屬移轉、持分交易等）。
    門檻與社區頁逐筆表格的 ＊ 一致：低於中位六成或高於一點六倍。
    樣本少於 5 筆時不排除，因為中位數本身就不可靠。 */
+
+/* ───────────────────────────────────────────────────────────
+   逐年房價走勢
+   ───────────────────────────────────────────────────────────
+   資料池已回補到 2012 年，但全站原本只講「近一年」與「近三年」。
+   「美術館特區房價走勢」「中都這幾年漲多少」這類問法沒有頁面對得上，
+   而 591、樂居這些平台給的也都是近期均價，沒有帶樣本數的長期中位數序列。
+
+   用中位數不用平均：十四年跨度裡有大坪數新案交屋潮這種結構性變化，
+   平均會被少數高價拉走。每一年都標樣本數，讓讀者自己判斷那一年可信度多少。
+
+   這裡用純 HTML／CSS 畫橫條（不載任何圖表套件）——條長只是視覺輔助，
+   真正的資料在同一列的數字與下方表格裡，爬蟲與 AI 讀到的是文字。 */
+function trendBlock(area, t) {
+  if (!t) return "";
+  const max = Math.max(...t.rows.map(r => r.unit));
+  const dir = t.changePct === null ? ""
+    : t.changePct > 0 ? `上漲約 ${t.changePct}%`
+    : t.changePct < 0 ? `下跌約 ${Math.abs(t.changePct)}%` : "持平";
+  const peakNote = t.peak.year === t.last.year
+    ? `${t.last.year} 年是這段期間的高點。`
+    : `高點在 ${t.peak.year} 年的 ${t.peak.unit} 萬／坪，${t.last.year} 年的 ${t.last.unit} 萬／坪`
+      + `${t.fromPeakPct === 0 ? "與高點相當" : `比高點${t.fromPeakPct > 0 ? "高" : "低"}約 ${Math.abs(t.fromPeakPct)}%`}。`;
+
+  return `<section class="mt-16" id="trend">
+    <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3 mb-6">
+      <h2 class="display text-[23px]">${esc(area.name)}房價走勢（${t.span}）</h2>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0">${t.sample.toLocaleString("en-US")} 筆成交</span>
+    </div>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-7 max-w-3xl">
+      逐年取該年所有電梯住宅成交的單價中位數，不是平均——這段期間有新成屋交屋潮這類結構性變化，
+      平均會被少數高價案拉走。${esc(area.name)}從 ${t.first.year} 年的 ${t.first.unit} 萬／坪
+      到 ${t.last.year} 年的 ${t.last.unit} 萬／坪，${dir}。${esc(peakNote)}
+      每一年的樣本數都列在右邊，樣本少的年份（通常是當年度還沒公告完的最新一年）參考性較低。
+    </p>
+
+    <div class="border border-line rounded-sm bg-surface p-5 md:p-7">
+      <ul class="space-y-2.5">
+        ${t.rows.map(r => `<li class="flex items-center gap-3">
+          <span class="font-mono text-[13px] text-inkFaint w-11 shrink-0 text-right">${r.year}</span>
+          <span class="flex-1 h-5 bg-paper rounded-sm overflow-hidden" aria-hidden="true">
+            <span class="block h-full ${r.year === t.peak.year ? "bg-orange" : "bg-orangeDeep/35"}" style="width:${Math.round((r.unit / max) * 100)}%"></span>
+          </span>
+          <span class="font-mono text-[14px] text-ink w-[4.5rem] shrink-0 text-right">${r.unit}</span>
+          <span class="font-mono text-[12px] text-inkFaint w-[4.5rem] shrink-0 text-right">${r.n.toLocaleString("en-US")} 筆</span>
+        </li>`).join("\n        ")}
+      </ul>
+    </div>
+
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface mt-6">
+      <table class="w-full text-[15px] min-w-[520px]">
+        <caption class="sr-only">${esc(area.name)}${t.span}各年度電梯住宅成交的單價中位數、總價中位數與成交筆數</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">年度</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">單價中位<span class="block font-mono text-[11px] text-inkFaint">萬／坪</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">總價中位<span class="block font-mono text-[11px] text-inkFaint">萬元</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${t.rows.map(r => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3 px-4 text-left font-normal font-mono text-[14px]">${r.year}</th>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-ink">${r.unit}</td>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-inkSoft">${r.total ? r.total.toLocaleString("en-US") : "—"}</td>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-inkFaint">${r.n.toLocaleString("en-US")}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      統計範圍：電梯住宅（住宅大樓＋華廈）的成屋成交，已排除店面與非住宅用途、已解約紀錄、
+      以及單價超出 3–150 萬／坪合理區間的資料異常。預售屋不計入——預售的交易日是簽約日、交屋還要兩三年，
+      混進逐年序列會讓年份失真。單一年度成交少於 30 筆者不列出。
+      來源：內政部不動產交易實價查詢服務網。
+    </p>
+  </section>`;
+}
+
+/* ───────────────────────────────────────────────────────────
+   房型行情
+   ───────────────────────────────────────────────────────────
+   站上原本有一篇全站合計的「高雄買幾房最好」，但沒有分生活圈。
+   「美術館特區三房多少錢」是很具體的問法，而資料池的
+   「建物現況格局-房」欄位本來就有，只是沒被用過。 */
+function roomsBlock(area, r) {
+  if (!r) return "";
+  const main = r.rows.reduce((m, x) => (x.n > m.n ? x : m), r.rows[0]);
+  return `<section class="mt-16" id="rooms">
+    <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3 mb-6">
+      <h2 class="display text-[23px]">${esc(area.name)}各房型的行情</h2>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0">近 ${r.years} 年・${r.sample.toLocaleString("en-US")} 筆</span>
+    </div>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      依實價登錄「建物現況格局」的房間數分組，取近 ${r.years} 年（${r.since} 年起）的中位數。
+      ${esc(area.name)}成交量最大的是${esc(roomLabel(main.rooms))}，佔 ${main.share}%，
+      總價中位 ${main.total ? main.total.toLocaleString("en-US") : "—"} 萬、權狀中位 ${main.pings} 坪。
+      注意單價和房型不是線性關係——大坪數產品的單價常比中坪數低，但總價高得多，
+      所以用單價比房型會得到和實際預算相反的結論。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[600px]">
+        <caption class="sr-only">${esc(area.name)}近 ${r.years} 年各房型的成交筆數、佔比、單價中位數、總價中位數與權狀坪數中位數</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">房型</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">佔比</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">單價中位<span class="block font-mono text-[11px] text-inkFaint">萬／坪</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">總價中位<span class="block font-mono text-[11px] text-inkFaint">萬元</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">權狀中位<span class="block font-mono text-[11px] text-inkFaint">坪</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${r.rows.map(x => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal font-medium">${esc(roomLabel(x.rooms))}</th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${x.n.toLocaleString("en-US")}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkFaint">${x.share}%</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${x.unit}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${x.total ? x.total.toLocaleString("en-US") : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${x.pings || "—"}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      房間數取自實價登錄的「建物現況格局-房」，登記為 0 房的（部分套房與開放式格局）不列入，
+      該組混了不同性質的產品、意義不一致。單一房型少於 15 筆者不列出。
+      權狀坪數為建物移轉總面積，含公設與車位登記面積。
+    </p>
+  </section>`;
+}
+
+/* ───────────────────────────────────────────────────────────
+   總價帶分布
+   ───────────────────────────────────────────────────────────
+   買方是拿預算找房，不是拿單價找房。「一千五百萬在美術館特區買得到什麼」
+   這種問法，站上原本完全沒有對應的內容。 */
+function bandsBlock(area, b) {
+  if (!b) return "";
+  const max = Math.max(...b.rows.map(r => r.n));
+  const fmt = n => n.toLocaleString("en-US");
+  return `<section class="mt-16" id="bands">
+    <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3 mb-6">
+      <h2 class="display text-[23px]">在${esc(area.name)}，各個預算買得到什麼</h2>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0">近 ${b.years} 年・${fmt(b.sample)} 筆</span>
+    </div>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      把近 ${b.years} 年（${b.since} 年起）的成交依總價每 ${b.step} 萬分一級，看每一級實際成交了多少筆、
+      買到的坪數與房型大概是什麼。${esc(area.name)}成交最密集的是
+      ${fmt(b.main.from)}–${fmt(b.main.to)} 萬這一帶，佔 ${b.main.share}%，權狀中位 ${b.main.pings} 坪。
+      這是「實際成交」的分布，不是「現在在賣」的分布——市場上掛售的物件結構可能不一樣。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[620px]">
+        <caption class="sr-only">${esc(area.name)}近 ${b.years} 年成交的總價帶分布，含各級距成交筆數、佔比、權狀坪數中位數、單價中位數與常見房型</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">總價帶<span class="block font-mono text-[11px] text-inkFaint">萬元</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">成交筆數</th>
+            <th scope="col" class="text-left font-normal py-3 px-4">佔比</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">權狀中位<span class="block font-mono text-[11px] text-inkFaint">坪</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">單價中位<span class="block font-mono text-[11px] text-inkFaint">萬／坪</span></th>
+            <th scope="col" class="text-left font-normal py-3 px-4">常見房型</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${b.rows.map(x => `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal font-mono text-[14px]">${fmt(x.from)}–${fmt(x.to)}</th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${fmt(x.n)}</td>
+            <td class="py-3.5 px-4">
+              <span class="flex items-center gap-2">
+                <span class="inline-block h-2.5 w-20 bg-paper rounded-sm overflow-hidden shrink-0" aria-hidden="true">
+                  <span class="block h-full bg-orangeDeep/45" style="width:${Math.round((x.n / max) * 100)}%"></span>
+                </span>
+                <span class="font-mono text-[13px] text-inkFaint">${x.share}%</span>
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${x.pings || "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${x.unit || "—"}</td>
+            <td class="py-3.5 px-4 text-[14px] text-inkSoft">${x.rooms ? esc(roomLabel(Math.round(x.rooms))) : "—"}</td>
+          </tr>`).join("\n          ")}
+          ${b.other ? `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3.5 px-4 text-left font-normal font-mono text-[14px] text-inkFaint">其他零星級距</th>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkFaint">${fmt(b.other.n)}</td>
+            <td class="py-3.5 px-4 font-mono text-[13px] text-inkFaint">${b.other.share}%</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkFaint">${b.other.pings || "—"}</td>
+            <td class="py-3.5 px-4"></td>
+            <td class="py-3.5 px-4"></td>
+          </tr>` : ""}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      總價為實價登錄的交易總價，含車位（車位有分開揭露時仍計在總價內）。
+      常見房型取該級距房間數的中位數。單一級距少於 10 筆者併入「其他零星級距」。
+      要用這個分布推自己的自備款與月付，可以接
+      <a href="../../tools/mortgage/index.html" class="text-orangeDeep hover:underline">房貸試算</a>。
+    </p>
+  </section>`;
+}
+
 function normalPrices(sorted) {
   /* 門檻訂在 3 筆：原本訂 5 筆，導致只有三、四筆的社區完全不排除異常，
      區間變成「博源新家大廈 5.7–30.7」「貝多芬 8–33.9」這種沒有意義的數字。
@@ -386,6 +589,13 @@ function areaPage(area, ctx) {
   const era = eraOf(items);
   const elevator = (areaMarket?.types || []).find(t => t.key === "elevator") || areaMarket;
 
+  /* 三組新統計都讀 data/area-deals/ 的資料池（回補到 2012 年、31,310 筆），
+     不是 community-deals.json——資料池含 2012 年起的全部成交，
+     而且有「建物現況格局-房」「總價元」這些社區頁沒用到的欄位。 */
+  const trend = yearly(area.code);
+  const rooms = byRooms(area.code);
+  const bands = priceBands(area.code);
+
   /* 可直接被引用的一句話。放在 H1 底下第一段，
      主詞、地點、數量、期間、價格全部寫在同一句裡。 */
   const lead = [
@@ -405,6 +615,32 @@ function areaPage(area, ctx) {
       elevator?.avgPricePerPing
         ? `近一年${area.name}的電梯住宅成交均價是每坪 ${elevator.avgPricePerPing} 萬元，常見單價區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪，常見總價 ${Number(elevator.medianTotalPrice || 0).toLocaleString("en-US")} 萬元，計算樣本為 ${elevator.sampleSize} 筆成交。不過區域均價只能抓大概的範圍，同一個生活圈裡不同社區、不同屋齡、不同樓層的價差往往比區域之間的價差還大。本頁下方列出這一區 ${items.length} 個社區各自的成交筆數與單價範圍，建議直接看你要買的那幾個社區的逐筆紀錄。`
         : `這一區近一年的成交樣本還不足以計算可靠的區域均價。本頁下方列出 ${items.length} 個社區各自的實價登錄成交筆數與單價範圍，建議直接看個別社區的逐筆紀錄，或直接問我們目前的實際市況。`],
+    /* 下面三題對應頁面上新增的逐年走勢、房型與總價帶三個區塊。
+       答案直接寫成可以被引用的完整句子（帶地名、年份、數字、樣本數），
+       AI 引擎被問到「美術館特區這幾年漲多少」時才有東西可以引。 */
+    ...(trend ? [[`${area.name}的房價這幾年漲了多少？`,
+      `以內政部實價登錄的電梯住宅成交計算，${area.name}的單價中位數從 ${trend.first.year} 年的 `
+      + `${trend.first.unit} 萬元／坪，到 ${trend.last.year} 年的 ${trend.last.unit} 萬元／坪，`
+      + `${trend.changePct > 0 ? `累計上漲約 ${trend.changePct}%` : trend.changePct < 0 ? `累計下跌約 ${Math.abs(trend.changePct)}%` : "大致持平"}，`
+      + `${trend.span} 期間共 ${trend.sample.toLocaleString("en-US")} 筆成交。`
+      + (trend.peak.year !== trend.last.year
+        ? `這段期間的高點在 ${trend.peak.year} 年的 ${trend.peak.unit} 萬元／坪，${trend.last.year} 年`
+          + `${trend.fromPeakPct === 0 ? "與高點相當" : `比高點${trend.fromPeakPct > 0 ? "高" : "低"}約 ${Math.abs(trend.fromPeakPct)}%`}。`
+        : `${trend.last.year} 年是這段期間的高點。`)
+      + `逐年的數字與各年度樣本數列在本頁的房價走勢區塊。要注意最新一年的樣本通常還不完整——`
+      + `實價登錄每月 1、11、21 日分批公告，當年度的成交會持續補進來。`]] : []),
+    ...(rooms ? [[`在${area.name}買${roomLabel(rooms.rows.reduce((m, x) => (x.n > m.n ? x : m), rooms.rows[0]).rooms)}大概要多少錢？`,
+      rooms.rows.map(x => `${roomLabel(x.rooms)}近 ${rooms.years} 年成交 ${x.n.toLocaleString("en-US")} 筆，`
+        + `單價中位 ${x.unit} 萬元／坪、總價中位 ${x.total ? x.total.toLocaleString("en-US") : "—"} 萬元、權狀中位 ${x.pings} 坪`).join("；")
+      + `。這是 ${rooms.since} 年起的實價登錄成交中位數，不是開價。`
+      + `單價和房型不是線性關係——大坪數產品的單價常比中坪數低，但總價高得多，`
+      + `所以用單價去比房型會得到和實際預算相反的結論，要看總價。`]] : []),
+    ...(bands ? [[`預算 ${bands.main.from.toLocaleString("en-US")} 到 ${bands.main.to.toLocaleString("en-US")} 萬，在${area.name}買得到什麼？`,
+      `這一帶是${area.name}近 ${bands.years} 年成交最密集的總價級距，佔 ${bands.main.share}%（${bands.main.n.toLocaleString("en-US")} 筆），`
+      + `權狀坪數中位 ${bands.main.pings} 坪${bands.main.rooms ? `、常見房型為${roomLabel(Math.round(bands.main.rooms))}` : ""}，`
+      + `單價中位 ${bands.main.unit} 萬元／坪。`
+      + `其他級距的分布是${bands.rows.map(x => `${x.from.toLocaleString("en-US")}–${x.to.toLocaleString("en-US")} 萬佔 ${x.share}%（中位 ${x.pings} 坪）`).join("、")}。`
+      + `這是實際成交的分布，不是現在掛售的分布——市面上在賣的物件結構可能不一樣。`]] : []),
     [`${area.name}有哪些社區？`,
       `本站目前收錄 ${items.length} 個社區，分布在 ${roads.length} 條路段，其中社區數最多的是${roads.slice(0, 5).map(([r, n]) => `${r}（${n} 個）`).join("、")}。完整清單在本頁下方的社區一覽表，每一個社區名稱都可以點進去看逐筆實價登錄成交、社區規格與學區。清單是依成交筆數排序的，筆數多的社區行情參考性比較高。`],
     [`${area.name}的社區屋齡大概是什麼分布？`,
@@ -438,13 +674,7 @@ function areaPage(area, ctx) {
         },
         containedInPlace: { "@type": "City", name: "高雄市" },
       },
-      publisher: {
-        "@type": "RealEstateAgent",
-        name: BRAND.teamName,
-        legalName: BRAND.legalName,
-        url: `${SITE}/`,
-        telephone: "+886-7-9766977",
-      },
+      publisher: orgRef(),
       mainEntity: {
         "@type": "ItemList",
         name: `${area.name}社區一覽`,
@@ -498,7 +728,7 @@ function areaPage(area, ctx) {
         url: "https://plvr.land.moi.gov.tw/",
       },
       license: "https://data.gov.tw/license",
-      publisher: { "@type": "Organization", name: BRAND.legalName, url: `${SITE}/` },
+      publisher: orgRef(),
       isAccessibleForFree: true,
       inLanguage: "zh-TW",
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
@@ -548,6 +778,15 @@ function areaPage(area, ctx) {
     <h2 class="display text-[23px] mb-6">${esc(area.name)}近一年成交行情</h2>
     ${marketBlock(areaMarket)}
   </section>
+
+  <!-- 逐年房價走勢 -->
+  ${trendBlock(area, trend)}
+
+  <!-- 房型行情 -->
+  ${roomsBlock(area, rooms)}
+
+  <!-- 總價帶分布 -->
+  ${bandsBlock(area, bands)}
 
   <!-- 社區一覽 -->
   <section class="mt-16" id="communities">

@@ -19,7 +19,7 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, orgRef } from "./lib/layout.js";
 import { webSlug, fillStats } from "./build-articles.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -105,7 +105,7 @@ export function buildFaq({ articles = [], hasBuyers = false, dataUpdated = "" } 
     { "@context": "https://schema.org", "@type": "FAQPage",
       name: "常見問題", url, inLanguage: "zh-TW",
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
-      publisher: { "@type": "RealEstateAgent", name: BRAND.teamName, url: `${SITE}/` },
+      publisher: orgRef(),
       mainEntity: uniq.map(x => ({
         "@type": "Question", name: x.q,
         acceptedAnswer: { "@type": "Answer", text: x.short, url: x.url },

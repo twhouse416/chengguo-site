@@ -5,7 +5,7 @@
  * 要改文案請改這個檔案，不要改 index.html（會被覆蓋）。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize, ORG_ID } from "./lib/layout.js";
 import { webSlug } from "./build-articles.js";
 import { loadCommunities } from "./lib/related.js";
 import { existsSync } from "node:fs";
@@ -743,6 +743,10 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
   const jsonLd = [
     {
       "@context": "https://schema.org", "@type": "RealEstateAgent",
+      /* 這一份是全站組織實體的權威定義，其他頁面用 orgRef() 參照這個 @id。
+         沒有 @id 的話每頁各自是一個獨立的同名組織，這一份的統編、座標、
+         營業時間、sameAs 就無法被其他 300 多頁共享。 */
+      "@id": ORG_ID,
       name: BRAND.teamName, legalName: BRAND.legalName, url: `${SITE}/`,
       logo: `${SITE}/assets/logo-full.png`, image: `${SITE}/assets/team-office.jpg`,
       telephone: "+886-7-9766977",
@@ -805,12 +809,8 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
       "@context": "https://schema.org", "@type": "WebSite",
       "@id": `${SITE}/#website`,
       name: BRAND.teamName, url: `${SITE}/`, inLanguage: "zh-TW",
-      publisher: {
-        "@type": "Organization", name: BRAND.legalName, url: `${SITE}/`,
-        logo: `${SITE}/assets/logo-full.png`, telephone: "+886-7-9766977",
-        address: { "@type": "PostalAddress", streetAddress: BRAND.addressShort, addressLocality: "高雄市", postalCode: "804", addressCountry: "TW" },
-        sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube],
-      },
+      /* 指向同一個組織實體，不要再宣告第二份（會變成兩個同名組織） */
+      publisher: { "@id": ORG_ID },
     },
     {
       "@context": "https://schema.org", "@type": "FAQPage",
