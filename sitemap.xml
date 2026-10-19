@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://k7.com.tw/</loc>
     <lastmod>2026-10-14</lastmod>
@@ -17,6 +18,156 @@
     <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/3qUxgCEUs4Y/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>美術館 社區大樓介紹 - 本業建設 艾美館</video:title>
+      <video:description>位於高雄市鼓山區美術館生活圈的「本業艾美館」，為本業建設打造的質感住宅社區。</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/3qUxgCEUs4Y</video:player_loc>
+      <video:publication_date>2026-06-07</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/32QmV2VBVUw/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>[澄果大小事 - 新青安還能使用嗎? 有誰適合?] #台灣房屋 #房地產 #美術館</video:title>
+      <video:description>想知道新青安是否還能使用？它到底有哪些內容呢？</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/32QmV2VBVUw</video:player_loc>
+      <video:publication_date>2026-01-23</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/GcN6FWznwio/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>[澄果大小事 - 買房除了頭期款，還需要負擔什麼費用?]</video:title>
+      <video:description>買房除了頭期款</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/GcN6FWznwio</video:player_loc>
+      <video:publication_date>2026-01-19</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i3.ytimg.com/vi/ZQxf84jxEmY/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>美術館、農十六 - 買房找 澄果商耕團隊</video:title>
+      <video:description>大家都說房市低迷，先不要買。</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/ZQxf84jxEmY</video:player_loc>
+      <video:publication_date>2026-01-16</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i1.ytimg.com/vi/4CbIq8b-Wes/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>美術館特區介紹</video:title>
+      <video:description>✪ 台　灣　房　屋　澄　果　團　隊 ✪</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/4CbIq8b-Wes</video:player_loc>
+      <video:publication_date>2025-08-08</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i1.ytimg.com/vi/PwREa5nEAw0/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>澄果團隊【螢光茶語-雲上山旅】#嘉義</video:title>
+      <video:description>澄果團隊【螢光茶語-雲上山旅】20250601</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/PwREa5nEAw0</video:player_loc>
+      <video:publication_date>2025-06-06</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/C_TYRr_tMdQ/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【信心、堅持、合作】#高雄買房  #house  #不動產 #買房</video:title>
+      <video:description>恭喜🎉洪店和麗玉合作成交🏠科工館輕軌旁車墅 #相信自己 #相信團隊 #你的未來正在改變</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/C_TYRr_tMdQ</video:player_loc>
+      <video:publication_date>2025-02-17</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/WHGUbQx8Hh8/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>2025年1月21日</video:title>
+      <video:description>2025年1月21日</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/WHGUbQx8Hh8</video:player_loc>
+      <video:publication_date>2025-01-21</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/ClIXhNL6o7M/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【房屋買賣可以不用履保？】#不動產 #買房 #高雄買房 #house</video:title>
+      <video:description>什麼是履約保證？要怎麼申請？可以不用嗎？</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/ClIXhNL6o7M</video:player_loc>
+      <video:publication_date>2024-12-26</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i3.ytimg.com/vi/2yW4VwimB5Y/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>🎥✨【2024澄果聖誕活動精華回顧！】#聖誕節</video:title>
+      <video:description>昨天的聖誕派對滿滿歡樂～🎄🎁</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/2yW4VwimB5Y</video:player_loc>
+      <video:publication_date>2024-12-24</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i1.ytimg.com/vi/lXz7JCG1AeY/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【購屋流程五步驟】#不動產 #買房  #house #高雄買房</video:title>
+      <video:description>簽約、用印、完稅、過戶、交屋。有任何疑問或需要服務，歡迎留言或私訊我！</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/lXz7JCG1AeY</video:player_loc>
+      <video:publication_date>2024-12-19</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i3.ytimg.com/vi/VOzBodWQDG0/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【果然冷知識】輕軌充電 #冷知識 #高雄輕軌 #輕軌 #高雄 #高雄買房</video:title>
+      <video:description>還知道什麼輕軌冷知識嗎?歡迎留言告訴我!</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/VOzBodWQDG0</video:player_loc>
+      <video:publication_date>2024-12-18</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i4.ytimg.com/vi/7IvMmTHQtUI/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【什麼是精耕？澄果團隊教你！】#高雄買房 #house #房仲 #台灣房屋</video:title>
+      <video:description>恭喜微笑女王 - 鄭麗玉，再度成交微笑時代社區 #相信自己 #相信團隊 #你的未來正在改變</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/7IvMmTHQtUI</video:player_loc>
+      <video:publication_date>2024-12-16</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i2.ytimg.com/vi/59wcs0DePyU/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【買房筆記】五個買房關鍵 #房地產 #高雄買房</video:title>
+      <video:description>買房可以說是人生大事之一，這裡整理了5大項一定要注意的重點，之後會再一步步和大家分享更多買房小細節唷!如果有什麼想法，或是遇到問題，歡迎底下留言一起討論唷~</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/59wcs0DePyU</video:player_loc>
+      <video:publication_date>2024-12-14</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://i1.ytimg.com/vi/4VmkkBB5BSs/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>高雄美術館冷知識  #高雄買房</video:title>
+      <video:description>還知道那些高美館的冷知識嗎?歡迎留言告訴我~！</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/4VmkkBB5BSs</video:player_loc>
+      <video:publication_date>2024-12-13</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
   </url>
   <url>
     <loc>https://k7.com.tw/tools/school-zone/</loc>
@@ -80,7 +231,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/deals/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -311,6 +462,18 @@
     <lastmod>2026-03-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/3qUxgCEUs4Y/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>美術館 社區大樓介紹 - 本業建設 艾美館</video:title>
+      <video:description>位於高雄市鼓山區美術館生活圈的「本業艾美館」，為本業建設打造的質感住宅社區。
+
+基地鄰近美術館特區核心地段，周邊綠地、公園與藝文氛圍豐富，生活機能成熟。社區規劃現代建築外觀與舒適公共空間，結合優質居住環境與便利交通，是兼具生活品質與地段價值的美術館特區指標型住宅之一。</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/3qUxgCEUs4Y</video:player_loc>
+      <video:publication_date>2026-06-07</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
   </url>
   <url>
     <loc>https://k7.com.tw/communities/boti.html</loc>
@@ -365,12 +528,75 @@
     <lastmod>2026-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/IM-f1aoVv-o/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【美廳苑介紹】高雄美術館特區指標社區｜房價、格局、建設公司、生活機能｜澄果團隊</video:title>
+      <video:description>【美廳苑完整社區介紹｜高雄美術館特區】
+
+想了解高雄美術館特區的住宅社區，「美廳苑」是許多購屋族會關注的社區之一。
+
+這支影片由 澄果團隊 帶你深入認識美廳苑，從社區位置、建設公司、建築規劃、房型格局、公共設施，到周邊生活機能與交通，一次整理給你。
+
+📍 美廳苑社區位置
+高雄市鼓山區美術東六街，位於高雄美術館特區生活圈。
+
+🏢 美廳苑社區特色
+美廳苑由城揚建設興建，規劃2房、3房、4房產品，社區為29層住宅大樓，並配置接待大廳、空中花園、交誼廳、健身房、視聽室、KTV、瑜伽教室及廚藝教室等公共設施。公開資料顯示，社區基地約899.5坪，共規劃262戶住家及4戶店面。
+
+🚗 交通與生活機能
+美廳苑鄰近高雄美術館、內惟藝術中心、內惟車站，並可利用凹子底捷運站、輕軌及國道1號、國道10號等交通系統。
+
+生活採買則可前往美術東二路商圈、明誠路商圈、瑞豐商圈及周邊超商、全聯等生活機能。學區方面，公開資料列有中山國小、七賢國中。
+
+💰 美廳苑房價與實價登錄
+
+如果你正在搜尋：
+
+「美廳苑房價多少？」
+「美廳苑一坪多少？」
+「美廳苑實價登錄」
+「美廳苑值得買嗎？」
+「高雄美術館房價」
+「高雄美術館買房」
+「鼓山區房價」
+
+建議不要只看單一成交價格，而是要進一步比較 樓層、座向、格局、坪數、車位、屋況與成交時間，才能真正判斷一間房子的市場價格。
+
+公開成交資料顯示，美廳苑近年已有多筆實價登錄紀錄，實際價格仍會依戶別、樓層、坪數、車位及交易條件有所差異。
+
+如果你正在尋找 高雄美術館買房、賣房、美廳苑房價分析、社區行情或實價登錄比較，歡迎與澄果團隊聯繫。
+
+我們不只帶你看房，也希望讓你真正了解：
+
+懂行情｜懂社區｜懂價格
+
+📍 澄果團隊
+專注高雄美術館特區｜農16特區｜中都特區｜瑞豐巨蛋商圈
+
+帶你認識美廳苑的社區環境、公設規劃與周邊生活機能，並整理這一區的房價區間與選屋重點。</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/IM-f1aoVv-o</video:player_loc>
+      <video:publication_date>2026-08-27</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
   </url>
   <url>
     <loc>https://k7.com.tw/communities/huaren-hui.html</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/wC4TNmI54tw/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>【華人匯 社區介紹｜高雄農十六特區】</video:title>
+      <video:description>台灣房屋 澄果團隊（澄果資產有限公司）
+深耕高雄鼓山美術館特區、農十六特區、瑞豐巨蛋生活圈與三民區中都重劃區超過 10 年，累積服務超過 150 件。專精社區大樓行情分析、樓層價差評估與換屋規劃。</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/wC4TNmI54tw</video:player_loc>
+      <video:publication_date>2026-09-08</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:requires_subscription>no</video:requires_subscription>
+      <video:live>no</video:live>
+    </video:video>
   </url>
   <url>
     <loc>https://k7.com.tw/communities/guangzhou-yuncui.html</loc>
@@ -1850,6 +2076,12 @@
   </url>
   <url>
     <loc>https://k7.com.tw/notes/self-use-land-value-tax.html</loc>
+    <lastmod>2026-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://k7.com.tw/notes/nong16-area-guide.html</loc>
     <lastmod>2026-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
