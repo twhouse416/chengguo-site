@@ -242,7 +242,7 @@ export function head({ title, description, keywords, canonical, ogImage, ogType 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" type="image/png" href="${up}assets/logo-icon.png" />
+<link rel="icon" type="image/png" href="${up}assets/logo-icon-v2.png" />
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}" />
 ${keywords ? `<meta name="keywords" content="${esc(keywords)}" />` : ""}
@@ -339,7 +339,7 @@ export function header({ depth = 0, hasBuyers = false, compact = false, isHome =
   return `<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
   <div class="${width} mx-auto px-6 h-[68px] flex items-center justify-between">
     <a href="${isHome ? "#top" : up + "index.html"}" class="flex items-center gap-3 shrink-0 mr-6">
-      <img src="${up}assets/logo-icon.png" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
+      <img src="${up}assets/logo-icon-v2.png" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
       <span class="leading-tight">
         <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
         <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>

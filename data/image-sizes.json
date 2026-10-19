@@ -87,12 +87,12 @@
     433,
     500
   ],
-  "assets/logo-icon.png": [
-    256,
-    256
-  ],
   "assets/team-office.jpg": [
     900,
     1125
+  ],
+  "assets/logo-icon-v2.png": [
+    256,
+    256
   ]
 }
