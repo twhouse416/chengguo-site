@@ -3,7 +3,7 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://k7.com.tw/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -213,37 +213,37 @@
   </url>
   <url>
     <loc>https://k7.com.tw/areas/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/schools/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/developers/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/deals/</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/communities/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/areas/art-museum/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -267,7 +267,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/developers/jingcheng/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -279,7 +279,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/developers/huangyuan/</loc>
-    <lastmod>2026-08-13</lastmod>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -321,7 +321,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/developers/guangzhou/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -333,7 +333,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/developers/fumao/</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -375,13 +375,13 @@
   </url>
   <url>
     <loc>https://k7.com.tw/schools/zhongshan-es/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/schools/qixian-js/</loc>
-    <lastmod>2026-09-03</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -417,7 +417,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/schools/gushan-hs-js/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -435,7 +435,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/schools/sanmin-js/</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -600,7 +600,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/guangzhou-yuncui.html</loc>
-    <lastmod>2025-05-04</lastmod>
+    <lastmod>2026-07-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -642,7 +642,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/yuguiyuanlin.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -726,7 +726,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/maerdaifu.html</loc>
-    <lastmod>2026-04-10</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -816,13 +816,13 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/shang-meishu.html</loc>
-    <lastmod>2026-05-29</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://k7.com.tw/communities/fumao-meisenyuan.html</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -840,7 +840,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/heye-xue.html</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -924,7 +924,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/lanyuan-huashiji.html</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -984,7 +984,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/jingcheng-mozhate.html</loc>
-    <lastmod>2026-04-04</lastmod>
+    <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1044,7 +1044,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/yuedu-xingguang.html</loc>
-    <lastmod>2026-03-30</lastmod>
+    <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1056,7 +1056,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/shenghuo-dashi.html</loc>
-    <lastmod>2026-07-29</lastmod>
+    <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1146,7 +1146,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/dipinyuan.html</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1242,7 +1242,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/xieyang-xinye.html</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -1728,7 +1728,7 @@
   </url>
   <url>
     <loc>https://k7.com.tw/communities/shizheng-qiye.html</loc>
-    <lastmod>2025-04-23</lastmod>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
