@@ -1,0 +1,136 @@
+name: 內容稽核
+
+# 為什麼要有這支：
+# scripts/audit-content.mjs 寫好之後，從來沒有被任何 workflow 執行過——
+# build-site.yml 裡只有一行註解提到它。等於稽核只在「有人想到要手動跑」的時候才存在，
+# 資料出錯時沒有任何機制會說話。
+# 2026-10 實際發生過：博愛大廈因為比對名稱過短，把隔壁社區 295 筆預售吸了進來，
+# 社區頁顯示 391 筆（實際 96 筆），一棟 1998 年的大樓寫著「其中 295 筆為預售屋買賣」，
+# 這個錯誤一直都在，但沒有人發現，直到被要求再查一次。
+#
+# 這支負責讓稽核自己說話：
+#   1. 每次全站建置或行情更新完成後自動跑一次（資料變動才是錯誤的來源）
+#   2. 每週一再跑一次完整巡檢（帶提醒，不只錯誤）
+#   3. 有錯誤就開 issue；已經有未關閉的 issue 就更新它，不重複開
+#
+# 刻意不讓稽核失敗阻斷建置：網站該上線還是要上線，內容問題由人判斷。
+
+on:
+  workflow_run:
+    workflows: ["全站靜態建置", "更新四大生活圈行情（每月 2、12、22 日）"]
+    types: [completed]
+  schedule:
+    # 每週一台灣時間早上 8:40（UTC 週日 00:40）。
+    # 避開整點，減少被 GitHub 排程壅塞延遲的機會。
+    - cron: "40 0 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 安裝相依套件
+        run: npm ci --no-audit --no-fund
+
+      - name: 重新建置（稽核的 --built 需要產生後的 HTML）
+        # 這裡只在 runner 上建置、不提交，純粹是為了讓稽核有東西可以掃。
+        run: node scripts/build-site.js
+
+      - name: 執行稽核
+        id: audit
+        # 排程跑的是完整巡檢（--digest 會把提醒一起帶進 issue）；
+        # 建置後觸發的只報錯誤，避免每次資料更新都貼四十條提醒。
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node scripts/audit-content.mjs --built --digest
+          else
+            node scripts/audit-content.mjs --built
+          fi
+
+      - name: 有錯誤就開或更新 issue
+        if: steps.audit.outputs.has_errors == 'true'
+        uses: actions/github-script@v7
+        env:
+          BODY: ${{ steps.audit.outputs.body }}
+          FAIL_COUNT: ${{ steps.audit.outputs.fail_count }}
+        with:
+          script: |
+            const title = "內容稽核發現錯誤";
+            const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+            const body = `最後檢查：${stamp} UTC（由 ${context.eventName} 觸發）\n\n${process.env.BODY}`;
+
+            /* 同一個問題只用一張 issue，重複開會讓人直接忽略 */
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = open.data.find(i => i.title === title);
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+              core.notice(`已更新 issue #${existing.number}（${process.env.FAIL_COUNT} 項錯誤）`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+              core.notice(`已開啟 issue #${created.data.number}（${process.env.FAIL_COUNT} 項錯誤）`);
+            }
+
+      - name: 沒有錯誤就關掉舊的 issue
+        if: steps.audit.outputs.has_errors == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "內容稽核發現錯誤";
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = open.data.find(i => i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `已修正，稽核通過（${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC）。自動關閉。`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+              });
+              core.notice(`稽核通過，已關閉 issue #${existing.number}`);
+            }
+
+      - name: 在執行摘要裡留下結果
+        if: always()
+        run: |
+          {
+            echo "### 內容稽核"
+            echo ""
+            echo "- 錯誤：${{ steps.audit.outputs.fail_count }}"
+            echo "- 提醒：${{ steps.audit.outputs.warn_count }}"
+          } >> "$GITHUB_STEP_SUMMARY"
