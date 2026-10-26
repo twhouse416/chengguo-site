@@ -9,7 +9,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="../assets/logo-icon-v2.png" />
-<title>買房試算工具｜學區查詢、房貸、新青安、持有稅｜台灣房屋 澄果團隊</title>
+<title>買房試算工具｜學區查詢、房貸、新青安、持有稅｜澄果團隊</title>
 <meta name="description" content="四個免費工具：高雄學區查詢、房貸試算、新青安資格與額度試算、房屋稅與地價稅試算。公式與資料來源都公開標示，不需留個人資料。" />
 <meta name="keywords" content="高雄學區查詢,房貸試算,新青安試算,房屋稅試算,地價稅試算,買房工具" />
 <link rel="canonical" href="https://k7.com.tw/tools/" />
@@ -17,13 +17,13 @@
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="台灣房屋 澄果團隊" />
-<meta property="og:title" content="買房試算工具｜學區查詢、房貸、新青安、持有稅｜台灣房屋 澄果團隊" />
+<meta property="og:title" content="買房試算工具｜學區查詢、房貸、新青安、持有稅｜澄果團隊" />
 <meta property="og:description" content="四個免費工具：高雄學區查詢、房貸試算、新青安資格與額度試算、房屋稅與地價稅試算。公式與資料來源都公開標示，不需留個人資料。" />
 <meta property="og:url" content="https://k7.com.tw/tools/" />
 <meta property="og:image" content="https://k7.com.tw/assets/logo-full.png" />
 <meta property="og:locale" content="zh_TW" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="買房試算工具｜學區查詢、房貸、新青安、持有稅｜台灣房屋 澄果團隊" />
+<meta name="twitter:title" content="買房試算工具｜學區查詢、房貸、新青安、持有稅｜澄果團隊" />
 <meta name="twitter:description" content="四個免費工具：高雄學區查詢、房貸試算、新青安資格與額度試算、房屋稅與地價稅試算。公式與資料來源都公開標示，不需留個人資料。" />
 <meta name="twitter:image" content="https://k7.com.tw/assets/logo-full.png" />
 
@@ -33,7 +33,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/tailwind.css" />
 <style>
   html { scroll-behavior: smooth; }
@@ -163,7 +163,12 @@
   </div>
 
   <section class="mt-16 pt-10 border-t-2 border-ink">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">FAQ</div>
+    <!-- 這一段原本只有 h1 然後直接跳到問題的 h3，標題層級少一階。
+         /areas/、/developers/、/tools/ 這三個彙整頁的 body 沒有自己的 h2，
+         所以整頁變成 h1 → h3，螢幕閱讀器的大綱會斷掉。
+         /schools/ 因為 body 本來就有 h2 才沒出問題。 -->
+    <h2 class="display text-[23px] mb-8">關於試算工具的常見問題</h2>
     <div class="mb-7">
       <h3 class="text-[17px] font-bold text-ink leading-[1.7]">這些工具要留資料嗎？</h3>
       <p class="mt-2.5 text-[16px] text-inkSoft leading-[1.95]">不用。四個工具都在瀏覽器裡計算，不會把你輸入的數字送到任何伺服器，也不需要註冊或留下聯絡方式。</p>

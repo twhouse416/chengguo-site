@@ -9,7 +9,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" href="../assets/logo-icon-v2.png" />
-<title>高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜台灣房屋 澄果團隊</title>
+<title>高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜澄果團隊</title>
 <meta name="description" content="美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區共 255 個社區的實價登錄行情對照，含單價與總價中位數、成交筆數與屋齡結構。" />
 <meta name="keywords" content="高雄生活圈,美術館特區房價,農十六房價,瑞豐巨蛋房價,中都重劃區房價,高雄買房" />
 <link rel="canonical" href="https://k7.com.tw/areas/" />
@@ -17,13 +17,13 @@
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="台灣房屋 澄果團隊" />
-<meta property="og:title" content="高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜台灣房屋 澄果團隊" />
+<meta property="og:title" content="高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜澄果團隊" />
 <meta property="og:description" content="美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區共 255 個社區的實價登錄行情對照，含單價與總價中位數、成交筆數與屋齡結構。" />
 <meta property="og:url" content="https://k7.com.tw/areas/" />
 <meta property="og:image" content="https://k7.com.tw/assets/area-01-artmuseum.jpg" />
 <meta property="og:locale" content="zh_TW" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜台灣房屋 澄果團隊" />
+<meta name="twitter:title" content="高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜澄果團隊" />
 <meta name="twitter:description" content="美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區共 255 個社區的實價登錄行情對照，含單價與總價中位數、成交筆數與屋齡結構。" />
 <meta name="twitter:image" content="https://k7.com.tw/assets/area-01-artmuseum.jpg" />
 
@@ -33,7 +33,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/tailwind.css" />
 <style>
   html { scroll-behavior: smooth; }
@@ -165,7 +165,12 @@
   </div>
 
   <section class="mt-16 pt-10 border-t-2 border-ink">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">FAQ</div>
+    <!-- 這一段原本只有 h1 然後直接跳到問題的 h3，標題層級少一階。
+         /areas/、/developers/、/tools/ 這三個彙整頁的 body 沒有自己的 h2，
+         所以整頁變成 h1 → h3，螢幕閱讀器的大綱會斷掉。
+         /schools/ 因為 body 本來就有 h2 才沒出問題。 -->
+    <h2 class="display text-[23px] mb-8">關於高雄四大生活圈的常見問題</h2>
     <div class="mb-7">
       <h3 class="text-[17px] font-bold text-ink leading-[1.7]">澄果團隊服務哪些生活圈？</h3>
       <p class="mt-2.5 text-[16px] text-inkSoft leading-[1.95]">鼓山區的美術館特區與農十六特區、左營與鼓山交界的瑞豐・巨蛋生活圈，以及三民區的中都重劃區，共四個，合計 255 個社區。</p>
