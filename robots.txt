@@ -1,64 +1,76 @@
 User-agent: *
 Allow: /
 
-# 後台與內部表單不需要被搜尋引擎收錄
+# 後台、內部表單與程式用的資料檔不需要被搜尋引擎收錄
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 # AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Claude-User
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Perplexity-User
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Bingbot
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: Amazonbot
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 User-agent: meta-externalagent
 Allow: /
 Disallow: /admin/
 Disallow: /buyer-intake/
+Disallow: /data/
 
 Sitemap: https://k7.com.tw/sitemap.xml
