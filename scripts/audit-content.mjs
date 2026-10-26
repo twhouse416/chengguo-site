@@ -25,8 +25,12 @@ const dealsMap = read("data/community-deals.json").deals;
 const articles = read("data/articles.json").articles.filter(a => !a.draft);
 
 let FAIL = 0, WARN = 0;
-const fail = (...m) => { FAIL++; console.log("  ✗", ...m); };
-const warn = (...m) => { WARN++; console.log("  !", ...m); };
+/* 把訊息留下來，讓 CI 能把內容寫進 GitHub issue。
+   原本只印到 stdout，而這支腳本從來沒有被任何 workflow 執行過——
+   等於稽核只在有人手動跑的時候才存在。2026-10 補上機器可讀的輸出。 */
+const FAIL_MSGS = [], WARN_MSGS = [];
+const fail = (...m) => { FAIL++; FAIL_MSGS.push(m.join(" ")); console.log("  ✗", ...m); };
+const warn = (...m) => { WARN++; WARN_MSGS.push(m.join(" ")); console.log("  !", ...m); };
 const ok = (...m) => console.log("  ✓", ...m);
 
 /* ---------- 共用計算 ---------- */
@@ -829,4 +833,34 @@ console.log("\n【O】規格表完工時間 vs 實價登錄建築完成年月");
 }
 
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
-process.exit(FAIL ? 1 : 0);
+
+/* ---------- 給 CI 用的輸出 ---------- */
+/* --digest 會連提醒一起帶出來（每週巡檢用）；平常只帶錯誤。 */
+if (process.env.GITHUB_OUTPUT) {
+  const digest = process.argv.includes("--digest");
+  let body = "";
+  if (FAIL) {
+    body += `## 稽核發現 ${FAIL} 項錯誤\n\n`;
+    body += FAIL_MSGS.map(m => `- ${m}`).join("\n") + "\n";
+  }
+  if (digest && WARN) {
+    body += `\n## 另有 ${WARN} 項提醒\n\n`;
+    body += WARN_MSGS.map(m => `- ${m}`).join("\n") + "\n";
+  }
+  if (body) {
+    body += `\n---\n由 \`scripts/audit-content.mjs\` 自動產生。`
+         + `本機重現：\`node scripts/build-site.js && node scripts/audit-content.mjs --built\`\n`;
+  }
+  const out = [
+    `fail_count=${FAIL}`,
+    `warn_count=${WARN}`,
+    `has_errors=${FAIL ? "true" : "false"}`,
+    `body<<AUDIT_EOF\n${body}\nAUDIT_EOF`,
+  ].join("\n") + "\n";
+  fs.appendFileSync(process.env.GITHUB_OUTPUT, out);
+}
+
+/* 錯誤不讓 CI 變紅：行情更新與全站建置不該因為內容問題而停擺，
+   網站照樣要上線。改成開 issue 通知，由人判斷。
+   --strict 時才用 exit code 1（本機與手動檢查用）。 */
+process.exit(FAIL && process.argv.includes("--strict") ? 1 : 0);
