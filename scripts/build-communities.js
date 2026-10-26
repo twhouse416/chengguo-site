@@ -431,6 +431,9 @@ function dealsTable(deals, c = {}, dataUpdated = "") {
     </summary>
     <div class="overflow-x-auto border border-line rounded-sm bg-surface mt-3">
       <table class="w-full text-[15px] min-w-[640px]">
+        <!-- 上面那張（最近的成交）有 caption，收在展開區塊裡的這張原本沒有，
+             對螢幕閱讀器來說會變成一張沒有標題的表。 -->
+        <caption class="sr-only">${esc(c.name || "本社區")}較早的實價登錄成交紀錄，共 ${rest.length} 筆，欄位為成交日期、類型、移轉層次、格局、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）${showPk ? "、車位總價（萬元）" : ""}</caption>
         <thead>
           <tr class="dl-head">
             <th class="dl-th">成交日期</th>

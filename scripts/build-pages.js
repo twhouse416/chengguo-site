@@ -36,7 +36,7 @@ export function buildNotesIndex({ articles, hasBuyers }) {
     <h2 class="text-[19px] font-bold leading-snug mb-3 tracking-tight">
       <a href="${webSlug(a.slug)}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h2>
     <p class="text-[15px] text-inkSoft leading-[1.9]">${esc(a.summary)}</p>
-    <a href="${webSlug(a.slug)}.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
+    <a href="${webSlug(a.slug)}.html" class="inline-block mt-4 py-1.5 font-mono text-[13px] text-orangeDeep hover:underline">閱讀全文 →</a>
   </article>`).join("\n      ");
 
   const empty = `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
@@ -338,7 +338,9 @@ export function buildDealsIndex({ deals, hasBuyers, market }) {
 
   return [
     head({
-      title: `賀成交｜澄果團隊成交實績｜${BRAND.teamName}`,
+      /* 後綴縮短成「｜澄果團隊」之後，原本的「賀成交｜澄果團隊成交實績｜台灣房屋 澄果團隊」
+         會變成「…｜澄果團隊成交實績｜澄果團隊」，團隊名出現兩次。改掉前段的重複。 */
+      title: `賀成交｜高雄美術館、農十六成交實績｜${BRAND.teamName}`,
       description: "澄果團隊在高雄美術館特區、農十六、瑞豐巨蛋與中都重劃區的成交實績紀錄。感謝每一組信任我們的屋主與買方。",
       keywords: "澄果團隊成交,高雄房仲實績,美術館特區成交,農十六成交",
       canonical: `${SITE}/deals/`,

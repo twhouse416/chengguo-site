@@ -233,9 +233,36 @@ export function clampDesc(s) {
   return cut.replace(/[，、；。]$/, "") + "⋯";
 }
 
+/* ───────────────────────────────────────────────────────────
+   標題的品牌後綴
+   ───────────────────────────────────────────────────────────
+   原本各頁都寫「…｜台灣房屋 澄果團隊」。中文在搜尋結果裡算全形寬度，
+   Google 行動版約在 60 個半形寬度處截斷，而這個後綴本身就佔 19——
+   實測 341 個可索引頁裡有 107 頁會被截掉結尾（文章 33、社區 32、
+   建商 19、學區 12、生活圈 5）。被截時先消失的正好是後綴，
+   等於品牌沒露出、關鍵字也被壓縮，兩頭落空。
+
+   改用短後綴「｜澄果團隊」（寬度 10），超寬頁數降到 33。
+   「台灣房屋」這個加盟品牌仍然出現在頁首、頁尾、關於頁，
+   以及結構化資料的 brand / parentOrganization / alternateName 裡，
+   搜尋引擎與 AI 判斷實體時讀得到，不依賴標題這一處。
+
+   做法是在 head() 統一改寫，不去動十五個呼叫端——
+   呼叫端照舊傳「…｜${BRAND.teamName}」，這裡換掉即可，
+   日後新增頁面也不會漏。 */
+const TITLE_SUFFIX_LONG = `｜${BRAND.teamName}`;
+const TITLE_SUFFIX_SHORT = "｜澄果團隊";
+export function titleWithBrand(title) {
+  const t = String(title || "");
+  return t.endsWith(TITLE_SUFFIX_LONG)
+    ? t.slice(0, -TITLE_SUFFIX_LONG.length) + TITLE_SUFFIX_SHORT
+    : t;
+}
+
 export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [], noindex = false }) {
   const up = "../".repeat(depth);
   description = clampDesc(description);
+  title = titleWithBrand(title);
   return `${AUTO_NOTE}
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -265,7 +292,7 @@ ${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</scri
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${up}assets/tailwind.css" />
 <style>
   html { scroll-behavior: smooth; }

@@ -185,11 +185,11 @@ function heroSection(heroVideo) {
         <div class="absolute left-0 right-0 bottom-0 flex items-end justify-between gap-3 p-4 pointer-events-none">
           <span data-hero-caption class="text-white text-[14px] leading-snug drop-shadow max-w-[70%]">${heroTitle}</span>
           <a href="https://www.youtube.com/watch?v=${esc(heroVideo.videoId)}" target="_blank" rel="noopener noreferrer"
-            class="pointer-events-auto shrink-0 font-mono text-[12px] text-white/90 hover:text-white underline underline-offset-4">在 YouTube 上觀看</a>
+            class="pointer-events-auto shrink-0 inline-block py-1.5 font-mono text-[12px] text-white/90 hover:text-white underline underline-offset-4">在 YouTube 上觀看</a>
         </div>
       </div>
       <p class="mt-3 font-mono text-[12px] text-inkFaint">
-        <a href="videos/index.html" class="hover:text-orangeDeep">看更多社區與行情影片 →</a>
+        <a href="videos/index.html" class="inline-block py-1.5 hover:text-orangeDeep">看更多社區與行情影片 →</a>
       </p>
       <script>
         (function () {
@@ -619,7 +619,7 @@ function articlesSection(articles) {
         <h3 class="text-[17px] font-bold leading-snug mb-3 tracking-tight">
           <a href="notes/${webSlug(a.slug)}.html" class="hover:text-orangeDeep transition">${esc(a.title)}</a></h3>
         <p class="text-[15px] text-inkSoft leading-[1.85]">${esc(a.summary)}</p>
-        <a href="notes/${webSlug(a.slug)}.html" class="inline-block font-mono text-[12px] text-orangeDeep mt-5 hover:underline">閱讀全文 →</a>
+        <a href="notes/${webSlug(a.slug)}.html" class="inline-block py-1.5 font-mono text-[12px] text-orangeDeep mt-5 hover:underline">閱讀全文 →</a>
       </article>`).join("\n      ")}
     </div>
     <div class="mt-12">

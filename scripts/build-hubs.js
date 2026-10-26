@@ -28,7 +28,7 @@ const med = a => { const s = [...a].sort((x, y) => x - y); const n = s.length;
 const SINCE = "2020-01-01";
 
 /* ---------- 共用：頁面骨架 ---------- */
-function shell({ eyebrow, h1, lead, crumb, body, faq, jsonLd, meta, hasBuyers, dataUpdated }) {
+function shell({ eyebrow, h1, lead, crumb, body, faq, faqHeading = "常見問題", jsonLd, meta, hasBuyers, dataUpdated }) {
   return [
     head({ ...meta, depth: 1, jsonLd }),
     header({ depth: 1, hasBuyers }),
@@ -47,7 +47,12 @@ function shell({ eyebrow, h1, lead, crumb, body, faq, jsonLd, meta, hasBuyers, d
   ${body}
 
   <section class="mt-16 pt-10 border-t-2 border-ink">
-    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">FAQ</div>
+    <!-- 這一段原本只有 h1 然後直接跳到問題的 h3，標題層級少一階。
+         /areas/、/developers/、/tools/ 這三個彙整頁的 body 沒有自己的 h2，
+         所以整頁變成 h1 → h3，螢幕閱讀器的大綱會斷掉。
+         /schools/ 因為 body 本來就有 h2 才沒出問題。 -->
+    <h2 class="display text-[23px] mb-8">${esc(faqHeading)}</h2>
     ${faq.map(([q, a]) => `<div class="mb-7">
       <h3 class="text-[17px] font-bold text-ink leading-[1.7]">${esc(q)}</h3>
       <p class="mt-2.5 text-[16px] text-inkSoft leading-[1.95]">${esc(a)}</p>
@@ -143,7 +148,8 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
   ];
   const items = rows.map(r => ({ name: r.name, url: `${SITE}/areas/${r.slug}/` }));
   return shell({
-    eyebrow: "Areas", crumb: "生活圈", h1: "高雄四大生活圈",
+    eyebrow: "Areas", crumb: "生活圈",
+    faqHeading: "關於高雄四大生活圈的常見問題", h1: "高雄四大生活圈",
     lead: esc(lead), hasBuyers, dataUpdated,
     body: grid(rows.map(r => card(`${r.slug}/index.html`, r.name,
       `${r.n} 個社區・2020 年起成交 ${nf(r.deals)} 筆`
@@ -200,14 +206,15 @@ function schoolsHub({ schools, dealsMap = {}, hasBuyers, dataUpdated }) {
   </section>`;
   const items = schools.map(s => ({ name: s.name, url: `${SITE}/schools/${s.slug}/` }));
   return shell({
-    eyebrow: "School Zones", crumb: "學區", h1: "高雄學區總覽",
+    eyebrow: "School Zones", crumb: "學區",
+    faqHeading: "關於高雄學區的常見問題", h1: "高雄學區總覽",
     lead: esc(lead), hasBuyers, dataUpdated,
     body: `<div class="mt-8 border-l-2 border-orange pl-5">
     <p class="text-[16px] text-ink leading-[1.9] max-w-3xl">
       <strong class="font-bold">要查特定門牌的學區，用工具比看清單快。</strong>
       選擇行政區與里別，一次查出對應的國小與國中。
     </p>
-    <a href="../tools/school-zone/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">用里別查學區 →</a>
+    <a href="../tools/school-zone/index.html" class="inline-block mt-4 py-1.5 font-mono text-[13px] text-orangeDeep hover:underline">用里別查學區 →</a>
   </div>
   ${sec("國小學區", es, `依社區數排序，合計涵蓋 ${es.reduce((n, s) => n + s.count, 0)} 個社區次。`)}
   ${sec("國中學區", js, `依社區數排序，合計涵蓋 ${js.reduce((n, s) => n + s.count, 0)} 個社區次。`)}`,
@@ -245,7 +252,8 @@ function developersHub({ developers, dealsMap = {}, hasBuyers, dataUpdated }) {
   ];
   const items = rows.map(d => ({ name: d.name, url: `${SITE}/developers/${d.slug}/` }));
   return shell({
-    eyebrow: "Developers", crumb: "建商", h1: "高雄建商總覽",
+    eyebrow: "Developers", crumb: "建商",
+    faqHeading: "關於高雄建商的常見問題", h1: "高雄建商總覽",
     lead: esc(lead), hasBuyers, dataUpdated,
     body: grid(rows.map(d => card(`${d.slug}/index.html`, d.name, statLine(d.count, d.st), ""))),
     faq,
@@ -281,7 +289,8 @@ function toolsHub({ hasBuyers }) {
   ];
   const items = TOOLS.map(t => ({ name: t.title, url: `${SITE}/tools/${t.slug}/` }));
   return shell({
-    eyebrow: "Tools", crumb: "試算工具", h1: "買房試算工具",
+    eyebrow: "Tools", crumb: "試算工具",
+    faqHeading: "關於試算工具的常見問題", h1: "買房試算工具",
     lead: esc(lead), hasBuyers, dataUpdated: "",
     body: grid(TOOLS.map(t => card(`${t.slug}/index.html`, t.title, t.intro, t.code))),
     faq,

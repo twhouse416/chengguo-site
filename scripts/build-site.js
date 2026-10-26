@@ -424,6 +424,12 @@ function main() {
   setArticleStats({
     communityCount: (_cfg.communities || []).filter(c => !c.draft).length,
     dealTotal: Object.values(_cd.deals || {}).reduce((a, b) => a + b.length, 0),
+    /* 全站「2020 年起、排除店面」的住家成交數。
+       文章裡引用的筆數幾乎都是這個子集（全站統計本來就建立在它上面），
+       而不是全期間的總數——沒有這個基準，過期檢查只能拿全期間總數去比，
+       結果 11 個正確的數字永遠在示警。 */
+    dealTotal2020: Object.values(_cd.deals || {}).reduce(
+      (a, b) => a + b.filter(d => d.use !== "店面" && String(d.date || "") >= "2020-01-01").length, 0),
     dataUpdated: (_cd.updatedAt || "").slice(0, 10),
     /* 查得到公設比的社區數：公設比那篇要用，隨社區增減自動更新 */
     ratioCount: (_cfg.communities || []).filter(c => !c.draft
@@ -436,6 +442,8 @@ function main() {
         key,
         communities: list.length,
         deals: list.reduce((n, c) => n + (_cd.deals?.[c.slug] || []).filter(d => d.use !== "店面").length, 0),
+        deals2020: list.reduce((n, c) => n + (_cd.deals?.[c.slug] || [])
+          .filter(d => d.use !== "店面" && String(d.date || "") >= "2020-01-01").length, 0),
       };
     }),
   });

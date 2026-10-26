@@ -97,13 +97,34 @@ export function checkStaleCounts(articles) {
           /* 句子裡若指名生活圈，就跟該生活圈的數字比，不要跟全站比——
              「本站收錄的瑞豐 35 個社區」要對照瑞豐的 37，不是全站的 255。 */
           const areaHit = (STATS.areas || []).find(x => m[0].includes(x.key));
-          const base = areaHit ? (label === "個社區" ? areaHit.communities : areaHit.deals) : now;
           const scope = areaHit ? areaHit.key : "全站";
           if (/建設|國小|國中/.test(m[0])) continue;
           const v = Number(String(m[1]).replace(/,/g, ""));
-          if (!v || !base) continue;
-          if (Math.abs(v - base) / base > 0.1) {
-            warn.push(`${a.slug}：寫死「${m[1]} ${label}」，${scope}現況 ${nf(base)}`);
+          if (!v) continue;
+
+          /* 限定詞：句子若明說這是某個條件下的子集（「成交滿 20 筆的 157 個社區」
+             「排除店面與預售的成屋成交 10,841 筆」「只有 11 個社區可對照」），
+             那個數字本來就不該等於全站數，拿來比一定不符。
+             這類數字由稽核【B】逐項重算把關，這裡不重複示警。 */
+          /* 限定詞可能出現在數字前面也可能在後面（「本站 199 個社區的實測結果」
+             的「實測」在後，「排除店面與預售的成屋成交 10,841 筆」的「排除」在前），
+             所以要看匹配前後各 40 字的視窗，不能只看匹配本身。 */
+          const around = text.slice(Math.max(0, m.index - 40), m.index + m[0].length + 40);
+          if (/滿\s*\d|實測|可對照|對照格|排除|成屋|預售|有備註|公設比|符合|其中|只有|不足|占全部|註記/.test(around)) continue;
+
+          /* 可接受的基準不只一個：文章引用的筆數多半是「2020 年起住家成交」
+             這個子集，而不是全期間總數。任一基準吻合就算正確。 */
+          const bases = label === "個社區"
+            ? [areaHit ? areaHit.communities : now].filter(Boolean)
+            : [
+                areaHit ? areaHit.deals : now,
+                areaHit ? areaHit.deals2020 : STATS.dealTotal2020,
+              ].filter(Boolean);
+          if (!bases.length) continue;
+          const ok = bases.some(b => Math.abs(v - b) / b <= 0.1);
+          if (!ok) {
+            const nearest = bases.reduce((p, b) => Math.abs(v - b) < Math.abs(v - p) ? b : p, bases[0]);
+            warn.push(`${a.slug}：寫死「${m[1]} ${label}」，${scope}現況 ${nf(nearest)}`);
           }
         }
       });
@@ -117,7 +138,21 @@ export function checkStaleCounts(articles) {
   return uniq;
 }
 
-function blockHtml(b, fallbackAlt = "") {
+/* caption 不是裝飾：螢幕閱讀器用它說明「這張表在講什麼」，
+   AI 擷取表格時也靠它判斷表格的主題。原本文章的 table 區塊完全沒有 caption
+   （農十六那篇 7 張表全缺），這裡補上——
+   優先用文章自己寫的 b.caption，沒有就用前一個段落標題＋欄位名組出來，
+   所以既有文章不必逐篇改 articles.json 也會全部補齊。 */
+function tableCaption(b, sectionTitle) {
+  if (b.caption) return fillStats(b.caption);
+  const cols = (b.head || []).map(h => String(fillStats(h)).replace(/\s+/g, " ").trim()).filter(Boolean);
+  const n = (b.rows || []).length;
+  const where = sectionTitle ? `${sectionTitle}：` : "";
+  const what = cols.length ? `欄位為${cols.join("、")}` : "資料表";
+  return `${where}${what}${n ? `，共 ${n} 列` : ""}`;
+}
+
+function blockHtml(b, fallbackAlt = "", sectionTitle = "") {
   switch (b.type) {
     case "h":
       return `<h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">${esc(fillStats(b.text))}</h2>`;
@@ -138,6 +173,7 @@ function blockHtml(b, fallbackAlt = "") {
 
     case "table":
       return `<div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
+        <caption class="sr-only">${esc(tableCaption(b, sectionTitle))}</caption>
         <thead><tr class="border-b border-line bg-paper">${(b.head || [])
           .map((h, i) => `<th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 ${i === 0 ? "text-left" : "text-right"}">${esc(fillStats(h))}</th>`)
           .join("")}</tr></thead>
@@ -270,7 +306,11 @@ function pageHtml(a, others, hasBuyers) {
       class="w-full h-auto rounded-sm border border-line bg-surface mt-8" />` : ""}
     <div class="mt-10">
       ${basisNote(a)}
-      ${(a.blocks || []).filter(visible).map(b => blockHtml(b, a.title)).join("\n      ")}
+      ${(() => { let sec = ""; return (a.blocks || []).filter(visible).map(b => {
+        const html = blockHtml(b, a.title, sec);
+        if (b.type === "h") sec = String(fillStats(b.text)).replace(/\s+/g, " ").trim();
+        return html;
+      }).join("\n      "); })()}
     </div>
   </article>
 

@@ -766,7 +766,7 @@ function schoolPage(name, items, ctx) {
       表格是本站社區資料裡「學區」欄位的整理結果，官方依據是下方的里鄰劃分原文。
       請用學區查詢工具核對你要看的那一戶所在的里別，並以入學當年度教育局及學校的公告為準。
     </p>
-    <a href="../../tools/school-zone/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">用里別查學區 →</a>
+    <a href="../../tools/school-zone/index.html" class="inline-block mt-4 py-1.5 font-mono text-[13px] text-orangeDeep hover:underline">用里別查學區 →</a>
   </div>
 
   ${isJunior ? `<section class="mt-14">

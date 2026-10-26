@@ -96,7 +96,7 @@ export function buildFaq({ articles = [], hasBuyers = false, dataUpdated = "" } 
       ${list.map(x => `<div class="border-l-2 border-line pl-6">
         <h3 class="text-[17px] font-bold text-ink leading-snug">${esc(x.q)}</h3>
         <p class="mt-2.5 text-[16px] text-inkSoft leading-[1.95]">${esc(x.short)}</p>
-        <a href="${x.href}" class="inline-block mt-2 font-mono text-[12px] text-orangeDeep hover:underline">完整說明：${esc(x.source)} →</a>
+        <a href="${x.href}" class="inline-block mt-2 py-1.5 font-mono text-[12px] text-orangeDeep hover:underline">完整說明：${esc(x.source)} →</a>
       </div>`).join("\n      ")}
     </div>
   </section>`).join("\n  ");
