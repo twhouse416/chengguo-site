@@ -689,5 +689,144 @@ if (BUILT) {
   warn("需要 --built 才能檢查（目前沒有已建置的 HTML）");
 }
 
+/* ---------- N 社區之間的成交歸屬 ---------- */
+/* 比對用的 projectNames 是**子字串**比對（fetch-market-data.js 的 stillBelongs
+   與 deal-pool 的收錄邏輯都是 project.includes(name)）。
+   所以只要有一個社區把過短的名稱放進 projectNames，它就會把
+   所有「名稱包含它」的建案通通吸過來。
+
+   2026-10 實際發生過：博愛大廈的 projectNames 有一個裸的「博愛」，
+   結果把博愛香榭（2021 完工、興富發）的 295 筆預售全部吸進去——
+   一棟 1998 年的大樓，社區頁上寫著「其中 295 筆為預售屋買賣」，
+   成交筆數 391（真正屬於它的只有 96），連帶讓生活圈頁與學區頁的
+   成交筆數一起灌水。
+
+   這裡用成交資料本身回頭驗證：如果一筆成交的建案名稱**精確等於**
+   另一個社區登記的名稱，而這個社區沒登記這個名稱，那它就是被誤收的。
+   這是錯誤不是提醒——頁面上的數字會直接錯給客戶看。 */
+console.log("\n【N】社區之間的成交歸屬（建案名稱子字串誤收）");
+{
+  const norm = x => String(x || "").replace(/\s+/g, "");
+  const owner = new Map();                 // 建案名稱 → 擁有它的社區集合
+  for (const c of communities) {
+    for (const n of (c.projectNames || [])) {
+      const k = norm(n);
+      if (!k) continue;
+      if (!owner.has(k)) owner.set(k, new Set());
+      owner.get(k).add(c.name);
+    }
+  }
+  let bad = 0;
+  for (const c of communities) {
+    const mine = new Set((c.projectNames || []).map(norm));
+    const hit = new Map();
+    for (const d of (dealsMap[c.slug] || [])) {
+      const p = norm(d.project);
+      if (!p || mine.has(p)) continue;
+      const o = owner.get(p);
+      if (o && !o.has(c.name)) hit.set(p, (hit.get(p) || 0) + 1);
+    }
+    for (const [p, n] of hit) {
+      bad++;
+      fail(`${c.name} 收錄了 ${n} 筆建案名稱為「${p}」的成交，但那個名稱登記在「${[...owner.get(p)].join("、")}」`
+         + `——檢查 ${c.name} 的 projectNames 有沒有過短而把別的建案吸進來`);
+    }
+  }
+
+  /* 另外把「還沒出事但有風險」的短名稱列出來：
+     某個社區的 projectNames 是另一個社區名稱的子字串，目前還沒抓到東西，
+     但只要那個建案之後出現在實價登錄就會中。 */
+  const risky = [];
+  for (const [a, ca] of owner) {
+    for (const [b, cb] of owner) {
+      if (a === b || a.length < 2 || !b.includes(a)) continue;
+      const sameOwner = [...ca].every(x => cb.has(x)) && [...cb].every(x => ca.has(x));
+      if (!sameOwner) risky.push(`「${a}」(${[...ca].join("、")}) 是「${b}」(${[...cb].join("、")}) 的子字串`);
+    }
+  }
+  if (risky.length) warn(`${risky.length} 組比對名稱有子字串重疊，目前尚未誤收但有風險：${risky.slice(0, 6).join("；")}${risky.length > 6 ? `…另 ${risky.length - 6} 組` : ""}`);
+  if (!bad) ok(`${communities.length} 個社區的成交歸屬沒有跨社區誤收`);
+}
+
+/* ---------- O 規格表的完工時間 vs 實價登錄的建築完成年月 ---------- */
+/* 門牌範圍是用「建築完成年月＋總樓層」驗證過的，所以同一個範圍內的成交
+   這個欄位會一致——那就是這棟樓在官方登記上的完工時間。
+   規格表的「完工時間」取自樂居、好房網這些平台，和官方登記不一定相同。
+
+   站上的既有慣例是「有兩說就並列、註明出處」，已經這樣寫的不算錯；
+   這裡只挑「只寫一個日期、又和官方登記差半年以上、而且沒交代差異」的，
+   因為那會讓讀者以為是確定的事實。屋齡直接影響貸款年限與定價，差一年有感。
+
+   用提醒不用錯誤：哪個日期才對是內容判斷（有的案子分批取得使照），
+   不是機械規則能定的。 */
+console.log("\n【O】規格表完工時間 vs 實價登錄建築完成年月");
+{
+  const pool = (() => {
+    const dir = path.join(ROOT, "data/area-deals");
+    if (!fs.existsSync(dir)) return null;
+    const out = [];
+    for (const f of fs.readdirSync(dir).filter(x => x.endsWith(".json"))) {
+      let d; try { d = JSON.parse(fs.readFileSync(path.join(dir, f), "utf-8")); } catch { continue; }
+      const ci = (d.columns || []).indexOf("土地位置建物門牌");
+      const yi = (d.columns || []).indexOf("建築完成年月");
+      if (ci < 0 || yi < 0) continue;
+      for (const r of (d.rows || [])) {
+        const a = String(r[ci] || ""), y = String(r[yi] || "").trim();
+        if (a && y) out.push([a, y]);
+      }
+    }
+    return out;
+  })();
+
+  if (!pool || !pool.length) {
+    warn("讀不到 data/area-deals 資料池，略過這項檢查");
+  } else {
+    const norm = x => String(x || "")
+      .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+      .replace(/[Ａ-Ｚａ-ｚ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+      .replace(/\s+/g, "");
+    const inRange = (a, ranges) => {
+      for (const r of (ranges || [])) {
+        const road = norm(r.road || "");
+        if (!road || !a.includes(road)) continue;
+        const m = (a.split(road)[1] || "").match(/^(\d+)/);
+        if (!m) continue;
+        const no = +m[1];
+        if (no < (r.from ?? -Infinity) || no > (r.to ?? Infinity)) continue;
+        if (r.parity === "odd" && no % 2 === 0) continue;
+        if (r.parity === "even" && no % 2 === 1) continue;
+        return true;
+      }
+      return false;
+    };
+    const normed = pool.map(([a, y]) => [norm(a), y]);
+    let n = 0;
+    for (const c of communities) {
+      const ranges = c.addressRanges || [];
+      if (!ranges.length) continue;
+      const spec = (c.specs || []).find(p => /完工/.test(p[0]));
+      if (!spec) continue;
+      const txt = String(spec[1]);
+      /* 已經並列兩說、寫了範圍、或註明以實價登錄為準的，照慣例不算錯 */
+      if (/實價登錄|不一致|另有|另記|推算|參考資料|交屋|[~～]|\d\s*至\s*\d/.test(txt)) continue;
+      const m = txt.match(/((?:19|20)\d{2})[\/\-年]?\s*(\d{1,2})?/);
+      if (!m) continue;
+      const sy = +m[1], sm = m[2] ? +m[2] : null;
+      const cnt = new Map();
+      for (const [a, y] of normed) if (inRange(a, ranges)) cnt.set(y, (cnt.get(y) || 0) + 1);
+      if (!cnt.size) continue;
+      const [roc, hits] = [...cnt].sort((a, b) => b[1] - a[1])[0];
+      if (hits < 5 || roc.length < 6) continue;
+      const ry = +roc.slice(0, roc.length - 4) + 1911, rm = +roc.slice(-4, -2);
+      const diff = Math.abs((sy * 12 + (sm || rm)) - (ry * 12 + rm));
+      if (diff < 6) continue;
+      n++;
+      warn(`${c.name}：規格表寫「${txt.slice(0, 20)}」，實價登錄的建築完成年月是 ${ry}/${String(rm).padStart(2, "0")}`
+         + `（${hits} 筆成交一致），差 ${diff} 個月且未在規格表裡交代`);
+    }
+    if (!n) ok("規格表的完工時間與實價登錄的建築完成年月沒有未交代的落差");
+  }
+}
+
 console.log(`\n═══ 稽核結束：${FAIL} 項錯誤、${WARN} 項提醒 ═══`);
 process.exit(FAIL ? 1 : 0);
