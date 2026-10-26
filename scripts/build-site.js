@@ -204,15 +204,26 @@ const AI_ANSWER_BOTS = [
 ];
 
 function buildRobots() {
+  /* 每個 User-agent 區塊共用的禁爬清單。
+     /data/：這裡全是給程式讀的 JSON，不是給人看的頁面。
+       學區工具用 fetch("../../data/school-zones.json?t=…") 取資料，
+       Googlebot 會解析 JS 字串把這個網址爬走，結果 Search Console 出現
+       「已檢索－目前尚未建立索引」的 data/school-zones.json?t=。
+       那一頁的可索引內容（說明、Notes、FAQ、CTA 共約 4,900 字）是靜態 HTML，
+       學區的官方里鄰原文另外也完整寫在 12 個學區頁上，
+       所以擋掉這個 JSON 不會讓任何內容從索引裡消失，工具對真人也照常運作
+       （robots.txt 只約束爬蟲）。
+       整個目錄一起擋，之後若有新工具改從前端讀 data/ 的檔案也自動涵蓋。 */
+  const DENY = ["/admin/", "/buyer-intake/", "/data/"];
+  const deny = DENY.map(p => `Disallow: ${p}`).join("\n");
   const txt = `User-agent: *
 Allow: /
 
-# 後台與內部表單不需要被搜尋引擎收錄
-Disallow: /admin/
-Disallow: /buyer-intake/
+# 後台、內部表單與程式用的資料檔不需要被搜尋引擎收錄
+${deny}
 
 # AI 搜尋引擎：本站內容歡迎引用，請標明出處並連回原頁
-${AI_ANSWER_BOTS.map(b => `User-agent: ${b}\nAllow: /\nDisallow: /admin/\nDisallow: /buyer-intake/\n`).join("\n")}
+${AI_ANSWER_BOTS.map(b => `User-agent: ${b}\nAllow: /\n${deny}\n`).join("\n")}
 Sitemap: ${SITE}/sitemap.xml
 `;
   writeFileSync(path.join(ROOT, "robots.txt"), txt, "utf-8");
