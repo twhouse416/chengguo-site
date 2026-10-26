@@ -70,6 +70,49 @@ const INTAKE_URL = `${location.origin}/buyer-intake/`;
 /* ---------- 工具 ---------- */
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
+/* GitHub API 的錯誤訊息。
+   原本五個發布流程都只丟「讀取失敗（401）」這種只有數字的訊息，
+   看到的人沒辦法從數字判斷要去修什麼——2026-10 就發生過一次：
+   權杖過期跳 401，但訊息看起來像是匯入的檔案有問題，查了一輪才確定無關。
+   這裡把狀態碼翻成「下一步該做什麼」。
+
+   為什麼 401 幾乎一定是權杖：這個 repo 是公開的，不帶權杖去讀 contents
+   會直接回 200。會拿到 401，表示有送出 Authorization 標頭而被 GitHub 拒絕。 */
+function ghErrorHint(status) {
+  if (status === 401) {
+    return "權杖無效或已過期。到 GitHub → Settings → Developer settings → "
+         + "Personal access tokens → Fine-grained tokens 確認狀態，"
+         + "過期的話重新產生一個（權限只需要 Contents: Read and write），再貼回上面的「GitHub 權杖」欄位。";
+  }
+  if (status === 403) {
+    return "權杖有效但權限不足，或暫時被 GitHub 限流。"
+         + "請確認這個權杖的 Repository access 有包含本儲存庫、且 Contents 設為 Read and write；"
+         + "若權限沒問題，過幾分鐘再試一次。";
+  }
+  if (status === 404) {
+    return "找不到這個儲存庫或檔案。請確認上面的「儲存庫」欄位是 擁有者/儲存庫名稱 的格式"
+         + "（本站是 twhouse416/chengguo-site），並確認權杖的 Repository access 有選到它。";
+  }
+  if (status === 409 || status === 422) {
+    return "檔案在你編輯期間被別人或自動流程改過了。請重新整理頁面、重新匯入後再發布一次，避免蓋掉別人的修改。";
+  }
+  if (status >= 500) {
+    return "GitHub 伺服器暫時有狀況，稍後再試一次。";
+  }
+  return "";
+}
+
+/* 把 Response 轉成帶建議的 Error。act 是動作名稱（讀取／儲存／發布）。 */
+async function ghError(act, res) {
+  let detail = "";
+  try {
+    const j = await res.json();
+    if (j && j.message) detail = "：" + j.message;
+  } catch {}
+  const hint = ghErrorHint(res.status);
+  return new Error(`${act}失敗（${res.status}）${detail}${hint ? "\n" + hint : ""}`);
+}
+
 function addMonths(dateStr, m) {
   const d = new Date(dateStr);
   d.setMonth(d.getMonth() + m);
@@ -752,7 +795,16 @@ function App() {
     loadDeals(tk, repo.trim());
   }, []);
 
-  const flash = (type, text) => { setMsg({ type, text }); setTimeout(() => setMsg(null), 6000); };
+  /* 成功訊息看過就好，6 秒後自己消失；
+     失敗訊息要留著——它現在會帶「下一步該做什麼」，
+     6 秒就消失等於沒講，而且使用者多半正在看別的地方。
+     失敗的改成手動關掉，或被下一則訊息取代。 */
+  const msgTimer = useRef(null);
+  const flash = (type, text) => {
+    clearTimeout(msgTimer.current);
+    setMsg({ type, text });
+    if (type === "pass") msgTimer.current = setTimeout(() => setMsg(null), 6000);
+  };
 
   const startNew = () => { setDraft(newArticle()); setIdx(-1); };
   const startEdit = i => { setDraft(JSON.parse(JSON.stringify(data.articles[i]))); setIdx(i); };
@@ -898,7 +950,7 @@ function App() {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${DEALS_PATH}`;
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
       const getRes = await fetch(api, { headers, cache: "no-store" });
-      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      if (!getRes.ok) throw await ghError("讀取", getRes);
       const cur = await getRes.json();
       const putRes = await fetch(api, {
         method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
@@ -908,10 +960,7 @@ function App() {
           sha: cur.sha,
         }),
       });
-      if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
-      }
+      if (!putRes.ok) throw await ghError("儲存", putRes);
       flash("pass", "賀成交已儲存，網站約 1–2 分鐘後更新。");
     } catch (e) { flash("fail", e.message || String(e)); }
     finally { setDBusy(false); }
@@ -950,17 +999,14 @@ function App() {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${COMMUNITY_PATH}`;
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
       const getRes = await fetch(api, { headers, cache: "no-store" });
-      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      if (!getRes.ok) throw await ghError("讀取", getRes);
       const cur = await getRes.json();
       const body = JSON.stringify(cdata, null, 2) + "\n";
       const putRes = await fetch(api, {
         method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({ message: `更新社區資料 ${todayStr()}`, content: toBase64(body), sha: cur.sha }),
       });
-      if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
-      }
+      if (!putRes.ok) throw await ghError("儲存", putRes);
       flash("pass", "社區資料已儲存。網站會自動重新建置，約 1–2 分鐘後更新。");
     } catch (e) { flash("fail", e.message || String(e)); }
     finally { setCBusy(false); }
@@ -1036,17 +1082,14 @@ function App() {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${BUYER_PATH}`;
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
       const getRes = await fetch(api, { headers, cache: "no-store" });
-      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      if (!getRes.ok) throw await ghError("讀取", getRes);
       const cur = await getRes.json();
       const body = JSON.stringify(bdata, null, 2) + "\n";
       const putRes = await fetch(api, {
         method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({ message: `更新買方需求 ${todayStr()}`, content: toBase64(body), sha: cur.sha }),
       });
-      if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
-      }
+      if (!putRes.ok) throw await ghError("儲存", putRes);
       flash("pass", "買方需求已儲存，網站約 1–2 分鐘後更新。");
     } catch (e) { flash("fail", e.message || String(e)); }
     finally { setBBusy(false); }
@@ -1059,7 +1102,7 @@ function App() {
       const api = `https://api.github.com/repos/${repo.trim()}/contents/${VIDEO_PATH}`;
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
       const getRes = await fetch(api, { headers, cache: "no-store" });
-      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）`);
+      if (!getRes.ok) throw await ghError("讀取", getRes);
       const cur = await getRes.json();
 
       const body = JSON.stringify(vdata, null, 2) + "\n";
@@ -1067,10 +1110,7 @@ function App() {
         method: "PUT", headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify({ message: `更新影片設定 ${todayStr()}`, content: toBase64(body), sha: cur.sha }),
       });
-      if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(`儲存失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
-      }
+      if (!putRes.ok) throw await ghError("儲存", putRes);
       const pj = await putRes.json().catch(() => null);
       if (pj?.content?.sha) setVSha(pj.content.sha);
       flash("pass", "影片設定已儲存，網站約 1–2 分鐘後更新。");
@@ -1109,7 +1149,7 @@ function App() {
       const headers = { Authorization: `Bearer ${token.trim()}`, Accept: "application/vnd.github+json" };
 
       const getRes = await fetch(api, { headers, cache: "no-store" });
-      if (!getRes.ok) throw new Error(`讀取失敗（${getRes.status}）。請確認權杖權限與儲存庫名稱。`);
+      if (!getRes.ok) throw await ghError("讀取", getRes);
       const cur = await getRes.json();
 
       /* 防呆：線上版本若比後台載入時更新，代表中間有人改過，先問過再覆蓋 */
@@ -1142,10 +1182,7 @@ function App() {
           sha: cur.sha,
         }),
       });
-      if (!putRes.ok) {
-        const err = await putRes.json().catch(() => ({}));
-        throw new Error(`發布失敗（${putRes.status}）${err.message ? "：" + err.message : ""}`);
-      }
+      if (!putRes.ok) throw await ghError("發布", putRes);
       const putJson = await putRes.json().catch(() => null);
       if (putJson?.content?.sha) setBaseSha(putJson.content.sha);
       sessionStorage.setItem("cg_token", token.trim());
@@ -1204,7 +1241,18 @@ function App() {
 
         {msg && (
           <div className={`px-6 py-3 text-[14px] ${msg.type === "pass" ? "bg-pass text-white" : "bg-fail text-white"}`}>
-            <div className="max-w-6xl mx-auto">{msg.text}</div>
+            {/* whitespace-pre-line：錯誤訊息的第二行是處理建議，
+                不加這個的話 HTML 會把換行吃掉、擠成一整串。 */}
+            <div className="max-w-6xl mx-auto flex items-start justify-between gap-6">
+              <span className="whitespace-pre-line leading-[1.7]">{msg.text}</span>
+              {msg.type !== "pass" && (
+                <button type="button" onClick={() => setMsg(null)}
+                  /* bg-transparent 是明寫的，不依賴 Tailwind preflight 幫忙重置；
+                     -m-2 p-2 讓實際可點範圍變大（手機上 × 很難按中），外觀不變。 */
+                  className="shrink-0 bg-transparent border-0 cursor-pointer -m-2 p-2 text-white/80 hover:text-white text-[18px] leading-none"
+                  aria-label="關閉訊息">×</button>
+              )}
+            </div>
           </div>
         )}
       </header>
