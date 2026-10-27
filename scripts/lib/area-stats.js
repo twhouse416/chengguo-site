@@ -210,3 +210,55 @@ export function priceBands(code, { years = 3, step = 500, minSample = 10, typeKe
 export function roomLabel(n) {
   return `${["", "一", "二", "三", "四", "五", "六", "七", "八", "九"][n] || n}房`;
 }
+
+/* ── 成交結構：新成屋佔比與屋齡分層的單價 ──
+   為什麼要有這個：2026/10 使用者看到走勢頁寫「美術館特區 2024 年 43.5 →
+   2026 年 36.3，跌最多」時指出「但還是有很多 40 以上，怕會誤導買方」。
+   拆開來看他是對的，而且原因是結構不是價格：
+     美術館特區 屋齡≤5 年的成交佔比  2022 26% → 2024 55% → 2026 24%
+     同期 屋齡≥15 年的單價中位       29.9 → 34.7 → 33.6（幾乎沒動）
+     同期 屋齡≤5 年的單價中位        37.5 → 50.3 → 43.1
+   也就是說「全部中位」從 43.5 掉到 36.3，主要是新成屋交屋潮結束、
+   成交組成換回中古屋，不是同一間房子跌了 17%。
+   農十六是最好的對照：2024 年起屋齡≤5 年的成交掛零，
+   它的「持平」是一個純中古屋市場的持平，兩區不能用全部中位直接比。
+
+   只給中位數而不講結構，等於讓讀者拿一個混了兩種產品的數字去出價。
+   這支負責把結構算出來，讓頁面可以同時呈現兩層。 */
+export function ageSplit(code, { newMax = 5, oldMin = 15, minSample = 15, typeKey = "elevator" } = {}) {
+  const group = (CONFIG.propertyTypes || []).find(t => t.key === typeKey);
+  const typeMatch = group?.match || ["住宅大樓", "華廈"];
+  const codes = Array.isArray(code) ? code : [code];
+
+  const rows = codes.flatMap(c => loadArea(c)).map(r => {
+    const x = pick(r, typeMatch);
+    if (!x) return null;
+    /* 建築完成年月是民國年（1050126）或西元（20160126） */
+    const a = String(r["建築完成年月"] || "").trim();
+    if (!/^\d{6,8}$/.test(a)) return null;
+    const built = a.length === 8 ? Number(a.slice(0, 4)) : Number(a.slice(0, a.length - 4)) + 1911;
+    if (!(built > 1950 && built <= x.year + 1)) return null;
+    return { ...x, age: x.year - built };
+  }).filter(Boolean);
+
+  const by = new Map();
+  rows.forEach(x => {
+    if (!by.has(x.year)) by.set(x.year, []);
+    by.get(x.year).push(x);
+  });
+
+  const out = [...by.entries()].map(([year, xs]) => {
+    const fresh = xs.filter(x => x.age <= newMax);
+    const old = xs.filter(x => x.age >= oldMin);
+    return {
+      year, n: xs.length,
+      newN: fresh.length,
+      newShare: xs.length ? Math.round((fresh.length / xs.length) * 100) : null,
+      newMed: fresh.length >= minSample ? r1(median(fresh.map(x => x.unit))) : null,
+      oldN: old.length,
+      oldMed: old.length >= minSample ? r1(median(old.map(x => x.unit))) : null,
+    };
+  }).filter(x => x.n >= 30).sort((a, b) => a.year - b.year);
+
+  return out.length ? { rows: out, newMax, oldMin, at: y => out.find(x => x.year === y) || null } : null;
+}

@@ -29,7 +29,7 @@ import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fi
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
-import { yearly, byRooms, priceBands, roomLabel } from "./lib/area-stats.js";
+import { yearly, byRooms, priceBands, roomLabel, ageSplit } from "./lib/area-stats.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -301,6 +301,21 @@ function sellerBlock(area, items, dealsMap) {
    真正的資料在同一列的數字與下方表格裡，爬蟲與 AI 讀到的是文字。 */
 function trendBlock(area, t) {
   if (!t) return "";
+  /* 只給一條「全部中位」的曲線會誤導：新成屋交屋潮來了又過去時，
+     這條線會先衝高再回落，但同期間中古屋可能根本沒怎麼動。
+     這裡把高點年與最新年的成交組成拆出來講一句，
+     完整的四區拆解在 areas/trend/。（2026/10 使用者指出的問題） */
+  const sp = ageSplit(area.code);
+  const pk = sp?.at(t.peak.year), lt = sp?.at(t.last.year);
+  const mix = (pk && lt && pk.newShare !== null && lt.newShare !== null
+               && Math.abs(pk.newShare - lt.newShare) >= 15
+               && pk.oldMed !== null && lt.oldMed !== null)
+    ? `同一段期間，屋齡 15 年以上的單價中位只從 ${pk.oldMed} 變成 ${lt.oldMed} 萬元／坪——`
+      + `上面這條線之所以在 ${t.peak.year} 年衝高、之後回落，主要是成交組成變了：`
+      + `屋齡 5 年內的新成屋從佔 ${pk.newShare}% 回到 ${lt.newShare}%，不是同一間房子跌了那麼多。`
+      + (lt.newMed ? `${t.last.year} 年屋齡 5 年內的成交中位仍有 ${lt.newMed} 萬元／坪。` : "")
+      + `抓參考價要用與你屋齡相近的那一層。`
+    : "";
   const max = Math.max(...t.rows.map(r => r.unit));
   const dir = t.changePct === null ? ""
     : t.changePct > 0 ? `上漲約 ${t.changePct}%`
@@ -362,6 +377,9 @@ function trendBlock(area, t) {
       混進逐年序列會讓年份失真。單一年度成交少於 30 筆者不列出。
       來源：內政部不動產交易實價查詢服務網。
     </p>
+    ${mix ? `<p class="text-[16px] text-ink leading-[1.9] mt-5 max-w-3xl border-l-2 border-orange pl-5">
+      <strong class="font-bold">只看這條線會看錯一件事。</strong>${esc(mix)}
+    </p>` : ""}
     <a href="../trend/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">
       和另外三個生活圈並排比較（高雄四大生活圈房價走勢 ${t.span}）→
     </a>

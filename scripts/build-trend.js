@@ -26,7 +26,7 @@ import { SITE, BRAND, esc, head, header, footer, orgRef, fitTitle } from "./lib/
 import { updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { AREAS } from "./build-areas.js";
-import { yearly } from "./lib/area-stats.js";
+import { yearly, ageSplit } from "./lib/area-stats.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -124,6 +124,92 @@ function matrix(series, combined) {
 }
 
 /* ───────────────────────────────────────────────────────────
+   成交結構：為什麼中位數會這樣動
+   ───────────────────────────────────────────────────────────
+   這一段是整頁最重要、也最容易被省略的一段。
+   只看「全部中位」會得到錯的結論：美術館特區從 2024 年的 43.5 掉到
+   2026 年的 36.3，看起來像跌了 17%，但同期間屋齡 15 年以上的中位
+   只從 34.7 動到 33.6。真正變的是成交組成——屋齡 5 年內的新成屋
+   佔比從 55% 回到 24%。農十六則是另一個極端：2024 年起新成屋掛零，
+   它的持平是一個純中古屋市場的持平。
+   兩區若拿「全部中位」直接比，比的是不同的產品組合。 */
+function ageBlock(series, combined) {
+  const A = combined.peak.year, B = combined.last.year;
+  const rows = series.map(s => {
+    const sp = ageSplit(s.code);
+    return { ...s, a: sp?.at(A) || null, b: sp?.at(B) || null };
+  }).filter(r => r.a || r.b);
+  if (!rows.length) return "";
+
+  /* 單價一律補到一位小數，否則同一欄會出現「29.4 → 30」這種看起來像不同精度的寫法 */
+  const num = (v, suf = "") => (v === null || v === undefined ? "—"
+    : `${suf === "%" ? v : Number(v).toFixed(1)}${suf}`);
+  /* 找出最能說明問題的那一區：新成屋佔比變動最大的 */
+  const swing = rows.filter(r => r.a?.newShare !== null && r.b?.newShare !== null)
+    .sort((x, y) => Math.abs(y.a.newShare - y.b.newShare) - Math.abs(x.a.newShare - x.b.newShare))[0];
+  /* 以及對照組：兩年都幾乎沒有新成屋的那一區 */
+  const pure = rows.filter(r => (r.a?.newShare ?? 99) <= 5 && (r.b?.newShare ?? 99) <= 5)[0];
+
+  return `<section class="mt-16" id="structure">
+    <div class="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-3 mb-6">
+      <h2 class="display text-[23px]">中位數會動，不一定是房子漲跌</h2>
+      <span class="font-mono text-[12px] text-inkFaint shrink-0">${A} vs ${B}</span>
+    </div>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-7 max-w-3xl">
+      上面那張表的「全部中位」混了兩種產品：剛交屋的新成屋，和屋齡十幾二十年的中古屋，
+      同一區兩者的單價差距常常在十萬元／坪以上。所以當一區的新成屋交屋潮來了又過去，
+      「全部中位」會先衝高再回落，但那段期間中古屋的價格可能根本沒怎麼動。
+      下表把 ${A} 年（四區合計的高點）與 ${B} 年並排，拆成三個數字看。
+    </p>
+
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[720px]">
+        <caption class="sr-only">高雄四大生活圈 ${A} 年與 ${B} 年的電梯住宅成交結構：全部單價中位、屋齡 15 年以上單價中位、屋齡 5 年內成交佔比</caption>
+        <thead>
+          <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
+            <th scope="col" class="text-left font-normal py-3 px-4">生活圈</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">全部中位<span class="block text-[11px]">${A} → ${B}</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4 bg-tint">屋齡 15 年以上<span class="block text-[11px]">${A} → ${B}</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">屋齡 5 年內中位<span class="block text-[11px]">${A} → ${B}</span></th>
+            <th scope="col" class="text-right font-normal py-3 px-4">屋齡 5 年內佔比<span class="block text-[11px]">${A} → ${B}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => {
+            const ya = r.t.rows.find(x => x.year === A), yb = r.t.rows.find(x => x.year === B);
+            return `<tr class="border-b border-line last:border-0">
+            <th scope="row" class="py-3 px-4 text-left font-normal text-[15px]">${esc(r.name)}<span class="block font-mono text-[11px] text-inkFaint">高雄市${esc(r.district)}</span></th>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-inkSoft">${num(ya?.unit)} → ${num(yb?.unit)}</td>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-ink bg-tint">${num(r.a?.oldMed)} → ${num(r.b?.oldMed)}</td>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-inkSoft">${num(r.a?.newMed)} → ${num(r.b?.newMed)}</td>
+            <td class="py-3 px-4 text-right font-mono text-[14px] text-inkSoft">${num(r.a?.newShare, "%")} → ${num(r.b?.newShare, "%")}</td>
+          </tr>`;
+          }).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+
+    ${swing ? `<p class="text-[16px] text-inkSoft leading-[1.9] mt-6 max-w-3xl">
+      看${esc(swing.name)}這一列：全部中位從 ${num(swing.t.rows.find(x => x.year === A)?.unit)} 變成
+      ${num(swing.t.rows.find(x => x.year === B)?.unit)} 萬元／坪，
+      但屋齡 15 年以上的中位只從 ${num(swing.a?.oldMed)} 變成 ${num(swing.b?.oldMed)}。
+      真正變的是組成——屋齡 5 年內的成交從佔 ${num(swing.a?.newShare, "%")} 回到 ${num(swing.b?.newShare, "%")}。
+      ${swing.b?.newMed ? `而且 ${B} 年屋齡 5 年內的中位仍有 ${swing.b.newMed} 萬元／坪，` : ""}
+      所以「這一區現在 ${num(swing.t.rows.find(x => x.year === B)?.unit)} 萬」這句話，
+      對新成屋買方來說是偏低的參考值。
+      ${pure && pure.slug !== swing.slug ? `對照${esc(pure.name)}：${A} 與 ${B} 年屋齡 5 年內的成交都接近掛零，
+      它的中位變化就幾乎等於中古屋本身的變化。` : ""}
+    </p>` : ""}
+
+    <p class="text-[14px] text-inkFaint leading-[1.9] mt-4">
+      屋齡以內政部實價登錄的「建築完成年月」計算，該欄位空白或格式異常的紀錄不列入本表
+      （因此這裡的筆數會略少於上面的逐年表）。各分層樣本不足 15 筆時不計算中位數，顯示為「—」。
+      要抓自己物件的參考價，請用與你屋齡相近的那一層，不要用全部中位。
+    </p>
+  </section>`;
+}
+
+/* ───────────────────────────────────────────────────────────
    頁面
    ─────────────────────────────────────────────────────────── */
 function trendPage({ series, combined, dataUpdated, articles, hasBuyers, counts }) {
@@ -144,6 +230,35 @@ function trendPage({ series, combined, dataUpdated, articles, hasBuyers, counts 
   const byMove = series.filter(s => s.t.changePct !== null)
     .slice().sort((a, b) => b.t.changePct - a.t.changePct);
   const byLast = series.slice().sort((a, b) => b.t.last.unit - a.t.last.unit);
+
+  /* 使用者 2026/10 指出：「美術館特區 43.5 → 36.3、跌最多」這種寫法，
+     會讓買方以為整區都掉到 36 萬，但那一區仍有四分之一的成交在 40 萬以上。
+     拆開看他是對的——變的是成交組成不是價格，所以這題要寫進 FAQ，
+     而且答案要自己把兩層數字講完整，AI 引擎才不會只引到會誤導的那一句。 */
+  const ageNote = (() => {
+    const cand = series.map(s => {
+      const sp = ageSplit(s.code);
+      const a = sp?.at(combined.peak.year), b = sp?.at(combined.last.year);
+      if (!a || !b || a.newShare === null || b.newShare === null) return null;
+      return { s, a, b, swing: Math.abs(a.newShare - b.newShare) };
+    }).filter(Boolean).sort((x, y) => y.swing - x.swing)[0];
+    if (!cand || cand.swing < 15 || cand.a.oldMed === null || cand.b.oldMed === null) return null;
+    const A = combined.peak.year, B = combined.last.year;
+    const ya = cand.s.t.rows.find(x => x.year === A)?.unit;
+    const yb = cand.s.t.rows.find(x => x.year === B)?.unit;
+    return {
+      name: cand.s.name,
+      text: `不一定。${cand.s.name}（高雄市${cand.s.district}）的電梯住宅成交單價中位數，`
+        + `從 ${A} 年的 ${ya} 萬元／坪變成 ${B} 年的 ${yb} 萬元／坪，但同一段期間，`
+        + `屋齡 15 年以上的中位只從 ${cand.a.oldMed} 萬元／坪變成 ${cand.b.oldMed} 萬元／坪，幾乎沒有動。`
+        + `真正改變的是成交的組成：屋齡 5 年內的新成屋從佔該區成交的 ${cand.a.newShare}% 回到 ${cand.b.newShare}%——`
+        + `${A} 年前後是交屋潮，大量新成屋成交把整體中位帶高，交屋潮過去之後成交又以中古屋為主。`
+        + (cand.b.newMed ? `${B} 年該區屋齡 5 年內的成交單價中位仍有 ${cand.b.newMed} 萬元／坪。` : "")
+        + `所以要抓自己物件的參考價，應該用與你屋齡相近的那一層，不要用全部中位：`
+        + `拿 ${yb} 萬去看一間剛交屋的新成屋會嚴重低估，拿 ${ya} 萬去看一間二十年的中古屋則會嚴重高估。`
+        + `本頁「中位數會動，不一定是房子漲跌」那一段列出四個生活圈的完整拆解。`,
+    };
+  })();
 
   const faq = [
     [`高雄房價這幾年漲了多少？`, lead
@@ -170,6 +285,8 @@ function trendPage({ series, combined, dataUpdated, articles, hasBuyers, counts 
       + `另外要分開看價與量：${combined.peak.year} 年的成交量是 ${nf(combined.peak.n)} 筆，`
       + `${combined.last.year} 年是 ${nf(combined.last.n)} 筆，`
       + `${combined.last.year === new Date().getFullYear() ? "但當年度尚未公告完，量不能直接拿來比。" : "量與價不一定同向。"}`],
+
+    ...(ageNote ? [[`${ageNote.name}的中位數掉下來，是不是代表房價跌了？`, ageNote.text]] : []),
 
     [`為什麼用中位數不用平均價？`,
       `這十幾年裡有大坪數新案交屋潮這類結構性變化，平均會被少數高價案拉走。`
@@ -354,6 +471,9 @@ function trendPage({ series, combined, dataUpdated, articles, hasBuyers, counts 
       只含 ${combined.last.year} 年 1 月以後的成交。兩個數字不同不是矛盾，是期間的切法不同。
     </p>
   </section>
+
+  <!-- 成交結構 -->
+  ${ageBlock(series, combined)}
 
   <!-- 各區摘要卡 -->
   <section class="mt-16" id="areas">
