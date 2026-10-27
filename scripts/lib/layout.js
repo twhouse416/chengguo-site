@@ -57,6 +57,14 @@ export const BRAND = {
 
    作法：首頁那一份掛上 ORG_ID 當權威定義，其他頁面一律用 orgRef() 參照，
    讓全站的組織節點收斂成同一個實體。2026-10 補上。 */
+/* 搜尋結果的標題寬度：中日韓字元佔兩個半形寬，Google 行動版大約
+   在 60 個半形寬度處截斷。各 builder 組標題時用它控預算。 */
+export function dispWidth(str) {
+  let n = 0;
+  for (const ch of String(str || "")) n += ch.codePointAt(0) > 0x2e80 ? 2 : 1;
+  return n;
+}
+
 export const ORG_ID = `${SITE}/#organization`;
 
 /* 參照首頁的組織實體。name／url 留著是為了讓單頁獨立看也讀得懂
@@ -257,6 +265,22 @@ export function titleWithBrand(title) {
   return t.endsWith(TITLE_SUFFIX_LONG)
     ? t.slice(0, -TITLE_SUFFIX_LONG.length) + TITLE_SUFFIX_SHORT
     : t;
+}
+
+/* 依顯示寬度組標題。
+   parts 由重要到次要排列，塞不下就從尾端丟，第一段一定保留。
+   預算用的是 head() 實際會輸出的短後綴「｜澄果團隊」——
+   各 builder 傳進來的是 BRAND.teamName（寬 19），但 head() 會把它換成
+   寬 10 的短版，拿長版去算預算會少算九個寬度而白白丟掉資訊。 */
+export function fitTitle(parts, limit = 60) {
+  const list = parts.filter(Boolean);
+  if (!list.length) return "";
+  const suffix = dispWidth(TITLE_SUFFIX_SHORT);
+  for (let keep = list.length; keep >= 1; keep--) {
+    const t = list.slice(0, keep).join("");
+    if (dispWidth(t) + suffix <= limit || keep === 1) return t;
+  }
+  return list[0];
 }
 
 export function head({ title, description, keywords, canonical, ogImage, ogType = "website", depth = 0, extra = "", jsonLd = [], noindex = false }) {

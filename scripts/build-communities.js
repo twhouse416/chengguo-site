@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, orgRef } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, orgRef, fitTitle } from "./lib/layout.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -251,6 +251,40 @@ const DEAL_CAP = 600;
 const LOW_SAMPLE = 10;
 
 /* ---------- 成交紀錄表格 ---------- */
+/* ───────────────────────────────────────────────────────────
+   社區成交的摘要數字
+   ───────────────────────────────────────────────────────────
+   原本這段算在 dealsTable() 裡，只有表格用得到。標題與 meta description
+   也需要同樣的數字（Search Console 實測：標題帶數字的頁面，在相同排名
+   位置的點閱率是 1.10%，不帶數字的只有 0.72%），所以抽出來共用——
+   抽出來而不是另外算一份，是為了確保標題上的數字和頁面上的永遠一致。 */
+function dealSummary(deals) {
+  const empty = { n: 0, low: 0, high: 0, mid: 0, label: "", fellBack: false };
+  if (!deals?.length) return empty;
+  const homes = deals.filter(d => d.use !== "店面");
+  const recent = homes.filter(d => String(d.date || "") >= RANGE_SINCE);
+  const used = recent.length >= 3 ? recent : homes;
+  const fellBack = recent.length < 3 && homes.length > 0;
+  const dates = used.map(d => d.date).filter(Boolean).sort();
+  const label = fellBack
+    ? (dates.length ? `${dates[0].slice(0, 4)}–${dates[dates.length - 1].slice(0, 4)} 全期間` : "全期間")
+    : "近三年";
+  const prices = used.map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+  if (!prices.length) return { ...empty, n: deals.length, label };
+  const rawMid = prices.length % 2
+    ? prices[(prices.length - 1) / 2]
+    : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2;
+  const normal = (prices.length >= 3 && rawMid > 0)
+    ? (p => p.length >= 2 ? p : prices)(prices.filter(v => v >= rawMid * 0.6 && v <= rawMid * 1.6))
+    : prices;
+  const [low, high] = summaryRange(normal);
+  const mid = normal.length % 2
+    ? normal[(normal.length - 1) / 2]
+    : (normal[normal.length / 2 - 1] + normal[normal.length / 2]) / 2;
+  const r1 = v => Math.round(v * 10) / 10;
+  return { n: deals.length, low: r1(low), high: r1(high), mid: r1(mid), label, fellBack };
+}
+
 function dealsTable(deals, c = {}, dataUpdated = "") {
   if (!deals?.length) {
     return `<div class="border border-line rounded-sm bg-surface p-8">
@@ -798,6 +832,12 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
     ? `${dealDates.length} 筆成交，${dealDates[0].slice(0, 4)}－${dealDates[dealDates.length - 1].slice(0, 4)} 年`
     : "";
 
+  /* 只有年份區間的版本：行情 FAQ 已經自己講了筆數，
+     再接一次 dealSpan 會變成「收錄的 158 筆成交紀錄（158 筆成交，2012－2026 年）」。 */
+  const dealYears = dealDates.length
+    ? `${dealDates[0].slice(0, 4)}－${dealDates[dealDates.length - 1].slice(0, 4)} 年`
+    : "";
+
   const units = unitCount(c);
   const floors = floorsAbove(c, deals);
   const built = yearBuilt(c);
@@ -918,6 +958,9 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
     });
   }
 
+  /* 成交摘要數字：標題、描述與 FAQ 都要用，所以在這裡先算好。 */
+  const sm = dealSummary(deals);
+
   /* ---------- 自備款 FAQ 去樣板化 ----------
      各社區頁的「買 XX 要準備多少自備款」答案高度相似（都是貸款八成、
      自備兩成、仲介費代書費規費契稅），Google 可能判定為樣板內容而降低價值。
@@ -925,12 +968,43 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
      每一頁的數字都不一樣，而且對讀者實際有用得多。
      原本審過的文案完整保留在後面，只是前面多一句具體數字。 */
   const faqList = (c.faq || []).map(([q, a]) => {
-    if (!/自備款/.test(q) || !dealMid) return [q, a];
-    const down = Math.round(dealMid * 0.2);
-    const lead = `以本社區近期實價登錄成交總價的中位數 ${dealMid.toLocaleString("en-US")} 萬元估算，`
-      + `貸款八成、自備兩成的話，自備款大約是 ${down.toLocaleString("en-US")} 萬元`
-      + `（${dealSpan}）。實際成交總價因樓層、坪數與是否含車位而異，這只是抓一個量級。`;
-    return [q, `${lead}${a}`];
+    if (/自備款/.test(q) && dealMid) {
+      const down = Math.round(dealMid * 0.2);
+      const lead = `${c.name}（高雄市${c.district}）近期實價登錄成交總價的中位數為 ${dealMid.toLocaleString("en-US")} 萬元，`
+        + `貸款八成、自備兩成的話，自備款大約是 ${down.toLocaleString("en-US")} 萬元`
+        + `（${dealSpan}）。實際成交總價因樓層、坪數與是否含車位而異，這只是抓一個量級。`;
+      return [q, `${lead}${a}`];
+    }
+
+    /* ---------- 行情 FAQ 補上即時數字 ----------
+       「○○的成交行情大概多少？」原本有 22 個社區的答案裡一個數字都沒有，
+       只說「本頁列出每一筆成交紀錄」——問價格卻不給價格。
+       其餘的答案雖然有數字，但是寫在 communities.json 裡的手寫值，
+       資料每月更新後會逐漸和頁面上的對不起來。
+
+       這裡一律在答案前面補一句用當下資料算出來的事實，
+       而且把社區名、行政區、期間、資料來源都寫進同一句——
+       AI 引擎引用的是單一句子，缺任何一項它就無法判斷這句話在講哪裡、
+       什麼時候、憑什麼。原本審過的文案完整保留在後面。 */
+    /* 學區 FAQ 同樣補一句自足的事實。
+       原本的答案多半從「學區以里、鄰為劃分單位」開始談原則，
+       沒提是哪個社區、哪個行政區，單獨被引用時讀者無從判斷在講哪裡。
+       這裡只敘述本站登載的欄位值，不改變原本「不等於保證、請自行核對」的立場。 */
+    if (/學區/.test(q) && (c.school?.primary || c.school?.junior)) {
+      const pair = [c.school?.primary && `國小${c.school.primary}`,
+                    c.school?.junior && `國中${c.school.junior}`].filter(Boolean).join("、");
+      const lead = `${c.name}（高雄市${c.district}${c.area || ""}）在本站社區資料的學區欄位登載為${pair}。`
+        + `高雄市的學區以里、鄰劃分，社區名稱與路名都不是依據，實際歸屬請以入學當年度教育局公告為準。`;
+      return [q, `${lead}${a}`];
+    }
+
+    if (/行情|房價|多少錢|價格/.test(q) && sm.n > 0 && sm.low > 0) {
+      const lead = `${c.name}（高雄市${c.district}${c.area ? `${c.area}` : ""}）`
+        + `${sm.label}的住家成交單價為每坪 ${sm.low} 至 ${sm.high} 萬元、中位 ${sm.mid} 萬元，`
+        + `依據內政部實價登錄收錄的 ${sm.n} 筆成交紀錄${dealYears ? `（${dealYears}）` : ""}。`;
+      return [q, `${lead}${a}`];
+    }
+    return [q, a];
   });
 
   if (faqList.length) {
@@ -946,10 +1020,38 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
   const kw = [c.name, ...(c.aliases || []), `${c.name}實價登錄`, `${c.name}房價`,
               `${c.name}成交`, c.area, `高雄${c.district}`].join(",");
 
+  /* ── 標題與描述 ──
+     原本寫「○○實價登錄與社區介紹｜生活圈」，是在描述「這一頁是什麼」。
+     Search Console 實測（2026-09~10，網頁報表 12,579 次曝光）顯示這種寫法
+     的點閱率只有 0.67%，而同樣排在第 5–10 名的文章頁是 3.94%——位置一樣、
+     差六倍，差別在文章標題是「賣房要告知哪些事？」這種會讓人想知道答案的問句，
+     社區頁則只是一個標籤。另外同位置比較，標題帶數字的 1.10%、不帶的 0.72%。
+
+     所以改成：前段放問句、接著放這個社區獨有的數字（成交筆數與單價區間），
+     生活圈與團隊名往後擺。數字取自 dealSummary()，和頁面上顯示的完全同源。
+     成交太少（算不出區間）的社區退回描述式寫法，不硬湊數字。 */
+  const hasNum = sm.n > 0 && sm.low > 0;
+  /* 「近三年」是標籤，退回全期間時絕對不能照用——站上曾有 29 個社區標錯。
+     標題空間有限，退回時用「全期間」三個字，年份區間留給頁面內文。 */
+  const span = sm.fellBack ? "全期間" : "近三年";
+
+  /* 標題在搜尋結果大約 60 個半形寬度處被截斷（中文算兩倍寬）。
+     依序把資訊塞進預算，塞不下就從最不重要的開始丟，
+     確保「社區名＋房價多少？＋單價區間」這段核心一定看得到。 */
+  const titleParts = hasNum
+    ? [`${c.name}房價多少？`, `${span}單價 ${sm.low}–${sm.high} 萬／坪`, `、${sm.n} 筆成交`]
+    : [`${c.name}房價與社區介紹`, `｜${c.area}實價登錄`, ""];
+  const title = fitTitle(titleParts);
+
+  const desc = hasNum
+    ? `${c.name}（${c.address}）${span}住家成交單價 ${sm.low} 至 ${sm.high} 萬元／坪、中位 ${sm.mid} 萬元／坪，`
+      + `收錄 ${sm.n} 筆內政部實價登錄成交紀錄。含逐筆成交、社區規格、學區與同區相近社區比較。`
+    : `${c.name}（${c.address}）的實價登錄成交紀錄、社區基本資料、學區與看屋重點。${c.summary}`;
+
   return [
     head({
-      title: `${c.name}實價登錄與社區介紹｜${c.area}｜${BRAND.teamName}`,
-      description: `${c.name}（${c.address}）的實價登錄成交紀錄、社區基本資料、學區與看屋重點。${c.summary}`,
+      title: `${title}｜${BRAND.teamName}`,
+      description: desc,
       keywords: kw,
       canonical: url,
       ogImage: `${SITE}/assets/area-01-artmuseum.jpg`,

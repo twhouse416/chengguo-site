@@ -89,10 +89,14 @@ function pick(r, typeMatch) {
   };
 }
 
+/* code 可以是單一生活圈代碼，也可以是代碼陣列。
+   傳陣列時是把幾個資料池的成交倒進同一個池子再統計，
+   不是把各區的中位數再平均——後者會讓成交量少的生活圈權重被放大。 */
 function rowsOf(code, typeKey = "elevator") {
   const group = (CONFIG.propertyTypes || []).find(t => t.key === typeKey);
   const typeMatch = group?.match || ["住宅大樓", "華廈"];
-  return loadArea(code).map(r => pick(r, typeMatch)).filter(Boolean);
+  const codes = Array.isArray(code) ? code : [code];
+  return codes.flatMap(c => loadArea(c)).map(r => pick(r, typeMatch)).filter(Boolean);
 }
 
 /* ── 逐年單價中位數 ──

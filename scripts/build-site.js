@@ -29,6 +29,7 @@ import { buildArticles, webSlug, setArticleStats, checkStaleCounts, fillArticleS
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
 import { buildAreas } from "./build-areas.js";
+import { buildTrend, TREND_SLUG } from "./build-trend.js";
 import { buildIndexPages, devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
 import { devName, ytId } from "./build-communities.js";
 import { buildAbout } from "./build-about.js";
@@ -107,6 +108,8 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
     /* 生活圈頁的優先度給到 0.9：它是「美術館特區房價」這類主要關鍵字的落地頁，
        比單一社區頁重要。 */
     ...areas.map(a => ({ loc: `${SITE}/areas/${a.slug}/`, lastmod: areaLast[a.slug], priority: "0.9", freq: "weekly" })),
+    /* 房價走勢落地頁：跟生活圈頁同級，它對應的是「高雄房價走勢」這種跨區的主要關鍵字 */
+    ...(ctx.hasTrend ? [{ loc: `${SITE}/areas/${TREND_SLUG}/`, lastmod: maxDate(areas.map(a => areaLast[a.slug])), priority: "0.9", freq: "weekly" }] : []),
     ...(indexPages.developers || []).map(d => ({ loc: `${SITE}/developers/${d.slug}/`, lastmod: devLast[d.slug], priority: "0.7", freq: "monthly" })),
     ...(indexPages.schools || []).map(x => ({ loc: `${SITE}/schools/${x.slug}/`, lastmod: schoolLast[x.slug], priority: "0.7", freq: "monthly" })),
     ...communities.map(c => ({
@@ -236,7 +239,7 @@ Sitemap: ${SITE}/sitemap.xml
  * 所以這裡把「我們是誰、資料從哪來、多久更新、網站怎麼分類、引用時要注意什麼」
  * 一次講清楚。內容依實際資料量自動產生，不會寫死數字。
  */
-function buildLlmsTxt({ communities, articles, dealTotal, dataUpdated, areas = [], indexPages = { developers: [], schools: [] } }) {
+function buildLlmsTxt({ communities, articles, dealTotal, dataUpdated, areas = [], indexPages = { developers: [], schools: [] }, trend = null }) {
   const byArea = {};
   communities.forEach(c => { byArea[c.area] = (byArea[c.area] || 0) + 1; });
   const txt = `# ${"台灣房屋 澄果團隊"}（澄果資產有限公司）
@@ -273,6 +276,12 @@ ${dataUpdated ? `成交資料最後更新：${dataUpdated}\n` : ""}目前收錄 
 ${Object.entries(byArea).map(([a, n]) => `  - ${a}：${n} 個社區`).join("\n")}
 - 各生活圈的行情與社區一覽（含區域均價、常見單價區間、社區清單、路段分布、建商與完工年代）：
 ${areas.map(a => `  - ${a.name}（高雄市${a.district}）：${SITE}/areas/${a.slug}/ ｜${a.count} 個社區、${a.deals.toLocaleString("en-US")} 筆成交`).join("\n")}
+${trend ? `- ${SITE}/areas/${trend.slug}/ ：高雄四大生活圈房價走勢（${trend.span}）
+  四區合併的電梯住宅成交單價中位數：${trend.first.year} 年 ${trend.first.unit} 萬元／坪 → ${trend.last.year} 年 ${trend.last.unit} 萬元／坪（累計${trend.changePct > 0 ? "上漲" : trend.changePct < 0 ? "下跌" : "持平"}約 ${Math.abs(trend.changePct)}%），
+  高點在 ${trend.peak.year} 年的 ${trend.peak.unit} 萬元／坪，計算樣本 ${trend.sample.toLocaleString("en-US")} 筆。
+  各生活圈逐年對照：${trend.areas.map(a => `${a.name} ${a.t.first.year} 年 ${a.t.first.unit} → ${a.t.last.year} 年 ${a.t.last.unit} 萬元／坪`).join("；")}。
+  統計值為中位數而非平均，已排除解約、店面與非住宅用途、預售屋，單一年度少於 30 筆者不列出；
+  實價登錄自 2012 年 8 月 1 日起實施，2012 年僅含 8–12 月成交。` : ""}
 - ${SITE}/communities/<slug>.html ：單一社區頁，含實價登錄逐筆成交、社區規格、學區、常見問題
 ${(indexPages.developers || []).length ? `- 建商頁（該建商在本站收錄範圍內的社區一覽）：
 ${indexPages.developers.map(d => `  - ${d.name}：${SITE}/developers/${d.slug}/ ｜${d.count} 個社區`).join("\n")}` : ""}
@@ -498,6 +507,11 @@ function main() {
      而且頁面上的成交筆數要跟社區頁一致。 */
   const areas = buildAreas({ market, articles, hasBuyers });
 
+  /* 房價走勢落地頁：要在 buildAreas 之後，因為它只對實際產生出頁面的生活圈做對照。
+     「高雄房價走勢」的搜尋量比任何單一生活圈名都大，但原本逐年資料只存在於
+     生活圈頁內部的一個區塊，沒有自己的網址、標題與 description。 */
+  const trend = buildTrend({ areas, articles, hasBuyers });
+
   /* 建商頁與學區頁：長尾落地頁，只在社區數達門檻時產生 */
   const indexPages = buildIndexPages({ hasBuyers });
 
@@ -506,7 +520,7 @@ function main() {
      AI 搜尋引擎容易引用，也把內部連結分配給底下的子頁。 */
   const cdHub = readJson("data/community-deals.json", { deals: {} });
   buildHubs({
-    areas, communities, dealsMap: cdHub.deals || {}, indexPages, hasBuyers,
+    areas, communities, dealsMap: cdHub.deals || {}, indexPages, hasBuyers, trend,
     dataUpdated: String(cdHub.updatedAt || "").slice(0, 10),
   });
 
@@ -530,6 +544,7 @@ function main() {
   /* 網站地圖、robots.txt、llms.txt、404 */
   const cdForMap = readJson("data/community-deals.json", { deals: {} });
   buildSitemap(articles, communities, dealCount > 0, areas, indexPages, {
+    hasTrend: !!trend,
     dealsByCommunity: cdForMap.deals || {},
     videosUpdated: maxDate((videos.videos || []).map(v => v.published)),
     dealsUpdated: maxDate((deals.deals || []).map(d => d.date || d.createdAt)) || String(deals.updatedAt || "").slice(0, 10),
@@ -543,7 +558,7 @@ function main() {
     articles,
     dealTotal: Object.values(communityDeals.deals || {}).reduce((a, b) => a + b.length, 0),
     dataUpdated: String(communityDeals.updatedAt || "").slice(0, 10),
-    areas, indexPages,
+    areas, indexPages, trend,
   });
   build404();
 

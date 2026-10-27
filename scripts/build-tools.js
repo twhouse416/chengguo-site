@@ -47,14 +47,46 @@ function calc(slug) {
   return { code, precompiled: true };
 }
 
+/* 學區工具的標題與說明要帶實際數字（幾個里、幾所學校），
+   但數字不能寫死——官方每學年會調整 data/school-zones.json。
+   所以在這裡從同一份資料算一次，標題與 description 都用這組數字。
+
+   為什麼值得這樣做：Search Console 實測，/tools/school-zone/ 是全站
+   曝光最高的一頁（1,892 次、平均排名 8.1），點閱率卻只有 0.58%。
+   同期間排名相近的文章頁是 3.94%。差別在標題——文章是問句開頭、
+   數字在前三十個字元內，工具頁原本的標題只是在描述這一頁是什麼。 */
+const ZONE = (() => {
+  try {
+    const d = JSON.parse(readFileSync(path.join(ROOT, "data/school-zones.json"), "utf-8"));
+    const e = d.entries || [];
+    const es = new Set(e.filter(x => x.stage === "國民小學").map(x => x.school));
+    const js = new Set(e.filter(x => x.stage === "國民中學").map(x => x.school));
+    const li = new Set();
+    e.forEach(x => String(x.zone || "").split(/[、。；]/).forEach(z => {
+      const m = z.match(/([一-龥]{1,6}里)/);
+      if (m) li.add(x.zoneDistrict + m[1]);
+    }));
+    const districts = [...new Set(e.map(x => x.zoneDistrict))];
+    return { es: es.size, js: js.size, all: es.size + js.size, li: li.size,
+             districts, year: d.schoolYear || "" };
+  } catch {
+    return { es: 0, js: 0, all: 0, li: 0, districts: [], year: "" };
+  }
+})();
+
 export const TOOLS = [
   /* ---------- 01 學區查詢 ---------- */
   {
     slug: "school-zone",
     code: "Tool 01",
     title: "高雄學區查詢",
-    pageTitle: "高雄學區查詢｜鼓山、左營、三民區國小與國中學區對照",
-    description: "查詢高雄市鼓山區、左營區、三民區各里對應的國小與國中學區，資料依高雄市115學年度國民小學、國民中學學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。",
+    pageTitle: ZONE.li
+      ? `高雄學區怎麼查？${ZONE.li} 個里對照 ${ZONE.all} 所國小國中`
+      : "高雄學區怎麼查？選行政區與里別，查國小與國中學區",
+    description: ZONE.li
+      ? `高雄學區查詢：選行政區與里別，一次查出對應的國小與國中。收錄${ZONE.districts.join("、")}共 ${ZONE.li} 個里、`
+        + `${ZONE.es} 所國小與 ${ZONE.js} 所國中，逐字轉錄自高雄市${ZONE.year}學年度學區劃分一覽表，並標示總量管制與自由學區。`
+      : "查詢高雄市鼓山區、左營區、三民區各里對應的國小與國中學區，資料依高雄市學區劃分一覽表逐字轉錄，並標示總量管制與自由學區。",
     keywords: "高雄學區查詢,高雄國中學區,美術館特區學區,農十六學區,鼓山區國小學區,鼓山區國中學區,左營區學區,三民區學區,高雄總量管制學校",
     intro: "選擇行政區與里別，一次查出對應的國小與國中學區。目前收錄澄果團隊主力生活圈所在的鼓山區、左營區、三民區。",
     notes: [
@@ -91,7 +123,7 @@ export const TOOLS = [
     slug: "mortgage",
     code: "Tool 02",
     title: "房貸試算",
-    pageTitle: "房貸試算｜月付金、總利息與收入負擔比一次算清楚",
+    pageTitle: "房貸月付金怎麼算？總價、成數、年限一次試算",
     description: "輸入房屋總價、貸款成數、年限與利率，立刻算出每月應繳金額、利息總額與本息比例，並可加入寬限期與家庭月收入評估負擔比。",
     keywords: "房貸試算,月付金試算,房貸利率,寬限期,房貸負擔比,高雄買房,自備款",
     intro: "把總價、成數、年限與利率填進去，立刻看到每月要繳多少、一共付出多少利息。數字會即時跟著變，可以直接拉來比較不同方案。",
@@ -126,7 +158,7 @@ export const TOOLS = [
     slug: "qingan",
     code: "Tool 03",
     title: "新青安 3.0 試算",
-    pageTitle: "新青安 3.0 試算｜資格門檻檢核與月付金變化",
+    pageTitle: "新青安能貸多少？資格三道門檻與月付金試算",
     description: "新青安3.0資格檢核與月付試算。年齡、所得、房屋總價三道門檻一次確認，並算出利息補貼「3+3」逐年退場後，月付金會怎麼變。",
     keywords: "新青安3.0,青安貸款,首購貸款,新青安資格,新青安額度,新青安利率,高雄首購",
     intro: "新制自 2026 年 8 月 1 日起實施，新增年齡、所得與房屋總價三道門檻，並針對婚育家庭加碼額度。先確認資格過不過，再看月付金隨補貼退場怎麼變。",
@@ -166,7 +198,7 @@ export const TOOLS = [
     slug: "property-tax",
     code: "Tool 04",
     title: "房地合一稅試算",
-    pageTitle: "房地合一稅試算｜稅率級距、自住優惠與重購退稅",
+    pageTitle: "房地合一稅要繳多少？稅率級距與自住優惠試算",
     description: "房地合一稅2.0試算。輸入買賣價格與持有期間算出應納稅額，並可試算自住400萬免稅額與換屋重購退稅，附不同持有期間的稅負比較。",
     keywords: "房地合一稅,房地合一稅試算,自住優惠400萬,重購退稅,土地漲價總數額,賣房稅費,高雄賣房",
     intro: "賣房前先抓出稅負。輸入買價、賣價、必要費用與持有年數，工具會自動判斷落在哪個稅率級距，並把四個級距與自住優惠的稅額一次並列比較；離級距邊界不遠時也會提醒再持有幾個月可以少繳多少。",

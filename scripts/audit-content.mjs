@@ -13,6 +13,7 @@
  *   C 文章內部：note/摘要宣稱的數字 vs 同篇表格內的數字
  *   D 資料品質：學區欄位格式、規格空值、草稿
  *   E 建置產出：{{ }} 殘留、NaN/undefined、內鏈死連結、JSON-LD
+ *   P 房價走勢頁 vs 生活圈頁：同一個（生活圈, 年度）的單價中位必須一致
  */
 import fs from "fs";
 import path from "path";
@@ -829,6 +830,96 @@ console.log("\n【O】規格表完工時間 vs 實價登錄建築完成年月");
          + `（${hits} 筆成交一致），差 ${diff} 個月且未在規格表裡交代`);
     }
     if (!n) ok("規格表的完工時間與實價登錄的建築完成年月沒有未交代的落差");
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   【P】房價走勢頁 vs 生活圈頁的逐年數字
+   ───────────────────────────────────────────────────────────
+   areas/trend/ 把四個生活圈的逐年單價中位數並排成一張表，
+   生活圈頁自己也各有一張。兩邊都由 scripts/lib/area-stats.js 的 yearly() 算出來，
+   所以「資料正確」不等於「頁面正確」——中間還有兩套不同的渲染程式，
+   欄位錯位、取錯索引、四捨五入不一致都會讓同一個數字在兩頁長得不一樣，
+   而這種錯誤讀者一眼看得出來，稽核卻抓不到。
+   這支檢查的是渲染後的 HTML，不是資料：從兩邊的表格把
+   （生活圈, 年度 → 單價中位）解析出來逐格相比。 */
+if (BUILT) {
+  console.log("\n【P】房價走勢頁 vs 生活圈頁的逐年單價");
+  const trendFile = path.join(ROOT, "areas/trend/index.html");
+  if (!fs.existsSync(trendFile)) {
+    warn("找不到 areas/trend/index.html——房價走勢落地頁沒有產生出來");
+  } else {
+    const txt = fs.readFileSync(trendFile, "utf-8");
+    /* 只取「四個生活圈逐年對照」那一張表 */
+    const seg = txt.match(/id="compare"[\s\S]*?<\/table>/);
+    const cellNum = td => {
+      const m = td.replace(/<span[\s\S]*?<\/span>/g, "").match(/>\s*(-?\d+(?:\.\d+)?)\s*$/)
+             || td.replace(/<span[\s\S]*?<\/span>/g, "").match(/(-?\d+(?:\.\d+)?)/);
+      return m ? Number(m[1]) : null;
+    };
+    if (!seg) {
+      fail("areas/trend/index.html：找不到四區逐年對照表（id=\"compare\"）");
+    } else {
+      /* 表頭：第一欄是年度、第二欄是四區整體，之後才是各生活圈 */
+      const ths = [...seg[0].matchAll(/<th scope="col"[^>]*>([\s\S]*?)<\/th>/g)]
+        .map(m => m[1].replace(/<[^>]+>/g, "").replace(/萬／坪/g, "").trim());
+      const areaCols = ths.slice(2);
+      /* 表身：每一列 th 是年度，td 依表頭順序 */
+      const bodyRows = [...seg[0].matchAll(/<tr class="border-b border-line last:border-0">([\s\S]*?)<\/tr>/g)];
+      const onTrend = new Map();   // `${區}|${年}` → 單價
+      for (const [, row] of bodyRows) {
+        const y = (row.match(/<th scope="row"[^>]*>([\s\S]*?)<\/th>/) || [])[1];
+        const year = y ? Number(y.replace(/<[^>]+>/g, "").replace(/[^\d]/g, "").slice(0, 4)) : null;
+        if (!year) continue;
+        const tds = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(m => m[1]);
+        areaCols.forEach((name, i) => {
+          const raw = tds[i + 1];                  // tds[0] 是四區整體
+          if (raw === undefined) return;
+          if (/^\s*—\s*$/.test(raw.replace(/<[^>]+>/g, ""))) return;
+          const v = cellNum(raw);
+          if (v !== null) onTrend.set(`${name}|${year}`, v);
+        });
+      }
+
+      /* 生活圈頁自己的逐年表 */
+      let checked = 0, bad = 0;
+      const areaDirs = fs.existsSync(path.join(ROOT, "areas"))
+        ? fs.readdirSync(path.join(ROOT, "areas"), { withFileTypes: true })
+            .filter(e => e.isDirectory() && e.name !== "trend").map(e => e.name)
+        : [];
+      for (const slug of areaDirs) {
+        const f = path.join(ROOT, "areas", slug, "index.html");
+        if (!fs.existsSync(f)) continue;
+        const a = fs.readFileSync(f, "utf-8");
+        const h1 = (a.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || [])[1] || "";
+        /* H1 是「高雄○○房價行情與社區一覽」，取出生活圈名以對上表頭 */
+        const name = areaCols.find(n => h1.includes(n));
+        if (!name) { warn(`areas/${slug}/：H1「${h1.replace(/<[^>]+>/g, "").trim()}」對不上走勢頁表頭的任何一欄`); continue; }
+        const tseg = a.match(/id="trend"[\s\S]*?<\/table>/);
+        if (!tseg) continue;   // 樣本不足、沒有走勢區塊是正常的
+        for (const [, row] of tseg[0].matchAll(/<tr class="border-b border-line last:border-0">([\s\S]*?)<\/tr>/g)) {
+          const y = (row.match(/<th scope="row"[^>]*>([\s\S]*?)<\/th>/) || [])[1];
+          const year = y ? Number(y.replace(/<[^>]+>/g, "").trim()) : null;
+          if (!year) continue;
+          const tds = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(m => m[1]);
+          const mine = cellNum(tds[0] || "");
+          const theirs = onTrend.get(`${name}|${year}`);
+          if (mine === null) continue;
+          if (theirs === undefined) {
+            fail(`${name} ${year} 年：生活圈頁有 ${mine} 萬／坪，但房價走勢頁那一格是空的`);
+            bad++;
+            continue;
+          }
+          checked++;
+          if (Math.abs(mine - theirs) > 0.001) {
+            fail(`${name} ${year} 年單價中位不一致：生活圈頁 ${mine}、房價走勢頁 ${theirs}（萬／坪）`);
+            bad++;
+          }
+        }
+      }
+      if (!checked) warn("沒有比對到任何逐年數字——解析方式可能已經跟模板脫鉤，請確認");
+      else if (!bad) ok(`房價走勢頁與 ${areaDirs.length} 個生活圈頁的逐年單價完全一致（比對 ${checked} 格）`);
+    }
   }
 }
 

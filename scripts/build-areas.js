@@ -25,7 +25,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
@@ -362,6 +362,9 @@ function trendBlock(area, t) {
       混進逐年序列會讓年份失真。單一年度成交少於 30 筆者不列出。
       來源：內政部不動產交易實價查詢服務網。
     </p>
+    <a href="../trend/index.html" class="inline-block mt-4 font-mono text-[13px] text-orangeDeep hover:underline">
+      和另外三個生活圈並排比較（高雄四大生活圈房價走勢 ${t.span}）→
+    </a>
   </section>`;
 }
 
@@ -744,10 +747,23 @@ function areaPage(area, ctx) {
 
   return [
     head({
-      title: `高雄${area.name}房價行情與社區一覽｜${items.length} 個社區實價登錄｜${BRAND.teamName}`,
-      description: `高雄${area.name}（${area.district}）的房價行情與 ${items.length} 個社區的實價登錄成交紀錄。`
-        + (elevator?.avgPricePerPing ? `近一年電梯住宅成交均價每坪 ${elevator.avgPricePerPing} 萬元，常見單價 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪。` : "")
-        + `含各社區完工年、戶數、成交筆數與單價範圍。`,
+      /* 原標題「高雄○○房價行情與社區一覽｜N 個社區實價登錄」是描述這一頁是什麼。
+         Search Console 實測：生活圈頁 649 次曝光、平均排名 5–10、點閱率只有 0.15%，
+         是全站最低；同樣位置的文章頁是 3.94%。美術館特區那頁 585 次曝光只拿到 1 次點擊。
+         改成問句開頭、把這一區獨有的數字（中位單價、社區數、十四年漲幅）往前放。 */
+      title: fitTitle([
+        `高雄${area.name}房價多少？`,
+        elevator?.avgPricePerPing ? `近一年中位 ${elevator.avgPricePerPing} 萬／坪` : `${items.length} 個社區實價登錄`,
+        elevator?.avgPricePerPing ? `、${items.length} 個社區` : "",
+      ]) + `｜${BRAND.teamName}`,
+      description: `高雄${area.name}（${area.district}）房價：`
+        + (elevator?.avgPricePerPing
+            ? `近一年電梯住宅成交單價中位 ${elevator.avgPricePerPing} 萬元／坪，常見區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪`
+              + (elevator.medianTotalPrice ? `，總價中位 ${Number(elevator.medianTotalPrice).toLocaleString("en-US")} 萬元` : "")
+              + `。`
+            : "")
+        + (trend ? `${trend.span} 逐年走勢：${trend.first.unit} → ${trend.last.unit} 萬／坪。` : "")
+        + `收錄 ${items.length} 個社區、${dealTotal.toLocaleString("en-US")} 筆內政部實價登錄成交紀錄。`,
       keywords: [`${area.name}房價`, `${area.name}行情`, `${area.name}社區`,
                  `高雄${area.name}`, ...area.aka, `高雄${area.district}房價`,
                  `${area.name}實價登錄`].join(","),

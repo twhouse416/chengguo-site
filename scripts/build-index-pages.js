@@ -23,7 +23,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, ORG_ID, orgRef } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, ORG_ID, orgRef, fitTitle } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate, devName } from "./build-communities.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -540,8 +540,22 @@ function developerPage(name, items, ctx) {
 
   return [
     head({
-      title: `${label}高雄社區一覽｜${items.length} 個社區實價登錄行情｜${BRAND.teamName}`,
-      description: `${label}在高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區的 ${items.length} 個社區，含完工年、戶數、實價登錄成交筆數與近三年住家單價區間。`,
+      /* 建商名是實際有搜尋量的詞（Search Console 實測：光洲建設 89 次曝光、
+         堅山建設 73、全誠建設 68、振美建設 42、北京建設 34，排名多在 7–11）。
+         原標題「○○高雄社區一覽」沒有給點擊理由，改成問句＋這家建商的單價中位。 */
+      /* 片段切細一點，預算不夠時是「逐段變短」而不是「整段消失」——
+         最差的情況也要留住社區數，不要退回只剩一個問句。 */
+      title: fitTitle([
+        `${label}高雄有哪些社區？`,
+        `${items.length} 個`,
+        profile.price !== null ? `、中位 ${profile.price} 萬／坪` : "",
+        profile.yearFirst ? `、${profile.yearFirst}–${profile.yearLast} 年` : "",
+      ]) + `｜${BRAND.teamName}`,
+      description: `${label}在高雄的 ${items.length} 個社區：`
+        + (profile.price !== null ? `近三年成交單價中位 ${profile.price} 萬元／坪` : "")
+        + (profile.ratio !== null ? `、公設比中位 ${profile.ratio}%` : "")
+        + (profile.yearFirst ? `，推案年代 ${profile.yearFirst}–${profile.yearLast} 年` : "")
+        + `，合計 ${dealTotal.toLocaleString("en-US")} 筆內政部實價登錄成交紀錄。`,
       keywords: [`${label}`, `${label}高雄`, `${label}社區`, `${label}建案`, `${name}`, "高雄建商", "高雄社區實價登錄"].join(","),
       canonical: url, ogImage: `${SITE}/assets/logo-full.png`, depth: 2, jsonLd,
     }),
@@ -629,6 +643,17 @@ function schoolPage(name, items, ctx) {
      國中頁：以「來源國小」為主表，社區只列成交量前 20 名，
              完整清單導回對應的國小頁。 */
   const cross = crossStage(items, dealsMap, isJunior ? "primary" : "junior");
+
+  /* 這個學區所有社區近三年住家成交的單價中位，給標題與描述用。
+     算法與 statOf／crossStage 同一套（排除店面、近三年、排除特殊交易）。 */
+  const zoneMid = (() => {
+    const p = normalPrices(items.flatMap(c => (dealsMap[c.slug] || [])
+      .filter(d => d.use !== "店面" && String(d.date || "") >= STAT_SINCE)
+      .map(d => d.unitPrice).filter(Boolean)).sort((a, b) => a - b));
+    if (p.length < 5) return 0;
+    const m = p.length % 2 ? p[(p.length - 1) / 2] : (p[p.length / 2 - 1] + p[p.length / 2]) / 2;
+    return Math.round(m * 10) / 10;
+  })();
   const TOP_N = 20;
   const shown = isJunior ? rows.slice(0, TOP_N) : rows;
   const trimmed = isJunior && rows.length > TOP_N;
@@ -735,9 +760,14 @@ function schoolPage(name, items, ctx) {
 
   return [
     head({
-      title: isJunior
-        ? `${name}學區有哪些社區？來源國小與 ${items.length} 個社區行情｜${BRAND.teamName}`
-        : `${name}學區有哪些社區？${items.length} 個社區實價登錄行情｜${BRAND.teamName}`,
+      /* 標題本來就是問句（這是對的），但少了數字——
+         實測同位置「標題帶數字 1.10% / 不帶 0.72%」。補上社區數與單價中位。 */
+      title: fitTitle([
+        `${name}學區有哪些社區？`,
+        `${items.length} 個`,
+        zoneMid ? `、中位 ${zoneMid} 萬／坪` : "",
+        isJunior ? `、來源國小 ${cross.length} 所` : "",
+      ]) + `｜${BRAND.teamName}`,
       description: isJunior
         ? `學區登載為${name}的 ${items.length} 個高雄社區，依來源國小學區分組列出社區數、實價登錄成交筆數與近三年單價中位數，並附高雄市${stage}學區劃分的官方里鄰原文。`
         : `學區登載為${name}的 ${items.length} 個高雄社區，含完工年、戶數、實價登錄成交筆數與近三年住家單價區間，以及這些社區對應的國中，並附高雄市${stage}學區劃分的官方里鄰原文。`,

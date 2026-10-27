@@ -109,7 +109,7 @@ function statLine(count, st) {
 }
 
 /* ================= /areas/ ================= */
-function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
+function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated, trend = null }) {
   const url = `${SITE}/areas/`;
   const rows = areas.map(a => {
     const list = communities.filter(c => c.area === a.name);
@@ -143,6 +143,12 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
         return byD.map(r => `${r.name} ${nf(r.deals)} 筆（${r.n} 個社區）`).join("、")
           + "。成交筆數多代表可比的參考案例多，不論買方估價或賣方訂價都比較有依據。";
       })()],
+    ...(trend ? [["高雄這四個生活圈的房價走勢，長期來看漲了多少？",
+      `四區合併計算的電梯住宅成交單價中位數，從 ${trend.first.year} 年的 ${trend.first.unit} 萬元／坪`
+      + `到 ${trend.last.year} 年的 ${trend.last.unit} 萬元／坪，累計`
+      + (trend.changePct > 0 ? `上漲約 ${trend.changePct}%` : trend.changePct < 0 ? `下跌約 ${Math.abs(trend.changePct)}%` : "大致持平")
+      + `，計算樣本 ${nf(trend.sample)} 筆；高點在 ${trend.peak.year} 年的 ${trend.peak.unit} 萬元／坪。`
+      + `各區逐年的數字與起算年不同的說明，在「高雄四大生活圈房價走勢（${trend.span}）」那一頁。`]] : []),
     ["這些數字多久更新一次？",
       "內政部於每月 1、11、21 日批次公告實價登錄，本站於公告隔日自動更新，所以行情會隨新成交累積變動。各頁都標示成交資料的更新日期。"],
   ];
@@ -151,11 +157,19 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated }) {
     eyebrow: "Areas", crumb: "生活圈",
     faqHeading: "關於高雄四大生活圈的常見問題", h1: "高雄四大生活圈",
     lead: esc(lead), hasBuyers, dataUpdated,
-    body: grid(rows.map(r => card(`${r.slug}/index.html`, r.name,
+    body: `${trend ? `<div class="mt-8 border-l-2 border-orange pl-5">
+    <p class="text-[16px] text-ink leading-[1.9] max-w-3xl">
+      <strong class="font-bold">要看長期走勢，四區並排比較比一頁一頁點更快。</strong>
+      ${trend.span} 逐年單價中位數：${trend.first.unit} → ${trend.last.unit} 萬元／坪，
+      高點在 ${trend.peak.year} 年的 ${trend.peak.unit} 萬元／坪，樣本 ${nf(trend.sample)} 筆。
+    </p>
+    <a href="${trend.slug}/index.html" class="inline-block mt-4 py-1.5 font-mono text-[13px] text-orangeDeep hover:underline">看高雄四大生活圈房價走勢 →</a>
+  </div>` : ""}
+  ${grid(rows.map(r => card(`${r.slug}/index.html`, r.name,
       `${r.n} 個社區・2020 年起成交 ${nf(r.deals)} 筆`
       + (r.up ? `・單價中位 ${r.up.toFixed(1)} 萬／坪` : "")
       + (r.tp ? `・總價中位 ${nf(Math.round(r.tp))} 萬` : ""),
-      `單價中位 ${r.up.toFixed(1)} 萬／坪　總價中位 ${nf(Math.round(r.tp))} 萬`))),
+      `單價中位 ${r.up.toFixed(1)} 萬／坪　總價中位 ${nf(Math.round(r.tp))} 萬`)))}`,
     faq,
     meta: {
       title: `高雄四大生活圈房價一覽｜美術館、農十六、瑞豐巨蛋、中都｜${BRAND.teamName}`,
@@ -307,9 +321,9 @@ function toolsHub({ hasBuyers }) {
 /* ---------- 入口 ---------- */
 export function buildHubs({ areas = [], communities = [], dealsMap = {},
                             indexPages = { developers: [], schools: [] },
-                            hasBuyers = false, dataUpdated = "" } = {}) {
+                            hasBuyers = false, dataUpdated = "", trend = null } = {}) {
   const out = [
-    ["areas", areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated })],
+    ["areas", areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated, trend })],
     ["schools", schoolsHub({ schools: indexPages.schools || [], dealsMap, hasBuyers, dataUpdated })],
     ["developers", developersHub({ developers: indexPages.developers || [], dealsMap, hasBuyers, dataUpdated })],
     ["tools", toolsHub({ hasBuyers })],

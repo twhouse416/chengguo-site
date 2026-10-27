@@ -14,7 +14,7 @@
  * 但所有文字內容都在 HTML 裡，不執行 JS 也讀得到。
  */
 
-import { SITE, BRAND, esc, head, header, footer, orgRef } from "./layout.js";
+import { SITE, BRAND, esc, head, header, footer, orgRef, dispWidth } from "./layout.js";
 
 /**
  * @param {object} o
@@ -79,7 +79,11 @@ export function buildTool(o, hasBuyers = false) {
 
   return [
     head({
-      title: o.pageTitle,
+      /* 工具頁原本沒有品牌後綴，搜尋結果上看不出是誰做的。
+         head() 會把「｜台灣房屋 澄果團隊」換成短的「｜澄果團隊」（寬度 10），
+         所以這裡只在加完仍不超過 Google 的截斷長度（60 半形）時才加。 */
+      title: dispWidth(o.pageTitle) + 10 <= 60
+        ? `${o.pageTitle}｜${BRAND.teamName}` : o.pageTitle,
       description: o.description,
       keywords: o.keywords,
       canonical: url,
