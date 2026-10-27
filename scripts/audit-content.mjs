@@ -406,9 +406,45 @@ for (const a of articles) {
           }
         }
         if (!best || bestD > 30) continue;
+
+        /* 否定句要反過來判。
+           「美術館特區不是四區裡單價最高的」是一個正確的句子，
+           但原本的規則只看「出現了最高＋出現了區名」，會把它判成錯誤宣稱。
+           否定詞必須緊接在「最高／最低」之前（10 個字元內）才算——
+           「不是最高」是否定，「雖然不是新案，但單價最高」不是。
+           反過來之後這條規則仍然有效：如果某區其實就是最高的，
+           而文章寫它「不是最高」，一樣會被抓出來。 */
+        const before = sent.slice(Math.max(0, m.index - 10), m.index);
+        const negated = /(不是|並非|不算|未必|稱不上|談不上|沒有一?個?是)[^。]{0,6}$/.test(before);
+
+        /* 否定句的主詞一定在否定詞之前：「美術館特區不是…最高的」。
+           「總價不是最低的——農十六的中位數比這裡低」這種句子，
+           否定詞前面沒有任何區名，後面那個區名是用來對照的、不是主詞，
+           用「離最高／最低最近」的規則會判給錯的區。判不出主詞就跳過，
+           寧可漏抓也不要製造假警報——假警報多了，真錯誤就會被忽略。 */
+        let subj = best;
+        if (negated) {
+          const head = sent.slice(0, m.index);
+          let hd = 1e9;
+          subj = null;
+          for (const area of AREAS) {
+            for (const al of ALIAS[area]) {
+              let i = -1;
+              while ((i = head.indexOf(al, i + 1)) >= 0) {
+                const d = m.index - i;
+                if (d < hd) { hd = d; subj = area; }
+              }
+            }
+          }
+          if (!subj) continue;
+        }
+
         gSeen++;
-        if (/並列/.test(flat) ? !mentioned.some(x => r[kind].includes(x)) : !r[kind].includes(best)) {
-          fail(`${a.slug}：宣稱「${best}」的${metric}${kind === "min" ? "最低" : "最高"}，實際是 ${r[kind].join("、")}`);
+        const claimTrue = /並列/.test(flat)
+          ? mentioned.some(x => r[kind].includes(x))
+          : r[kind].includes(subj);
+        if (negated ? claimTrue : !claimTrue) {
+          fail(`${a.slug}：宣稱「${subj}」的${metric}${negated ? "不是" : ""}${kind === "min" ? "最低" : "最高"}，實際是 ${r[kind].join("、")}`);
           fail(`    句子：${sent.slice(0, 70)}`);
           gBad++;
         }
