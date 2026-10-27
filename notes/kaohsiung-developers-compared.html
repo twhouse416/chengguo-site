@@ -1,0 +1,796 @@
+<!--
+  ⚠️ 這個檔案由 scripts/build-site.js 自動產生，請勿直接編輯。
+  要修改內容請改 scripts/ 底下的樣板，或在後台編輯 data/ 裡的資料。
+  直接改這個檔案，下次自動建置時會被覆蓋。
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="../assets/logo-icon-v2.png" />
+<title>高雄 18 家建商差在哪？社區數、單價中位與推案年代｜澄果團隊</title>
+<meta name="description" content="把高雄四大生活圈裡推案 3 個社區以上的 18 家建商放在同一張表，用內政部實價登錄比社區數、近三年單價中位、推案年代與生活圈分布。每個單價都標成交筆數——樣本量差了近五十倍，不標會變成誤導。" />
+<meta name="keywords" content="高雄建商、高雄建商名單、高雄建設公司、高雄建商比較、京城建設、興富發建設、鼎宇建設、皇苑建設、城揚建設、全誠建設、麗晶建設、永信建設開發" />
+<link rel="canonical" href="https://k7.com.tw/notes/kaohsiung-developers-compared.html" />
+
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="台灣房屋 澄果團隊" />
+<meta property="og:title" content="高雄 18 家建商差在哪？社區數、單價中位與推案年代｜澄果團隊" />
+<meta property="og:description" content="把高雄四大生活圈裡推案 3 個社區以上的 18 家建商放在同一張表，用內政部實價登錄比社區數、近三年單價中位、推案年代與生活圈分布。每個單價都標成交筆數——樣本量差了近五十倍，不標會變成誤導。" />
+<meta property="og:url" content="https://k7.com.tw/notes/kaohsiung-developers-compared.html" />
+<meta property="og:image" content="https://k7.com.tw/assets/area-01-artmuseum.jpg" />
+<meta property="og:locale" content="zh_TW" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="高雄 18 家建商差在哪？社區數、單價中位與推案年代｜澄果團隊" />
+<meta name="twitter:description" content="把高雄四大生活圈裡推案 3 個社區以上的 18 家建商放在同一張表，用內政部實價登錄比社區數、近三年單價中位、推案年代與生活圈分布。每個單價都標成交筆數——樣本量差了近五十倍，不標會變成誤導。" />
+<meta name="twitter:image" content="https://k7.com.tw/assets/area-01-artmuseum.jpg" />
+<meta property="article:published_time" content="2026-10-27" />
+<meta property="article:modified_time" content="2026-10-27" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"高雄 18 家建商差在哪？社區數、單價中位與推案年代","description":"把高雄四大生活圈裡推案 3 個社區以上的 18 家建商放在同一張表，用內政部實價登錄比社區數、近三年單價中位、推案年代與生活圈分布。每個單價都標成交筆數——樣本量差了近五十倍，不標會變成誤導。","image":["https://k7.com.tw/assets/logo-full.png"],"datePublished":"2026-10-27","dateModified":"2026-10-27","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https://k7.com.tw/notes/kaohsiung-developers-compared.html"},"author":{"@id":"https://k7.com.tw/#organization","@type":"RealEstateAgent","name":"台灣房屋 澄果團隊","url":"https://k7.com.tw/"},"publisher":{"@id":"https://k7.com.tw/#organization","@type":"RealEstateAgent","name":"台灣房屋 澄果團隊","url":"https://k7.com.tw/"},"keywords":"高雄建商, 高雄建商名單, 高雄建設公司, 高雄建商比較, 京城建設, 興富發建設, 鼎宇建設, 皇苑建設, 城揚建設, 全誠建設, 麗晶建設, 永信建設開發"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首頁","item":"https://k7.com.tw/"},{"@type":"ListItem","position":2,"name":"知識文章","item":"https://k7.com.tw/notes/"},{"@type":"ListItem","position":3,"name":"高雄 18 家建商差在哪？社區數、單價中位與推案年代","item":"https://k7.com.tw/notes/kaohsiung-developers-compared.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"高雄哪一家建商的房子最貴？","acceptedAnswer":{"@type":"Answer","text":"以本站收錄的高雄四大生活圈、近三年成交單價中位數來看，最高的是城揚建設的 49.9 萬元／坪（512 筆成交），最低的是太子建設的 31.5 萬元／坪（14 筆）。全站所有收錄社區的中位數是 39 萬元／坪。但這個差距主要反映屋齡與生活圈——單價高的建商社區完工年多延伸到近年，單價低的多半停在二十年前，拿來比的其實是屋齡不是品牌。"}},{"@type":"Question","name":"建商名氣跟房價有關嗎？","acceptedAnswer":{"@type":"Answer","text":"從實價登錄看不出品牌溢價。影響成交單價最大的是生活圈、屋齡與坪數結構，這三項先決定了價格區間，建商的影響在其後。比較可靠的用法是：先鎖定生活圈與屋齡，再在同一個條件下比較不同建商的案子，而不是用建商當第一層篩選。"}},{"@type":"Question","name":"同一家建商不同年代的案子可以互相參考嗎？","acceptedAnswer":{"@type":"Answer","text":"參考價值有限。公設比、坪數結構、車位型式與建築法規都隨年代改變，同一家建商 2005 年與 2024 年的案子，規格差距往往比同年代不同建商之間還大。本站每個建商頁都標了收錄社區的完工年區間，區間跨度大的建商尤其不適合把舊案的經驗套到新案上。"}},{"@type":"Question","name":"為什麼有些建商在你們站上只有 3 個社區？","acceptedAnswer":{"@type":"Answer","text":"因為本站只收錄高雄的四大生活圈（美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區），而且只替推案達 3 個社區以上的建商建立專頁。所以頁面上的社區數是「本站收錄範圍內」的數字，不是該建商在高雄的全部推案量。"}},{"@type":"Question","name":"單價中位數只有十幾筆成交，可以信嗎？","acceptedAnswer":{"@type":"Answer","text":"要打折看。本站 18 家建商裡有 9 家的近三年成交未滿 30 筆，筆數這麼少時，一兩筆大坪數或特殊條件的交易就能把中位數帶走好幾萬，和京城建設 609 筆、城揚建設 512 筆的穩定度完全不同。文章與建商頁都標了筆數，請連筆數一起看，不要當成等價的排名。"}}]}</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/tailwind.css" />
+<style>
+  html { scroll-behavior: smooth; }
+  /* 錨點跳轉時預留 sticky header 的高度，避免標題被蓋住 */
+  section[id], article[id] { scroll-margin-top: 84px; }
+  body { background:#F4F4F2; -webkit-font-smoothing:antialiased; }
+  ::selection { background:#FD7305; color:#fff; }
+  .display { font-weight:900; letter-spacing:-0.02em; line-height:1.25; }
+  :focus-visible { outline:2px solid #FD7305; outline-offset:2px; }
+  /* hidden 屬性預設是 display:none，但會被 Tailwind 的 flex/grid 等 display 類別蓋過。
+     加上這條確保 hidden 一定生效。 */
+  [hidden] { display: none !important; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] .faq-plus { transform: rotate(45deg); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body class="font-sans text-ink">
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-ink focus:text-white focus:px-4 focus:py-2 focus:rounded-sm">跳到主要內容</a>
+<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b border-line">
+  <div class="max-w-3xl mx-auto px-6 h-[68px] flex items-center justify-between">
+    <a href="../" class="flex items-center gap-3 shrink-0 mr-6">
+      <img src="../assets/logo-icon-v2.png" alt="" width="36" height="36" class="w-9 h-9 object-contain" />
+      <span class="leading-tight">
+        <span class="block font-mono text-[11px] tracking-[0.2em] text-inkFaint">TAIWAN REALTY</span>
+        <span class="block text-[17px] font-bold tracking-tight text-ink">澄果團隊</span>
+      </span>
+    </a>
+    
+    
+    <div class="hidden sm:flex items-center gap-4 shrink-0">
+      <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 px-4 py-3 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition whitespace-nowrap">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-5 h-5"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>LINE 諮詢</a>
+      <a href="tel:0797669977" class="inline-flex items-center px-4 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition whitespace-nowrap">來電諮詢 07-9766977</a>
+    </div>
+    
+  </div>
+  
+</header>
+<main id="main" class="max-w-3xl mx-auto px-6 py-14">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span>
+    <a href="./" class="hover:text-orangeDeep">知識文章</a>
+  </nav>
+
+  <article>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[12px] mb-4">
+      <span class="text-orangeDeep tracking-wider">選屋</span>
+      <time class="text-inkFaint" datetime="2026-10-27">2026.10.27</time>
+      <span class="text-inkFaint">約 7 分鐘</span>
+    </div>
+    
+    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[14px] text-inkFaint mb-7 pb-6 border-b border-line">
+      <span>作者</span>
+      <a href="../about/" rel="author" class="text-ink font-medium hover:text-orangeDeep">台灣房屋 澄果團隊</a>
+      <span>・高雄在地房仲，深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區</span>
+      
+    </div>
+    <h1 class="display text-[28px] md:text-[34px]">高雄 18 家建商差在哪？社區數、單價中位與推案年代</h1>
+    <p class="mt-5 text-[17px] text-inkSoft leading-[1.95]">把高雄四大生活圈裡推案 3 個社區以上的 18 家建商放在同一張表，用內政部實價登錄比社區數、近三年單價中位、推案年代與生活圈分布。每個單價都標成交筆數——樣本量差了近五十倍，不標會變成誤導。</p>
+    
+    
+    <div class="mt-10">
+      <p class="text-[14px] text-inkFaint leading-[1.9] mb-8 pb-6 border-b border-line">
+    <strong class="font-bold text-inkSoft">統計基準</strong>：本文的建商數字取自本站的建商頁，資料為內政部實價登錄的逐筆成交紀錄，收錄範圍僅限高雄四大生活圈（美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區），且只替推案達 3 個社區以上的建商建立頁面，因此「社區數」不是該建商在高雄的全部推案量。「近三年單價中位」為 2024 年起的成交，已排除店面；各建商的樣本量差異極大（512 筆到 14 筆不等），表中已逐列標示筆數，未滿 30 筆者另加註。全站所有收錄社區的近三年單價中位為 39 萬／坪。資料每月累積（內政部於每月 1、11、21 日批次公告，本站於公告隔日更新），統計基準日 2026-10-27。
+  </p>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">「這個建商的房子好不好？」是看房時一定會問的問題，但多數答案都停在印象。這篇換個方式：把本站收錄的高雄四大生活圈（美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區）裡，推案達 3 個社區以上的 <strong class="font-bold text-ink">18 家建商</strong>放在同一張表上，用內政部實價登錄的成交紀錄做橫向比較。</p></div>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">先說清楚這份資料能回答什麼、不能回答什麼。<strong class="font-bold text-ink">能回答的是</strong>：這家建商在這四個生活圈留下多少社區、成交價落在什麼位置、推案集中在哪個年代。<strong class="font-bold text-ink">不能回答的是</strong>：工法、建材、售後服務、管委會運作得好不好——這些東西實價登錄裡沒有，任何人拿成交價來推論它們都是在猜。</p></div>
+      <h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">推案量級：三個層級</h2>
+      <div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
+        <caption class="sr-only">推案量級：三個層級：欄位為層級、建商（社區數／本站收錄成交筆數），共 3 列</caption>
+        <thead><tr class="border-b border-line bg-paper"><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-left">層級</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">建商（社區數／本站收錄成交筆數）</th></tr></thead>
+        <tbody><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">推案量大（10 個社區以上）</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">京城建設 44 個／4,322 筆、興富發建設 14 個／3,047 筆、鼎宇建設 11 個／461 筆、皇苑建設 11 個／1,154 筆、城揚建設 10 個／1,600 筆</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">中等（4–9 個）</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">全誠建設 9 個／343 筆、麗晶建設 7 個／493 筆、永信建設開發 4 個／376 筆</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">精兵（3 個）</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">北京建設 3 個／500 筆、福懋建設 3 個／223 筆、光洲建設 3 個／339 筆、堅山建設 3 個／371 筆、棋琴建設 3 個／189 筆、勝偕建設 3 個／282 筆、嵩豐建設 3 個／104 筆、太普開發 3 個／277 筆、太子建設 3 個／162 筆、振美建設 3 個／123 筆</td></tr></tbody></table></div>
+      <div class="mb-9 bg-tint border-l-2 border-orange px-6 py-5">
+        <p class="text-[16px] leading-[1.95] text-orangeDeep">「社區數」是本站收錄範圍內的數字，不是該建商在高雄的全部推案。本站只收錄上述四個生活圈，而且只替推案達 3 個社區以上的建商建立專頁，所以這裡看到的「3 個」不代表那家建商在高雄只蓋過 3 個社區。</p></div>
+      <h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">近三年成交單價中位：連筆數一起看</h2>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">下表是各建商名下社區在近三年（2024 年起）的成交單價中位數。<strong class="font-bold text-ink">請務必連右邊的筆數一起看</strong>——樣本量在這張表裡差了將近五十倍，筆數少的那幾家，一兩筆特殊交易就能把中位數帶走好幾萬。</p></div>
+      <div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
+        <caption class="sr-only">近三年成交單價中位：連筆數一起看：欄位為建商、單價中位（萬／坪）、近三年成交筆數、備註，共 18 列</caption>
+        <thead><tr class="border-b border-line bg-paper"><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-left">建商</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">單價中位（萬／坪）</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">近三年成交筆數</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">備註</th></tr></thead>
+        <tbody><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">城揚建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">49.9</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">512</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">皇苑建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">47.6</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">125</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">福懋建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">41.1</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">169</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">堅山建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">40.2</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">28</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">勝偕建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">39.4</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">20</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">光洲建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">38.5</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">23</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">興富發建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">37.8</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">337</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">永信建設開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">37.5</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">19</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太普開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">37</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">29</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">麗晶建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">36.5</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">45</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">京城建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">36.3</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">609</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">北京建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">36.2</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">65</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">鼎宇建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">36.1</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">54</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">棋琴建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">36.1</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">14</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">全誠建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">35.2</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">42</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft"></td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">振美建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">34.2</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">15</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">嵩豐建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">32.4</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">12</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太子建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">31.5</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">14</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">樣本少，僅供參考</td></tr></tbody></table></div>
+      <div class="mb-9 bg-tint border-l-2 border-orange px-6 py-5">
+        <p class="text-[16px] leading-[1.95] text-orangeDeep">全站所有收錄社區的近三年單價中位數是 39 萬／坪，可以當成對照基準。表中 9 家的近三年成交未滿 30 筆（堅山建設 28 筆、勝偕建設 20 筆、光洲建設 23 筆、永信建設開發 19 筆、太普開發 29 筆、棋琴建設 14 筆、振美建設 15 筆、嵩豐建設 12 筆、太子建設 14 筆），這幾個數字的穩定度和京城建設的 609 筆、城揚建設的 512 筆完全不是同一個量級，不要拿來當作建商之間的排名。</p></div>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">更重要的是：<strong class="font-bold text-ink">單價高低主要反映的是屋齡與生活圈，不是品牌溢價。</strong>排在前面的幾家，社區完工年都延伸到近年，有新成屋把中位數撐上去；排在後面的幾家，推案多半停在二十年前，成交的全是中古屋。拿這兩組直接比，比的是屋齡不是建商。</p></div>
+      <h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">推案年代：決定你現在看到的屋況</h2>
+      <div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
+        <caption class="sr-only">推案年代：決定你現在看到的屋況：欄位為建商、本站收錄社區的完工年區間，共 18 列</caption>
+        <thead><tr class="border-b border-line bg-paper"><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-left">建商</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">本站收錄社區的完工年區間</th></tr></thead>
+        <tbody><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太子建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">1990–2004 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">全誠建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">1997–2012 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">興富發建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">1999–2026 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">鼎宇建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2000–2016 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">京城建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2002–2024 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">麗晶建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2002–2014 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">嵩豐建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2002–2006 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">皇苑建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2003–2023 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">永信建設開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2004–2018 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">北京建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2004–2006 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">福懋建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2005–2025 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">勝偕建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2005–2013 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">振美建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2005–2016 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">堅山建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2006–2017 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太普開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2006–2011 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">城揚建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2007–2024 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">棋琴建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2010–2013 年</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">光洲建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">2014–2021 年</td></tr></tbody></table></div>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">完工年區間跨度大的建商，表示它在不同年代都有推案，不同案子的規格、公設比與坪數結構會差很多，彼此的參考價值有限。區間窄的建商則集中在某個年代，那幾個社區的條件通常比較接近。</p></div>
+      <h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">地盤：誰主要在哪一區</h2>
+      <div class="mb-10 overflow-x-auto"><table class="w-full text-[16px] border border-line bg-surface">
+        <caption class="sr-only">地盤：誰主要在哪一區：欄位為建商、生活圈分布，共 18 列</caption>
+        <thead><tr class="border-b border-line bg-paper"><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-left">建商</th><th class="font-mono text-[13px] tracking-wider text-inkFaint font-normal py-3 px-4 text-right">生活圈分布</th></tr></thead>
+        <tbody><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">京城建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（21個）、農十六特區（17個）、瑞豐・巨蛋（4個）、中都重劃區（2個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">興富發建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">農十六特區（6個）、美術館特區（3個）、中都重劃區（3個）、瑞豐・巨蛋（2個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">鼎宇建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（10個）、瑞豐・巨蛋（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">皇苑建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（9個）、農十六特區（2個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">城揚建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（8個）、農十六特區（2個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">全誠建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（7個）、瑞豐・巨蛋（2個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">麗晶建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（4個）、瑞豐・巨蛋（2個）、農十六特區（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">永信建設開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（1個）、中都重劃區（1個）、農十六特區（1個）、瑞豐・巨蛋（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">北京建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（3個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">福懋建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">農十六特區（2個）、中都重劃區（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">光洲建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（3個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">堅山建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（2個）、農十六特區（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">棋琴建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（2個）、瑞豐・巨蛋（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">勝偕建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">農十六特區（3個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">嵩豐建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（3個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太普開發</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（3個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">太子建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">美術館特區（1個）、瑞豐・巨蛋（1個）、農十六特區（1個）</td></tr><tr class="border-b border-line last:border-0"><td class="py-3.5 px-4 leading-relaxed text-left text-ink">振美建設</td><td class="py-3.5 px-4 leading-relaxed text-right text-inkSoft">農十六特區（2個）、美術館特區（1個）</td></tr></tbody></table></div>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">這張表的用處是反過來看：如果你已經鎖定某個生活圈，就知道在那一區會常常遇到哪幾家建商的案子。</p></div>
+      <h2 class="display text-[23px] mt-16 mb-6 pt-7 border-t border-line">怎麼用這些數字看房</h2>
+      <ul class="mb-9 space-y-4"><li class="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
+          <span class="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">01</span>
+          <span><strong class="font-bold text-ink">先鎖生活圈與屋齡，再看建商</strong>——不要反過來拿建商當第一層篩選，那會讓你錯過同一區條件更好的案子</span></li><li class="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
+          <span class="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">02</span>
+          <span><strong class="font-bold text-ink">比較要在同一個年代內做</strong>——同一家建商 2005 年和 2024 年的案子，規格差距往往比不同建商之間還大</span></li><li class="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
+          <span class="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">03</span>
+          <span><strong class="font-bold text-ink">單價差異先問屋齡與坪數，再問品牌</strong>——大坪數產品的單價常比中坪數低，但總價高得多</span></li><li class="flex gap-3 text-[17px] leading-[1.95] text-inkSoft">
+          <span class="font-mono text-[13px] text-orangeDeep pt-1.5 shrink-0">04</span>
+          <span><strong class="font-bold text-ink">真正要看的是個別社區</strong>——建商層級的中位數只能抓大概，同一家建商不同社區的價差經常比建商之間還大</span></li></ul>
+      <blockquote class="my-14 py-7 border-y-2 border-ink">
+        <p class="display text-[20px] md:text-[22px] leading-[1.6]">建商是參考，不是結論。同一個區裡，社區的管理與屋況差異，影響住起來的感受遠大於外牆上掛的名字。</p></blockquote>
+      <div class="mb-8"><p class="text-[17px] leading-[2.05] text-inkSoft mb-5 last:mb-0">每一家建商在本站都有獨立頁面，列出它名下所有收錄社區的清單、逐筆成交、公設比與總戶數中位數，可以從建商總覽頁進去看。</p></div>
+    </div>
+  </article>
+
+  <section class="mt-16 pt-10 border-t-2 border-ink">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">FAQ</div>
+    <h2 class="display text-[23px] mb-8">常見問題</h2>
+    <div class="space-y-6">
+      <div class="border-l-2 border-line pl-6" id="faq-1">
+        <h3 class="text-[17px] font-bold leading-snug mb-3">高雄哪一家建商的房子最貴？</h3>
+        <p class="text-[16px] leading-[1.95] text-inkSoft">以本站收錄的高雄四大生活圈、近三年成交單價中位數來看，最高的是城揚建設的 49.9 萬元／坪（512 筆成交），最低的是太子建設的 31.5 萬元／坪（14 筆）。全站所有收錄社區的中位數是 39 萬元／坪。但這個差距主要反映屋齡與生活圈——單價高的建商社區完工年多延伸到近年，單價低的多半停在二十年前，拿來比的其實是屋齡不是品牌。</p></div>
+      <div class="border-l-2 border-line pl-6" id="faq-2">
+        <h3 class="text-[17px] font-bold leading-snug mb-3">建商名氣跟房價有關嗎？</h3>
+        <p class="text-[16px] leading-[1.95] text-inkSoft">從實價登錄看不出品牌溢價。影響成交單價最大的是生活圈、屋齡與坪數結構，這三項先決定了價格區間，建商的影響在其後。比較可靠的用法是：先鎖定生活圈與屋齡，再在同一個條件下比較不同建商的案子，而不是用建商當第一層篩選。</p></div>
+      <div class="border-l-2 border-line pl-6" id="faq-3">
+        <h3 class="text-[17px] font-bold leading-snug mb-3">同一家建商不同年代的案子可以互相參考嗎？</h3>
+        <p class="text-[16px] leading-[1.95] text-inkSoft">參考價值有限。公設比、坪數結構、車位型式與建築法規都隨年代改變，同一家建商 2005 年與 2024 年的案子，規格差距往往比同年代不同建商之間還大。本站每個建商頁都標了收錄社區的完工年區間，區間跨度大的建商尤其不適合把舊案的經驗套到新案上。</p></div>
+      <div class="border-l-2 border-line pl-6" id="faq-4">
+        <h3 class="text-[17px] font-bold leading-snug mb-3">為什麼有些建商在你們站上只有 3 個社區？</h3>
+        <p class="text-[16px] leading-[1.95] text-inkSoft">因為本站只收錄高雄的四大生活圈（美術館特區、農十六特區、瑞豐・巨蛋、中都重劃區），而且只替推案達 3 個社區以上的建商建立專頁。所以頁面上的社區數是「本站收錄範圍內」的數字，不是該建商在高雄的全部推案量。</p></div>
+      <div class="border-l-2 border-line pl-6" id="faq-5">
+        <h3 class="text-[17px] font-bold leading-snug mb-3">單價中位數只有十幾筆成交，可以信嗎？</h3>
+        <p class="text-[16px] leading-[1.95] text-inkSoft">要打折看。本站 18 家建商裡有 9 家的近三年成交未滿 30 筆，筆數這麼少時，一兩筆大坪數或特殊條件的交易就能把中位數帶走好幾萬，和京城建設 609 筆、城揚建設 512 筆的穩定度完全不同。文章與建商頁都標了筆數，請連筆數一起看，不要當成等價的排名。</p></div>
+    </div>
+  </section>
+
+  <section class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-4">Sources</div>
+    <ul class="space-y-2">
+      <li class="text-[15px] text-inkSoft leading-relaxed">
+        <a href="https://lvr.land.moi.gov.tw/" target="_blank" rel="noopener noreferrer nofollow"
+          class="hover:text-orangeDeep underline decoration-line underline-offset-4">內政部不動產交易實價查詢服務網</a></li>
+    </ul>
+    <p class="text-[14px] text-inkFaint leading-relaxed mt-4">
+      本文內容依上述公開資料整理，並結合澄果團隊在地實務經驗。法規與行情可能變動，正式決策請以主管機關公告為準。
+    </p>
+  </section>
+
+  <section class="mt-14 pt-8 border-t border-line">
+    <div class="flex flex-wrap gap-6 items-start">
+      <img src="../assets/logo-icon-v2.png" alt="" width="56" height="56" class="w-14 h-14 object-contain shrink-0" />
+      <div class="flex-1 min-w-[240px]">
+        <div class="font-mono text-[12px] tracking-wider text-inkFaint mb-1">關於作者</div>
+        <h2 class="text-[18px] font-bold tracking-tight mb-3">台灣房屋 澄果團隊</h2>
+        <p class="text-[15px] text-inkSoft leading-[1.9]">
+          深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區 10 年以上，
+          累計服務件數超過 150 件，歷年獲台灣房屋評鑑優質與團隊績效獎項共 15 項。
+          截至 115 年 7 月，約 58% 成交業績來自美術館特區與農十六。
+          提供免費房屋估價、成交行情分析、售屋策略規劃，以及首購購屋建議與換屋規劃。
+        </p>
+        <p class="font-mono text-[13px] text-inkFaint leading-[1.9] mt-3">
+          804 高雄市鼓山區青海路416號｜<a href="tel:0797669977" class="hover:text-orangeDeep">07-9766977</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
+    <h2 class="display text-[20px] text-white">有問題，直接問比較快</h2>
+    <p class="mt-3 text-[16px] leading-[1.9]">
+      每個人的狀況都不一樣。把你的情形說給我們聽，澄果團隊會用實際成交資料和在地經驗回答你。
+    </p>
+    <a href="tel:0797669977" class="inline-flex items-center mt-6 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+  </section>
+
+  <section class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">Communities</div>
+    <h2 class="text-[19px] font-bold tracking-tight mb-2">這篇提到的生活圈，我們整理過的社區</h2>
+    <p class="text-[15px] text-inkSoft leading-[1.9] mb-6">
+      每個社區頁都有實價登錄的逐筆成交紀錄、規格與學區資料。
+      想先看整區行情，可以到<a href="../#areas" class="text-orangeDeep hover:underline">首頁的生活圈行情</a>。
+    </p>
+    <div class="mb-6 last:mb-0">
+      <div class="font-mono text-[13px] text-inkSoft mb-3">美術館特區</div>
+      <div class="grid sm:grid-cols-2 gap-4">
+      <a href="../communities/meishu-baitiane.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+        <span class="text-[16px] font-bold tracking-tight">美術白天鵝</span>
+      </a>
+      <a href="../communities/meishu-1hao-yuan.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+        <span class="text-[16px] font-bold tracking-tight">美術1号院</span>
+      </a>
+      <a href="../communities/aimeiguan.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+        <span class="text-[16px] font-bold tracking-tight">艾美館</span>
+      </a>
+      <a href="../communities/boti.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">美術館特區</span>
+        <span class="text-[16px] font-bold tracking-tight">城揚波堤</span>
+      </a>
+    </div>
+    </div>
+    <div class="mb-6 last:mb-0">
+      <div class="font-mono text-[13px] text-inkSoft mb-3">農十六特區</div>
+      <div class="grid sm:grid-cols-2 gap-4">
+      <a href="../communities/huaren-hui.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
+        <span class="text-[16px] font-bold tracking-tight">華人匯</span>
+      </a>
+      <a href="../communities/farglory-park16.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
+        <span class="text-[16px] font-bold tracking-tight">遠雄PARK16</span>
+      </a>
+      <a href="../communities/modeng-guocheng.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
+        <span class="text-[16px] font-bold tracking-tight">摩登國城</span>
+      </a>
+      <a href="../communities/jingcheng-yalishanda.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">農十六特區</span>
+        <span class="text-[16px] font-bold tracking-tight">京城亞歷山大</span>
+      </a>
+    </div>
+    </div>
+    <div class="mb-6 last:mb-0">
+      <div class="font-mono text-[13px] text-inkSoft mb-3">瑞豐・巨蛋</div>
+      <div class="grid sm:grid-cols-2 gap-4">
+      <a href="../communities/boai-xiangxie.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">瑞豐・巨蛋</span>
+        <span class="text-[16px] font-bold tracking-tight">博愛香榭</span>
+      </a>
+      <a href="../communities/jingyan.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">瑞豐・巨蛋</span>
+        <span class="text-[16px] font-bold tracking-tight">晶硯</span>
+      </a>
+      <a href="../communities/guanshan-guanhai.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">瑞豐・巨蛋</span>
+        <span class="text-[16px] font-bold tracking-tight">觀山觀海</span>
+      </a>
+      <a href="../communities/shishang-jingcheng.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">瑞豐・巨蛋</span>
+        <span class="text-[16px] font-bold tracking-tight">時尚京城</span>
+      </a>
+    </div>
+    </div>
+    <div class="mb-6 last:mb-0">
+      <div class="font-mono text-[13px] text-inkSoft mb-3">中都重劃區</div>
+      <div class="grid sm:grid-cols-2 gap-4">
+      <a href="../communities/meishu-dayue.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">中都重劃區</span>
+        <span class="text-[16px] font-bold tracking-tight">美樹大悅</span>
+      </a>
+      <a href="../communities/runlong-shuheyuan.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">中都重劃區</span>
+        <span class="text-[16px] font-bold tracking-tight">潤隆樹禾苑</span>
+      </a>
+      <a href="../communities/shang-meishu.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">中都重劃區</span>
+        <span class="text-[16px] font-bold tracking-tight">上美術</span>
+      </a>
+      <a href="../communities/fumao-meisenyuan.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition">
+        <span class="font-mono text-[12px] text-inkFaint block">中都重劃區</span>
+        <span class="text-[16px] font-bold tracking-tight">福懋美森園</span>
+      </a>
+    </div>
+    </div>
+  </section>
+  <section class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-2">Next</div>
+    <h2 class="text-[19px] font-bold tracking-tight mb-6">接下來可以看這些</h2>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <a href="../notes/nong16-area-guide.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition block">
+        <span class="font-mono text-[12px] text-inkFaint block mb-1">選屋</span>
+        <span class="text-[15px] font-bold tracking-tight leading-snug">高雄農十六特區買房指南｜72 個社區、6,393 筆成交紀錄的完整分析</span>
+      </a>
+      <a href="../notes/room-count-vs-price-kaohsiung.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition block">
+        <span class="font-mono text-[12px] text-inkFaint block mb-1">選屋</span>
+        <span class="text-[15px] font-bold tracking-tight leading-snug">高雄買幾房最好？12,066 筆成交看單價、總價與供給結構</span>
+      </a>
+      <a href="../notes/parking-space-price-kaohsiung.html"
+        class="border border-line rounded-sm bg-surface px-5 py-4 hover:border-orange hover:bg-tint transition block">
+        <span class="font-mono text-[12px] text-inkFaint block mb-1">選屋</span>
+        <span class="text-[15px] font-bold tracking-tight leading-snug">高雄車位值多少錢？2,630 筆實價登錄的平面與機械價差</span>
+      </a>
+    </div>
+    <p class="mt-6 font-mono text-[13px]">
+      自己算一次：<a href="../tools/school-zone/" class="text-orangeDeep hover:underline mr-4">學區查詢 →</a><a href="../tools/mortgage/" class="text-orangeDeep hover:underline mr-4">房貸試算 →</a>
+      <a href="../communities/" class="text-orangeDeep hover:underline">社區行情 →</a>
+    </p>
+    
+  </section>
+
+  <section class="mt-14 pt-8 border-t border-line">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-6">More</div>
+    <div class="space-y-6">
+      <a href="nong16-area-guide.html" class="flex gap-4 group items-start">
+        <img src="../assets/articles/cover-nong16-guide.svg" alt="高雄農十六特區買房指南｜72 個社區、6,393 筆成交紀錄的完整分析" loading="lazy" width="1200" height="800"
+          class="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />
+        <div>
+          <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">選屋</div>
+          <h3 class="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">高雄農十六特區買房指南｜72 個社區、6,393 筆成交紀錄的完整分析</h3>
+        </div></a>
+      <a href="room-count-vs-price-kaohsiung.html" class="flex gap-4 group items-start">
+        <img src="../assets/articles/cover-room-count.svg" alt="高雄買幾房最好？12,066 筆成交看單價、總價與供給結構" loading="lazy" width="1200" height="800"
+          class="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />
+        <div>
+          <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">選屋</div>
+          <h3 class="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">高雄買幾房最好？12,066 筆成交看單價、總價與供給結構</h3>
+        </div></a>
+      <a href="parking-space-price-kaohsiung.html" class="flex gap-4 group items-start">
+        <img src="../assets/articles/cover-parking.svg" alt="高雄車位值多少錢？2,630 筆實價登錄的平面與機械價差" loading="lazy" width="1200" height="800"
+          class="w-24 aspect-[3/2] object-cover bg-paper rounded-sm border border-line shrink-0" />
+        <div>
+          <div class="font-mono text-[12px] text-orangeDeep tracking-wider mb-1">選屋</div>
+          <h3 class="text-[17px] font-bold leading-snug group-hover:text-orangeDeep transition">高雄車位值多少錢？2,630 筆實價登錄的平面與機械價差</h3>
+        </div></a>
+    </div>
+  </section>
+</main>
+<a id="lineFab" href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
+  aria-label="用 LINE 詢問"
+  class="xl:hidden fixed right-4 bottom-4 z-40 w-14 h-14 flex items-center justify-center rounded-full bg-[#06C755] text-white shadow-lg transition-opacity duration-300">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-8 h-8"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>
+</a>
+<script>
+  /* 捲到頁尾就把浮動按鈕淡出，避免蓋住頁尾的按鈕 */
+  (function () {
+    var fab = document.getElementById("lineFab");
+    var foot = document.querySelector("footer");
+    if (!fab || !foot || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        fab.style.opacity = e.isIntersecting ? "0" : "1";
+        fab.style.pointerEvents = e.isIntersecting ? "none" : "auto";
+      });
+    }, { rootMargin: "0px" }).observe(foot);
+  })();
+</script>
+<footer id="contact" class="bg-ink text-white/75">
+  <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-10">
+    <div class="md:col-span-7">
+      <h2 class="display text-2xl text-white">先聊聊，不用急著決定</h2>
+      <p class="mt-5 text-[16px] leading-[2] max-w-md">
+        不論是想知道自己的預算能買哪一區，或是手上房子現在值多少，都可以先問。我們會用實際成交資料回答你。
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="tel:0797669977" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 07-9766977</a>
+        <a href="https://lin.ee/Y7D8Ygk" target="_blank" rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-7 py-3.5 text-[15px] font-medium rounded-sm bg-[#06C755] text-white hover:opacity-90 transition">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true"><path d="M12 2C6.48 2 2 5.73 2 10.32c0 4.11 3.55 7.55 8.35 8.2.32.07.77.22.88.5.1.25.07.65.03.9l-.14.85c-.4.25-.2.98.86.53 1.06-.44 5.72-3.37 7.8-5.77C21.4 13.7 22 12.06 22 10.32 22 5.73 17.52 2 12 2zM8.1 13.1H6.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v3.55H8.1c.3 0 .54.24.54.54s-.24.54-.54.54zm2.13-.54c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54s.54.24.54.54v4.09zm4.9 0c0 .23-.15.44-.37.51a.6.6 0 0 1-.17.03.53.53 0 0 1-.43-.22l-2.1-2.85v2.53c0 .3-.24.54-.54.54s-.54-.24-.54-.54V8.47c0-.23.15-.44.37-.51a.55.55 0 0 1 .6.19l2.1 2.86V8.47c0-.3.25-.54.55-.54s.53.24.53.54v4.09zm3.3-2.59c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.96h1.51c.3 0 .54.24.54.54s-.24.54-.54.54h-2.05c-.3 0-.54-.24-.54-.54V8.47c0-.3.24-.54.54-.54h2.05c.3 0 .54.24.54.54s-.24.55-.54.55h-1.51v.95h1.51z"/></svg>
+          LINE 諮詢
+        </a>
+        <a href="https://store.twhg.com.tw/TE80" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm border border-white/30 text-white hover:bg-white hover:text-ink transition">看在售物件 ↗</a>
+      </div>
+      <nav aria-label="頁尾導覽" class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[14px]">
+        <a href="../#services" class="hover:text-orange transition">服務項目</a>
+        <a href="../areas/" class="hover:text-orange transition">生活圈行情</a>
+        <a href="../about/" class="hover:text-orange transition">關於團隊</a>
+        <a href="../tools/" class="hover:text-orange transition">試算工具</a>
+        <a href="../notes/" class="hover:text-orange transition">知識文章</a>
+        <a href="../videos/" class="hover:text-orange transition">影片</a>
+        <a href="../deals/" class="hover:text-orange transition">近期成交</a>
+        <a href="../schools/" class="hover:text-orange transition">學區總覽</a>
+        <a href="../developers/" class="hover:text-orange transition">建商總覽</a>
+        <a href="../#buyers" class="hover:text-orange transition">買方需求</a>
+        <a href="../#faq" class="hover:text-orange transition">常見問題</a>
+      </nav>
+      <div class="mt-8"><div class="flex items-center gap-2">
+    <a href="https://www.facebook.com/TWhouseo8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Facebook" title="Facebook" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-[19px] h-[19px]"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/twhouse_o8" target="_blank" rel="noopener noreferrer" aria-label="澄果團隊 Instagram" title="Instagram" class="w-10 h-10 flex items-center justify-center border rounded-sm transition border-white/25 text-white/70 hover:text-white hover:border-white hover:bg-white/10">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="w-[19px] h-[19px]">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" /></svg>
+    </a>
+  </div></div>
+    </div>
+    <div class="md:col-span-5">
+      <div id="estimate" class="border border-white/15 rounded-sm p-7 scroll-mt-24">
+  <div class="font-mono text-[12px] tracking-[0.18em] text-orange uppercase mb-2">Free Valuation</div>
+  <h3 class="text-[18px] font-bold text-white">免費估價，也可以只是先問</h3>
+  <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
+    我們用你那一戶所在社區的逐筆實價登錄成交，挑樓層、坪數與車位條件相近的來比，抓出合理的價格區間，並說明判斷依據。
+    <strong class="text-white/80">不收費，也不需要先簽委託。</strong>
+  </p>
+  <p class="text-[14px] leading-[1.85] text-white/55 mt-2">
+    不方便講電話也沒關係，填一下需求，我們會挑你方便的時段聯絡。
+  </p>
+
+  <form id="contactForm" class="mt-6 space-y-4" novalidate>
+    <input type="hidden" name="access_key" value="1ed3ef7d-7db9-47d6-9648-134f82d63a7c" />
+    <input type="hidden" name="subject" value="澄果團隊官網｜客戶諮詢" />
+    <input type="hidden" name="from_name" value="澄果團隊官網" />
+    <!-- 蜜罐欄位：機器人會填，真人看不到，用來擋垃圾訊息 -->
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-name">稱呼 <span class="text-orange">*</span></label>
+        <input id="cf-name" name="稱呼" required maxlength="30" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="王先生 / 陳小姐" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-phone">聯絡電話 <span class="text-orange">*</span></label>
+        <input id="cf-phone" name="聯絡電話" required type="tel" inputmode="tel" maxlength="20"
+          class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="09xx-xxx-xxx" />
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-line">LINE ID（選填）</label>
+        <input id="cf-line" name="LINE ID" maxlength="40" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="習慣用 LINE 聯絡再填" />
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-email">Email（選填）</label>
+        <input id="cf-email" name="Email" type="email" maxlength="80" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="要收書面資料再填" />
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-type">需求類型</label>
+        <select id="cf-type" name="需求類型" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="我要賣房" class="text-ink">我要賣房</option><option value="我要買房" class="text-ink">我要買房</option><option value="想先估價" class="text-ink">想先估價</option><option value="換屋規劃" class="text-ink">換屋規劃</option><option value="其他" class="text-ink">其他</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-time">方便聯絡的時段</label>
+        <select id="cf-time" name="方便聯絡時段" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+          <option value="都可以" class="text-ink">都可以</option><option value="上午 9-12 點" class="text-ink">上午 9-12 點</option><option value="下午 1-6 點" class="text-ink">下午 1-6 點</option><option value="晚上 6-9 點" class="text-ink">晚上 6-9 點</option><option value="假日" class="text-ink">假日</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 需求類型選「想先估價」或「我要賣房」時才展開。
+         估價要的是社區、樓層、坪數與車位，不先問，就得再來回一輪，
+         每多一次來回就流失一批人。 -->
+    <div id="cf-estimate-fields" hidden class="border-l-2 border-orange/60 pl-5 space-y-4 pt-1">
+      <p class="text-[13px] leading-[1.8] text-white/50">
+        下面四欄填了，我們回電時就能直接給你區間；不確定的可以留空。
+      </p>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-comm">社區名稱或地址</label>
+          <input id="cf-comm" name="社區或地址" maxlength="60" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="例如：美術白天鵝 / 美術東四路690號" />
+        </div>
+        <div>
+          <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-floor">樓層／總樓層</label>
+          <input id="cf-floor" name="樓層" maxlength="20" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="例如：12／24" />
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-ping">權狀坪數</label>
+          <input id="cf-ping" name="權狀坪數" maxlength="20" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition" placeholder="例如：38.5 坪" />
+        </div>
+        <div>
+          <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-park">車位</label>
+          <select id="cf-park" name="車位" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition">
+            <option value="未選擇" class="text-ink">未選擇</option><option value="有．平面" class="text-ink">有．平面</option><option value="有．機械" class="text-ink">有．機械</option><option value="沒有車位" class="text-ink">沒有車位</option><option value="不確定" class="text-ink">不確定</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-mono text-[12px] tracking-wider text-white/50 mb-1.5" for="cf-msg">想詢問的內容</label>
+      <textarea id="cf-msg" name="詢問內容" rows="3" maxlength="500" class="w-full bg-white/5 border border-white/20 rounded-sm px-4 py-2.5 text-[15px] text-white placeholder-white/35 focus:border-orange focus:bg-white/10 outline-none transition"
+        placeholder="例如：想知道美術館特區三房的行情，預算 1,500 萬左右"></textarea>
+    </div>
+
+    <!-- 個資法第20條第2項：行銷須另行取得同意，預設不勾選 -->
+    <label for="cf-marketing" class="flex items-start gap-2.5 cursor-pointer select-none">
+      <input id="cf-marketing" name="行銷同意" type="checkbox" value="同意"
+        class="mt-[3px] w-4 h-4 shrink-0 accent-[#FD7305] cursor-pointer" />
+      <span class="text-[13px] leading-[1.75] text-white/50">
+        我願意收到澄果團隊的房市行情、新案與活動資訊（不勾選不影響本次諮詢，日後也可隨時來電免費取消）
+      </span>
+    </label>
+
+    <!-- 個資法第7條第4項：同意之舉證責任在蒐集者，隨表單一併送出同意時間 -->
+    <input type="hidden" id="cf-consent-at" name="同意告知事項時間" value="" />
+
+    <button type="submit" id="cf-submit"
+      class="w-full inline-flex items-center justify-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition disabled:opacity-50">
+      送出
+    </button>
+
+    <p class="text-[13px] leading-[1.8] text-white/45">
+      送出前會顯示
+      <button type="button" id="cf-privacy-open" class="text-orange/80 hover:text-orange hover:underline">個資蒐集告知事項</button>
+      ，同意後才會送出。
+    </p>
+
+    <p id="cf-status" class="text-[14px] leading-[1.8]" role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<!-- 個資告知事項 -->
+<div id="cf-privacy" hidden class="fixed inset-0 z-[110] bg-ink/90 flex items-center justify-center p-4 md:p-10">
+  <div class="bg-surface text-ink rounded-sm max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+    <div class="p-8">
+      <h3 class="display text-[20px] mb-5">個人資料蒐集、處理及利用告知事項</h3>
+      <div class="space-y-4 text-[15px] leading-[1.9] text-inkSoft">
+        <p>依《個人資料保護法》第 8 條規定，澄果資產有限公司（以下稱本公司）於蒐集您的個人資料前，謹告知下列事項：</p>
+        <div>
+          <div class="font-bold text-ink mb-1">一、蒐集目的</div>
+          <p>040 行銷、069 契約、類似契約或其他法律關係事務、090 消費者、客戶管理與服務、181 其他經營合於營業登記項目所定之業務。
+             具體而言為不動產仲介服務、客戶管理與服務、行銷業務聯繫，以及回覆您的諮詢需求。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">二、蒐集的個人資料類別</div>
+          <p>C001 辨識個人者（您主動提供的姓名或稱呼、聯絡電話、LINE ID、電子郵件位址）、
+             C002 辨識財務者（您主動提供的預算等資訊），以及您於本表單填寫的需求內容。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">三、利用期間、地區、對象及方式</div>
+          <p>期間：未成交之諮詢資料，保存至最後聯繫日起 2 年；已成交案件之相關資料，保存至契約成立日起 5 年。
+             期限屆至後本公司將刪除或停止處理利用，法令另有規定者從其規定。<br />
+             地區：中華民國境內；惟本公司使用之線上表單服務供應商（Web3Forms）之伺服器可能位於境外，您送出表單即同時同意此項傳輸。<br />
+             對象：本公司及所屬經紀人員；前述線上表單服務供應商（僅作訊息轉寄，不作其他利用）；
+             及您委託本公司進行不動產交易時，為完成該交易所必要之履約協力單位（地政士、金融機構、不動產估價師等）。
+             除上述及法令規定外，非經您同意不會提供予其他第三人。<br />
+             方式：以電話、簡訊、LINE、電子郵件或其他通訊軟體與您聯繫，並於前述蒐集目的範圍內使用。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">四、您得行使的權利</div>
+          <p>依個資法第 3 條，您得向本公司請求查詢、閱覽、製給複製本、補充或更正、停止蒐集處理利用，或請求刪除您的個人資料；
+             本項權利不得預先拋棄，亦不得以特約限制。查詢、閱覽或製給複製本，本公司得酌收必要成本費用。</p>
+          <p class="mt-2">另依個資法第 20 條第 2 項，您得隨時免費表示拒絕接受行銷，本公司於接獲通知後將立即停止利用您的個人資料進行行銷。</p>
+          <p class="mt-2">行使上述權利，請來電 <a href="tel:0797669977" class="text-orangeDeep hover:underline">07-9766977</a> 或親洽本公司辦理。</p>
+        </div>
+        <div>
+          <div class="font-bold text-ink mb-1">五、不提供個人資料的影響</div>
+          <p>本表單為選擇性填寫。若不提供聯絡方式，本公司將無法與您聯繫或提供相關服務，但不影響您以電話等其他方式洽詢。</p>
+        </div>
+      </div>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <button type="button" id="cf-privacy-agree"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">
+          我已閱讀並同意，送出
+        </button>
+        <button type="button" id="cf-privacy-close"
+          class="inline-flex items-center px-7 py-3 text-[15px] font-medium rounded-sm border border-line text-ink hover:bg-paper transition">
+          再想一下
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-6 font-mono text-[13px] text-white/55 flex flex-wrap gap-x-8 gap-y-1">
+      <span class="text-white/80">台灣房屋 澄果團隊</span>
+      <span>澄果資產有限公司</span>
+      <span>804 高雄市鼓山區青海路416號</span>
+      <span><a href="tel:0797669977" class="hover:text-orange transition">07-9766977</a></span>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+      <span>© 2026 澄果資產有限公司　統一編號 91072050　台灣房屋美術青海特許加盟店</span>
+      <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* 聯絡表單：送到 Web3Forms，全程原生 JavaScript */
+  (function () {
+    var form = document.getElementById("contactForm");
+    if (!form) return;
+
+    var status = document.getElementById("cf-status");
+    var submit = document.getElementById("cf-submit");
+
+    /* 需求類型選到估價或賣房時，展開估價需要的欄位。
+       先問社區、樓層、坪數與車位，回電時就能直接給區間，
+       不用再來回一輪。帶 #estimate 進站的也直接幫他展開。 */
+    (function () {
+      var type = document.getElementById("cf-type");
+      var extra = document.getElementById("cf-estimate-fields");
+      if (!type || !extra) return;
+      var fields = extra.querySelectorAll("input, select, textarea");
+      function sync() {
+        var v = type.value;
+        var on = (v === "想先估價" || v === "我要賣房" || v === "換屋規劃");
+        if (on) extra.removeAttribute("hidden");
+        else extra.setAttribute("hidden", "");
+        /* 收合時把欄位停用，買方的詢問信就不會多出四個空欄位 */
+        for (var i = 0; i < fields.length; i++) fields[i].disabled = !on;
+      }
+      type.addEventListener("change", sync);
+      /* 從文章或其他頁面連 #estimate 過來的，預設就是要估價 */
+      if (location.hash === "#estimate") {
+        type.value = "想先估價";
+        var box = document.getElementById("estimate");
+        if (box) setTimeout(function () { box.scrollIntoView({ block: "start" }); }, 60);
+      }
+      sync();
+    })();
+    var modal = document.getElementById("cf-privacy");
+    var agreed = false;          // 這次工作階段是否已同意告知事項
+    var pendingSubmit = false;   // 是否因為要看告知事項而暫停送出
+
+    function openModal(pending) {
+      pendingSubmit = !!pending;
+      modal.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      modal.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
+
+    /* 主動點連結查看：只是閱讀，不會觸發送出 */
+    document.getElementById("cf-privacy-open").addEventListener("click", function () {
+      openModal(false);
+    });
+    document.getElementById("cf-privacy-close").addEventListener("click", function () {
+      closeModal();
+      if (pendingSubmit) {
+        pendingSubmit = false;
+        say("需要同意告知事項才能送出。你也可以直接來電 07-9766977。");
+      }
+    });
+    document.getElementById("cf-privacy-agree").addEventListener("click", function () {
+      agreed = true;
+      /* 個資法第7條第4項：同意的舉證責任在蒐集者，把同意時間隨表單送出留存 */
+      var stamp = document.getElementById("cf-consent-at");
+      if (stamp) {
+        var d = new Date();
+        function p(n) { return (n < 10 ? "0" : "") + n; }
+        stamp.value = d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+          " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds()) +
+          "（本地時間，UTC" + (d.getTimezoneOffset() > 0 ? "-" : "+") +
+          p(Math.abs(d.getTimezoneOffset()) / 60 | 0) + "）";
+      }
+      closeModal();
+      if (pendingSubmit) { pendingSubmit = false; send(); }
+    });
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
+    });
+
+    function say(msg, ok) {
+      status.textContent = msg;
+      status.className = "text-[14px] leading-[1.8] " + (ok ? "text-orange" : "text-white/70");
+    }
+
+    function send() {
+      submit.disabled = true;
+      submit.textContent = "送出中…";
+      say("");
+
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify((function () {
+          var payload = Object.fromEntries(new FormData(form));
+          /* 未勾選的 checkbox 不會進 FormData，明確寫成「不同意」才有紀錄可查 */
+          var mk = document.getElementById("cf-marketing");
+          payload["行銷同意"] = (mk && mk.checked) ? "同意" : "不同意";
+          return payload;
+        })()),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.success) throw new Error(d.message || "送出失敗");
+          form.reset();
+          agreed = false;   /* 下一次送出仍需再次同意 */
+          say("已收到你的訊息，我們會盡快與你聯絡。急件請直接來電 07-9766977。", true);
+          submit.textContent = "已送出";
+        })
+        .catch(function () {
+          say("送出時發生問題，請稍後再試，或直接來電 07-9766977。");
+          submit.disabled = false;
+          submit.textContent = "送出";
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var name = form.querySelector("#cf-name").value.trim();
+      var phone = form.querySelector("#cf-phone").value.trim();
+
+      if (!name) { say("請填寫稱呼"); form.querySelector("#cf-name").focus(); return; }
+      if (!phone) { say("請填寫聯絡電話"); form.querySelector("#cf-phone").focus(); return; }
+      /* 電話只做寬鬆檢查：市話、手機、含分機或連字號都放行 */
+      if (phone.replace(/[^0-9]/g, "").length < 8) {
+        say("電話號碼看起來不完整，請再確認一次"); form.querySelector("#cf-phone").focus(); return;
+      }
+
+      /* 資料填妥後才顯示告知事項，同意即接著送出 */
+      if (!agreed) { openModal(true); return; }
+      send();
+    });
+  })();
+
+  /* 手機選單：純原生，不依賴框架 */
+  (function () {
+    var btn = document.getElementById("menuBtn");
+    var menu = document.getElementById("mobileMenu");
+    if (!btn || !menu) return;
+
+    function setOpen(open) {
+      if (open) {
+        menu.removeAttribute("hidden");
+        btn.setAttribute("aria-expanded", "true");
+        btn.firstElementChild.textContent = "✕";
+      } else {
+        menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", "false");
+        btn.firstElementChild.textContent = "☰";
+      }
+    }
+
+    btn.addEventListener("click", function () { setOpen(menu.hasAttribute("hidden")); });
+
+    /* 點選單項目後自動關閉，否則跳到區塊時畫面仍被選單蓋住 */
+    menu.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { setOpen(false); });
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !menu.hasAttribute("hidden")) setOpen(false);
+    });
+
+    /* 視窗放大到桌機寬度時，把選單收起來，避免殘留 */
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 1280 && !menu.hasAttribute("hidden")) setOpen(false);
+    });
+  })();
+</script>
+</body>
+</html>
