@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="92" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">高雄 18 家建商　近三年成交單價中位數（萬／坪）</text>
+  <g>
+    <rect x="120" y="132" width="26" height="13" fill="#FD7305" fill-opacity="0.9"/>
+    <text x="158" y="148" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#16191D">樣本 30 筆以上</text>
+    <rect x="320" y="132" width="26" height="13" fill="#FD7305" fill-opacity="0.3"/>
+    <text x="358" y="148" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">樣本不足，僅供參考</text>
+    <path d="M600 130 V148" stroke="#737A83" stroke-width="2"/>
+    
+    <text x="616" y="148" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">全站中位 39</text>
+  </g>
+  <path d="M120 172 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  
+    <text x="110" y="218" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">城揚建設</text>
+    <rect x="240" y="205" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="205" width="120" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M289 200 V222" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="219" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">49.9</text>
+    <text x="560" y="218" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">512 筆</text>
+    <text x="110" y="264" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">皇苑建設</text>
+    <rect x="240" y="251" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="251" width="105" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M289 246 V268" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="265" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">47.6</text>
+    <text x="560" y="264" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">125 筆</text>
+    <text x="110" y="310" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">福懋建設</text>
+    <rect x="240" y="297" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="297" width="63" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M289 292 V314" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="311" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">41.1</text>
+    <text x="560" y="310" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">169 筆</text>
+    <text x="110" y="356" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">堅山建設</text>
+    <rect x="240" y="343" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="343" width="57" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M289 338 V360" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="357" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">40.2</text>
+    <text x="560" y="356" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">28 筆・樣本少</text>
+    <text x="110" y="402" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">勝偕建設</text>
+    <rect x="240" y="389" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="389" width="52" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M289 384 V406" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="403" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">39.4</text>
+    <text x="560" y="402" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">20 筆・樣本少</text>
+    <text x="110" y="448" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">光洲建設</text>
+    <rect x="240" y="435" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="435" width="46" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M289 430 V452" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="449" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">38.5</text>
+    <text x="560" y="448" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">23 筆・樣本少</text>
+    <text x="110" y="494" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">興富發建設</text>
+    <rect x="240" y="481" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="481" width="41" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M289 476 V498" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="495" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">37.8</text>
+    <text x="560" y="494" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">337 筆</text>
+    <text x="110" y="540" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">永信建設開發</text>
+    <rect x="240" y="527" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="527" width="39" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M289 522 V544" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="541" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">37.5</text>
+    <text x="560" y="540" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">19 筆・樣本少</text>
+    <text x="110" y="586" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">太普開發</text>
+    <rect x="240" y="573" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="240" y="573" width="36" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M289 568 V590" stroke="#737A83" stroke-width="2"/>
+    <text x="420" y="587" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">37.0</text>
+    <text x="560" y="586" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">29 筆・樣本少</text>
+    <text x="630" y="218" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">麗晶建設</text>
+    <rect x="760" y="205" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="205" width="33" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M809 200 V222" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="219" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">36.5</text>
+    <text x="1080" y="218" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">45 筆</text>
+    <text x="630" y="264" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">京城建設</text>
+    <rect x="760" y="251" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="251" width="31" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M809 246 V268" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="265" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">36.3</text>
+    <text x="1080" y="264" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">609 筆</text>
+    <text x="630" y="310" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">北京建設</text>
+    <rect x="760" y="297" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="297" width="31" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M809 292 V314" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="311" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">36.2</text>
+    <text x="1080" y="310" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">65 筆</text>
+    <text x="630" y="356" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">鼎宇建設</text>
+    <rect x="760" y="343" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="343" width="30" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M809 338 V360" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="357" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">36.1</text>
+    <text x="1080" y="356" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">54 筆</text>
+    <text x="630" y="402" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">棋琴建設</text>
+    <rect x="760" y="389" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="389" width="30" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M809 384 V406" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="403" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">36.1</text>
+    <text x="1080" y="402" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">14 筆・樣本少</text>
+    <text x="630" y="448" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#16191D">全誠建設</text>
+    <rect x="760" y="435" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="435" width="24" height="12" fill="#FD7305" fill-opacity="0.9"/>
+    <path d="M809 430 V452" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="449" font-family="'IBM Plex Mono',monospace" font-size="22" font-weight="700" text-anchor="end" fill="#B85400">35.2</text>
+    <text x="1080" y="448" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">42 筆</text>
+    <text x="630" y="494" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">振美建設</text>
+    <rect x="760" y="481" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="481" width="18" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M809 476 V498" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="495" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">34.2</text>
+    <text x="1080" y="494" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">15 筆・樣本少</text>
+    <text x="630" y="540" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">嵩豐建設</text>
+    <rect x="760" y="527" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="527" width="6" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M809 522 V544" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="541" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">32.4</text>
+    <text x="1080" y="540" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">12 筆・樣本少</text>
+    <text x="630" y="586" font-family="'Noto Sans TC',sans-serif" font-size="19" fill="#737A83">太子建設</text>
+    <rect x="760" y="573" width="120" height="12" fill="#16191D" fill-opacity="0.07"/>
+    <rect x="760" y="573" width="3" height="12" fill="#FD7305" fill-opacity="0.3"/>
+    <path d="M809 568 V590" stroke="#737A83" stroke-width="2"/>
+    <text x="940" y="587" font-family="'IBM Plex Mono',monospace" font-size="22" text-anchor="end" fill="#737A83">31.5</text>
+    <text x="1080" y="586" font-family="'IBM Plex Mono',monospace" font-size="16" text-anchor="end" fill="#737A83">14 筆・樣本少</text>
+
+  <path d="M120 668 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="724" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D">單價差的是<tspan fill="#B85400">屋齡與生活圈</tspan>，不是品牌溢價</text>
+  <text x="120" y="764" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">樣本從 12 筆到 609 筆，筆數少的中位會被一兩筆帶走</text>
+</svg>

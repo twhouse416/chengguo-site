@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="92" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">高雄美術館特區　13,131 筆成交　單價中位數（萬／坪）</text>
+
+  <g>
+    <rect x="120" y="128" width="26" height="26" fill="#FD7305" fill-opacity="0.9"/>
+    <text x="158" y="149" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">全部成交中位</text>
+    <rect x="320" y="128" width="26" height="26" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="358" y="149" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#16191D">屋齡 15 年以上中位</text>
+  </g>
+  
+    <rect x="170" y="317" width="62" height="243" fill="#FD7305" fill-opacity="0.42"/>
+    <rect x="242" y="332" width="62" height="228" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="201" y="301" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#16191D">31.9</text>
+    <text x="273" y="316" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#737A83">29.9</text>
+    <text x="237" y="596" font-family="'IBM Plex Mono',monospace" font-size="19" text-anchor="middle" fill="#737A83">2022</text>
+    <text x="237" y="622" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle" fill="#737A83">新屋 26%</text>
+    <rect x="356" y="294" width="62" height="266" fill="#FD7305" fill-opacity="0.42"/>
+    <rect x="428" y="323" width="62" height="237" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="387" y="278" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#16191D">34.9</text>
+    <text x="459" y="307" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#737A83">31.1</text>
+    <text x="423" y="596" font-family="'IBM Plex Mono',monospace" font-size="19" text-anchor="middle" fill="#737A83">2023</text>
+    <text x="423" y="622" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle" fill="#737A83">新屋 41%</text>
+    <rect x="542" y="228" width="62" height="332" fill="#FD7305" fill-opacity="0.9"/>
+    <rect x="614" y="295" width="62" height="265" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="573" y="212" font-family="'IBM Plex Mono',monospace" font-size="27" font-weight="700" text-anchor="middle" fill="#B85400">43.5</text>
+    <text x="645" y="279" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#737A83">34.7</text>
+    <text x="609" y="596" font-family="'IBM Plex Mono',monospace" font-size="19" text-anchor="middle" fill="#737A83">2024</text>
+    <text x="609" y="622" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle" fill="#737A83">新屋 55%</text>
+    <rect x="728" y="281" width="62" height="279" fill="#FD7305" fill-opacity="0.42"/>
+    <rect x="800" y="301" width="62" height="259" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="759" y="265" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#16191D">36.6</text>
+    <text x="831" y="285" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#737A83">33.9</text>
+    <text x="795" y="596" font-family="'IBM Plex Mono',monospace" font-size="19" text-anchor="middle" fill="#737A83">2025</text>
+    <text x="795" y="622" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle" fill="#737A83">新屋 23%</text>
+    <rect x="914" y="283" width="62" height="277" fill="#FD7305" fill-opacity="0.42"/>
+    <rect x="986" y="304" width="62" height="256" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
+    <text x="945" y="267" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#16191D">36.3</text>
+    <text x="1017" y="288" font-family="'IBM Plex Mono',monospace" font-size="21" text-anchor="middle" fill="#737A83">33.6</text>
+    <text x="981" y="596" font-family="'IBM Plex Mono',monospace" font-size="19" text-anchor="middle" fill="#737A83">2026</text>
+    <text x="981" y="622" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle" fill="#737A83">新屋 24%</text>
+  <path d="M120 560 H1080" stroke="#16191D" stroke-width="2"/>
+
+  <path d="M120 668 H1080" stroke="#DEDCD7" stroke-width="2"/>
+  <text x="120" y="724" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D">高點是<tspan fill="#B85400">新成屋交屋潮</tspan>，中古屋那一層幾乎沒動</text>
+  <text x="120" y="764" font-family="'IBM Plex Mono',monospace" font-size="19" fill="#737A83">中位數會動，不一定是房子漲跌</text>
+</svg>
