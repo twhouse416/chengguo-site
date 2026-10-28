@@ -6,12 +6,12 @@
     <text x="120" y="208" font-size="28" fill="#16191D">美術館特區</text>
     <rect x="420" y="182" width="399" height="34" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
     <text x="839" y="209" font-size="25" font-family="'IBM Plex Mono',monospace" fill="#16191D">32.5 萬</text>
-    <text x="1010" y="209" font-size="21" font-family="'IBM Plex Mono',monospace" fill="#737A83">1,683 萬</text>
+    <text x="1010" y="209" font-size="21" font-family="'IBM Plex Mono',monospace" fill="#737A83">1,685 萬</text>
 
     <text x="120" y="282" font-size="28" fill="#16191D">中都重劃區</text>
     <rect x="420" y="256" width="450" height="34" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
-    <text x="890" y="283" font-size="25" font-family="'IBM Plex Mono',monospace" fill="#16191D">36.7 萬</text>
-    <text x="1010" y="283" font-size="21" font-family="'IBM Plex Mono',monospace" fill="#737A83">1,376 萬</text>
+    <text x="890" y="283" font-size="25" font-family="'IBM Plex Mono',monospace" fill="#16191D">36.8 萬</text>
+    <text x="1010" y="283" font-size="21" font-family="'IBM Plex Mono',monospace" fill="#737A83">1,378 萬</text>
 
     <text x="120" y="356" font-size="28" fill="#16191D">農十六特區</text>
     <rect x="420" y="330" width="368" height="34" fill="#16191D" fill-opacity="0.12" stroke="#16191D" stroke-width="2"/>
@@ -29,10 +29,10 @@
   <path d="M120 500 H1080" stroke="#DEDCD7" stroke-width="2"/>
   <g font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">
     <text x="120" y="556">37 個社區</text>
-    <text x="400" y="556">1,158 筆住家成交</text>
+    <text x="400" y="556">1,160 筆住家成交</text>
     <text x="760" y="556">公設比中位 28.44%</text>
   </g>
   <path d="M120 606 H1080" stroke="#DEDCD7" stroke-width="2"/>
-  <text x="120" y="664" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">單價 30.1 萬四區第二低，坪數中位 47.9 坪</text>
+  <text x="120" y="664" font-family="'Noto Sans TC',sans-serif" font-size="30" font-weight="700" fill="#16191D">單價 30.1 萬與農十六同為四區最低，坪數中位 47.9 坪</text>
   <text x="120" y="712" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">公設比 28.44% 四區最低　｜　代價：37 個社區有 16 個是 1990 年代完工</text>
 </svg>
