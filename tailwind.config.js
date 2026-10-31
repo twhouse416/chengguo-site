@@ -25,9 +25,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#16191D", inkSoft: "#474D55", inkFaint: "#737A83",
+        ink: "#16191D", inkSoft: "#474D55", inkFaint: "#666D75",
         paper: "#F4F4F2", surface: "#FFFFFF", line: "#DEDCD7",
-        orange: "#FD7305", orangeDeep: "#B85400", tint: "#FCEFE3",
+        orange: "#FD7305", orangeDeep: "#AD4F00", tint: "#FCEFE3",
         /* 工具頁的通過／不符狀態色。
            原本 scripts/tools/*.calc.js 就在用 text-pass / text-fail / border-fail，
            但這裡沒定義，Tailwind 不會產生對應的 class，

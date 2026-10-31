@@ -9,7 +9,8 @@
 import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize, orgRef, unitStr } from "./lib/layout.js";
 import { webSlug, fillStats } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
-import { isoDate } from "./build-communities.js";
+import { isoDate, ytId } from "./build-communities.js";
+import { loadCommunities } from "./lib/related.js";
 
 /* ================= 文章列表 ================= */
 export function buildNotesIndex({ articles, hasBuyers }) {
@@ -141,9 +142,9 @@ export function buildVideosIndex({ videos, hasBuyers }) {
         ${v.category ? `<span class="text-orangeDeep tracking-wider">${esc(v.category)}</span>` : ""}
         <time class="text-inkFaint" datetime="${v.published}">${fmtDate(v.published)}</time>
       </div>
-      <h2 class="text-[17px] font-bold leading-snug mt-1.5 tracking-tight group-hover:text-orangeDeep transition">${esc(v.titleShown || v.title)}</h2>
-      ${(v.descShown || v.desc) ? `<p class="text-[14px] text-inkSoft leading-[1.85] mt-2">${esc(v.descShown || v.desc)}</p>` : ""}
     </button>
+    <h2 class="text-[17px] font-bold leading-snug mt-1.5 tracking-tight"><a href="${esc(v.videoId)}.html" class="hover:text-orangeDeep transition">${esc(v.titleShown || v.title)}</a></h2>
+    ${(v.descShown || v.desc) ? `<p class="text-[14px] text-inkSoft leading-[1.85] mt-2">${esc(v.descShown || v.desc)}</p>` : ""}
   </article>`).join("\n      ");
 
   const empty = `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
@@ -263,6 +264,92 @@ export function buildVideosIndex({ videos, hasBuyers }) {
   ].join("\n");
 }
 
+
+/* ================= 單支影片觀看頁 =================
+   Google 只為「影片是主角」的頁面建立影片索引。列表頁、首頁、社區頁的影片
+   在 Search Console 都被判為「影片不在觀賞頁面上」。每支影片一頁 videos/<id>.html，
+   播放器放在最上方（直接 iframe，不用點擊替身，Google 才偵測得到），
+   搭配 VideoObject、video sitemap，並連回對應的社區頁或生活圈。 */
+export function buildVideoPages({ videos, hasBuyers }) {
+  const list = (videos?.videos || []).filter(v => !v.hidden && v.videoId);
+  let comms = [];
+  try { comms = loadCommunities(); } catch { comms = []; }
+  const byVid = new Map(comms.filter(c => c.video?.id).map(c => [ytId(c.video.id), c]));
+
+  return list.map((v, idx) => {
+    const title = v.titleShown || v.title;
+    const desc = v.descShown || v.desc || title;
+    const url = `${SITE}/videos/${v.videoId}.html`;
+    const comm = byVid.get(v.videoId);
+    const others = list.filter(x => x.videoId !== v.videoId).slice(0, 6);
+    const jsonLd = [{
+      "@context": "https://schema.org", "@type": "VideoObject",
+      name: title, description: desc,
+      thumbnailUrl: [v.thumb, `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`].filter((x, i, a) => x && a.indexOf(x) === i),
+      uploadDate: isoDate(v.published),
+      embedUrl: `https://www.youtube.com/embed/${v.videoId}`,
+      contentUrl: `https://www.youtube.com/watch?v=${v.videoId}`,
+      url, inLanguage: "zh-TW", publisher: orgRef(),
+    }, {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "首頁", item: `${SITE}/` },
+        { "@type": "ListItem", position: 2, name: "影片", item: `${SITE}/videos/` },
+        { "@type": "ListItem", position: 3, name: title, item: url },
+      ],
+    }];
+    const html = [
+      head({
+        title: `${title}｜澄果團隊影片`,
+        description: desc,
+        keywords: [title, v.category, comm?.name, "高雄社區介紹", "澄果團隊"].filter(Boolean).join(","),
+        canonical: url,
+        ogImage: v.thumb || `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`,
+        depth: 1, jsonLd,
+      }),
+      header({ depth: 1, hasBuyers }),
+      `<main class="max-w-4xl mx-auto px-6 py-12">
+  <nav aria-label="麵包屑" class="font-mono text-[12px] text-inkFaint mb-6">
+    <a href="../index.html" class="hover:text-orangeDeep">首頁</a><span class="mx-2">/</span><a href="index.html" class="hover:text-orangeDeep">影片</a><span class="mx-2">/</span><span>${esc(title)}</span>
+  </nav>
+  <h1 class="display text-[26px] md:text-[32px] leading-snug">${esc(title)}</h1>
+  <div class="flex items-center gap-3 mt-3 font-mono text-[12px]">
+    ${v.category ? `<span class="text-orangeDeep tracking-wider">${esc(v.category)}</span>` : ""}
+    <time class="text-inkFaint" datetime="${esc(v.published)}">${fmtDate(v.published)}</time>
+  </div>
+  <div class="mt-7 aspect-video bg-black rounded-sm overflow-hidden border border-line">
+    <iframe class="w-full h-full" src="https://www.youtube.com/embed/${esc(v.videoId)}?rel=0&modestbranding=1&playsinline=1"
+      title="${esc(title)}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  <p class="mt-7 text-[17px] text-inkSoft leading-[2]">${esc(desc)}</p>
+  ${comm ? `<section class="mt-10 border border-line rounded-sm bg-surface p-7">
+    <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase">Community</div>
+    <h2 class="display text-[20px] mt-2">${esc(comm.name)}的實價登錄與社區資料</h2>
+    <p class="mt-3 text-[16px] text-inkSoft leading-[1.9]">${esc(comm.summary || `${comm.name}位於${comm.address || "高雄"}。`)}</p>
+    <a href="../communities/${esc(comm.slug)}.html" class="inline-flex items-center mt-5 px-6 py-3 text-[15px] font-medium rounded-sm bg-ink text-white hover:bg-orangeDeep transition">看${esc(comm.name)}逐筆成交與規格 →</a>
+  </section>` : ""}
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a href="https://www.youtube.com/watch?v=${esc(v.videoId)}" target="_blank" rel="noopener noreferrer"
+      class="inline-flex items-center px-6 py-3 text-[15px] rounded-sm border border-ink/25 text-ink hover:bg-ink hover:text-white transition">在 YouTube 觀看</a>
+    <a href="${BRAND.phoneHref}" class="inline-flex items-center px-6 py-3 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">來電諮詢 ${BRAND.phone}</a>
+  </div>
+  ${others.length ? `<section class="mt-14 pt-8 border-t border-line">
+    <h2 class="display text-[20px]">更多影片</h2>
+    <ul class="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-8">
+      ${others.map(o => `<li><a href="${esc(o.videoId)}.html" class="group block">
+        <img src="${esc(o.thumb)}" alt="${esc(o.titleShown || o.title)} 影片縮圖"${imgSize(o.thumb)} loading="lazy" class="w-full aspect-video object-cover rounded-sm border border-line group-hover:opacity-90 transition" />
+        <span class="block mt-3 text-[15px] font-bold leading-snug group-hover:text-orangeDeep transition">${esc(o.titleShown || o.title)}</span>
+      </a></li>`).join("\n      ")}
+    </ul>
+    <a href="index.html" class="inline-block mt-8 font-mono text-[14px] text-orangeDeep hover:underline">看全部影片 →</a>
+  </section>` : ""}
+</main>`,
+      footer({ depth: 1, hasBuyers }),
+    ].join("\n");
+    return { file: `${v.videoId}.html`, html };
+  });
+}
 
 /* ================= 賀成交列表 ================= */
 export function buildDealsIndex({ deals, hasBuyers, market }) {

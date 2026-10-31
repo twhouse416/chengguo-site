@@ -18,13 +18,13 @@
  *    要改文案請改 scripts/build-home.js、scripts/build-pages.js。
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { SITE, BRAND, head, header, footer } from "./lib/layout.js";
 import { buildHome } from "./build-home.js";
-import { buildNotesIndex, buildVideosIndex, buildDealsIndex } from "./build-pages.js";
+import { buildNotesIndex, buildVideosIndex, buildVideoPages, buildDealsIndex } from "./build-pages.js";
 import { buildArticles, webSlug, setArticleStats, checkStaleCounts, fillArticleStats } from "./build-articles.js";
 import { buildTools } from "./build-tools.js";
 import { buildCommunities } from "./build-communities.js";
@@ -117,6 +117,10 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
       lastmod: cLast[c.slug],
       priority: "0.9", freq: "weekly",
     })),
+    ...(ctx.videos || []).filter(v => !v.hidden && v.videoId).map(v => ({
+      loc: `${SITE}/videos/${v.videoId}.html`, lastmod: String(v.published || "").slice(0, 10),
+      priority: "0.6", freq: "monthly",
+    })),
     ...articles.map(a => ({
       loc: `${SITE}/notes/${webSlug(a.slug)}.html`,
       lastmod: a.updated || a.date,
@@ -136,7 +140,7 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
     (videoExt[loc] || (videoExt[loc] = [])).push(v);
   };
   (ctx.videos || []).filter(v => !v.hidden && v.videoId).forEach(v => {
-    addVideo(`${SITE}/videos/`, {
+    addVideo(`${SITE}/videos/${v.videoId}.html`, {
       id: v.videoId,
       title: v.titleShown || v.title || "",
       desc: v.descShown || v.desc || v.titleShown || v.title || "",
@@ -487,6 +491,13 @@ function main() {
   writeFileSync(path.join(ROOT, "videos/index.html"),
     buildVideosIndex({ videos, hasBuyers }), "utf-8");
   console.log("[產生] videos/index.html");
+  /* 單支影片觀看頁：先清掉已下架影片留下的舊檔 */
+  const vPages = buildVideoPages({ videos, hasBuyers });
+  const keep = new Set(vPages.map(p => p.file).concat("index.html"));
+  readdirSync(path.join(ROOT, "videos")).filter(f => f.endsWith(".html") && !keep.has(f))
+    .forEach(f => { unlinkSync(path.join(ROOT, "videos", f)); console.log(`[移除] videos/${f}`); });
+  vPages.forEach(p => writeFileSync(path.join(ROOT, "videos", p.file), p.html, "utf-8"));
+  console.log(`[產生] videos/ 單支影片觀看頁 ${vPages.length} 頁`);
 
   /* 賀成交 */
   const dealCount = (deals.deals || []).filter(d => !d.hidden && d.img).length;

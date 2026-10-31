@@ -574,16 +574,16 @@ function experienceSection() {
         <g font-family="'IBM Plex Mono', monospace">
           <path d="M170 87 H210" stroke="#FD7305" stroke-width="1.5"/><circle cx="170" cy="87" r="3.5" fill="#FD7305"/>
           <text x="218" y="82" font-size="19" font-weight="600" fill="#16191D">42.5</text>
-          <text x="218" y="99" font-size="11" fill="#737A83">高樓層・面公園</text>
+          <text x="218" y="99" font-size="11" fill="#666D75">高樓層・面公園</text>
           <path d="M170 207 H210" stroke="#FD7305" stroke-width="1.5"/><circle cx="170" cy="207" r="3.5" fill="#FD7305"/>
           <text x="218" y="202" font-size="19" font-weight="600" fill="#16191D">35.8</text>
-          <text x="218" y="219" font-size="11" fill="#737A83">低樓層・面路</text>
+          <text x="218" y="219" font-size="11" fill="#666D75">低樓層・面路</text>
           <path d="M300 92 V202" stroke="#DEDCD7" stroke-width="1"/>
           <path d="M296 98 L300 92 L304 98 M296 196 L300 202 L304 196" stroke="#DEDCD7" stroke-width="1" fill="none" stroke-linecap="round"/>
-          <text x="288" y="152" font-size="11" fill="#B85400" text-anchor="end">價差</text>
-          <text x="288" y="166" font-size="11" fill="#B85400" text-anchor="end">6.7 萬/坪</text>
+          <text x="288" y="152" font-size="11" fill="#AD4F00" text-anchor="end">價差</text>
+          <text x="288" y="166" font-size="11" fill="#AD4F00" text-anchor="end">6.7 萬/坪</text>
         </g>
-        <text x="20" y="292" font-family="'Noto Sans TC', sans-serif" font-size="12" fill="#737A83">同一社區，條件不同，單價就不同</text>
+        <text x="20" y="292" font-family="'Noto Sans TC', sans-serif" font-size="12" fill="#666D75">同一社區，條件不同，單價就不同</text>
       </svg>
     </div>
     <div class="lg:col-span-7 space-y-6">

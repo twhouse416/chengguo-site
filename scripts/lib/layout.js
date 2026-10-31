@@ -759,7 +759,7 @@ export function footer({ depth = 0, hasBuyers = false, compact = false, isHome =
   </div>
 
   <div class="border-t border-white/10">
-    <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/40 flex flex-wrap gap-x-6 gap-y-1 justify-between">
+    <div class="max-w-6xl mx-auto px-6 py-5 font-mono text-[12px] text-white/55 flex flex-wrap gap-x-6 gap-y-1 justify-between">
       <span>© ${new Date().getFullYear()} ${BRAND.legalName}　統一編號 ${BRAND.taxId}　${BRAND.franchiseName}</span>
       <span>行情資料來源：內政部不動產交易實價查詢服務網</span>
     </div>
