@@ -12,7 +12,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildTool } from "./lib/tool-shell.js";
 import { schoolZoneRelated } from "./lib/related.js";
-import { esc } from "./lib/layout.js";
+import { esc, unitStr } from "./lib/layout.js";
 import { AREAS } from "./build-areas.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -265,11 +265,11 @@ function areaBudgetBlock(market, dataNote) {
     </p>
     <div class="overflow-x-auto border border-line rounded-sm bg-surface">
       <table class="w-full text-[15px] min-w-[600px]">
-        <caption class="sr-only">高雄四個生活圈近一年電梯住宅的平均單價、常見單價區間、常見總價與自備款推算</caption>
+        <caption class="sr-only">高雄四個生活圈近一年電梯住宅的單價中位數、常見單價區間、常見總價與自備款推算</caption>
         <thead>
           <tr class="border-b border-line bg-paper font-mono text-[12px] tracking-wider text-inkFaint">
             <th scope="col" class="text-left font-normal py-3 px-4">生活圈</th>
-            <th scope="col" class="text-right font-normal py-3 px-4">平均單價</th>
+            <th scope="col" class="text-right font-normal py-3 px-4">單價中位</th>
             <th scope="col" class="text-right font-normal py-3 px-4">常見單價區間</th>
             <th scope="col" class="text-right font-normal py-3 px-4">常見總價</th>
             <th scope="col" class="text-right font-normal py-3 px-4">自備兩成約</th>
@@ -281,7 +281,7 @@ function areaBudgetBlock(market, dataNote) {
               ${r.slug ? `<a href="../../areas/${r.slug}/index.html" class="text-ink hover:text-orangeDeep font-medium">${esc(r.name)}</a>`
                        : `<span class="font-medium">${esc(r.name)}</span>`}
             </th>
-            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.avgPricePerPing ? `${r.avgPricePerPing} 萬` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.avgPricePerPing ? `${unitStr(r.avgPricePerPing)} 萬` : "—"}</td>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${r.bandLow ? `${r.bandLow}–${r.bandHigh} 萬` : "—"}</td>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${r.medianTotalPrice ? `${Number(r.medianTotalPrice).toLocaleString("en-US")} 萬` : "—"}</td>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] font-semibold text-orangeDeep">${r.medianTotalPrice ? `${Math.round(r.medianTotalPrice * 0.2).toLocaleString("en-US")} 萬` : "—"}</td>

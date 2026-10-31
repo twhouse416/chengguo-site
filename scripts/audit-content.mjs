@@ -14,6 +14,7 @@
  *   D 資料品質：學區欄位格式、規格空值、草稿
  *   E 建置產出：{{ }} 殘留、NaN/undefined、內鏈死連結、JSON-LD
  *   P 房價走勢頁 vs 生活圈頁：同一個（生活圈, 年度）的單價中位必須一致
+ *   Q 統計值的名稱 vs 算法：修剪後平均不可以被寫成「中位」
  */
 import fs from "fs";
 import path from "path";
@@ -399,6 +400,12 @@ for (const a of articles) {
           for (const al of ALIAS[area]) {
             let i = -1;
             while ((i = flat.indexOf(al, i + 1)) >= 0) {
+              /* 被「與／和／跟／比」帶出來的區名是拿來對照的，不是這句話的主詞。
+                 踩過的句子：「單價與農十六同為四區最低水準，公設比則是單獨最低」——
+                 這是瑞豐那篇在講自己，但農十六落在句首 12 字內，
+                 規則一就把主詞判給了農十六，於是報出一條不存在的錯誤。
+                 假警報比漏抓更糟：報幾次之後就沒有人會再看這個稽核了。 */
+              if (/[與和跟比]$/.test(flat.slice(0, i))) continue;
               if (i < 12 && (!best || bestD === 1e9)) { best = area; bestD = 0; }
               const d = Math.abs(pos[i] - m.index);   // 換回 sent 座標再比
               if (bestD !== 0 && d < bestD) { bestD = d; best = area; }
@@ -440,7 +447,12 @@ for (const a of articles) {
         }
 
         gSeen++;
-        const claimTrue = /並列/.test(flat)
+        /* 並列的說法不只「並列」一種：「與農十六同為四區最低水準」講的是
+           兩區同處最低，而且句子自己把兩個數字都寫出來了（30.1 與 30.0），
+           這是誠實的陳述，不該被當成「宣稱自己是唯一最低」。
+           只要句子裡有並列語氣，就改判成「提到的區當中有一個是極值即可」。 */
+        const JOINT = /(並列|同為|同列|皆為|均為|一樣|相當|同樣)/;
+        const claimTrue = JOINT.test(flat)
           ? mentioned.some(x => r[kind].includes(x))
           : r[kind].includes(subj);
         if (negated ? claimTrue : !claimTrue) {
@@ -956,6 +968,64 @@ if (BUILT) {
       if (!checked) warn("沒有比對到任何逐年數字——解析方式可能已經跟模板脫鉤，請確認");
       else if (!bad) ok(`房價走勢頁與 ${areaDirs.length} 個生活圈頁的逐年單價完全一致（比對 ${checked} 格）`);
     }
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   【Q】統計值的名稱必須跟算法一致
+   ───────────────────────────────────────────────────────────
+   市場資料的 avgPricePerPing 這個欄位名是歷史包袱，它實際上是哪一種
+   統計量，由 fetch-market-data.js 的 AREA_STAT_KIND 決定：
+     "median"       中位數（2026/10/31 起）
+     "trimmed-mean" 剔除頭尾各一成後的平均（2026/09/09–10/31）
+   這個欄位的值在 2026 年內被改過三次方向，每次都有人忘了改文案：
+     09/09 上午改成中位數、下午改回平均，文案跟著改了
+     10/27 文案被寫成「近一年中位」，但當時的值是平均——數字對、名稱錯，
+           四個生活圈頁都中招，而且頁面看起來完全正常，只有知道算法的人
+           才看得出名稱掛錯
+   所以這條檢查不寫死方向，改成讀 AREA_STAT_KIND，再反過來禁止另一個詞。
+   以後只要改算法，沒同步改文案就會立刻報錯。 */
+console.log("\n【Q】統計值的名稱 vs 實際算法");
+{
+  const FMD = path.join(ROOT, "scripts/fetch-market-data.js");
+  const kindM = fs.existsSync(FMD)
+    ? (fs.readFileSync(FMD, "utf-8").match(/AREA_STAT_KIND\s*=\s*"([a-z-]+)"/) || [])[1]
+    : null;
+  if (!kindM) {
+    warn("找不到 fetch-market-data.js 的 AREA_STAT_KIND，無法檢查統計值用字");
+  } else {
+    /* 口徑是中位數時，禁止把它講成平均；是修剪後平均時，禁止講成中位 */
+    const BAN = kindM === "median"
+      ? { re: /(平均單價|成交均價|區域均價|每坪平均|均價)/, say: "中位數", wrong: "平均" }
+      : { re: /中位/, say: "修剪後平均", wrong: "中位" };
+
+    const SRC = path.join(ROOT, "scripts");
+    const walkJs = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => {
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) return e.name === "node_modules" ? [] : walkJs(p);
+      return /\.(js|mjs)$/.test(e.name) ? [p] : [];
+    });
+    let qBad = 0, qSeen = 0;
+    for (const f of fs.existsSync(SRC) ? walkJs(SRC) : []) {
+      const rel = path.relative(ROOT, f);
+      /* 產生端的註解本來就會提到兩種算法；稽核自己的訊息字串也含這些詞 */
+      if (/fetch-market-data\.js$|audit-content\.mjs$/.test(rel)) continue;
+      const src = fs.readFileSync(f, "utf-8");
+      src.split("\n").forEach((line, i) => {
+        if (!line.includes("avgPricePerPing")) return;
+        if (/^\s*\/[/*]|^\s*\*/.test(line)) return;            // 整行是註解就不算
+        qSeen++;
+        /* 只看同一段樣板字串，整行一起看會把相鄰但無關的兩段誤判 */
+        for (const seg of line.match(/`[^`]*`/g) || []) {
+          if (seg.includes("avgPricePerPing") && BAN.re.test(seg)) {
+            fail(`${rel}:${i + 1}：avgPricePerPing 現在是${BAN.say}，卻被寫成「${BAN.wrong}」`
+               + ` → ${seg.replace(/\s+/g, " ").slice(0, 70)}`);
+            qBad++;
+          }
+        }
+      });
+    }
+    if (!qBad) ok(`avgPricePerPing 的用字與 AREA_STAT_KIND（${kindM}）一致（檢查 ${qSeen} 處引用）`);
   }
 }
 

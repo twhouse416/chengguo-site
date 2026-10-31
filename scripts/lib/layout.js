@@ -59,6 +59,14 @@ export const BRAND = {
    讓全站的組織節點收斂成同一個實體。2026-10 補上。 */
 /* 搜尋結果的標題寬度：中日韓字元佔兩個半形寬，Google 行動版大約
    在 60 個半形寬度處截斷。各 builder 組標題時用它控預算。 */
+/* 生活圈單價一律顯示一位小數。
+   market-data.json 存的是數字，中都剛好算出 39 就會印成「39」，
+   和同一列的 36.4、34.8、32.5 並排看起來像兩種精度。
+   這個函式是全站顯示 avgPricePerPing 的唯一入口。 */
+export function unitStr(v) {
+  return v === null || v === undefined || v === "" ? "" : Number(v).toFixed(1);
+}
+
 export function dispWidth(str) {
   let n = 0;
   for (const ch of String(str || "")) n += ch.codePointAt(0) > 0x2e80 ? 2 : 1;

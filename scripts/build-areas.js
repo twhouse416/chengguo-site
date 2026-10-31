@@ -15,7 +15,7 @@
  * 找不到一個「就是在回答這件事」的頁面。
  *
  * 內容全部由既有資料算出來，不新增任何人工填寫的欄位：
- *   data/market-data.json     近一年的區域均價與價格帶（首頁用的同一份）
+ *   data/market-data.json     近一年的區域單價中位數與價格帶（首頁用的同一份）
  *   data/communities.json     社區清單、門牌、規格
  *   data/community-deals.json 逐筆成交（算筆數、單價範圍、期間）
  *
@@ -25,7 +25,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle, unitStr } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
@@ -135,14 +135,14 @@ function marketBlock(areaMarket) {
   const types = (areaMarket?.types || []).filter(t => t.avgPricePerPing || t.sampleSize);
   if (!types.length) {
     return `<p class="text-[16px] text-inkSoft leading-[1.9]">
-      近一年這一區還沒有足夠的成交紀錄可以計算區域均價。下方的社區清單仍有逐筆成交可以參考。
+      近一年這一區還沒有足夠的成交紀錄可以計算區域行情。下方的社區清單仍有逐筆成交可以參考。
     </p>`;
   }
   return `<div class="grid sm:grid-cols-2 gap-6">
     ${types.map(t => `<div class="border border-line rounded-sm bg-surface p-7">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(t.label)}</div>
       ${t.avgPricePerPing ? `<div class="mt-2">
-        <span class="font-mono text-[32px] font-semibold text-ink leading-none">${t.avgPricePerPing}</span>
+        <span class="font-mono text-[32px] font-semibold text-ink leading-none">${unitStr(t.avgPricePerPing)}</span>
         <span class="font-mono text-[13px] text-inkSoft ml-1">萬元／坪</span>
       </div>
       <dl class="mt-5 pt-5 border-t border-line space-y-2.5 font-mono text-[13px]">
@@ -164,7 +164,7 @@ function marketBlock(areaMarket) {
   </div>
 
   <p class="text-[14px] text-inkFaint leading-[1.9] mt-5 max-w-3xl">
-    以上為近四季（約一年）成屋成交的每坪平均單價，已先剔除頭尾各一成極端值與單價明顯異常者。
+    以上為近四季（約一年）成屋成交的每坪單價中位數，已先剔除單價明顯異常者。
     「常見單價區間」是把成交由低到高排列後去掉最高與最低各四分之一的範圍，
     實際成交仍可能高於或低於此區間。「常見總價」取正中間那一筆，比平均數不容易被少數高價案拉高。
     電梯住宅與透天分開計算，兩者的單價不能直接比較。資料來源為內政部不動產交易實價查詢服務網。
@@ -624,7 +624,7 @@ function areaPage(area, ctx) {
     `本站收錄 ${items.length} 個社區、${dealTotal.toLocaleString("en-US")} 筆內政部實價登錄成交紀錄`,
     dates.length ? `，涵蓋 ${ym(dates[0])}至 ${ym(dates[dates.length - 1])}` : "",
     elevator?.avgPricePerPing
-      ? `。近一年電梯住宅成交均價每坪 ${elevator.avgPricePerPing} 萬元`
+      ? `。近一年電梯住宅成交單價中位數每坪 ${unitStr(elevator.avgPricePerPing)} 萬元`
         + (elevator.bandLow ? `，常見單價區間 ${elevator.bandLow} 至 ${elevator.bandHigh} 萬元／坪` : "")
         + (elevator.medianTotalPrice ? `，常見總價 ${Number(elevator.medianTotalPrice).toLocaleString("en-US")} 萬元` : "")
       : "",
@@ -634,8 +634,8 @@ function areaPage(area, ctx) {
   const faq = [
     [`${area.name}的房價行情大概多少？`,
       elevator?.avgPricePerPing
-        ? `近一年${area.name}的電梯住宅成交均價是每坪 ${elevator.avgPricePerPing} 萬元，常見單價區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪，常見總價 ${Number(elevator.medianTotalPrice || 0).toLocaleString("en-US")} 萬元，計算樣本為 ${elevator.sampleSize} 筆成交。不過區域均價只能抓大概的範圍，同一個生活圈裡不同社區、不同屋齡、不同樓層的價差往往比區域之間的價差還大。本頁下方列出這一區 ${items.length} 個社區各自的成交筆數與單價範圍，建議直接看你要買的那幾個社區的逐筆紀錄。`
-        : `這一區近一年的成交樣本還不足以計算可靠的區域均價。本頁下方列出 ${items.length} 個社區各自的實價登錄成交筆數與單價範圍，建議直接看個別社區的逐筆紀錄，或直接問我們目前的實際市況。`],
+        ? `近一年${area.name}的電梯住宅成交單價中位數是每坪 ${unitStr(elevator.avgPricePerPing)} 萬元，常見單價區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪，常見總價 ${Number(elevator.medianTotalPrice || 0).toLocaleString("en-US")} 萬元，計算樣本為 ${elevator.sampleSize} 筆成交。這是近一年（滾動十二個月）的數字，與本站房價走勢頁上「日曆年度」的中位數期間不同，會有小幅落差，兩者都是中位數。不過區域中位數只能抓大概的範圍，同一個生活圈裡不同社區、不同屋齡、不同樓層的價差往往比區域之間的價差還大。本頁下方列出這一區 ${items.length} 個社區各自的成交筆數與單價範圍，建議直接看你要買的那幾個社區的逐筆紀錄。`
+        : `這一區近一年的成交樣本還不足以計算可靠的區域行情。本頁下方列出 ${items.length} 個社區各自的實價登錄成交筆數與單價範圍，建議直接看個別社區的逐筆紀錄，或直接問我們目前的實際市況。`],
     /* 下面三題對應頁面上新增的逐年走勢、房型與總價帶三個區塊。
        答案直接寫成可以被引用的完整句子（帶地名、年份、數字、樣本數），
        AI 引擎被問到「美術館特區這幾年漲多少」時才有東西可以引。 */
@@ -771,12 +771,12 @@ function areaPage(area, ctx) {
          改成問句開頭、把這一區獨有的數字（中位單價、社區數、十四年漲幅）往前放。 */
       title: fitTitle([
         `高雄${area.name}房價多少？`,
-        elevator?.avgPricePerPing ? `近一年中位 ${elevator.avgPricePerPing} 萬／坪` : `${items.length} 個社區實價登錄`,
+        elevator?.avgPricePerPing ? `近一年中位 ${unitStr(elevator.avgPricePerPing)} 萬／坪` : `${items.length} 個社區實價登錄`,
         elevator?.avgPricePerPing ? `、${items.length} 個社區` : "",
       ]) + `｜${BRAND.teamName}`,
       description: `高雄${area.name}（${area.district}）房價：`
         + (elevator?.avgPricePerPing
-            ? `近一年電梯住宅成交單價中位 ${elevator.avgPricePerPing} 萬元／坪，常見區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪`
+            ? `近一年電梯住宅成交單價中位 ${unitStr(elevator.avgPricePerPing)} 萬元／坪，常見區間 ${elevator.bandLow}–${elevator.bandHigh} 萬元／坪`
               + (elevator.medianTotalPrice ? `，總價中位 ${Number(elevator.medianTotalPrice).toLocaleString("en-US")} 萬元` : "")
               + `。`
             : "")

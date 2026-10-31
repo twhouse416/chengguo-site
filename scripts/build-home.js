@@ -5,7 +5,7 @@
  * 要改文案請改這個檔案，不要改 index.html（會被覆蓋）。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize, ORG_ID } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize, ORG_ID, unitStr } from "./lib/layout.js";
 import { webSlug } from "./build-articles.js";
 import { loadCommunities } from "./lib/related.js";
 import { existsSync } from "node:fs";
@@ -91,7 +91,7 @@ export const FAQS = [
   ["房屋出售的流程有哪些？",
    "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
   ["高雄美術館特區的房價怎麼看？",
-   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪平均單價、常見單價區間與常見總價，可以先抓範圍。"],
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪單價中位數、常見單價區間與常見總價，可以先抓範圍。"],
   ["農十六和美術館特區差在哪裡？",
    "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
   ["房地合一稅怎麼算？",
@@ -396,7 +396,7 @@ function areasSection(market) {
     t.sampleSize >= 20 && t.buildingSize > 0
     && (t.sampleSize / t.buildingSize) > CONCENTRATION_LIMIT;
 
-  /* 單一型態的一行：標籤、平均單價、價格帶長條 */
+  /* 單一型態的一行：標籤、單價中位數、價格帶長條 */
   const typeRow = (t, isMain) => {
     const size = isMain ? "text-[26px]" : "text-[20px]";
     if (!t.avgPricePerPing) {
@@ -422,7 +422,7 @@ function areasSection(market) {
     return `<div class="py-2">
       <div class="flex items-baseline justify-between gap-3">
         <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
-        <span class="font-mono ${size} font-semibold text-ink leading-none">${t.avgPricePerPing}<span class="text-[12px] font-normal text-inkSoft ml-1">萬/坪</span></span>
+        <span class="font-mono ${size} font-semibold text-ink leading-none">${unitStr(t.avgPricePerPing)}<span class="text-[12px] font-normal text-inkSoft ml-1">萬/坪</span></span>
       </div>
       ${bar}
       ${t.lowSample ? `<p class="font-mono text-[11px] text-orangeDeep mt-1">樣本數偏少，僅供參考</p>` : ""}
@@ -432,7 +432,7 @@ function areasSection(market) {
 
   return `<section id="areas" class="max-w-6xl mx-auto px-6 py-20">
   ${sectionHead("Market Data", "四個主力生活圈，現在的行情",
-    "近一年實際成交的每坪平均單價與常見價格區間。電梯住宅與透天分開計算，兩者的單價不能直接比較。")}
+    "近一年實際成交的每坪單價中位數與常見價格區間。電梯住宅與透天分開計算，兩者的單價不能直接比較。")}
 
   ${/* 原本這裡是一整段長文，讀者不會看完。改成摺疊：想知道細節的人自己打開。 */""}
   <details class="mb-10 -mt-4 border border-line rounded-sm bg-surface">
@@ -441,9 +441,9 @@ function areasSection(market) {
     </summary>
     <div class="px-6 pb-6 -mt-1 space-y-4 text-[15px] text-inkSoft leading-[1.9]">
       <p><strong class="text-ink font-bold">常見單價區間</strong>：把近一年的成交由低到高排列，去掉最高與最低各四分之一後的範圍。實際成交仍可能高於或低於這個區間。</p>
-      <p><strong class="text-ink font-bold">平均單價</strong>：平均前已剔除頭尾各一成的極端成交。不限屋齡，新舊物件一起計算。</p>
+      <p><strong class="text-ink font-bold">單價中位數</strong>：把近一年的成交由低到高排列，取正中間那一筆，不是平均。中位數不受少數高價或低價案影響，比較接近「一般物件大概多少錢」。不限屋齡，新舊物件一起計算。</p>
       <p><strong class="text-ink font-bold">常見總價</strong>：成交總價由低到高排列後正中間那一筆，含車位。兩區單價接近時，總價才看得出坪數與產品的差別。</p>
-      <p><strong class="text-ink font-bold">新案交屋的影響</strong>：數字包含新成屋交屋後的第一手過戶，一手價通常高於同區中古行情。某一區近期若有新案集中交屋，均價就會被帶高——對照「筆數／門牌數」可以判斷：門牌數少而筆數多，代表成交集中在少數幾棟。</p>
+      <p><strong class="text-ink font-bold">新案交屋的影響</strong>：數字包含新成屋交屋後的第一手過戶，一手價通常高於同區中古行情。某一區近期若有新案集中交屋，中位數就會被帶高——對照「筆數／門牌數」可以判斷：門牌數少而筆數多，代表成交集中在少數幾棟。</p>
       <p><strong class="text-ink font-bold">為什麼透天要分開算</strong>：透天的總價含土地、坪數只算建物，單價的意義與電梯住宅不同。</p>
       <p>同一區內屋齡、樓層、格局與座向的差異都會造成落差，這些數字僅供抓範圍用。要看個別社區的逐筆成交，請進各社區頁。</p>
     </div>
@@ -472,7 +472,7 @@ function areasSection(market) {
     }).join("\n    ")}
   </div>
   ${domain ? `<div class="mt-8 pt-4 border-t border-line flex justify-between font-mono text-[11px] text-inkFaint">
-    <span>${domain.min} 萬/坪</span><span>四區共用刻度｜直線為該區平均單價</span><span>${domain.max} 萬/坪</span>
+    <span>${domain.min} 萬/坪</span><span>四區共用刻度｜直線為該區單價中位數</span><span>${domain.max} 萬/坪</span>
   </div>` : ""}
   <p class="mt-4 font-mono text-[11px] text-inkFaint">
     ${/* 用 <time datetime> 標記，不只是文字。

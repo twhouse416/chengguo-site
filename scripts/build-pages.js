@@ -6,7 +6,7 @@
  * 即使爬蟲不執行 JS，內容仍完整可讀。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize, orgRef } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead , thumbOf, imgSize, orgRef, unitStr } from "./lib/layout.js";
 import { webSlug, fillStats } from "./build-articles.js";
 import { dealCard } from "./build-home.js";
 import { isoDate } from "./build-communities.js";
@@ -397,7 +397,7 @@ export function buildDealsIndex({ deals, hasBuyers, market }) {
                 : `<span class="font-medium">${esc(d.area)}</span>`}
             </th>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkSoft">${d.count} 筆</td>
-            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${d.unit ? `${d.unit} 萬／坪` : "—"}</td>
+            <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${d.unit ? `${unitStr(d.unit)} 萬／坪` : "—"}</td>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] text-ink">${d.total ? `${d.total.toLocaleString("en-US")} 萬` : "—"}</td>
             <td class="py-3.5 px-4 text-right font-mono text-[14px] text-inkFaint">${d.sample || "—"}</td>
           </tr>`).join("\n          ")}

@@ -6,7 +6,7 @@
  * 本腳本設計為「每日執行、有新一期資料才會變動結果」。
  *
  * v2 變更：
- * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價平均與總價中位數
+ * - 生活圈行情用「近四季（約一年）」的成屋資料計算單價與總價的中位數
  * - 「最新即時檔」只有十天份，不能當一整季看待
  *
  * v3 變更：改用「成交資料池」（data/area-deals/，見 scripts/lib/deal-pool.js）
@@ -48,6 +48,12 @@ const COMMUNITY_OUTPUT = path.join(ROOT, "data/community-deals.json");
 
 /* 下載網址與 CSV 讀取都移到 scripts/lib/moi-download.js，
    回補腳本與這一支共用同一份，不再各寫一次。 */
+
+/* 生活圈行情的代表值用哪一種統計量。
+   這個常數是「全站用字」的唯一依據：scripts/audit-content.mjs 的【Q】
+   會讀它，然後檢查各頁面的文案有沒有把它講成另一種統計量。
+   要改算法時，這一行要跟著改，否則稽核會立刻報錯。 */
+export const AREA_STAT_KIND = "median";   // "median" | "trimmed-mean"
 
 const M2_TO_PING = 0.3025; // 平方公尺 轉 坪
 
@@ -117,7 +123,7 @@ function median(arr) {
   return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
 }
 
-/* ---------- 依生活圈設定篩選 + 計算單價平均（萬元/坪） ----------
+/* ---------- 依生活圈設定篩選 + 計算單價中位數（萬元/坪） ----------
    typeGroup 指定建物型態群組（電梯住宅／透天），不給就不限型態。 */
 function computeAreaAverage(records, area, typeGroup) {
   /* keywords：整條路都屬於這個生活圈，巷弄自動涵蓋
@@ -192,7 +198,19 @@ function computeAreaAverage(records, area, typeGroup) {
   const cut = all.length >= 10 ? Math.floor(all.length * 0.1) : (all.length >= 5 ? 1 : 0);
   const prices = cut > 0 ? all.slice(cut, all.length - cut) : all;
 
-  const mean = prices.reduce((s, v) => s + v, 0) / prices.length;
+  /* 代表值用中位數。
+     2026/09/09 曾在同一天內先改成中位數、又改回修剪後平均；
+     2026/10/31 再改回中位數，這次的理由不是統計學上誰比較好，而是一致性：
+     站上同一個生活圈原本有三個口徑的單價——首頁與生活圈頁頂部是修剪後平均、
+     /areas/ 是 2020 年起的中位數、/areas/trend/ 是日曆年度的中位數——
+     讀者（以及 AI 引擎）會以為數字在打架。全站統一成中位數之後，
+     剩下的差異只有「期間」一項，一句話就說得清楚。
+     實測四區的兩種算法只差 0.2–0.8 萬／坪，統一的代價很小。
+
+     註：頭尾對稱修剪不會改變中位數（剔掉的是兩端等量的值），
+     所以這裡取 prices 或 all 的中位數結果相同；
+     修剪保留下來只影響下面的 25%／75% 價格帶。 */
+  const mid = median(prices);
 
   // 取 25%～75% 百分位當作「常見成交價格帶」
   const pct = (p) => prices[Math.min(prices.length - 1, Math.floor(prices.length * p))];
@@ -215,7 +233,10 @@ function computeAreaAverage(records, area, typeGroup) {
     buildingSize,                    // 這些成交分布在幾個門牌
     rawSize: matched.length,         // 篩選條件命中的原始筆數
     trimmedSize: prices.length,      // 實際用來計算的筆數
-    avgPricePerPing: Math.round(mean / 1000) / 10, // 修剪後平均，萬元/坪
+    /* 欄位名沿用 avgPricePerPing（市場資料檔與十幾處引用都用這個鍵，
+       改名的漣漪大於好處），但值是中位數。
+       口徑寫在 AREA_STAT_KIND，稽核的【Q】會讀它來檢查全站用字。 */
+    avgPricePerPing: Math.round(mid / 1000) / 10, // 中位數，萬元/坪
     bandLow: toWan(pct(0.25)),
     bandHigh: toWan(pct(0.75)),
     medianTotalPrice,                // 總價中位數，萬元
@@ -528,7 +549,7 @@ async function main() {
   const areas = AREAS_CONFIG.areas.map(area => {
     /* 每個建物型態群組各算一組數字。
        電梯住宅與透天的單價意義不同（透天總價含土地、坪數只算建物），
-       混在一起平均對兩者都不準，所以分開統計、分開顯示。 */
+       混在一起算對兩者都不準，所以分開統計、分開顯示。 */
     const byType = TYPES.map(t => {
       const cur = computeAreaAverage(recentRecords, area, t);
       const past = trendRecords.length
@@ -571,7 +592,7 @@ async function main() {
 
   const output = {
     updatedAt: new Date().toISOString(),
-    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價為近四季（約一年）成屋成交的平均價，已先剔除頭尾各一成極端值與單價明顯異常者再平均，常見單價區間為去掉最高與最低各四分之一後的範圍；另標示這些成交分布的門牌數，以及排序後正中間那一筆的成交總價（含車位）。電梯住宅與透天分開統計，不限屋齡。",
+    sourceNote: "資料來源：內政部不動產交易實價查詢服務網（每月1、11、21日批次公告，非逐日即時資料）。單價為近四季（約一年）成屋成交的中位數，已先剔除單價明顯異常者，常見單價區間為去掉最高與最低各四分之一後的範圍；另標示這些成交分布的門牌數，以及排序後正中間那一筆的成交總價（含車位）。電梯住宅與透天分開統計，不限屋齡。",
     areas,
   };
 
