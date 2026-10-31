@@ -205,7 +205,14 @@ export const esc = s => String(s ?? "")
  * 網址只允許 http(s)、站內相對路徑與錨點，避免 javascript: 之類的寫法。
  * 站外連結補 target 與 rel="noopener"，站內連結不加（同分頁開啟才順）。
  */
-const SAFE_HREF = /^(https?:\/\/|\/|\.{1,2}\/|#)/;
+/* 另外放行同資料夾的純檔名（文章互連常寫成 other-post.html 或 other-post.html#faq-1）。
+   原本只認 ./ 開頭，於是這類連結被當成「不認得的協定」原樣輸出，線上直接露出 [文字](檔名) 的原始碼。 */
+const SAFE_HREF = /^(https?:\/\/|\/|\.{1,2}\/|#|[\w-]+\.html(#[\w-]+)?$)/;
+/* 結構化資料只放純文字：FAQ 答案常寫成 Markdown（[文字](連結)、**粗體**），
+   頁面上由 rich() 轉成 HTML，但寫進 JSON-LD 時要拿掉語法，否則 Google 與 AI 讀到的是原始碼。 */
+export const ldPlain = (k, v) => typeof v === "string"
+  ? v.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1")
+  : v;
 export const rich = s => esc(s)
   .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (whole, text, href) => {
     /* esc 把 & 變成 &amp;，在 href 屬性裡本來就該是這樣，不用還原 */
@@ -326,7 +333,7 @@ ${noindex ? `<meta name="robots" content="noindex,follow" />` : ""}
 <meta name="twitter:description" content="${esc(description)}" />
 <meta name="twitter:image" content="${ogImage || `${SITE}/assets/logo-full.png`}" />
 ${extra}
-${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n")}
+${jsonLd.map(o => `<script type="application/ld+json">${JSON.stringify(o, ldPlain)}</script>`).join("\n")}
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

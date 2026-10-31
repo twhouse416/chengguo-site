@@ -320,7 +320,7 @@ function pageHtml(a, others, hasBuyers) {
     <div class="space-y-6">
       ${a.faq.map((f, i) => `<div class="border-l-2 border-line pl-6" id="faq-${i + 1}">
         <h3 class="text-[17px] font-bold leading-snug mb-3">${esc(fillStats(f.q))}</h3>
-        <p class="text-[16px] leading-[1.95] text-inkSoft">${esc(f.a)}</p></div>`).join("\n      ")}
+        <p class="text-[16px] leading-[1.95] text-inkSoft">${rich(f.a)}</p></div>`).join("\n      ")}
     </div>
   </section>` : ""}
 

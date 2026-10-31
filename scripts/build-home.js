@@ -720,7 +720,7 @@ function buyersSection(buyersData) {
   const who = nRent === 0 ? "買方" : nRent === list.length ? "承租方" : "買方與承租方";
   return `<section id="buyers" class="bg-surface border-y border-line">
   <div class="max-w-6xl mx-auto px-6 py-20">
-    ${sectionHead("Buyers", `這些${who}，正在找你的房子`, buyersData.intro || "")}
+    ${sectionHead("Buyers", `這些${who}，正在找你的房子`, (buyersData.intro || "").replace(/買方需求/g, `${who === "買方" ? "買方" : who === "承租方" ? "承租" : "買方與承租"}需求`))}
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       ${list.map((b, i) => `<article class="border border-line rounded-sm bg-paper p-7 flex flex-col">
         <div class="flex items-baseline justify-between gap-3 mb-4">
