@@ -25,7 +25,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle, unitStr } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle, unitStr, tooThin } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
@@ -141,7 +141,8 @@ function marketBlock(areaMarket) {
   return `<div class="grid sm:grid-cols-2 gap-6">
     ${types.map(t => `<div class="border border-line rounded-sm bg-surface p-7">
       <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(t.label)}</div>
-      ${t.avgPricePerPing ? `<div class="mt-2">
+      ${tooThin(t) ? `<p class="text-[15px] text-inkSoft leading-[1.9] mt-3">近一年僅 ${t.sampleSize} 筆成交，單一案件不代表行情，不另計算單價。</p>`
+      : t.avgPricePerPing ? `<div class="mt-2">
         <span class="font-mono text-[32px] font-semibold text-ink leading-none">${unitStr(t.avgPricePerPing)}</span>
         <span class="font-mono text-[13px] text-inkSoft ml-1">萬元／坪</span>
       </div>

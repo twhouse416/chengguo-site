@@ -63,6 +63,12 @@ export const BRAND = {
    market-data.json 存的是數字，中都剛好算出 39 就會印成「39」，
    和同一列的 36.4、34.8、32.5 並排看起來像兩種精度。
    這個函式是全站顯示 avgPricePerPing 的唯一入口。 */
+/* 生活圈行情卡片的最低樣本數。近一年成交不到 3 筆時，
+   「常見單價 50–50 萬」「常見總價 8,200 萬」這種數字只是單一案件，
+   不是行情——不給數字，也不放進首頁四區共用刻度（否則一筆特例會把刻度撐開）。 */
+export const MIN_PRICE_SAMPLE = 3;
+export const tooThin = (t) => (t?.sampleSize ?? 0) > 0 && t.sampleSize < MIN_PRICE_SAMPLE;
+
 export function unitStr(v) {
   return v === null || v === undefined || v === "" ? "" : Number(v).toFixed(1);
 }

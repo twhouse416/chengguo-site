@@ -5,8 +5,9 @@
  * 要改文案請改這個檔案，不要改 index.html（會被覆蓋）。
  */
 
-import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize, ORG_ID, unitStr } from "./lib/layout.js";
+import { SITE, BRAND, esc, fmtDate, head, header, footer, sectionHead, socialLinks, LINE_ICON , thumbOf, imgSize, ORG_ID, unitStr, tooThin } from "./lib/layout.js";
 import { webSlug } from "./build-articles.js";
+import { ageSplit } from "./lib/area-stats.js";
 import { loadCommunities } from "./lib/related.js";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -34,7 +35,7 @@ export const FACTS = [
 
 const AREA_META = {
   "01": { district: "鼓山區", desc: "公園綠帶與美術館園區環繞，學區成熟，四區中總價門檻最高。", img: "assets/area-01-artmuseum.jpg" },
-  "02": { district: "鼓山區", desc: "重劃區規劃完整，新成屋比例高，車位與公設條件普遍較好。", img: "assets/area-02-nong16.jpg" },
+  "02": { district: "鼓山區", desc: "重劃區規劃完整、機能集中；近年成交幾乎都是中古屋，單價不受新案交屋拉抬。", img: "assets/area-02-nong16.jpg" },
   "03": { district: "左營區", desc: "巨蛋商圈與捷運紅線交會，生活機能密集，通勤族接受度高。", img: "assets/area-03-ruifeng.jpg" },
   "04": { district: "三民區", desc: "愛河與中都濕地公園相鄰，新興換屋區，總價門檻相對親民。", img: "assets/area-04-zhongdu.jpg" },
 };
@@ -81,7 +82,28 @@ const TOOLS = [
   { title: "房地合一稅試算", desc: "換屋賣舊屋前，先抓出稅負與時程。", href: "tools/property-tax/index.html", illus: "tax" },
 ];
 
-export const FAQS = [
+export /* 「農十六和美術館差在哪」的第一段：成交結構。
+   這兩區的屋齡結構差很多（美術館特區每年都有一批新成屋交屋，農十六 2021 年起
+   幾乎沒有），不能寫成「屋齡分布接近」。數字由 ageSplit() 從實價登錄資料池算出，
+   每次建置自動更新，不手打。資料不足時退回不含數字的敘述。 */
+function nong16VsArtMuseum() {
+  try {
+    const a = ageSplit("01"), b = ageSplit("02");
+    const y = Math.min(a?.rows.at(-1)?.year ?? 0, b?.rows.at(-1)?.year ?? 0);
+    const ra = a?.at(y), rb = b?.at(y);
+    if (!ra || !rb || ra.newShare == null || rb.newShare == null) throw 0;
+    const when = y === new Date().getFullYear() ? `${y} 年至今` : `${y} 年`;
+    const old = (ra.oldMed && rb.oldMed)
+      ? `要比價格就比同一個屋齡層：屋齡 15 年以上的電梯住宅，美術館特區單價中位數約每坪 ${unitStr(ra.oldMed)} 萬元、農十六特區約 ${unitStr(rb.oldMed)} 萬元。`
+      : "要比價格就比同一個屋齡層，不要直接比兩區的整體中位數。";
+    return `兩區都在高雄市鼓山區，但成交結構很不一樣。依內政部實價登錄，${when}美術館特區的電梯住宅成交約 ${ra.newShare}% 是屋齡 5 年內的新成屋，`
+      + `農十六特區${rb.newShare === 0 ? "一筆都沒有" : `只有 ${rb.newShare}%`}，幾乎是純中古屋市場，所以兩區的整體單價不能直接比。${old}`;
+  } catch {
+    return "兩區都在高雄市鼓山區，但成交結構不同：美術館特區近年仍有新成屋交屋，農十六特區的成交幾乎都是中古屋，兩區的整體單價不能直接比，要比同一個屋齡層。";
+  }
+}
+
+const FAQS = [
   ["高雄美術館特區的房仲該怎麼挑？",
    "建議看三件事：是不是真的長期在這個商圈成交、能不能提出同社區的實際成交比對、以及願不願意誠實說明物件的缺點。澄果團隊深耕高雄美術館特區與農十六特區十年以上，截至 115 年 7 月，約 58% 的成交業績來自這兩大商圈。"],
   ["農十六特區適合現在賣房嗎？",
@@ -91,9 +113,9 @@ export const FAQS = [
   ["房屋出售的流程有哪些？",
    "大致是：估價與訂價 → 簽委託 → 準備文件與屋況整理 → 上架行銷與帶看 → 議價與簽約 → 用印、完稅 → 交屋。其中稅費概算建議在訂價階段就先做，才能算出實際淨到手的金額。"],
   ["高雄美術館特區的房價怎麼看？",
-   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。本站首頁的行情區塊每日自動抓取內政部實價登錄，顯示近一年電梯住宅與透天各自的每坪單價中位數、常見單價區間與常見總價，可以先抓範圍。"],
+   "美術館特區緊鄰內惟埤文化園區，綠地與景觀是核心價值，在四大生活圈中總價門檻最高。內政部實價登錄每月 1、11、21 日批次公告，本站隔天自動更新首頁行情區塊，顯示近一年電梯住宅與透天各自的每坪單價中位數、常見單價區間與常見總價，可以先抓範圍。"],
   ["農十六和美術館特區差在哪裡？",
-   "兩區都在鼓山區、屋齡分布接近，主要差異在生活型態：美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
+   nong16VsArtMuseum() + "生活型態上，美術館特區買的是生活品質，有大面積綠地與開闊景觀；農十六特區買的是生活機能，商圈、學校、醫療與採買動線集中。至於車位、公設與屋況，同一區內社區之間的差異往往比兩區之間更大。"],
   ["房地合一稅怎麼算？",
    "課稅所得 =（成交價 − 取得成本 − 必要費用 − 土地漲價總數額），再依持有期間套用稅率：2 年以內 45%、超過 2 年未逾 5 年 35%、超過 5 年未逾 10 年 20%、超過 10 年 15%。符合自住條件者，課稅所得 400 萬元以下免稅、超過部分課 10%。本站有房地合一稅試算工具可以先估算。"],
   ["換屋可以申請重購退稅嗎？",
@@ -276,7 +298,7 @@ function heroSection(heroVideo) {
   <div class="max-w-6xl mx-auto px-6 pt-16 pb-16 grid lg:grid-cols-12 gap-12 items-center">
     <div class="lg:col-span-6">
       <div class="font-mono text-[11px] tracking-[0.18em] text-orangeDeep uppercase mb-5">高雄 · 鼓山 / 左營 / 三民</div>
-      <h1 class="display text-[34px] md:text-[46px] text-ink">美術館房地產顧問<br />為您解決家的大小事</h1>
+      <h1 class="display text-[34px] md:text-[46px] text-ink">高雄美術館・農十六房仲<br />為您解決家的大小事</h1>
       <p class="mt-7 text-[17px] text-inkSoft leading-[2] max-w-xl">
         深耕高雄美術館特區、農十六特區、瑞豐巨蛋與中都重劃區十年以上。
         提供房屋出售規劃、免費房屋估價、成交行情分析與首購換屋建議，
@@ -373,7 +395,7 @@ function areasSection(market) {
 
   /* 每個生活圈可能有多組型態（電梯住宅、透天）。
      刻度要四區共用才有比較意義，所以先蒐集所有型態的價格帶算出共同範圍。 */
-  const allRows = areas.flatMap(a => a.types || []).filter(t => t.bandLow && t.bandHigh);
+  const allRows = areas.flatMap(a => a.types || []).filter(t => t.bandLow && t.bandHigh && !tooThin(t));
   const domain = allRows.length
     ? { min: Math.min(...allRows.map(t => t.bandLow)), max: Math.max(...allRows.map(t => t.bandHigh)) }
     : null;
@@ -403,6 +425,12 @@ function areasSection(market) {
       return `<div class="flex items-baseline justify-between gap-3 py-2">
         <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
         <span class="font-mono text-[12px] text-inkFaint">近一年無成交紀錄</span>
+      </div>`;
+    }
+    if (tooThin(t)) {
+      return `<div class="flex items-baseline justify-between gap-3 py-2">
+        <span class="font-mono text-[12px] text-inkFaint shrink-0">${esc(t.label)}</span>
+        <span class="font-mono text-[12px] text-inkFaint">近一年僅 ${t.sampleSize} 筆成交，不足以估算</span>
       </div>`;
     }
     const span = domain ? (domain.max - domain.min || 1) : 1;
@@ -631,7 +659,7 @@ function articlesSection(articles) {
 
 function toolsSection() {
   return `<section id="tools" class="max-w-6xl mx-auto px-6 py-20">
-  ${sectionHead("Tools", "先算清楚，再做決定", "不需要留資料就能用。首購與換屋最常用到的四個工具，陸續上線中。")}
+  ${sectionHead("Tools", "先算清楚，再做決定", "不需要留資料就能用。首購與換屋最常用到的四個工具：學區、房貸、新青安與房地合一稅。")}
   <div class="grid sm:grid-cols-2 gap-6">
     ${TOOLS.map((t, i) => `<a href="${t.href}" class="sm:aspect-square flex flex-col border border-line rounded-sm bg-surface p-8 hover:bg-tint hover:border-orange transition">
       <div class="font-mono text-[12px] tracking-[0.18em] text-inkFaint">${String(i + 1).padStart(2, "0")}</div>
@@ -685,14 +713,22 @@ export function dealCard(d, depth = 0) {
 function buyersSection(buyersData) {
   const list = (buyersData?.buyers || []).filter(b => !b.hidden);
   if (!list.length) return "";
+  /* 需求牆也會刊登承租需求（例如找店面的租客）。後台沒有「買／租」欄位，
+     以預算或需求重點是否提到「租」判斷，避免把租客寫成「買方」、把月租金寫成「預算」。 */
+  const isRent = (b) => /租/.test([b.budget, ...(b.notes || [])].join(" "));
+  const nRent = list.filter(isRent).length;
+  const who = nRent === 0 ? "買方" : nRent === list.length ? "承租方" : "買方與承租方";
   return `<section id="buyers" class="bg-surface border-y border-line">
   <div class="max-w-6xl mx-auto px-6 py-20">
-    ${sectionHead("Buyers", "這些買方，正在找你的房子", buyersData.intro || "")}
+    ${sectionHead("Buyers", `這些${who}，正在找你的房子`, buyersData.intro || "")}
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       ${list.map((b, i) => `<article class="border border-line rounded-sm bg-paper p-7 flex flex-col">
         <div class="flex items-baseline justify-between gap-3 mb-4">
           <span class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep">${String(i + 1).padStart(2, "0")}</span>
-          ${b.updated ? `<span class="font-mono text-[12px] text-inkFaint">${esc(b.updated)}</span>` : ""}
+          <span class="flex items-baseline gap-3">
+            ${nRent ? `<span class="font-mono text-[11px] px-2 py-0.5 border rounded-sm ${isRent(b) ? "border-orange text-orangeDeep" : "border-line text-inkSoft"}">${isRent(b) ? "承租需求" : "購屋需求"}</span>` : ""}
+            ${b.updated ? `<span class="font-mono text-[12px] text-inkFaint">${esc(b.updated)}</span>` : ""}
+          </span>
         </div>
         <h3 class="text-[19px] font-bold tracking-tight leading-snug mb-5">${esc(b.area)}</h3>
         <dl class="space-y-3 mb-5">
@@ -700,8 +736,8 @@ function buyersSection(buyersData) {
             <dt class="font-mono text-[12px] text-inkFaint w-12 shrink-0 pt-1">坪數</dt>
             <dd class="text-[15px] text-ink">${esc(b.size)}</dd></div>
           <div class="flex gap-4 pb-3 border-b border-line">
-            <dt class="font-mono text-[12px] text-inkFaint w-12 shrink-0 pt-1">預算</dt>
-            <dd class="font-mono text-[17px] font-semibold text-ink">${esc(b.budget)}</dd></div>
+            <dt class="font-mono text-[12px] text-inkFaint w-12 shrink-0 pt-1">${isRent(b) ? "租金" : "預算"}</dt>
+            <dd class="font-mono text-[17px] font-semibold text-ink">${esc(isRent(b) ? String(b.budget || "").replace(/^租金預算\s*/, "") : b.budget)}</dd></div>
         </dl>
         ${b.notes?.length ? `<ul class="space-y-2 mb-6 flex-1">
           ${b.notes.map(n => `<li class="flex gap-2.5 text-[15px] text-inkSoft leading-[1.8]"><span class="text-orange shrink-0">・</span><span>${esc(n)}</span></li>`).join("")}
@@ -711,7 +747,7 @@ function buyersSection(buyersData) {
     </div>
     <div class="mt-12 flex flex-wrap items-center gap-6">
       <a href="${BRAND.phoneHref}" class="inline-flex items-center px-7 py-3.5 text-[15px] font-medium rounded-sm bg-orange text-white hover:bg-orangeDeep transition">免費估價 ${BRAND.phone}</a>
-      <p class="text-[15px] text-inkSoft leading-[1.9]">沒有完全符合的也沒關係，買方條件通常有調整空間。先估價，再決定要不要賣。</p>
+      <p class="text-[15px] text-inkSoft leading-[1.9]">${nRent ? "沒有完全符合的也沒關係，買方與租客的條件通常都有調整空間。先估價，再決定要賣還是出租。" : "沒有完全符合的也沒關係，買方條件通常有調整空間。先估價，再決定要不要賣。"}</p>
     </div>
   </div>
 </section>`;
@@ -820,7 +856,7 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
 
   return [
     head({
-      title: "台灣房屋 澄果團隊｜美術館房地產顧問，為您解決家的大小事",
+      title: "高雄美術館特區・農十六房仲｜免費估價｜台灣房屋澄果團隊",
       description: "高雄美術館特區、農十六房仲。台灣房屋澄果團隊深耕十年以上，截至115年7月約58%成交來自兩大商圈。提供免費房屋估價、成交行情分析、售屋策略規劃、房地合一稅概算，以及首購與換屋購屋建議。",
       keywords: "高雄美術館房仲,農十六房仲,高雄房仲推薦,免費房屋估價,美術館特區房價,農十六房價,高雄房屋出售,售屋流程,房地合一稅,瑞豐巨蛋,中都重劃區,台灣房屋澄果團隊",
       canonical: `${SITE}/`,
