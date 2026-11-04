@@ -23,6 +23,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { SITE, BRAND, head, header, footer } from "./lib/layout.js";
+import { applyContentLastmod } from "./lib/page-dates.js";
 import { buildHome } from "./build-home.js";
 import { buildNotesIndex, buildVideosIndex, buildVideoPages, buildDealsIndex } from "./build-pages.js";
 import { buildArticles, webSlug, setArticleStats, checkStaleCounts, fillArticleStats } from "./build-articles.js";
@@ -180,6 +181,15 @@ function buildSitemap(articles, communities = [], hasDeals = false, areas = [], 
 
   const nVideoUrls = Object.keys(videoExt).length;
   const nVideos = Object.values(videoExt).reduce((n, a) => n + a.length, 0);
+
+  /* lastmod 在這裡定案。
+     上面每一頁算出來的日期講的是「資料有多新」（該社區最新成交日等等），
+     不是「這一頁哪天改過」——sitemap 要的是後者。
+     applyContentLastmod 會掃描剛產生好的 HTML，用內容指紋跟上次建置比對，
+     內容真的變了才把 lastmod 換成今天，並把該頁 JSON-LD 的 dateModified
+     對齊同一個日期。詳細理由寫在 scripts/lib/page-dates.js 的檔頭。 */
+  const stat = applyContentLastmod(pages, { root: ROOT, site: SITE, today });
+  console.log(`[日期] 內容指紋比對 ${stat.total} 頁：沿用 ${stat.unchanged}、改為今天 ${stat.changed + stat.added}（其中新頁 ${stat.added}）`);
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -553,15 +563,6 @@ function main() {
   buildBuyerIntake({ communities });
 
   /* 網站地圖、robots.txt、llms.txt、404 */
-  const cdForMap = readJson("data/community-deals.json", { deals: {} });
-  buildSitemap(articles, communities, dealCount > 0, areas, indexPages, {
-    hasTrend: !!trend,
-    dealsByCommunity: cdForMap.deals || {},
-    videosUpdated: maxDate((videos.videos || []).map(v => v.published)),
-    dealsUpdated: maxDate((deals.deals || []).map(d => d.date || d.createdAt)) || String(deals.updatedAt || "").slice(0, 10),
-    marketUpdated: String(market?.updatedAt || cdForMap.updatedAt || "").slice(0, 10),
-    videos: videos.videos || [],
-  });
   buildRobots();
   const communityDeals = readJson("data/community-deals.json", { deals: {} });
   buildLlmsTxt({
@@ -573,8 +574,21 @@ function main() {
   });
   build404();
 
-  /* 最後一步：把內部連結改成與 canonical 一致的目錄形式 */
+  /* 把內部連結改成與 canonical 一致的目錄形式。
+     要在 sitemap 之前：sitemap 的 lastmod 現在是對「產生完成的 HTML」算內容指紋
+     得出來的，連結改寫也算頁面內容的一部分，必須先改完再算，否則第一次改寫
+     會讓全站指紋變動一次。 */
   normalizeAllLinks();
+
+  const cdForMap = readJson("data/community-deals.json", { deals: {} });
+  buildSitemap(articles, communities, dealCount > 0, areas, indexPages, {
+    hasTrend: !!trend,
+    dealsByCommunity: cdForMap.deals || {},
+    videosUpdated: maxDate((videos.videos || []).map(v => v.published)),
+    dealsUpdated: maxDate((deals.deals || []).map(d => d.date || d.createdAt)) || String(deals.updatedAt || "").slice(0, 10),
+    marketUpdated: String(market?.updatedAt || cdForMap.updatedAt || "").slice(0, 10),
+    videos: videos.videos || [],
+  });
 
   console.log(`[完成] 全站建置：文章 ${articles.length} 篇、影片 ${(videos.videos || []).filter(v => !v.hidden).length} 支、賀成交 ${dealCount} 筆、買方需求 ${hasBuyers ? "有" : "無"}`);
 }

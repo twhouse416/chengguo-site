@@ -841,7 +841,16 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
   const units = unitCount(c);
   const floors = floorsAbove(c, deals);
   const built = yearBuilt(c);
-  const parkingSpec = specVal(c, "車位");
+  /* amenityFeature：社區的硬體條件。原本只輸出「車位」一項，
+     而車位這個欄位只有 142 / 255 個社區查得到，等於有 113 頁完全沒有這段。
+     規格表裡其實還有公設比、建築結構、基地面積、土地使用分區、管理費、
+     建築設計這些同樣是「社區設施條件」的欄位，機器讀得到才有用。
+     一樣遵守「查不到就不輸出」——不補零、不推測。 */
+  const AMENITY_KEYS = ["車位", "公設比", "建築結構", "基地面積", "土地使用分區", "管理費", "建築設計"];
+  const amenities = AMENITY_KEYS
+    .map(k => [k, specVal(c, k)])
+    .filter(([, v]) => String(v).trim())
+    .map(([k, v]) => ({ "@type": "LocationFeatureSpecification", name: k, value: String(v).trim() }));
 
   const jsonLd = [
     {
@@ -875,12 +884,7 @@ function communityPage(c, deals, others, hasBuyers, dataUpdated = "", compare = 
       ...(units ? { numberOfAccommodationUnits: units } : {}),
       ...(floors ? { numberOfFloors: floors } : {}),
       ...(built ? { yearBuilt: built } : {}),
-      ...(parkingSpec ? {
-        amenityFeature: [{
-          "@type": "LocationFeatureSpecification",
-          name: "車位", value: parkingSpec,
-        }],
-      } : {}),
+      ...(amenities.length ? { amenityFeature: amenities } : {}),
       ...(dataUpdated ? { dateModified: dataUpdated } : {}),
       /* 每一頁都帶上組織實體，不只首頁有。用 @id 參照首頁那份權威定義，
          避免 255 個社區頁各自變成一個同名組織。 */
@@ -1200,6 +1204,14 @@ ${videoSection(c)}
    依社區數排序會讓農十六在補齊之前一直吊車尾，
    但這是團隊的主力區之一，順序應該由我們決定，不是由資料多寡決定。 */
 const AREA_ORDER = ["美術館特區", "農十六特區", "瑞豐・巨蛋", "中都重劃區"];
+
+/* 社區總覽頁的生活圈導讀。只有實際有社區的生活圈會被印出來。 */
+const AREA_INTRO = [
+  { area: "美術館特區", en: "Art Museum", desc: "鼓山區，內惟埤文化園區周邊。重劃完成早、街廓方整，中大坪數與低密度住宅為主，屋齡跨度大，從 1990 年代末的老社區到近年新案都有。" },
+  { area: "農十六特區", en: "Nong 16", desc: "鼓山區，博愛二路以東。開發時間比美術館特區晚，社區屋齡集中、公設規劃較新，生活機能靠近巨蛋與明誠商圈。" },
+  { area: "瑞豐・巨蛋", en: "Ruifeng Arena", desc: "左營區，捷運巨蛋站與瑞豐夜市一帶。交通與商圈機能最密集，坪數選擇從小坪數到換屋型都有，租賃需求也相對高。" },
+  { area: "中都重劃區", en: "Zhongdu", desc: "三民區，愛河中游與中都濕地公園旁。區內多為近十年的新案，單價基期相對低，是近年首購與換屋常被拿來比較的區域。" },
+];
 
 function groupByArea(list) {
   const map = new Map();
@@ -1529,6 +1541,14 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
         url: `${SITE}/communities/${c.slug}.html`, name: c.name,
       })),
     },
+  }, {
+    /* 這一頁是全站連入最多的頁，但原本只有 CollectionPage，
+       沒有麵包屑結構化資料，搜尋結果拿不到階層。補上。 */
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: `${SITE}/` },
+      { "@type": "ListItem", position: 2, name: "社區行情", item: `${SITE}/communities/` },
+    ],
   }] : [];
 
   return [
@@ -1552,6 +1572,25 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
     我們把常被問到的社區整理成獨立頁面，列出實價登錄的每一筆成交紀錄、社區基本資料與學區資訊。
     成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
     先選一個生活圈，或直接用上方搜尋找社區名稱。
+  </p>
+
+  <!-- 這一頁是全站連入最多的頁，原本可見文字卻最少（清單預設是收合的，
+       爬蟲與讀者點進來看到的幾乎只有篩選器）。這段導讀把四個生活圈的差別
+       與資料的來源、更新頻率講清楚，讓這一頁本身就能回答問題。 -->
+  <div class="mt-8 grid gap-5 sm:grid-cols-2 max-w-3xl">
+    ${AREA_INTRO.filter(a => groups.some(g => g.area === a.area)).map(a => `<div>
+      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">${a.en}</div>
+      <h2 class="text-[17px] font-bold">${a.area}<span class="ml-2 font-mono text-[12px] text-inkFaint">${
+        (groups.find(g => g.area === a.area)?.items.length) || 0} 個社區</span></h2>
+      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">${a.desc}</p>
+    </div>`).join("\n    ")}
+  </div>
+
+  <p class="mt-7 text-[15px] text-inkSoft leading-[1.9] max-w-2xl">
+    每一個社區頁的成交紀錄都來自內政部不動產交易實價查詢服務網，該平台每月 1、11、21 日批次公告，
+    我們在公告後更新，頁面上會標示資料更新日。社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）
+    取自好房網、成家網、591、信義房屋、樂居等公開平台，同一項目有兩種記載時並列兩者；
+    查不到的欄位一律留空，不做推測。要確認權狀面積與產權，仍請查閱建物謄本。
   </p>
   ${dataUpdated ? `<p class="mt-4 font-mono text-[12px] text-inkFaint">
     收錄 ${list.length} 個社區、成交 ${Object.values(dealsMap).reduce((a, b) => a + b.length, 0).toLocaleString("en-US")} 筆
