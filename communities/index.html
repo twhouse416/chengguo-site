@@ -136,56 +136,21 @@
   <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Communities</div>
   <h1 class="display text-[30px] md:text-[36px]">社區行情</h1>
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
-    我們把常被問到的社區整理成獨立頁面，列出實價登錄的每一筆成交紀錄、社區基本資料與學區資訊。
-    成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
-    先選一個生活圈，或直接用上方搜尋找社區名稱。
+    每個社區一頁，逐筆列出實價登錄成交、社區基本資料與學區，不做平均，方便你找條件相近的戶別比對。
+    先選生活圈，或用下方搜尋直接找社區名稱。
   </p>
-
-  <!-- 這一頁是全站連入最多的頁，原本可見文字卻最少（清單預設是收合的，
-       爬蟲與讀者點進來看到的幾乎只有篩選器）。這段導讀把四個生活圈的差別
-       與資料的來源、更新頻率講清楚，讓這一頁本身就能回答問題。 -->
-  <div class="mt-8 grid gap-5 sm:grid-cols-2 max-w-3xl">
-    <div>
-      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">Art Museum</div>
-      <h2 class="text-[17px] font-bold">美術館特區<span class="ml-2 font-mono text-[12px] text-inkFaint">128 個社區</span></h2>
-      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">鼓山區，內惟埤文化園區周邊。重劃完成早、街廓方整，中大坪數與低密度住宅為主，屋齡跨度大，從 1990 年代末的老社區到近年新案都有。</p>
-    </div>
-    <div>
-      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">Nong 16</div>
-      <h2 class="text-[17px] font-bold">農十六特區<span class="ml-2 font-mono text-[12px] text-inkFaint">72 個社區</span></h2>
-      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">鼓山區，博愛二路以東。開發時間比美術館特區晚，社區屋齡集中、公設規劃較新，生活機能靠近巨蛋與明誠商圈。</p>
-    </div>
-    <div>
-      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">Ruifeng Arena</div>
-      <h2 class="text-[17px] font-bold">瑞豐・巨蛋<span class="ml-2 font-mono text-[12px] text-inkFaint">37 個社區</span></h2>
-      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">左營區，捷運巨蛋站與瑞豐夜市一帶。交通與商圈機能最密集，坪數選擇從小坪數到換屋型都有，租賃需求也相對高。</p>
-    </div>
-    <div>
-      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">Zhongdu</div>
-      <h2 class="text-[17px] font-bold">中都重劃區<span class="ml-2 font-mono text-[12px] text-inkFaint">18 個社區</span></h2>
-      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">三民區，愛河中游與中都濕地公園旁。區內多為近十年的新案，單價基期相對低，是近年首購與換屋常被拿來比較的區域。</p>
-    </div>
-  </div>
-
-  <p class="mt-7 text-[15px] text-inkSoft leading-[1.9] max-w-2xl">
-    每一個社區頁的成交紀錄都來自內政部不動產交易實價查詢服務網，該平台每月 1、11、21 日批次公告，
-    我們在公告後更新，頁面上會標示資料更新日。社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）
-    取自好房網、成家網、591、信義房屋、樂居等公開平台，同一項目有兩種記載時並列兩者；
-    查不到的欄位一律留空，不做推測。要確認權狀面積與產權，仍請查閱建物謄本。
-  </p>
-  <p class="mt-4 font-mono text-[12px] text-inkFaint">
-    收錄 255 個社區、成交 26,111 筆
+  <p class="mt-3 font-mono text-[12px] text-inkFaint">
+    收錄 255 個社區・成交 26,111 筆
     ・資料更新於 <time datetime="2026-11-13">2026 年 11 月 13 日</time>
-    ・來源：內政部不動產交易實價查詢服務網
   </p>
-  <div class="mt-6 h-px bg-line"></div>
 
   <div id="areaHub" class="mt-10 grid sm:grid-cols-2 gap-5">
     <div class="border border-line rounded-sm bg-surface hover:border-orange transition flex flex-col">
         <a href="#area-01" data-hub-link data-area="01" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
           <div class="font-mono text-[12px] tracking-wider text-inkFaint">鼓山區</div>
           <h2 class="text-[23px] font-bold tracking-tight mt-1">美術館特區</h2>
-          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">美術白天鵝、美樹香榭、印象巴黎 等</p>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">內惟埤文化園區周邊。重劃完成早、街廓方整，中大坪數與低密度住宅為主，屋齡跨度大，從 1990 年代末的老社區到近年新案都有。</p>
+          <p class="text-[13px] text-inkFaint leading-[1.8] mt-3">代表社區：美術白天鵝、美樹香榭、印象巴黎 等</p>
           <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">128</span> 個社區<span class="mx-1.5">・</span>成交 13,697 筆
@@ -201,7 +166,8 @@
         <a href="#area-02" data-hub-link data-area="02" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
           <div class="font-mono text-[12px] tracking-wider text-inkFaint">鼓山區</div>
           <h2 class="text-[23px] font-bold tracking-tight mt-1">農十六特區</h2>
-          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">華人匯、遠雄PARK16、蘭園畫世紀 等</p>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">博愛二路以東。開發時間比美術館特區晚，社區屋齡集中、公設規劃較新，生活機能靠近巨蛋與明誠商圈。</p>
+          <p class="text-[13px] text-inkFaint leading-[1.8] mt-3">代表社區：華人匯、遠雄PARK16、蘭園畫世紀 等</p>
           <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">72</span> 個社區<span class="mx-1.5">・</span>成交 6,435 筆
@@ -217,7 +183,8 @@
         <a href="#area-03" data-hub-link data-area="03" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
           <div class="font-mono text-[12px] tracking-wider text-inkFaint">左營區</div>
           <h2 class="text-[23px] font-bold tracking-tight mt-1">瑞豐・巨蛋</h2>
-          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">博愛香榭、觀山觀海、京城鉅誕 等</p>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">捷運巨蛋站與瑞豐夜市一帶。交通與商圈機能最密集，坪數選擇從小坪數到換屋型都有，租賃需求也相對高。</p>
+          <p class="text-[13px] text-inkFaint leading-[1.8] mt-3">代表社區：博愛香榭、觀山觀海、京城鉅誕 等</p>
           <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">37</span> 個社區<span class="mx-1.5">・</span>成交 3,121 筆
@@ -233,7 +200,8 @@
         <a href="#area-04" data-hub-link data-area="04" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
           <div class="font-mono text-[12px] tracking-wider text-inkFaint">三民區</div>
           <h2 class="text-[23px] font-bold tracking-tight mt-1">中都重劃區</h2>
-          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">美樹大悅、潤隆樹禾苑、上美術 等</p>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">愛河中游與中都濕地公園旁。區內多為近十年的新案，單價基期相對低，是近年首購與換屋常被拿來比較的區域。</p>
+          <p class="text-[13px] text-inkFaint leading-[1.8] mt-3">代表社區：美樹大悅、潤隆樹禾苑、上美術 等</p>
           <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">18</span> 個社區<span class="mx-1.5">・</span>成交 2,858 筆
@@ -5093,7 +5061,18 @@
   })();
 </script>
 
-  <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
+  <!-- 資料來源說明：原本放在頁首，和導讀、生活圈卡片擠在一起看起來很亂（2026/11 使用者回饋），
+       移到頁尾。文字保留在頁面上，搜尋引擎與 AI 仍讀得到來源與更新頻率。 -->
+  <section class="mt-14 border-t border-line pt-8 max-w-3xl">
+    <h2 class="text-[17px] font-bold">資料來源與更新方式</h2>
+    <p class="mt-3 text-[14px] text-inkSoft leading-[1.9]">
+      成交紀錄來自內政部不動產交易實價查詢服務網，該平台每月 1、11、21 日批次公告，我們在公告後更新，頁面上會標示資料更新日。
+      社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）取自好房網、成家網、591、信義房屋、樂居等公開平台，
+      同一項目有兩種記載時並列兩者；查不到的欄位一律留空，不做推測。要確認權狀面積與產權，仍請查閱建物謄本。
+    </p>
+  </section>
+
+  <section class="mt-10 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">想查的社區不在名單上？</h2>
     <p class="mt-3 text-[16px] leading-[1.9] max-w-xl">
       我們手上有更多社區的成交資料與屋況紀錄，只是還沒整理成頁面。
