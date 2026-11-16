@@ -1281,7 +1281,8 @@ function areaHub(groups, dealsMap) {
         <a href="#area-${esc(code)}" data-hub-link data-area="${esc(code)}" class="p-7 flex flex-col flex-1 hover:bg-tint transition">
           <div class="font-mono text-[12px] tracking-wider text-inkFaint">${esc(AREA_DISTRICT[area] || "")}</div>
           <h2 class="text-[23px] font-bold tracking-tight mt-1">${esc(area)}</h2>
-          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">${esc(top.join("、"))}${items.length > 3 ? " 等" : ""}</p>
+          <p class="text-[15px] text-inkSoft leading-[1.85] mt-3 flex-1">${esc((AREA_INTRO.find(a => a.area === area)?.desc || "").replace(/^[^，]{2,4}區，/, ""))}</p>
+          <p class="text-[13px] text-inkFaint leading-[1.8] mt-3">代表社區：${esc(top.join("、"))}${items.length > 3 ? " 等" : ""}</p>
           <div class="mt-5 pt-5 border-t border-line flex items-baseline justify-between gap-3">
             <div class="font-mono text-[12px] text-inkFaint">
               <span class="text-[20px] font-semibold text-ink">${items.length}</span> 個社區<span class="mx-1.5">・</span>成交 ${total.toLocaleString("en-US")} 筆
@@ -1569,35 +1570,13 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
   <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">Communities</div>
   <h1 class="display text-[30px] md:text-[36px]">社區行情</h1>
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.9] max-w-2xl">
-    我們把常被問到的社區整理成獨立頁面，列出實價登錄的每一筆成交紀錄、社區基本資料與學區資訊。
-    成交紀錄逐筆呈現、不做平均，方便你找條件相近的戶別來比對。
-    先選一個生活圈，或直接用上方搜尋找社區名稱。
+    每個社區一頁，逐筆列出實價登錄成交、社區基本資料與學區，不做平均，方便你找條件相近的戶別比對。
+    先選生活圈，或用下方搜尋直接找社區名稱。
   </p>
-
-  <!-- 這一頁是全站連入最多的頁，原本可見文字卻最少（清單預設是收合的，
-       爬蟲與讀者點進來看到的幾乎只有篩選器）。這段導讀把四個生活圈的差別
-       與資料的來源、更新頻率講清楚，讓這一頁本身就能回答問題。 -->
-  <div class="mt-8 grid gap-5 sm:grid-cols-2 max-w-3xl">
-    ${AREA_INTRO.filter(a => groups.some(g => g.area === a.area)).map(a => `<div>
-      <div class="font-mono text-[12px] tracking-[0.12em] text-orangeDeep uppercase mb-1">${a.en}</div>
-      <h2 class="text-[17px] font-bold">${a.area}<span class="ml-2 font-mono text-[12px] text-inkFaint">${
-        (groups.find(g => g.area === a.area)?.items.length) || 0} 個社區</span></h2>
-      <p class="mt-1 text-[15px] text-inkSoft leading-[1.85]">${a.desc}</p>
-    </div>`).join("\n    ")}
-  </div>
-
-  <p class="mt-7 text-[15px] text-inkSoft leading-[1.9] max-w-2xl">
-    每一個社區頁的成交紀錄都來自內政部不動產交易實價查詢服務網，該平台每月 1、11、21 日批次公告，
-    我們在公告後更新，頁面上會標示資料更新日。社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）
-    取自好房網、成家網、591、信義房屋、樂居等公開平台，同一項目有兩種記載時並列兩者；
-    查不到的欄位一律留空，不做推測。要確認權狀面積與產權，仍請查閱建物謄本。
-  </p>
-  ${dataUpdated ? `<p class="mt-4 font-mono text-[12px] text-inkFaint">
-    收錄 ${list.length} 個社區、成交 ${Object.values(dealsMap).reduce((a, b) => a + b.length, 0).toLocaleString("en-US")} 筆
+  ${dataUpdated ? `<p class="mt-3 font-mono text-[12px] text-inkFaint">
+    收錄 ${list.length} 個社區・成交 ${Object.values(dealsMap).reduce((a, b) => a + b.length, 0).toLocaleString("en-US")} 筆
     ・資料更新於 <time datetime="${dataUpdated}">${twDate(dataUpdated)}</time>
-    ・來源：內政部不動產交易實價查詢服務網
   </p>` : ""}
-  <div class="mt-6 h-px bg-line"></div>
 
   ${list.length === 0 ? `<div class="mt-10 border border-line rounded-sm bg-surface p-8">
     <p class="text-[16px] text-inkSoft leading-[1.9]">社區頁面陸續整理中。想了解特定社區的行情，歡迎直接來電。</p>
@@ -1663,7 +1642,18 @@ function communityIndex(list, dealsMap, hasBuyers, dataUpdated = "") {
     </p>` : ""}
   </section>`).join("\n") + emptyState() + listScript()}
 
-  <section class="mt-14 bg-ink text-white/75 rounded-sm p-8">
+  <!-- 資料來源說明：原本放在頁首，和導讀、生活圈卡片擠在一起看起來很亂（2026/11 使用者回饋），
+       移到頁尾。文字保留在頁面上，搜尋引擎與 AI 仍讀得到來源與更新頻率。 -->
+  <section class="mt-14 border-t border-line pt-8 max-w-3xl">
+    <h2 class="text-[17px] font-bold">資料來源與更新方式</h2>
+    <p class="mt-3 text-[14px] text-inkSoft leading-[1.9]">
+      成交紀錄來自內政部不動產交易實價查詢服務網，該平台每月 1、11、21 日批次公告，我們在公告後更新，頁面上會標示資料更新日。
+      社區規格（建商、營造、戶數、樓層、公設比、車位、基地面積）取自好房網、成家網、591、信義房屋、樂居等公開平台，
+      同一項目有兩種記載時並列兩者；查不到的欄位一律留空，不做推測。要確認權狀面積與產權，仍請查閱建物謄本。
+    </p>
+  </section>
+
+  <section class="mt-10 bg-ink text-white/75 rounded-sm p-8">
     <h2 class="display text-[20px] text-white">想查的社區不在名單上？</h2>
     <p class="mt-3 text-[16px] leading-[1.9] max-w-xl">
       我們手上有更多社區的成交資料與屋況紀錄，只是還沒整理成頁面。
