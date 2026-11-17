@@ -4,7 +4,7 @@ const { useState, useMemo } = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:079766977",
 };
 
 /* 房屋總價上限（萬元），依購屋所在縣市三級制 */

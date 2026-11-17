@@ -37,7 +37,7 @@ export const BRAND = {
   address: "804 高雄市鼓山區青海路416號",
   addressShort: "鼓山區青海路416號",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:079766977",
   officialSite: "https://store.twhg.com.tw/TE80",
   facebook: "https://www.facebook.com/TWhouseo8",
   instagram: "https://www.instagram.com/twhouse_o8",

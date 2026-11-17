@@ -4,7 +4,7 @@ const { useState, useEffect, useMemo } = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:079766977",
 };
 
 /* 官方原文裡「全里為○○國中學區」這種寫法，會被誤抓成里名「全里」，

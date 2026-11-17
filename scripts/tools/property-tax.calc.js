@@ -4,7 +4,7 @@ const { useState, useMemo } = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:079766977",
 };
 
 /* 房地合一稅 2.0 稅率級距（境內居住者個人）

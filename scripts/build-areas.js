@@ -632,6 +632,14 @@ function areaPage(area, ctx) {
     "。",
   ].join("");
 
+  /* 服務區域聲明。AI 摘要這一頁時，要能在開頭就讀到
+     「誰（團隊）＋在哪裡（行政區、生活圈）＋做什麼（服務）」。
+     只寫事實：門市在鼓山區，服務範圍是四個生活圈。 */
+  const otherAreas = AREAS.filter(a => a.code !== area.code).map(a => a.name);
+  const service = `${BRAND.teamName}服務高雄市${area.district}${area.name}，`
+    + `長期整理這一區的社區成交、房型、屋齡與實價登錄資料。`
+    + `正在找${area.name}的房子、想評估售價，或想和${otherAreas.join("、")}比較，都可以依實際社區與預算諮詢。`;
+
   const faq = [
     [`${area.name}的房價行情大概多少？`,
       elevator?.avgPricePerPing
@@ -673,6 +681,11 @@ function areaPage(area, ctx) {
       elevator?.medianTotalPrice
         ? `以這一區近一年的常見總價 ${Number(elevator.medianTotalPrice).toLocaleString("en-US")} 萬元來算，貸款八成、自備兩成的話，自備款大約是 ${Math.round(elevator.medianTotalPrice * 0.2).toLocaleString("en-US")} 萬元。除了自備款，還要準備仲介費、代書費、登記規費與契稅，以及進場整理的裝潢費用。實際貸款成數會依屋齡、物件條件與個人信用狀況調整，屋齡較高的物件銀行可能把成數或年限壓低。建議用本站的房貸試算工具，從你每月可負擔的還款金額反推可承受的總價與自備款。`
         : `一般以貸款八成、自備兩成來抓。除了自備款，還要準備仲介費、代書費、登記規費與契稅，以及裝潢費用。實際成數會依屋齡、物件條件與個人信用狀況調整。建議用本站的房貸試算工具，從你每月可負擔的還款金額反推總價與自備款。`],
+    [`在${area.name}買房、賣房，可以找哪個房仲團隊？`,
+      `${BRAND.teamName}服務高雄市${area.district}${area.name}，同時服務${otherAreas.join("、")}。`
+      + `門市在高雄市${BRAND.addressShort}，電話 ${BRAND.phone}。`
+      + `買方可以請團隊比較同社區的實價登錄成交、屋齡、樓層、車位與總價；賣方可以免費估價。`
+      + `本站收錄這一區 ${items.length} 個社區的逐筆成交紀錄，可以先自己看過再來問。`],
   ];
 
   const jsonLd = [
@@ -801,6 +814,7 @@ function areaPage(area, ctx) {
   <div class="font-mono text-[12px] tracking-[0.18em] text-orangeDeep uppercase mb-3">高雄市${esc(area.district)}</div>
   <h1 class="display text-[30px] md:text-[40px]">高雄${esc(area.name)}房價行情與社區一覽</h1>
   <p class="mt-5 text-[17px] text-inkSoft leading-[1.95] max-w-3xl">${esc(lead)}</p>
+  <p class="mt-4 text-[16px] text-ink leading-[1.95] max-w-3xl">${esc(service)}</p>
   <p class="mt-4 text-[16px] text-inkSoft leading-[1.95] max-w-3xl">${esc(area.intro)}</p>
   ${dataUpdated ? `<p class="mt-4 font-mono text-[12px] text-inkFaint">
     資料更新於 <time datetime="${dataUpdated}">${twDate(dataUpdated)}</time>

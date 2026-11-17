@@ -4,7 +4,7 @@ const { useState, useMemo } = React;
 const BRAND = {
   officialSite: "https://store.twhg.com.tw/TE80",
   phone: "07-9766977",
-  phoneHref: "tel:0797669977",
+  phoneHref: "tel:079766977",
 };
 
 const fmtWan = n => (Math.round(n * 10) / 10).toLocaleString("zh-TW");
