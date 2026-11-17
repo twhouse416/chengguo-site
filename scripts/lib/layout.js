@@ -44,6 +44,8 @@ export const BRAND = {
   /* Google 商家檔案的分享連結（使用者 2026/11/17 提供）。
      放進 sameAs 與 hasMap，讓搜尋引擎與 AI 把地圖上的店和本站認成同一個實體。 */
   googleProfile: "https://maps.app.goo.gl/PXYrpUnyNcRFhpgR7",
+  /* R.TUBE 頻道首頁（使用者 2026/11/17 提供，去掉分頁與排序參數） */
+  rtube: "https://www.rtube.com.tw/@twhouse416",
   youtube: "https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E6%88%BF%E5%B1%8B%E6%BE%84%E6%9E%9C%E5%9C%98%E9%9A%8A",
   /* 以下兩項讀自 data/site-config.json，那個檔案不會被更新覆蓋 */
   formKey: CONFIG.formKey || "",

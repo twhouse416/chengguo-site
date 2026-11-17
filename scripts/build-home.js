@@ -789,7 +789,7 @@ export function buildHome({ market, articles, buyers, videos, deals }) {
       address: { "@type": "PostalAddress", streetAddress: BRAND.addressShort, addressLocality: "高雄市", postalCode: "804", addressCountry: "TW" },
       areaServed: ["高雄市鼓山區美術館特區", "高雄市鼓山區農十六特區", "高雄市左營區瑞豐巨蛋生活圈", "高雄市三民區中都重劃區"]
         .map(n => ({ "@type": "Place", name: n })),
-      sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube, BRAND.googleProfile].filter(Boolean),
+      sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube, BRAND.googleProfile, BRAND.rtube].filter(Boolean),
       /* 統一編號：法人在台灣唯一且可查證的識別碼。
          加盟店全名與品牌：讓搜尋引擎把這個團隊接到「台灣房屋」這個既有實體上，
          而不是當成一家查無來歷的小公司。 */
