@@ -70,7 +70,7 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
           { "@type": "Place", name: "高雄市左營區瑞豐巨蛋生活圈" },
           { "@type": "Place", name: "高雄市三民區中都重劃區" },
         ],
-        sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube].filter(Boolean),
+        sameAs: [BRAND.officialSite, BRAND.facebook, BRAND.instagram, BRAND.youtube, BRAND.googleProfile].filter(Boolean),
         knowsLanguage: "zh-TW",
         award: AWARDS,
         makesOffer: SERVICES.map(([n, d]) => ({
