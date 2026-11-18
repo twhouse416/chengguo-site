@@ -36,7 +36,7 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
   const url = `${SITE}/about/`;
 
   const lead = `澄果團隊隸屬台灣房屋，公司全名為澄果資產有限公司，`
-    + `深耕高雄市鼓山區美術館特區、鼓山區農十六特區、左營區瑞豐巨蛋生活圈`
+    + `商耕高雄市鼓山區美術館特區、鼓山區農十六特區、左營區瑞豐巨蛋生活圈`
     + `與三民區中都重劃區 10 年以上，累計服務件數超過 150 件，`
     + `歷年獲台灣房屋評鑑與競賽獎項 ${AWARDS.length} 項。`
     + (communityCount ? `本站整理了這四個生活圈內 ${communityCount} 個社區的實價登錄成交紀錄，共 ${dealTotal.toLocaleString("en-US")} 筆。` : "");
@@ -91,7 +91,7 @@ export function buildAbout({ hasBuyers = false, communityCount = 0, dealTotal = 
   const html = [
     head({
       title: `關於台灣房屋 澄果團隊｜高雄美術館特區、農十六、瑞豐巨蛋、中都在地房仲`,
-      description: `澄果資產有限公司（台灣房屋 澄果團隊）深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋與三民中都重劃區 10 年以上，累計服務超過 150 件，歷年獲獎 ${AWARDS.length} 項。地址 ${BRAND.address}，電話 ${BRAND.phone}。`,
+      description: `澄果資產有限公司（台灣房屋 澄果團隊）商耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋與三民中都重劃區 10 年以上，累計服務超過 150 件，歷年獲獎 ${AWARDS.length} 項。地址 ${BRAND.address}，電話 ${BRAND.phone}。`,
       keywords: "澄果團隊,台灣房屋澄果團隊,澄果資產有限公司,高雄房仲,美術館特區房仲,農十六房仲,高雄買房顧問",
       canonical: url, ogImage: `${SITE}/assets/team-office.jpg`, depth: 1, jsonLd,
     }),

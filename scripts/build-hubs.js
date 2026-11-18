@@ -120,7 +120,7 @@ function areasHub({ areas, communities, dealsMap, hasBuyers, dataUpdated, trend 
   }).sort((x, y) => y.n - x.n);
   const totalC = rows.reduce((n, r) => n + r.n, 0);
   const totalD = rows.reduce((n, r) => n + r.deals, 0);
-  const lead = `澄果團隊深耕的四個高雄生活圈，合計 ${nf(totalC)} 個社區、`
+  const lead = `澄果團隊商耕的四個高雄生活圈，合計 ${nf(totalC)} 個社區、`
     + `${nf(totalD)} 筆 2020 年起的住家實價登錄成交紀錄。每個生活圈頁都列出該區的社區清單、`
     + `成交行情、屋齡結構與學區分布，單價與總價中位數取自逐筆成交紀錄而非平均值。`;
   const faq = [

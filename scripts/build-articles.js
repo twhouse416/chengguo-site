@@ -291,7 +291,7 @@ function pageHtml(a, others, hasBuyers) {
     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[14px] text-inkFaint mb-7 pb-6 border-b border-line">
       <span>作者</span>
       <a href="../about/index.html" rel="author" class="text-ink font-medium hover:text-orangeDeep">${esc(BRAND.teamName)}</a>
-      <span>・高雄在地房仲，深耕美術館特區、農十六、瑞豐巨蛋與中都重劃區</span>
+      <span>・高雄在地房仲，商耕美術館特區、農十六、瑞豐巨蛋與中都重劃區</span>
       ${a.updated && a.updated !== a.date
         ? `<span class="font-mono text-[13px] w-full sm:w-auto">最後更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time></span>`
         : ""}
@@ -343,7 +343,7 @@ function pageHtml(a, others, hasBuyers) {
         <div class="font-mono text-[12px] tracking-wider text-inkFaint mb-1">關於作者</div>
         <h2 class="text-[18px] font-bold tracking-tight mb-3">${BRAND.teamName}</h2>
         <p class="text-[15px] text-inkSoft leading-[1.9]">
-          深耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區 10 年以上，
+          商耕高雄鼓山美術館特區、農十六特區、左營瑞豐巨蛋生活圈與三民區中都重劃區 10 年以上，
           累計服務件數超過 150 件，歷年獲台灣房屋評鑑優質與團隊績效獎項共 15 項。
           截至 115 年 7 月，約 58% 成交業績來自美術館特區與農十六。
           提供免費房屋估價、成交行情分析、售屋策略規劃，以及首購購屋建議與換屋規劃。

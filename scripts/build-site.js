@@ -258,7 +258,7 @@ function buildLlmsTxt({ communities, articles, dealTotal, dataUpdated, areas = [
   communities.forEach(c => { byArea[c.area] = (byArea[c.area] || 0) + 1; });
   const txt = `# ${"台灣房屋 澄果團隊"}（澄果資產有限公司）
 
-高雄在地房仲團隊，深耕鼓山區美術館特區、鼓山區農十六特區、左營區瑞豐巨蛋生活圈
+高雄在地房仲團隊，商耕鼓山區美術館特區、鼓山區農十六特區、左營區瑞豐巨蛋生活圈
 與三民區中都重劃區 10 年以上。網站提供這四個生活圈的社區實價登錄成交紀錄、
 社區規格、學區資訊與購屋試算工具。
 
