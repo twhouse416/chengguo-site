@@ -81,8 +81,8 @@ export const TOOLS = [
     code: "Tool 01",
     title: "澄果團隊高雄學區查詢",
     pageTitle: ZONE.li
-      ? `高雄學區怎麼查？${ZONE.li} 個里對照 ${ZONE.all} 所國小國中`
-      : "高雄學區怎麼查？選行政區與里別，查國小與國中學區",
+      ? `高雄學區查詢｜${ZONE.li} 個里對照 ${ZONE.all} 所國小國中`
+      : "高雄學區查詢｜選行政區與里別，查國小與國中學區",
     description: ZONE.li
       ? `澄果團隊高雄學區查詢：選行政區與里別，一次查出對應的國小與國中。收錄${ZONE.districts.join("、")}共 ${ZONE.li} 個里、`
         + `${ZONE.es} 所國小與 ${ZONE.js} 所國中，逐字轉錄自高雄市${ZONE.year}學年度學區劃分一覽表，並標示總量管制與自由學區。`
