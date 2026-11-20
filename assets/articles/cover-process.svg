@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">成屋買賣流程</text>
+  <text x="120" y="168" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="700" fill="#16191D">每一筆款，<tspan fill="#B85400">綁一件該完成的事</tspan></text>
+  <circle cx="152" cy="240" r="25" fill="#16191D"/>
+  <text x="152" y="249" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#F4F4F2" text-anchor="middle">一</text>
+  <text x="212" y="250" font-family="'Noto Sans TC',sans-serif" font-size="31" font-weight="700" fill="#16191D">看屋與查核</text>
+  <text x="1080" y="250" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#737A83" text-anchor="end">不付錢</text>
+  <line x1="152" y1="266" x2="152" y2="310" stroke="#D8D6D1" stroke-width="3"/>
+  <circle cx="152" cy="335" r="25" fill="#16191D"/>
+  <text x="152" y="344" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#F4F4F2" text-anchor="middle">二</text>
+  <text x="212" y="345" font-family="'Noto Sans TC',sans-serif" font-size="31" font-weight="700" fill="#16191D">出價</text>
+  <text x="1080" y="345" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#737A83" text-anchor="end">斡旋金或零</text>
+  <line x1="152" y1="361" x2="152" y2="405" stroke="#D8D6D1" stroke-width="3"/>
+  <circle cx="152" cy="430" r="25" fill="#16191D"/>
+  <text x="152" y="439" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#F4F4F2" text-anchor="middle">三</text>
+  <text x="212" y="440" font-family="'Noto Sans TC',sans-serif" font-size="31" font-weight="700" fill="#16191D">簽約</text>
+  <text x="1080" y="440" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#B85400" text-anchor="end">簽約款</text>
+  <line x1="152" y1="456" x2="152" y2="500" stroke="#D8D6D1" stroke-width="3"/>
+  <circle cx="152" cy="525" r="25" fill="#16191D"/>
+  <text x="152" y="534" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#F4F4F2" text-anchor="middle">四</text>
+  <text x="212" y="535" font-family="'Noto Sans TC',sans-serif" font-size="31" font-weight="700" fill="#16191D">用印完稅</text>
+  <text x="1080" y="535" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#B85400" text-anchor="end">備證款・完稅款</text>
+  <line x1="152" y1="551" x2="152" y2="595" stroke="#D8D6D1" stroke-width="3"/>
+  <circle cx="152" cy="620" r="25" fill="#FD7305"/>
+  <text x="152" y="629" font-family="'Noto Sans TC',sans-serif" font-size="26" font-weight="700" fill="#F4F4F2" text-anchor="middle">五</text>
+  <text x="212" y="630" font-family="'Noto Sans TC',sans-serif" font-size="31" font-weight="700" fill="#16191D">交屋</text>
+  <text x="1080" y="630" font-family="'IBM Plex Mono',monospace" font-size="25" fill="#B85400" text-anchor="end">交屋款</text>
+  <text x="120" y="736" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">四筆價款依成屋買賣定型化契約應記載事項第四點</text>
+
+</svg>

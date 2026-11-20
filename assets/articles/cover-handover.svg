@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">交屋點交</text>
+  <text x="120" y="168" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="700" fill="#16191D">發現瑕疵之後，<tspan fill="#B85400">時間開始跑</tspan></text>
+  <line x1="190" y1="300" x2="1010" y2="300" stroke="#D8D6D1" stroke-width="3"/>
+  <circle cx="190" cy="300" r="13" fill="#16191D"/>
+  <text x="190" y="262" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D" text-anchor="middle">交屋日</text>
+  <text x="190" y="352" font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#737A83" text-anchor="middle">點交與交屋款同時</text>
+  <circle cx="463" cy="300" r="13" fill="#16191D"/>
+  <text x="463" y="262" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D" text-anchor="middle">發現瑕疵</text>
+  <text x="463" y="352" font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#737A83" text-anchor="middle">應即通知賣方</text>
+  <circle cx="736" cy="300" r="13" fill="#FD7305"/>
+  <text x="736" y="262" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D" text-anchor="middle">通知後 6 個月</text>
+  <text x="736" y="352" font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#737A83" text-anchor="middle">解約減價權消滅</text>
+  <circle cx="1009" cy="300" r="13" fill="#FD7305"/>
+  <text x="1009" y="262" font-family="'Noto Sans TC',sans-serif" font-size="29" font-weight="700" fill="#16191D" text-anchor="middle">交付後 5 年</text>
+  <text x="1009" y="352" font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#737A83" text-anchor="middle">絕對上限</text>
+  <rect x="120" y="470" width="960" height="150" fill="none" stroke="#FD7305" stroke-width="3"/>
+  <text x="160" y="528" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#16191D">六個月是從「通知那天」起算，不是從交屋日</text>
+  <text x="160" y="578" font-family="'Noto Sans TC',sans-serif" font-size="25" fill="#737A83">怠於通知者，視為承認所受領之物（民法第 356 條）</text>
+  <text x="120" y="736" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">依民法第 354–365 條與成屋買賣定型化契約應記載事項</text>
+
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">出價的兩種方式</text>
+  <text x="120" y="168" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="700" fill="#16191D">兩種都要經紀人簽章，<tspan fill="#B85400">走的路不一樣</tspan></text>
+  <line x1="120" y1="246" x2="1080" y2="246" stroke="#D8D6D1" stroke-width="2"/>
+  <text x="560" y="228" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#FD7305" text-anchor="middle">斡旋金</text>
+  <text x="900" y="228" font-family="'IBM Plex Mono',monospace" font-size="24" fill="#FD7305" text-anchor="middle">要約書</text>
+  <text x="120" y="310" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D">出價要先付錢</text>
+  <text x="560" y="310" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">要</text>
+  <text x="900" y="310" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">不用</text>
+  <line x1="120" y1="344" x2="1080" y2="344" stroke="#D8D6D1" stroke-width="1"/>
+  <text x="120" y="406" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D">賣方同意前反悔</text>
+  <text x="560" y="406" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">可要求退回</text>
+  <text x="900" y="406" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">可撤回</text>
+  <line x1="120" y1="440" x2="1080" y2="440" stroke="#D8D6D1" stroke-width="1"/>
+  <text x="120" y="502" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D">賣方簽章送達後</text>
+  <text x="560" y="502" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">定金轉入價款</text>
+  <text x="900" y="502" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">負簽約義務</text>
+  <line x1="120" y1="536" x2="1080" y2="536" stroke="#D8D6D1" stroke-width="1"/>
+  <text x="120" y="598" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#16191D">撤回方式</text>
+  <text x="560" y="598" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">依收據約定</text>
+  <text x="900" y="598" font-family="'Noto Sans TC',sans-serif" font-size="27" fill="#737A83" text-anchor="middle">存證信函或書面</text>
+  <text x="120" y="736" font-family="'IBM Plex Mono',monospace" font-size="21" fill="#737A83">依內政部版要約書範本與不動產經紀業管理條例第 22 條</text>
+
+</svg>
