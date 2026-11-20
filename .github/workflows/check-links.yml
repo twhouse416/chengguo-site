@@ -1,0 +1,113 @@
+name: 文章外部連結健檢
+
+# 為什麼要有這支：
+# 文章裡引用的官方出處（財政部、央行、內政部、區公所……）會搬家或下架，
+# 政府網站改版又特別頻繁。連結掛掉對讀者是死路，對 Google 的 E-E-A-T 也是扣分，
+# 但沒有人會定期去點。這支每週替你點一遍。
+#
+# 它不只看「通不通」，還會把每個連結的最終網址與實際頁面標題抓回來，
+# 所以「連結還活著但已經變成別的內容」也看得出來。
+#
+# 刻意不讓它失敗：連結掛掉是內容問題，網站該上線還是要上線，由人判斷換成什麼。
+
+on:
+  schedule:
+    # 每週二台灣時間早上 8:50（UTC 週二 00:50）。避開整點，減少被排程壅塞延遲。
+    - cron: "50 0 * * 2"
+  workflow_dispatch:
+    inputs:
+      candidates:
+        description: "連同程式裡的候選清單一起檢查（補資料來源前用來驗網址）"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 檢查連結
+        id: check
+        run: |
+          if [ "${{ inputs.candidates }}" = "true" ]; then
+            node scripts/check-links.mjs --candidates
+          else
+            node scripts/check-links.mjs
+          fi
+
+      - name: 把報告提交回 repo
+        # 報告放在 .github/ 之下，GitHub Pages 不會發布以點開頭的目錄，
+        # 所以它進得了版本庫、但不會出現在網站上。
+        run: |
+          if [ -n "$(git status --porcelain .github/link-check-report.md)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/link-check-report.md
+            git commit -m "連結健檢報告 $(date +'%Y-%m-%d %H:%M')"
+            git push
+          else
+            echo "報告沒有變動，不提交"
+          fi
+
+      - name: 有失效就開或更新 issue
+        if: steps.check.outputs.has_dead == 'true'
+        uses: actions/github-script@v7
+        env:
+          BODY: ${{ steps.check.outputs.body }}
+          DEAD: ${{ steps.check.outputs.dead_count }}
+        with:
+          script: |
+            const title = "文章外部連結失效";
+            const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+            const body = `最後檢查：${stamp} UTC（由 ${context.eventName} 觸發）\n\n${process.env.BODY}`;
+            /* 同一個問題只用一張 issue，重複開會讓人直接忽略 */
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", per_page: 100,
+            });
+            const existing = open.data.find(i => i.title === title);
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number, body,
+              });
+              core.notice(`已更新 issue #${existing.number}（${process.env.DEAD} 條失效）`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo, title, body,
+              });
+              core.notice(`已開啟 issue #${created.data.number}（${process.env.DEAD} 條失效）`);
+            }
+
+      - name: 全部正常就關掉舊的 issue
+        if: steps.check.outputs.has_dead == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "文章外部連結失效";
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", per_page: 100,
+            });
+            const existing = open.data.find(i => i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `連結都正常了（${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC）。自動關閉。`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number, state: "closed",
+              });
+              core.notice(`連結全部正常，已關閉 issue #${existing.number}`);
+            }
