@@ -1,0 +1,35 @@
+name: 法規原文擷取（一次性）
+
+# 為什麼要有這支：
+# 開發端的環境連不到 .gov.tw，但 GitHub Actions 連得到。
+# 這支把寫稿要用到的法條原文與定型化契約抓回來，放進 .github/source-extracts/，
+# 提交回 repo 給開發端讀（.github/ 不會被 GitHub Pages 發布，不會出現在網站上）。
+#
+# 只有手動才會跑，沒有排程。四篇流程文章寫完之後，
+# 這個工作流程和 scripts/fetch-law-sources.mjs 就可以一起刪掉。
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 安裝 PDF 轉文字工具
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+      - name: 抓取法規原文
+        run: node scripts/fetch-law-sources.mjs
+
+      - name: 提交回 repo
+        # 用既有的共用腳本，它已經處理好「別的流程同時推送」的狀況
+        run: bash scripts/git-push-retry.sh "法規原文擷取 $(date +'%Y-%m-%d %H:%M')" .github/source-extracts
