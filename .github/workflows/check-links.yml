@@ -48,36 +48,20 @@ jobs:
         # 報告放在 .github/ 之下，GitHub Pages 不會發布以點開頭的目錄，
         # 所以它進得了版本庫、但不會出現在網站上。
         #
-        # 為什麼要這樣繞一圈：這支開始跑的時候抓的是當下的程式碼，跑完往往
-        # 已經過了幾分鐘，期間若有別的更新（例如後台發布、每日建置）推上來，
-        # 直接 push 會被 Git 擋下來（not a fast-forward）。所以先把最新版抓
-        # 下來，再把這次的報告蓋上去——報告是整份重寫的，不需要逐行合併。
+        # 推送交給共用腳本處理：這支開始跑的時候抓的是當下的程式碼，跑完往往
+        # 已經過了幾分鐘，期間若有別的更新（後台發布、每日建置）推上來，
+        # 直接 push 會被 Git 擋下來。共用腳本會以遠端最新為底、只把這次
+        # 改到的檔案套回去再推，不會蓋掉別的流程剛推上來的東西。
+        #
+        # 後面加 || echo warning 是刻意的：連結健檢本來就設計成不讓流程變紅字，
+        # 報告推不上去只是少一份存檔，檢查結果仍在本頁的摘要裡。
+        env:
+          PUSH_RETRIES: "3"
         run: |
-          if [ -z "$(git status --porcelain .github/link-check-report.md)" ]; then
-            echo "報告沒有變動，不提交"
-            exit 0
-          fi
-          cp .github/link-check-report.md /tmp/link-check-report.md
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for i in 1 2 3; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            cp /tmp/link-check-report.md .github/link-check-report.md
-            if [ -z "$(git status --porcelain .github/link-check-report.md)" ]; then
-              echo "最新版的報告內容已經一樣，不需要提交"
-              exit 0
-            fi
-            git add .github/link-check-report.md
-            git commit -m "連結健檢報告 $(date +'%Y-%m-%d %H:%M')"
-            if git push; then
-              echo "報告已提交（第 $i 次嘗試）"
-              exit 0
-            fi
-            echo "推送被擋下（repo 上有更新的內容），等 10 秒後重試"
-            sleep 10
-          done
-          echo "::warning::報告連續三次推不上去，但連結檢查結果仍在本頁的摘要裡"
+          bash scripts/git-push-retry.sh \
+            "連結健檢報告 $(date +'%Y-%m-%d %H:%M')" \
+            .github/link-check-report.md \
+            || echo "::warning::報告推不上去，但連結檢查結果仍在本頁的摘要裡"
 
       - name: 有失效就開或更新 issue
         if: steps.check.outputs.has_dead == 'true'
