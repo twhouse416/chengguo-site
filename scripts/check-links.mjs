@@ -25,21 +25,36 @@ const WITH_CANDIDATES = process.argv.includes("--candidates");
 /* 一次性的候選清單：要補進文章 sources 欄位之前先驗一遍。
    驗完、網址確定之後，這個陣列就可以清空（留著也只是多檢查幾條）。 */
 const CANDIDATES = [
-  "https://www.etax.nat.gov.tw/",
-  "https://law.moj.gov.tw/",
-  "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0060069",
-  "https://www.jcic.org.tw/",
+  /* 第二輪（2026/11/20）。第一輪驗出兩個錯，所以這一輪的原則是：
+       - 猜出來的網址一律先丟進來驗，不要直接寫進文章
+       - 已知會轉址的，直接改用最終網址，省一次跳轉
+     第一輪的教訓：
+       pcode=D0060069 我以為是「不動產經紀業管理條例」，實際是「獎勵辦法」——差三碼是不同法規
+       pip.moi.gov.tw 回 200 但標題是「Request Rejected」，被防火牆擋掉，只看狀態碼看不出來
+       www.ris.gov.tw/app/portal/219 我以為是門牌查詢，實際是「年歲對照表」
+       高雄歸「高雄國稅局」不是「南區國稅局」，南區管的是雲嘉南 */
+
+  /* 法條（要精確到條例本身，不要拿到施行細則或獎勵辦法） */
+  "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0060066",   // 應為 不動產經紀業管理條例
+  "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340003",   // 應為 所得稅法（房地合一在這部）
+  "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340072",   // 應為 遺產及贈與稅法
+
+  /* 主管機關（高雄在地） */
+  "https://www.ntbk.gov.tw/",                                     // 應為 財政部高雄國稅局
+  "https://www.kctax.gov.tw/main/index.aspx",                     // 高雄市稅捐稽徵處（已知最終網址）
+
+  /* 全國性機關（用第一輪驗出的最終網址，省一次轉址） */
+  "https://www.cbc.gov.tw/tw/mp-1.html",                          // 中央銀行
+  "https://www.jcic.org.tw/main_ch/index.aspx",                   // 金融聯合徵信中心
+
+  /* 稅務入口網的節稅手冊：讀者比法條好讀，但路徑是猜的，要驗 */
+  "https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-saving-manual/local/land-value-tax/D58m6We",
+  "https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-saving-manual",
+
+  /* 地政司：第一輪 www.land.moi.gov.tw 完全連不到，試不帶 www 與替代入口 */
+  "https://land.moi.gov.tw/",
+  "https://www.land.moi.gov.tw/chhtml/index",
   "https://www.land.moi.gov.tw/",
-  "https://pip.moi.gov.tw/",
-  "https://www.kctax.gov.tw/",
-  "https://www.ntbsa.gov.tw/",
-  "https://www.nta.gov.tw/",
-  "https://www.mof.gov.tw/",
-  "https://www.cbc.gov.tw/",
-  "https://cpc.ey.gov.tw/",
-  "https://www.kh.edu.tw/",
-  "https://lvr.land.moi.gov.tw/",
-  "https://www.ris.gov.tw/app/portal/219",
 ];
 
 /* ---------- 收集文章裡的外部連結 ---------- */
