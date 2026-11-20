@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+  <rect width="1200" height="800" fill="#F4F4F2"/>
+  <text x="120" y="100" font-family="'IBM Plex Mono',monospace" font-size="23" fill="#737A83">換屋的執行面</text>
+  <text x="120" y="168" font-family="'Noto Sans TC',sans-serif" font-size="52" font-weight="700" fill="#16191D">兩邊的交屋日，<tspan fill="#B85400">對不上的那一段</tspan></text>
+  <text x="120" y="252" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">賣出</text>
+  <rect x="120" y="268" width="480" height="56" rx="6" fill="#16191D"/>
+  <text x="146" y="306" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#F4F4F2">舊屋　交屋</text>
+  <text x="700" y="388" font-family="'IBM Plex Mono',monospace" font-size="22" fill="#737A83">買進</text>
+  <rect x="700" y="404" width="380" height="56" rx="6" fill="#FD7305"/>
+  <text x="726" y="442" font-family="'Noto Sans TC',sans-serif" font-size="28" font-weight="700" fill="#F4F4F2">新屋　交屋</text>
+
+  <line x1="600" y1="296" x2="700" y2="296" stroke="#C9C6C0" stroke-width="3" stroke-dasharray="9 8"/>
+  <line x1="650" y1="296" x2="650" y2="516" stroke="#C9C6C0" stroke-width="3" stroke-dasharray="9 8"/>
+  <line x1="600" y1="432" x2="700" y2="432" stroke="#C9C6C0" stroke-width="3" stroke-dasharray="9 8"/>
+  <rect x="120" y="516" width="1060" height="0" fill="none"/>
+  <rect x="470" y="518" width="360" height="86" fill="none" stroke="#FD7305" stroke-width="3"/>
+  <text x="500" y="554" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">這段怎麼辦</text>
+  <text x="500" y="588" font-family="'Noto Sans TC',sans-serif" font-size="23" fill="#737A83">住哪裡、錢從哪來</text>
+  <text x="120" y="676" font-family="'Noto Sans TC',sans-serif" font-size="27" font-weight="700" fill="#16191D">交屋日可以綁「貸款撥付日」，不一定要綁死某一天</text>
+  <text x="120" y="714" font-family="'Noto Sans TC',sans-serif" font-size="24" fill="#737A83">展延條款與賣方借住都不在應記載事項裡——不寫就沒有</text>
+  <text x="120" y="768" font-family="'IBM Plex Mono',monospace" font-size="20" fill="#737A83">依成屋買賣定型化契約應記載事項第五、七、十、十二點</text>
+</svg>
