@@ -3,6 +3,14 @@
   "intro": "感謝每一組信任澄果團隊的屋主與買方。",
   "deals": [
     {
+      "id": "d-1795253680802",
+      "img": "assets/deals/20261121-202604-57vv.jpg",
+      "area": "美術館特區",
+      "community": "印象巴黎",
+      "caption": "美術館電梯三房平車",
+      "hidden": false
+    },
+    {
       "id": "d-1795253346561",
       "img": "assets/deals/20261121-澄果團隊金色賀成交海報-urc3.jpg",
       "area": "其他區域",
