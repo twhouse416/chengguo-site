@@ -1,7 +1,41 @@
 {
-  "updatedAt": "2026-11-13T03:14:39.231Z",
+  "updatedAt": "2026-11-22T02:50:04.656Z",
   "deals": {
     "meishu-baitiane": [
+      {
+        "date": "2026-09-20",
+        "floor": "二十層",
+        "totalFloor": "二十四層",
+        "ping": 29.61,
+        "unitPrice": 41.9,
+        "totalPrice": 1120,
+        "layout": "1房1廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": 150,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東四路６９６號二十樓之６",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
+        "date": "2026-09-07",
+        "floor": "十三層",
+        "totalFloor": "二十四層",
+        "ping": 29.35,
+        "unitPrice": 38.5,
+        "totalPrice": 1130,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東四路６９８號十三樓之３",
+        "project": "",
+        "unit": "",
+        "note": "含傢俱設備費；"
+      },
       {
         "date": "2026-08-25",
         "floor": "四層",
@@ -10167,40 +10201,6 @@
         "project": "",
         "unit": "",
         "note": "預售屋、或土地及建物分件登記案件；"
-      },
-      {
-        "date": "2021-02-18",
-        "floor": "十九層",
-        "totalFloor": "24",
-        "ping": 49.57,
-        "unitPrice": 31,
-        "totalPrice": 1540,
-        "layout": "1房2廳2衛",
-        "parking": "坡道平面",
-        "parkingPrice": 200,
-        "kind": "預售",
-        "use": "",
-        "addr": "高雄市鼓山區美術東四路700號旁A5-19F",
-        "project": "美術白天鵝",
-        "unit": "",
-        "note": ""
-      },
-      {
-        "date": "2021-02-18",
-        "floor": "十四層",
-        "totalFloor": "24",
-        "ping": 43.93,
-        "unitPrice": 29.1,
-        "totalPrice": 1295,
-        "layout": "3房2廳2衛",
-        "parking": "坡道平面",
-        "parkingPrice": 200,
-        "kind": "預售",
-        "use": "",
-        "addr": "高雄市鼓山區美術東四路700號旁A6-14F",
-        "project": "美術白天鵝",
-        "unit": "",
-        "note": ""
       }
     ],
     "meishu-1hao-yuan": [
@@ -24991,6 +24991,23 @@
       }
     ],
     "yinxiang-bali": [
+      {
+        "date": "2026-09-19",
+        "floor": "八層",
+        "totalFloor": "十五層",
+        "ping": 19.08,
+        "unitPrice": 29.6,
+        "totalPrice": 565,
+        "layout": "1房1廳1衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東四路４５８號八樓之１０",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-08-23",
         "floor": "三層",
@@ -46529,6 +46546,23 @@
     ],
     "huaren-hui": [
       {
+        "date": "2026-08-13",
+        "floor": "六層",
+        "totalFloor": "三十八層",
+        "ping": 115.28,
+        "unitPrice": 29.3,
+        "totalPrice": 3600,
+        "layout": "0房0廳0衛",
+        "parking": "坡道平面",
+        "parkingPrice": 750,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區裕誠路１６８９號六樓",
+        "project": "",
+        "unit": "",
+        "note": "毛胚屋；"
+      },
+      {
         "date": "2026-07-23",
         "floor": "二十五層",
         "totalFloor": "三十八層",
@@ -55627,6 +55661,23 @@
       }
     ],
     "meishu-huangju": [
+      {
+        "date": "2026-08-30",
+        "floor": "二十七層",
+        "totalFloor": "二十九層",
+        "ping": 86.32,
+        "unitPrice": 45.5,
+        "totalPrice": 3930,
+        "layout": "3房2廳3衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術北五街７６號二十七樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-07-11",
         "floor": "二十三層",
@@ -89419,6 +89470,23 @@
         "note": ""
       },
       {
+        "date": "2026-08-22",
+        "floor": "四層",
+        "totalFloor": "二十八層",
+        "ping": 98.99,
+        "unitPrice": 40.3,
+        "totalPrice": 3988,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區青海路２９９號四樓",
+        "project": "",
+        "unit": "",
+        "note": "含裝潢費；含傢俱設備費；"
+      },
+      {
         "date": "2026-05-07",
         "floor": "二十六層",
         "totalFloor": "二十八層",
@@ -104814,6 +104882,23 @@
       }
     ],
     "taipu-fengge": [
+      {
+        "date": "2026-08-11",
+        "floor": "十一層",
+        "totalFloor": "十五層",
+        "ping": 21.41,
+        "unitPrice": 23.4,
+        "totalPrice": 500,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東七街１０２號十一樓",
+        "project": "",
+        "unit": "",
+        "note": "親友、員工、共有人或其他特殊關係間之交易；"
+      },
       {
         "date": "2025-12-03",
         "floor": "八層",
@@ -128572,6 +128657,23 @@
       }
     ],
     "meishu-yuandi-a": [
+      {
+        "date": "2026-09-16",
+        "floor": "二十一層",
+        "totalFloor": "二十七層",
+        "ping": 57.57,
+        "unitPrice": 34.5,
+        "totalPrice": 1988,
+        "layout": "4房2廳2衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區明誠四路２５８號二十一樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2025-05-10",
         "floor": "四層",
@@ -153001,6 +153103,23 @@
         "note": "含裝潢費；含傢俱設備費；"
       },
       {
+        "date": "2026-08-07",
+        "floor": "十六層",
+        "totalFloor": "二十四層",
+        "ping": 44.95,
+        "unitPrice": 43.6,
+        "totalPrice": 1780,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": 200,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區美都路１３６號十六樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-06-25",
         "floor": "七層",
         "totalFloor": "二十四層",
@@ -176879,6 +176998,23 @@
     ],
     "heye-xue": [
       {
+        "date": "2026-09-26",
+        "floor": "十三層",
+        "totalFloor": "十五層",
+        "ping": 29.21,
+        "unitPrice": 39,
+        "totalPrice": 1140,
+        "layout": "2房2廳2衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區熱河三街３８號十三樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-09-20",
         "floor": "十三層",
         "totalFloor": "十五層",
@@ -176896,6 +177032,23 @@
         "note": ""
       },
       {
+        "date": "2026-09-20",
+        "floor": "四層",
+        "totalFloor": "十五層",
+        "ping": 38.39,
+        "unitPrice": 36.6,
+        "totalPrice": 1280,
+        "layout": "2房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": 210,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區熱河三街３８號四樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-09-12",
         "floor": "十四層",
         "totalFloor": "十五層",
@@ -176908,6 +177061,23 @@
         "kind": "成屋",
         "use": "",
         "addr": "高雄市三民區熱河三街３８號十四樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
+        "date": "2026-09-05",
+        "floor": "九層",
+        "totalFloor": "十五層",
+        "ping": 39.27,
+        "unitPrice": 38.4,
+        "totalPrice": 1290,
+        "layout": "2房2廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": 200,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區熱河三街４６號九樓",
         "project": "",
         "unit": "",
         "note": ""
@@ -181881,6 +182051,23 @@
         "note": "預售屋、或土地及建物分件登記案件；"
       },
       {
+        "date": "2023-06-17",
+        "floor": "二十二層",
+        "totalFloor": "二十二層",
+        "ping": 34.35,
+        "unitPrice": 56.1,
+        "totalPrice": 1631,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": 200,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區美都路１６８號二十二樓之６",
+        "project": "",
+        "unit": "",
+        "note": "113.07.10契約讓與115.06.15契約讓與115.07.23契約讓與預"
+      },
+      {
         "date": "2023-06-16",
         "floor": "二層",
         "totalFloor": "22",
@@ -185123,6 +185310,23 @@
         "kind": "成屋",
         "use": "",
         "addr": "高雄市三民區美都路１６８號二十樓之８",
+        "project": "",
+        "unit": "",
+        "note": "預售屋、或土地及建物分件登記案件；"
+      },
+      {
+        "date": "2023-04-29",
+        "floor": "二十一層",
+        "totalFloor": "二十二層",
+        "ping": 34.66,
+        "unitPrice": 57,
+        "totalPrice": 1681,
+        "layout": "1房1廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": 210,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市三民區美都路１６８號二十一樓之８",
         "project": "",
         "unit": "",
         "note": "預售屋、或土地及建物分件登記案件；"
@@ -214759,6 +214963,23 @@
         "kind": "成屋",
         "use": "",
         "addr": "高雄市鼓山區裕國街１３７號九樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
+        "date": "2026-09-08",
+        "floor": "十層",
+        "totalFloor": "十四層",
+        "ping": 45.12,
+        "unitPrice": 36.7,
+        "totalPrice": 1560,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": 173,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區裕國街１４９號十樓",
         "project": "",
         "unit": "",
         "note": ""
@@ -286289,6 +286510,23 @@
     ],
     "feiyang": [
       {
+        "date": "2026-10-10",
+        "floor": "八層",
+        "totalFloor": "十五層",
+        "ping": 32.47,
+        "unitPrice": 35,
+        "totalPrice": 1136,
+        "layout": "3房2廳2衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區龍勝路７８號八樓",
+        "project": "",
+        "unit": "",
+        "note": "含傢俱設備費；"
+      },
+      {
         "date": "2026-05-09",
         "floor": "四層",
         "totalFloor": "十五層",
@@ -305974,6 +306212,23 @@
     ],
     "taipu-meishu-beiyijie": [
       {
+        "date": "2026-09-09",
+        "floor": "十四層",
+        "totalFloor": "十四層",
+        "ping": 44.46,
+        "unitPrice": 31.2,
+        "totalPrice": 1386,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術北一街６９號十四樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-06-15",
         "floor": "十一層",
         "totalFloor": "十四層",
@@ -313868,6 +314123,23 @@
     ],
     "qiqin-13chongzou": [
       {
+        "date": "2026-10-22",
+        "floor": "七層",
+        "totalFloor": "十五層",
+        "ping": 46.46,
+        "unitPrice": 30.1,
+        "totalPrice": 1400,
+        "layout": "2房1廳1衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術東八街１０８號七樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2024-07-18",
         "floor": "二層",
         "totalFloor": "十五層",
@@ -317425,6 +317697,23 @@
     ],
     "fenghuanghui": [
       {
+        "date": "2026-04-28",
+        "floor": "二層",
+        "totalFloor": "二十四層",
+        "ping": 84.63,
+        "unitPrice": 38,
+        "totalPrice": 3216,
+        "layout": "3房2廳3衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區青海路５７號二樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-04-03",
         "floor": "二層",
         "totalFloor": "二十四層",
@@ -320911,6 +321200,23 @@
       }
     ],
     "huangyuan-yubao": [
+      {
+        "date": "2026-07-08",
+        "floor": "二十九層",
+        "totalFloor": "二十九層",
+        "ping": 93.47,
+        "unitPrice": 41.7,
+        "totalPrice": 3900,
+        "layout": "3房2廳2衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術南三路３５７號二十九樓",
+        "project": "",
+        "unit": "",
+        "note": "親友、員工、共有人或其他特殊關係間之交易；"
+      },
       {
         "date": "2026-02-04",
         "floor": "十九層",
@@ -336541,6 +336847,23 @@
       }
     ],
     "shidai-fuhao": [
+      {
+        "date": "2026-08-17",
+        "floor": "十層",
+        "totalFloor": "二十九層",
+        "ping": 151.64,
+        "unitPrice": 26,
+        "totalPrice": 3950,
+        "layout": "0房0廳0衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市左營區博愛二路３６６號十樓之２",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-02-02",
         "floor": "三層",
@@ -359288,6 +359611,23 @@
     ],
     "fangu": [
       {
+        "date": "2026-10-12",
+        "floor": "十一層",
+        "totalFloor": "十四層",
+        "ping": 24.46,
+        "unitPrice": 35.2,
+        "totalPrice": 860,
+        "layout": "2房2廳1衛",
+        "parking": "",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術南三路７１號十一樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-03-29",
         "floor": "十一層",
         "totalFloor": "十四層",
@@ -376234,6 +376574,23 @@
       }
     ],
     "renwen-shoufu": [
+      {
+        "date": "2026-10-14",
+        "floor": "十一層",
+        "totalFloor": "二十四層",
+        "ping": 98.75,
+        "unitPrice": 42.5,
+        "totalPrice": 4200,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區神農路１９７號十一樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-08-13",
         "floor": "二十層",
@@ -422303,6 +422660,23 @@
     ],
     "yujianzhu": [
       {
+        "date": "2026-09-22",
+        "floor": "二層",
+        "totalFloor": "十八層",
+        "ping": 75.22,
+        "unitPrice": 38.7,
+        "totalPrice": 2768,
+        "layout": "3房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": 180,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區裕國街１３號二樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
+      {
         "date": "2026-02-24",
         "floor": "十六層",
         "totalFloor": "十八層",
@@ -424518,6 +424892,23 @@
       }
     ],
     "fanersai": [
+      {
+        "date": "2026-08-18",
+        "floor": "三層",
+        "totalFloor": "十四層",
+        "ping": 70.4,
+        "unitPrice": 27,
+        "totalPrice": 1898,
+        "layout": "4房2廳2衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區美術南一街１５號三樓",
+        "project": "",
+        "unit": "",
+        "note": "本件賣方免除物之瑕疵擔保責任，惟若重大瑕疵除外如：非自然身故、輻射屋、海砂屋.."
+      },
       {
         "date": "2024-09-20",
         "floor": "十三層，十四層",
@@ -436895,6 +437286,23 @@
       }
     ],
     "jingcheng-cbd": [
+      {
+        "date": "2026-07-23",
+        "floor": "五層",
+        "totalFloor": "十三層",
+        "ping": 65.03,
+        "unitPrice": 30,
+        "totalPrice": 1950,
+        "layout": "0房0廳0衛",
+        "parking": "坡道平面",
+        "parkingPrice": null,
+        "kind": "成屋",
+        "use": "",
+        "addr": "高雄市鼓山區中華一路８２６號五樓",
+        "project": "",
+        "unit": "",
+        "note": ""
+      },
       {
         "date": "2026-02-05",
         "floor": "八層",
