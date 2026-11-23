@@ -25,7 +25,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle, unitStr, tooThin } from "./lib/layout.js";
+import { SITE, BRAND, esc, head, header, footer, sectionHead, ORG_ID, orgRef, fitTitle, unitStr, tooThin, fmtDate } from "./lib/layout.js";
 import { specVal, yearBuilt, unitCount, updatedDate, twDate } from "./build-communities.js";
 import { webSlug } from "./build-articles.js";
 import { devSlugOf, schoolSlugOf, schoolNames } from "./build-index-pages.js";
@@ -300,6 +300,73 @@ function sellerBlock(area, items, dealsMap) {
 
    這裡用純 HTML／CSS 畫橫條（不載任何圖表套件）——條長只是視覺輔助，
    真正的資料在同一列的數字與下方表格裡，爬蟲與 AI 讀到的是文字。 */
+/* ── 最新登錄成交 ──
+   每次實價登錄批次公告、網站重建後，這一區最新的成交會出現在這裡，
+   等於一份自動更新的「本區月報」：不用另外寫文章，也不會跟既有頁面搶排名。
+   只列收錄社區的成交（每筆都能點進社區頁），排除店面；預售照列並標示。
+   刻意不在這裡算漲跌：單月樣本太少（瑞豐巨蛋一個月約十筆電梯住宅），
+   又有一到三個月的登錄延遲，算出來的變動多半是雜訊。 */
+const LATEST_N = 12;
+function latestBlock(area, items, dealsMap) {
+  const all = items.flatMap(c => (dealsMap[c.slug] || [])
+    .filter(d => d.use !== "店面" && d.date && d.unitPrice >= 3 && d.unitPrice <= 150)
+    .map(d => ({ ...d, c })));
+  if (all.length < LATEST_N) return "";
+  all.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const rows = all.slice(0, LATEST_N);
+  const newest = rows[0].date;
+  const since = (() => { const d = new Date(newest); d.setDate(d.getDate() - 90); return d.toISOString().slice(0, 10); })();
+  const recent = all.filter(d => d.date > since);
+  const comms = new Set(recent.map(d => d.c.slug)).size;
+  /* 與社區頁逐筆表格的 ＊ 同一套判定：同社區近三年住家單價中位（不足三筆退回全期間），
+     低於六成或高於一點六倍者標記為可能的特殊交易（親屬移轉、持分等）。 */
+  const since3 = (() => { const d = new Date(); d.setFullYear(d.getFullYear() - 3); return d.toISOString().slice(0, 10); })();
+  const midOf = slug => {
+    const homes = (dealsMap[slug] || []).filter(d => d.use !== "店面");
+    const rec = homes.filter(d => String(d.date || "") >= since3);
+    const p = (rec.length >= 3 ? rec : homes).map(d => d.unitPrice).filter(Boolean).sort((a, b) => a - b);
+    if (p.length < 3) return 0;
+    return p.length % 2 ? p[(p.length - 1) / 2] : (p[p.length / 2 - 1] + p[p.length / 2]) / 2;
+  };
+  const isOdd = d => { const m = midOf(d.c.slug); return m > 0 && (d.unitPrice < m * 0.6 || d.unitPrice > m * 1.6); };
+  const anyOdd = rows.some(isOdd);
+  return `<section class="mt-16" id="latest">
+    <h2 class="display text-[23px] mb-3">${esc(area.name)}最新登錄成交</h2>
+    <p class="text-[16px] text-inkSoft leading-[1.9] mb-6 max-w-3xl">
+      依成交日期由新到舊，列出本站收錄社區最近的 ${LATEST_N} 筆住家成交，每次內政部批次公告後自動更新。
+      最近一筆成交日期為 ${ym(newest)}；以最新成交日往前推 90 天，共有 ${recent.length} 筆成交、分布在 ${comms} 個社區。
+    </p>
+    <div class="overflow-x-auto border border-line rounded-sm bg-surface">
+      <table class="w-full text-[15px] min-w-[640px]">
+        <caption class="sr-only">高雄${esc(area.name)}最新 ${LATEST_N} 筆實價登錄住家成交，欄位為成交日期、社區、類型、樓層、建物移轉總面積（坪）、單價（萬元／坪）、總價（萬元）</caption>
+        <thead>
+          <tr class="dl-head">
+            <th scope="col" class="dl-th">成交日期</th>
+            <th scope="col" class="dl-th">社區</th>
+            <th scope="col" class="dl-th">類型</th>
+            <th scope="col" class="dl-th">樓層</th>
+            <th scope="col" class="dl-th-r">坪數</th>
+            <th scope="col" class="dl-th-r">單價</th>
+            <th scope="col" class="dl-th-r">總價</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(d => `<tr class="dl-row">
+            <td class="dl-date">${fmtDate(d.date)}</td>
+            <td class="dl-cell"><a href="../../communities/${esc(d.c.slug)}.html" class="text-ink hover:text-orangeDeep underline decoration-line underline-offset-4">${esc(d.c.name)}</a></td>
+            <td class="dl-kind ${d.kind === "預售" ? "text-orangeDeep" : "text-inkFaint"}">${esc(d.kind || "成屋")}</td>
+            <td class="dl-cell">${esc(d.floor || "—")}</td>
+            <td class="dl-num">${d.ping || "—"}</td>
+            <td class="dl-num-em">${d.unitPrice}${isOdd(d) ? `<span class="text-orangeDeep font-normal" title="與該社區一般成交價差距較大，可能為特殊交易">＊</span>` : ""}</td>
+            <td class="dl-num">${d.totalPrice ? d.totalPrice.toLocaleString("zh-TW") : "—"}</td>
+          </tr>`).join("\n          ")}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 font-mono text-[12px] text-inkFaint leading-[1.8]">單價：萬元／坪；總價：萬元。實價登錄在過戶後才申報、每月 1、11、21 日批次公告，通常會有一到三個月的延遲，所以最近一兩個月的成交會陸續補上。已排除店面成交。${anyOdd ? "標＊者單價與該社區一般成交差距較大，可能是親屬間移轉、部分持分或含增建等特殊交易，僅標記供參考。" : ""}</p>
+  </section>`;
+}
+
 function trendBlock(area, t) {
   if (!t) return "";
   /* 只給一條「全部中位」的曲線會誤導：新成屋交屋潮來了又過去時，
@@ -827,6 +894,9 @@ function areaPage(area, ctx) {
     <h2 class="display text-[23px] mb-6">${esc(area.name)}近一年成交行情</h2>
     ${marketBlock(areaMarket)}
   </section>
+
+  <!-- 最新登錄成交（每次公告後自動更新） -->
+  ${latestBlock(area, items, dealsMap)}
 
   <!-- 逐年房價走勢 -->
   ${trendBlock(area, trend)}
