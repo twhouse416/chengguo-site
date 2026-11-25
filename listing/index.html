@@ -41,6 +41,17 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 .tag-new{background:var(--ink);color:#fff}
 .tag-up{background:var(--or);color:#fff}
 .way ol{margin:4px 0 0;padding-left:20px}
+.way .pri{margin:6px 0 4px}
+.way.focus{outline:3px solid var(--or);outline-offset:2px}
+.flow{font-size:15px;margin-top:8px}
+.flow:empty{display:none}
+.flow .st{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+.flow .st b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;margin-top:1px}
+.flow .st.done b{background:var(--ok)}
+.flow .ok{color:var(--ok);font-weight:700}.flow .err{color:var(--bad)}
+.flow code{user-select:all}
+.copy{min-height:30px;padding:2px 10px;font-size:13px;margin-left:6px}
+.manual{margin-top:10px;font-size:14px}.manual summary{cursor:pointer;color:var(--mute)}
 .tip{margin:0 0 14px;padding:10px 14px;background:#FCEFE3;border-left:4px solid var(--or);border-radius:3px;color:#7a3d00;font-size:15px}
 [hidden]{display:none!important}
 </style>
@@ -72,29 +83,34 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 
 <section id="dl">
 <h2>下載／更新擴充功能</h2>
-<p class="note" style="margin:0 0 10px">最新版本：<b id="latestV"></b>。第一次安裝或要更新，都從這裡下載。</p>
-<a class="btn" href="chengguo-uploader.zip" download>下載 澄果上架（擴充功能）</a>
-<details id="steps" style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">安裝與更新步驟</summary>
+<p class="note" style="margin:0 0 6px">最新版本：<b id="latestV"></b>。請用 Google Chrome 一般視窗操作。</p>
 <div class="ways">
-<div class="way">
+<div class="way" id="wayNew">
 <div class="way-h"><span class="tag tag-new">第一次安裝</span><span>這台電腦從來沒裝過</span></div>
+<button class="pri" id="btnInstall">一鍵安裝</button>
+<div class="flow" id="flowNew"></div>
+<details class="manual"><summary>手動方式</summary>
 <ol>
-<li>解壓縮後，把 <code>chengguo-uploader</code> 資料夾放到固定位置（例如「文件」），之後不要刪除或搬移。</li>
+<li><a href="chengguo-uploader.zip" download>下載壓縮檔</a>，解壓縮後把 <code>chengguo-uploader</code> 資料夾放到固定位置（例如「文件」），之後不要刪除或搬移。</li>
 <li>Chrome 網址列輸入 <code>chrome://extensions</code> 按 Enter。</li>
 <li>打開右上角「開發人員模式」，按左上角「載入未封裝項目」，選 <code>chengguo-uploader</code> 資料夾。</li>
 <li>Chrome 右上角登入自己的 Google 帳號，並到 <a href="join.html">成員資訊登記</a> 填資料，等管理者啟用。</li>
 </ol>
+</details>
 </div>
-<div class="way way-up">
+<div class="way way-up" id="wayUp">
 <div class="way-h"><span class="tag tag-up">更新</span><span>已經裝過舊版</span></div>
+<button class="pri" id="btnUpdate">一鍵更新</button>
+<div class="flow" id="flowUp"></div>
+<details class="manual"><summary>手動方式</summary>
 <ol>
-<li>解壓縮後，用新的 <code>chengguo-uploader</code> 資料夾<b>覆蓋</b>原本那個資料夾。</li>
+<li><a href="chengguo-uploader.zip" download>下載壓縮檔</a>，解壓縮後用新的 <code>chengguo-uploader</code> 資料夾<b>覆蓋</b>原本那個資料夾。</li>
 <li>到 <code>chrome://extensions</code>，在「澄果上架」卡片按重新整理（↻）。</li>
 <li>重新整理這一頁，版本顯示「已是最新」即完成；排程與設定都會保留。</li>
 </ol>
-</div>
-</div>
 </details>
+</div>
+</div>
 </section>
 
 <section>
@@ -114,7 +130,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
-const LATEST = '2.8.1';   // 每次更新擴充功能時，這裡也要改成新版本號
+const LATEST = '2.8.2';   // 每次更新擴充功能時，這裡也要改成新版本號
 const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
@@ -130,9 +146,9 @@ async function check() {
   if (!r) {
     set('dExt', 'tExt', 'bad', !isChrome ? '未安裝擴充元件（請改用 Google Chrome 開啟這一頁）'
       : '未安裝擴充元件（如果是無痕視窗，擴充元件預設不會啟用，請改用一般視窗開啟）');
-    $('tExt').className = 'err'; $('steps').open = true; return;
+    $('tExt').className = 'err'; $('wayNew').classList.add('focus'); return;
   }
-  if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充元件版本 ${r.version}，有新版本 ${LATEST}，請用下方「下載／更新擴充功能」更新`); $('tExt').className = 'err'; $('steps').open = true; }
+  if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充元件版本 ${r.version}，有新版本 ${LATEST}，請用下方「下載／更新擴充功能」更新`); $('tExt').className = 'err'; $('wayUp').classList.add('focus'); }
   else set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}，已是最新）`);
   if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); }
   else { set('dMe', 'tMe', 'bad', r.error || '無法確認身分'); $('joinRow').hidden = false; }
@@ -157,6 +173,112 @@ $('url').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 $('sched').addEventListener('click', () => send({ type: 'openSched' }));
 $('latestV').textContent = LATEST;
 check();
+}
+</script>
+<script src="jszip.min.js"></script>
+<script>
+// ===== 一鍵安裝／一鍵更新：下載壓縮檔 → 在同仁選的資料夾解壓縮（覆蓋）→ 指引或自動重新載入 =====
+{
+const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ext = msg => new Promise(res => { try { if (!(window.chrome && chrome.runtime && chrome.runtime.sendMessage)) return res(null); chrome.runtime.sendMessage(EXT_ID, msg, r => res(chrome.runtime.lastError ? null : r)); } catch (e) { res(null); } });
+const canFS = 'showDirectoryPicker' in window;
+// 記住安裝位置（下次更新不用再選）
+const db = () => new Promise((ok, no) => { const r = indexedDB.open('cg-installer', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+const kvSet = async (k, v) => { const d = await db(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = ok; }); };
+const kvGet = async k => { const d = await db(); return new Promise(ok => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => ok(q.result); q.onerror = () => ok(null); }); };
+
+function show(box, html) { $(box).innerHTML = html; }
+const step = (n, html, done) => `<div class="st${done ? ' done' : ''}"><b>${done ? '✓' : n}</b><div>${html}</div></div>`;
+const copyBtn = t => `<code>${t}</code><button class="copy" data-copy="${t}">複製</button>`;
+document.addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) { navigator.clipboard.writeText(b.dataset.copy).then(() => { b.textContent = '已複製'; setTimeout(() => b.textContent = '複製', 1500); }); } });
+
+async function getZip(box) {
+  show(box, '下載中…');
+  const r = await fetch('chengguo-uploader.zip?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('下載失敗，請稍後再試。');
+  return JSZip.loadAsync(await r.blob());
+}
+async function isOurs(dir) {
+  try { const f = await (await dir.getFileHandle('manifest.json')).getFile(); return JSON.parse(await f.text()).name === '澄果上架'; } catch (e) { return false; }
+}
+async function writeZip(zip, target, box) {
+  const files = Object.values(zip.files).filter(f => !f.dir && f.name.startsWith('chengguo-uploader/'));
+  let n = 0;
+  for (const f of files) {
+    const parts = f.name.slice('chengguo-uploader/'.length).split('/');
+    let dir = target;
+    for (const d of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(d, { create: true });
+    const fh = await dir.getFileHandle(parts.at(-1), { create: true });
+    const w = await fh.createWritable(); await w.write(await f.async('blob')); await w.close();
+    if (++n % 5 === 0) show(box, `放入檔案中… ${n} / ${files.length}`);
+  }
+  return files.length;
+}
+const pickErr = e => e && e.name === 'AbortError' ? '已取消。' : /system|blocked|not allowed|SecurityError/i.test(String(e && (e.name + e.message))) ? 'Chrome 不允許直接寫入這個位置（例如「文件」「桌面」本身）。請在裡面新增一個資料夾（例如「澄果」）再選它。' : '發生錯誤：' + (e && e.message || e);
+
+// ---- 一鍵安裝 ----
+$('btnInstall').onclick = async () => {
+  const box = 'flowNew';
+  if (!canFS) { show(box, '<span class="err">這個瀏覽器不支援一鍵安裝，請用 Google Chrome，或展開下方「手動方式」。</span>'); return; }
+  try {
+    show(box, step(1, '請選擇要放擴充功能的資料夾。建議先在「文件」裡新增一個資料夾（例如「澄果」）再選它；之後<b>不要刪除或搬移</b>。'));
+    const parent = await window.showDirectoryPicker({ id: 'cg-install', mode: 'readwrite', startIn: 'documents' });
+    const zip = await getZip(box);
+    const target = parent.name === 'chengguo-uploader' ? parent : await parent.getDirectoryHandle('chengguo-uploader', { create: true });
+    await writeZip(zip, target, box);
+    await kvSet('dir', target);
+    const where = parent.name === 'chengguo-uploader' ? parent.name : `${parent.name}\\chengguo-uploader`;
+    show(box, step(1, `已放好檔案：<b>${where}</b>`, true)
+      + step(2, `在 Chrome 開一個新分頁，網址列貼上 ${copyBtn('chrome://extensions')} 按 Enter。`)
+      + step(3, '打開右上角「<b>開發人員模式</b>」。')
+      + step(4, `按左上角「<b>載入未封裝項目</b>」，選剛才的 <b>${where}</b> 資料夾。`)
+      + step(5, '回到這一頁，<span id="waitTxt">正在等待安裝完成…</span>'));
+    for (let i = 0; i < 300; i++) {          // 最多等 10 分鐘
+      await sleep(2000);
+      const r = await ext({ type: 'ping' });
+      if (r) { const w = document.getElementById('waitTxt'); if (w) w.outerHTML = `<span class="ok">安裝成功（版本 ${r.version}）！頁面即將重新整理。</span>`; await sleep(1500); location.reload(); return; }
+    }
+  } catch (e) { show(box, `<span class="err">${pickErr(e)}</span>`); }
+};
+
+// ---- 一鍵更新 ----
+$('btnUpdate').onclick = async () => {
+  const box = 'flowUp';
+  if (!canFS) { show(box, '<span class="err">這個瀏覽器不支援一鍵更新，請用 Google Chrome，或展開下方「手動方式」。</span>'); return; }
+  try {
+    const before = await ext({ type: 'ping' });
+    let target = await kvGet('dir').catch(() => null);
+    if (target && (await target.requestPermission({ mode: 'readwrite' })) !== 'granted') target = null;
+    if (target && !(await isOurs(target))) target = null;
+    if (!target) {
+      show(box, step(1, '請選擇當初安裝的 <b>chengguo-uploader</b> 資料夾（不知道在哪：到 chrome://extensions →「澄果上架」→「詳細資料」→「來源」可以看到位置）。'));
+      let dir = await window.showDirectoryPicker({ id: 'cg-install', mode: 'readwrite', startIn: 'documents' });
+      if (!(await isOurs(dir))) {
+        try { const sub = await dir.getDirectoryHandle('chengguo-uploader'); if (await isOurs(sub)) dir = sub; } catch (e) {}
+      }
+      if (!(await isOurs(dir))) { show(box, '<span class="err">這個資料夾不是「澄果上架」。請選裡面有 manifest.json 的 chengguo-uploader 資料夾。</span>'); return; }
+      target = dir;
+    }
+    const zip = await getZip(box);
+    await writeZip(zip, target, box);
+    await kvSet('dir', target);
+    show(box, step(1, `已覆蓋新版檔案：<b>${target.name}</b>`, true) + step(2, '重新載入擴充功能中…'));
+    const r = await ext({ type: 'reload' });
+    if (r && r.ok) {
+      await sleep(2500);
+      let after = null; for (let i = 0; i < 10 && !after; i++) { after = await ext({ type: 'ping' }); if (!after) await sleep(800); }
+      show(box, step(1, '已覆蓋新版檔案', true) + step(2, `<span class="ok">更新完成（版本 ${after ? after.version : '—'}）！頁面即將重新整理。</span>`, true));
+      await sleep(1500); location.reload();
+    } else {
+      // 舊版擴充功能還不會自己重新載入，這一次要手動按 ↻
+      show(box, step(1, '已覆蓋新版檔案', true)
+        + step(2, `這次需要手動重新載入：網址列貼上 ${copyBtn('chrome://extensions')}，在「澄果上架」卡片按重新整理（↻）。${before ? '' : '（如果沒看到「澄果上架」，請改用「第一次安裝」。）'}`)
+        + step(3, '回到這一頁按 F5 重新整理，版本顯示「已是最新」即完成。之後的更新就會全自動。'));
+    }
+  } catch (e) { show(box, `<span class="err">${pickErr(e)}</span>`); }
+};
 }
 </script>
 </body>
