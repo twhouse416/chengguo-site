@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>物件上架小幫手</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 店內作業工具，冷靜、直接，像一張填好的委託單
+   IDEA: 物件上架工作單——一格一格往下填，每格都有「複製」
+   PICTURE: 工作單本身；照片牆就是畫面主體
+   COLOUR and TYPE: 澄果品牌 #FD7305 只作重點，冷調中性底 #F4F4F2；Noto Sans TC 900 標題、IBM Plex Mono 數字
+   LAYOUT: 單欄工作流，步驟列可跳轉，窄螢幕照樣一欄 */
+:root{color-scheme:light dark;--bg:light-dark(#F4F4F2,#141412);--card:light-dark(#fff,#1d1d1b);--ink:light-dark(#151513,#ecebe6);--mute:light-dark(#62625c,#a3a29b);--line:light-dark(#dcdcd6,#34342f);--or:#FD7305;--orSoft:light-dark(#fff1e6,#3a2412);--warn:light-dark(#fff6cc,#3b3410);--bad:light-dark(#b42318,#ff8a7a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1000px;margin:0 auto;padding:clamp(20px,4vw,48px) max(4vw,16px) 80px}
+h1{font-weight:900;font-size:clamp(28px,5vw,40px);line-height:1.1;margin:0 0 6px;text-wrap:balance}
+h2{font-weight:900;font-size:22px;margin:0 0 4px;display:flex;gap:10px;align-items:baseline}
+h2 b{font:500 14px "IBM Plex Mono",monospace;color:var(--or)}
+.lead{color:var(--mute);margin:0 0 20px;max-width:62ch}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 24px;padding:0;list-style:none}
+.steps a{display:block;padding:6px 12px;border:1px solid var(--line);border-radius:3px;color:var(--mute);text-decoration:none;font-size:14px}
+.steps a.on{border-color:var(--or);color:var(--ink);background:var(--orSoft)}
+section{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:clamp(16px,3vw,28px);margin:0 0 16px}
+section.off{opacity:.45;pointer-events:none}
+.hint{color:var(--mute);font-size:14px;margin:4px 0 14px}
+.drop{border:2px dashed var(--line);border-radius:4px;padding:28px 16px;text-align:center}
+.drop.hover{border-color:var(--or);background:var(--orSoft)}
+button,.btn{font:inherit;font-size:15px;min-height:44px;padding:8px 18px;border-radius:3px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--or);border-color:var(--or);color:#fff;font-weight:700}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:8px 20px;margin:14px 0 0;font-size:14px}
+.files div{border-top:1px solid var(--line);padding-top:6px}
+.csimg{display:block;max-width:100%;max-height:70vh;border:1px solid var(--line);border-radius:3px;margin:6px 0}pre.cs{white-space:pre-wrap;font-size:13px;max-height:50vh;overflow:auto;background:var(--bg);border:1px solid var(--line);padding:10px;border-radius:3px}
+.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:3px;padding:6px 10px;font-size:14px;color:var(--ink);cursor:pointer}.chip input{width:auto;margin:0}.chip.on{border-color:var(--or);background:var(--orSoft)}
+.files b{display:block;font-size:13px;color:var(--mute);font-weight:500}
+.ok{color:light-dark(#18794e,#6fd3a0)}.no{color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px 16px}
+label{display:block;font-size:13px;color:var(--mute)}
+input,textarea,select{width:100%;font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink);margin-top:3px}
+textarea{min-height:110px;resize:vertical;line-height:1.6}
+.full{grid-column:1/-1}
+.out{border-top:1px solid var(--line);padding:14px 0}
+.out h3{font-size:15px;margin:0 0 6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.out textarea{min-height:60px}
+.mono{font-family:"IBM Plex Mono",monospace}
+.flag{background:var(--warn);border-radius:3px;padding:10px 12px;font-size:14px;margin:10px 0}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.ph{position:relative;border:2px solid transparent;border-radius:4px;overflow:hidden;background:var(--bg)}
+.ph.sel{border-color:var(--or)}
+.ph img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;cursor:pointer}
+.ph .n{position:absolute;top:6px;left:6px;background:var(--or);color:#fff;font:500 13px "IBM Plex Mono",monospace;padding:1px 7px;border-radius:2px}
+.ph .bar{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 6px;color:var(--mute)}
+.ph .bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph .bar button{min-height:30px;padding:0 8px;font-size:13px}
+.mk{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) auto;gap:8px 12px;align-items:center;border-top:1px solid var(--line);padding:9px 0}
+.mk span:first-child{color:var(--mute);font-size:14px}
+.mk .v{font-weight:500;overflow-wrap:anywhere}
+.mk button{min-height:36px;padding:4px 12px;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:3px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .8s linear infinite;vertical-align:-2px}
+@keyframes r{to{transform:rotate(1turn)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+@media(max-width:600px){.mk{grid-template-columns:minmax(0,1fr) auto}.mk span:first-child{grid-column:1/-1}}
+details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>物件上架小幫手</h1>
+<div id="modeBar" class="flag" style="margin:0 0 14px"></div>
+<p class="lead">選一個物件資料夾，工具會整理出重點、組好 Marketplace 與社團用的文案，並排好照片。檔案只在你的電腦上讀取；AI 完整版會把 CS 表與介紹文案交給 AI 整理，離線模式則完全不上傳。</p>
+<ul class="steps" id="steps">
+<li><a href="#s1">1 選資料夾</a></li><li><a href="#s2">2 確認重點</a></li><li><a href="#s3">3 文案</a></li><li><a href="#s4">4 照片</a></li><li><a href="#s5">5 上架</a></li><li><a href="#s6">上架紀錄</a></li>
+</ul>
+
+<section id="s1">
+<h2><b>1</b>選物件資料夾</h2>
+<p class="hint">選整個物件資料夾即可，檔名不用特別改。A 開頭的子資料夾（分析、回報、原始相簿、產調謄本）和評估建議書都會自動略過，不會讀取。</p>
+<div class="drop" id="drop">
+<p style="margin:0 0 12px">把物件資料夾拖到這裡，或</p>
+<div class="row" style="justify-content:center">
+<label class="btn pri" style="color:#fff;background:var(--or);border-color:var(--or);display:inline-flex;align-items:center;font-weight:700">選擇資料夾<input type="file" id="pickDir" webkitdirectory multiple hidden></label>
+<label class="btn" style="display:inline-flex;align-items:center;color:var(--ink)">改選個別檔案<input type="file" id="pickFiles" multiple accept="image/*,.pdf,.docx,.xlsx" hidden></label>
+</div>
+</div>
+<div class="files" id="found"></div>
+<div id="csBox" hidden style="margin-top:16px"><b style="font-size:15px">哪一個是 CS 表（物件資料表）？</b><p class="hint" style="margin:2px 0 8px">工具先猜了一個，不對請改勾。可以勾多個（例如 CS 表有兩頁）。Excel、PDF、圖片都可以。</p><div class="row" id="csList"></div><button id="csAll" style="margin-top:8px;font-size:14px;min-height:36px">顯示所有檔案</button></div>
+<div class="row" style="margin-top:16px"><button class="pri" id="btnRead" disabled>讀取 CS 表、整理重點</button><span id="readMsg" class="hint" style="margin:0"></span></div>
+</section>
+
+<section id="s2" class="off">
+<h2><b>2</b>確認重點</h2>
+<p class="hint">這些是 AI 從 CS 表讀出來的資料。<b>請逐格核對</b>，有錯直接改。下一步的文案只會用這裡的內容，數字不會另外編。</p>
+<div id="csRef" hidden style="margin:0 0 14px"></div>
+<div class="grid" id="fields"></div>
+<div id="internal" class="flag" hidden></div>
+<div class="row" style="margin-top:16px">
+<label style="width:auto">語氣<select id="tone" style="width:auto"><option>穩重專業</option><option>溫馨生活感</option><option>簡短重點</option></select></label>
+<button class="pri" id="btnCopy">產生文案</button><span id="copyMsg" class="hint" style="margin:0"></span>
+</div>
+</section>
+
+<section id="s3" class="off">
+<h2><b>3</b>文案</h2>
+<p class="hint">文案可以直接修改。結尾會自動加上公司名稱（依不動產經紀業管理條例須註明經紀業名稱）、經紀人資訊，以及你的姓名、聯絡電話、LINE 與營業員證號。</p>
+<div class="grid" style="background:var(--orSoft);padding:12px;border-radius:4px;margin-bottom:6px">
+<label>你的姓名（必填）<input id="cfName" autocomplete="name"></label>
+<label>聯絡電話（必填）<input id="cfPhone" inputmode="tel" autocomplete="tel"></label>
+<label>LINE ID（選填）<input id="cfLine"></label>
+<label>營業員證號（必填）<input id="cfLic"></label>
+<p class="hint full" style="margin:0">填一次就會記在這台電腦，下次自動帶入；改了會立刻更新下方兩份文案的結尾。</p>
+</div>
+<div id="numFlag"></div>
+<div class="out"><h3>Marketplace 標題 <button data-copy="oTitle">複製</button></h3><input id="oTitle"></div>
+<div class="out"><h3>Marketplace 描述 <button data-copy="oDesc">複製</button></h3><textarea id="oDesc" style="min-height:300px"></textarea></div>
+<div class="out"><h3>社團轉發版（較短）<button data-copy="oGroup">複製</button></h3><textarea id="oGroup" style="min-height:200px"></textarea></div>
+<div class="row"><button id="btnRe">重新產生文案</button></div>
+</section>
+
+<section id="s4" class="off">
+<h2><b>4</b>照片</h2>
+<p class="hint">Marketplace 房屋銷售最多 10 張，預設選室內照、格局、公設的前 10 張。點照片選取或取消，橘色數字是上架順序，用 ◀ ▶ 調整。被勾成 CS 表的檔案不會出現在這裡；配置圖預設不選。</p>
+<div class="row" style="margin-bottom:12px"><button id="btnAll">恢復預設（前 10 張）</button><button id="btnNone">全不選</button><span class="hint mono" id="phCount" style="margin:0"></span></div>
+<div class="photos" id="photos"></div>
+<div class="row" style="margin-top:16px"><button class="pri" id="btnZip">下載已排序的照片包</button><span class="hint" id="zipMsg" style="margin:0"></span></div>
+</section>
+
+<section id="s5" class="off">
+<h2><b>5</b>到 Marketplace 上架</h2>
+<p class="hint">按「下載上架包」，會得到一個 .zip 檔，裡面有文案、欄位資料和排好順序的照片。按瀏覽器上的「澄果上架」擴充功能、選這個檔案，會自動打開 Marketplace 手機版的「房屋銷售」表單並填好標題、價格、說明和照片；最後自己檢查、按發布。</p>
+<div class="row" style="margin-bottom:12px"><button class="pri" id="btnPack">下載上架包</button><span class="hint" id="packMsg" style="margin:0"></span></div>
+<details><summary>沒有擴充功能？改用手機手動上架</summary><div id="mk"></div></details>
+<div class="row" style="margin-top:16px"><button class="pri" id="btnLog">我已上架，加入紀錄</button></div>
+</section>
+
+<section id="s6">
+<h2>上架紀錄</h2>
+<p class="hint">委託到期前 7 天會標成黃色，過期標紅色，提醒你回 Marketplace 下架。</p>
+<div class="scroll"><table><thead><tr><th>物件</th><th>上架日</th><th>委託到期</th><th></th></tr></thead><tbody id="log"></tbody></table></div>
+</section>
+<p class="hint">AI 讀表難免看錯字，上架前務必再核對一次價格、坪數與樓層。</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),1800)};
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={noAd:'',csInfo:'',folder:'',cands:[],showAll:false,docx:null,hints:[],photos:[],docText:'',fields:null,internal:null};
+let sample=null,downloads=null;
+const AI_URL='https://claude.ai/artifact/2wZ79ToaChGCXNPvrfdCcs';
+const LOCAL=!window.claude;
+function setMode(){
+  const ai=!!sample,bar=$('modeBar');
+  bar.hidden=ai;
+  if(!ai){bar.innerHTML=`<b>離線模式（不使用 AI）</b>：資料從 CS 表 Excel 與資料夾名稱自動抓取，說明只放【物件資料】與【特色】，CS 表也會顯示在第 2 步讓你對照核對。`+(LOCAL?` 有 Claude 帳號的同仁可改開 <a href="${AI_URL}">AI 完整版</a>。`:'')}
+  $('btnRead').textContent=ai?'讀取 CS 表、整理重點':'整理資料';
+  $('btnCopy').textContent=ai?'產生文案':'組合文案';
+}
+window.claude?.use?.('sample').then(x=>{sample=x;setMode()}).catch(()=>{});
+window.claude?.use?.('downloads').then(x=>{downloads=x}).catch(()=>{});
+async function saveFile(name,blob){
+  if(downloads)return downloads.save({filename:name,data:blob});
+  if(LOCAL){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);return}
+  throw new Error('nodl');
+}
+
+const FIELDS=[['title_hint','案名／標題提示'],['community','社區名稱'],['district','行政區'],['road','路段（不含門牌號）'],['type','建物型態'],['price','售價（萬元）'],['rooms','房'],['halls','廳'],['baths','衛'],['area_total','權狀坪數'],['area_main','主建物坪數'],['area_land','土地坪數'],['age','屋齡（年）'],['parking','車位'],['mgmt_fee','管理費'],['facing','座向'],['highlights','賣點（一行一點）']];
+const SKIP=/評估|分析|謄本|產調|回報|建議書|配案/;
+
+function on(id){const s=$(id);s.classList.remove('off');document.querySelectorAll('#steps a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id))}
+
+/* ---------- 1. 讀資料夾 ---------- */
+const GUESS=/(^|[^a-z])cs([^a-z]|$)|case\s*stud|委託|資料表|物件表|銷售表|現況/i;
+const PHOTOISH=n=>/^\d/.test(n)||/公設|格局|配置|外觀|空拍/.test(n);
+const isCS=f=>S.cands.some(c=>c.sel&&c.f===f);
+function ingest(list){
+  const files=list.filter(f=>{const p=(f._path||f.webkitRelativePath||f.name).split('/');return p.length<=2});
+  const top=list[0]&&(list[0]._path||list[0].webkitRelativePath||'').split('/');
+  S.folder=top&&top.length>1&&top[0]!=='x'?top[0]:'物件';
+  S.cands=[];S.docx=null;S.hints=S.folder!=='物件'?[S.folder]:[];S.photos=[];S.showAll=false;
+  for(const f of files){
+    const n=f.name,low=n.toLowerCase(),base=n.replace(/\.[^.]+$/,'');
+    if(SKIP.test(n))continue;
+    if(low.endsWith('.docx')){if(!S.docx||/文案|介紹/.test(n))S.docx=f;continue}
+    const img=/\.(jpe?g|png|webp)$/i.test(n);
+    if(img||/\.(pdf|xlsx|xls)$/i.test(n))S.cands.push({f,name:n,kind:img?'img':/\.pdf$/i.test(n)?'pdf':'xlsx',guess:GUESS.test(base),photoish:img&&PHOTOISH(n),sel:false});
+    if(img)S.photos.push({f,name:n,sel:false,url:URL.createObjectURL(f)});
+  }
+  let g=S.cands.filter(c=>c.guess);
+  if(!g.length)g=S.cands.filter(c=>c.kind==='xlsx').slice(0,1);
+  if(!g.length)g=S.cands.filter(c=>c.kind==='pdf').slice(0,1);
+  g.forEach(c=>c.sel=true);
+  const rank=n=>/^\d+/.test(n)?1:/格局/.test(n)?2:/公設/.test(n)?3:/配置/.test(n)?5:4;
+  S.photos.sort((a,b)=>rank(a.name)-rank(b.name)||a.name.localeCompare(b.name,'zh-Hant',{numeric:true}));
+  S.skipped=list.length-files.length;
+  defaultPick();renderFound();renderPhotos();
+}
+function renderFound(){
+  const sel=S.cands.filter(c=>c.sel);
+  $('found').innerHTML=[
+    ['物件資料夾',esc(S.folder)],
+    ['CS 表',sel.length?`<span class="ok">${sel.map(c=>esc(c.name)).join('、')}</span>`:'<span class="no">還沒選，請在下方勾選</span>'],
+    ['介紹文案',S.docx?`<span class="ok">${esc(S.docx.name)}</span>`:'沒有（不影響）'],
+    ['照片',`${S.photos.filter(p=>!isCS(p.f)).length} 張`],
+    ['略過',`子資料夾內 ${S.skipped} 個檔案，以及評估、分析、配案類文件`]
+  ].map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+  const list=S.cands.filter(c=>S.showAll||c.sel||!c.photoish);
+  $('csBox').hidden=!S.cands.length;
+  $('csList').innerHTML=list.map(c=>`<label class="chip${c.sel?' on':''}"><input type="checkbox" data-cs="${S.cands.indexOf(c)}"${c.sel?' checked':''}>${esc(c.name)}</label>`).join('')||'<span class="hint">沒有可選的檔案</span>';
+  $('csAll').hidden=S.showAll||!S.cands.some(c=>c.photoish&&!c.sel);
+  $('btnRead').disabled=!sel.length;
+}
+$('csList').onchange=e=>{const i=e.target.dataset.cs;if(i==null)return;S.cands[+i].sel=e.target.checked;defaultPick();renderFound();renderPhotos()};
+$('csAll').onclick=()=>{S.showAll=true;renderFound()};
+$('pickDir').onchange=e=>ingest([...e.target.files]);
+$('pickFiles').onchange=e=>ingest([...e.target.files].map(f=>(f._path='x/'+f.name,f)));
+const drop=$('drop');
+drop.ondragover=e=>{e.preventDefault();drop.classList.add('hover')};
+drop.ondragleave=()=>drop.classList.remove('hover');
+drop.ondrop=async e=>{
+  e.preventDefault();drop.classList.remove('hover');
+  const out=[];
+  const walk=(entry,path)=>new Promise(res=>{
+    if(entry.isFile)entry.file(f=>{f._path=path+f.name;out.push(f);res()},()=>res());
+    else{const r=entry.createReader(),all=[];const next=()=>r.readEntries(async es=>{if(!es.length){for(const c of all)await walk(c,path+entry.name+'/');res()}else{all.push(...es);next()}},()=>res());next()}
+  });
+  const items=[...e.dataTransfer.items].map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry()).filter(Boolean);
+  if(items.length===1&&items[0].isDirectory)await walk(items[0],'');
+  else for(const it of items){if(it.isFile)await new Promise(r=>it.file(f=>{f._path='x/'+f.name;out.push(f);r()},r))}
+  // 資料夾拖入時路徑是「資料夾/檔名」
+  ingest(out.map(f=>{if(!f._path.includes('/'))f._path='x/'+f._path;return f}));
+};
+
+async function toImage(file,max=1800){
+  const bmp=await createImageBitmap(file);const k=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.88));
+}
+async function pdfImages(file){
+  const doc=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const out=[];
+  for(let i=1;i<=Math.min(doc.numPages,3);i++){
+    const p=await doc.getPage(i);const v0=p.getViewport({scale:1});const v=p.getViewport({scale:1800/Math.max(v0.width,v0.height)});
+    const c=document.createElement('canvas');c.width=v.width;c.height=v.height;
+    await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;out.push(await new Promise(r=>c.toBlob(r,'image/jpeg',.88)));
+  }return out;
+}
+
+$('btnRead').onclick=async()=>{
+  if(!sample)return offlineRead();
+  const b=$('btnRead');b.disabled=true;$('readMsg').innerHTML='<span class="spin"></span> 正在讀取 CS 表…';
+  try{
+    const imgs=[];let sheet='';
+    for(const c of S.cands.filter(c=>c.sel)){
+      if(c.kind==='pdf')imgs.push(...await pdfImages(c.f));
+      else if(c.kind==='img')imgs.push(await toImage(c.f));
+      else if(window.XLSX){const wb=XLSX.read(await c.f.arrayBuffer(),{type:'array'});for(const n of wb.SheetNames){const t=XLSX.utils.sheet_to_csv(wb.Sheets[n],{blankrows:false}).replace(/,{2,}/g,',').replace(/^,|,$/gm,'').trim();if(t)sheet+=`【${c.name}／${n}】\n${t}\n`}}
+    }
+    sheet=sheet.slice(0,15000);
+    S.docText='';if(S.docx&&window.mammoth){try{S.docText=(await mammoth.extractRawText({arrayBuffer:await S.docx.arrayBuffer()})).value.trim().slice(0,4000)}catch(e){}}
+    const prompt=`你是台灣房仲公司的資料整理助理。以下是一份房屋物件的 CS 表（委託銷售資料表），可能是附圖，也可能是下面的 Excel 文字內容。
+Excel 內容：
+"""${sheet||'（無）'}"""
+請只根據 CS 表上看得到的內容填寫欄位；看不清楚或沒有寫的一律填空字串 ""，絕對不要猜測或自行推算。
+同仁寫的介紹文案（可補充 CS 表沒寫的賣點，但數字以 CS 表為準）：
+"""${S.docText||'（無）'}"""
+資料夾名稱與檔名提示（常是案名＋價格，可能含完整門牌，門牌號碼不可寫進欄位）：${S.hints.join('、')||'（無）'}
+
+規則：
+- road 只寫到路名或街名（例如「至真路」），不可寫門牌號碼與樓層門牌。
+- price 只填數字，單位萬元。坪數、屋齡、樓層只填數字。
+- parking 簡述車位型式與是否含在總價，例如「坡道平面車位，含在總價」。
+- highlights 給 3～6 點對買方有意義的賣點，每點 20 字內，只能用表上或介紹文案中有的事實。
+- 以下屬內部資料，不可出現在任何公開欄位：屋主姓名電話、身分證、底價、服務費、地號建號、完整門牌。
+- internal 物件放內部提醒用資料：委託到期日（YYYY-MM-DD）與發現的敏感資訊類別（只寫類別，不寫內容）。
+
+只回傳 JSON：
+{"title_hint":"","community":"","district":"","road":"","type":"","price":"","rooms":"","halls":"","baths":"","area_total":"","area_main":"","area_land":"","age":"","parking":"","mgmt_fee":"","facing":"","highlights":[""],"internal":{"expiry":"","sensitive":[""]}}`;
+    const r=await sample.json(prompt,imgs.length?{images:imgs,modelTier:'complex'}:{modelTier:'complex'});
+    S.internal=r.internal||{};delete r.internal;
+    {const xs=await csExcelResults();S.noAd=xs.map(x=>x.noAd).find(Boolean)||'';S.csInfo=''}
+    if(Array.isArray(r.highlights))r.highlights=r.highlights.filter(Boolean).join('\n');
+    S.fields=r;renderFields();on('s2');$('readMsg').textContent='完成。';location.hash='s2';
+  }catch(e){$('readMsg').textContent=e.code==='not_granted'?'需要同意讓此頁使用 AI 才能整理。':e.code==='rate_limited'?'使用太頻繁，請稍等一分鐘再試。':'讀取失敗：'+(e.message||e)}
+  b.disabled=false;
+};
+
+/* ---------- 離線模式 ---------- */
+const AREA_DIST=[[/瑞豐|巨蛋|左營/,'左營區'],[/美術|農十六|農16|鼓山/,'鼓山區'],[/中都|三民/,'三民區']];
+function parseFolder(name){
+  const o={};const n=name.replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248));
+  const pr=[...n.matchAll(/(\d+(?:\.\d+)?)\s*萬/g)].pop();if(pr)o.price=pr[1];
+  const ty=n.match(/透天|別墅|華廈|公寓|電梯大樓|大樓|店面|套房|土地/);if(ty)o.type=ty[0];
+  const grp=[...n.matchAll(/[（(]([^）)]*)[）)]/g)].map(m=>m[1]).filter(x=>!/^(售|租|出售|出租)$/.test(x.trim()));
+  const inner=(grp[0]||'').split(/[-－—]/);
+  if(inner[0])o.title_hint=inner[0].trim();
+  const addr=inner.slice(1).join('');const rd=addr.match(/^(.*?(?:路|街|大道)(?:[一二三四五六七八九十]段)?)/);if(rd)o.road=rd[1].replace(/^.*?[市區]/,'');
+  for(const[re,d]of AREA_DIST)if(re.test(n)){o.district=d;break}
+  return o;
+}
+function parseDoc(t){
+  const o={};if(!t)return o;const n=t.replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248));
+  const g=n.match(/(\d)\s*房\s*(?:(\d)\s*廳)?\s*(?:(\d)\s*衛)?/);if(g){o.rooms=g[1];if(g[2])o.halls=g[2];if(g[3])o.baths=g[3]}
+  const m=(re)=>{const x=n.match(re);return x?x[1]:''};
+  o.area_total=m(/權狀[^\d\n]{0,6}(\d+(?:\.\d+)?)\s*坪/);o.area_main=m(/主建[物坪]?[^\d\n]{0,6}(\d+(?:\.\d+)?)\s*坪/);
+  o.area_land=m(/(?:土地|地坪)[^\d\n]{0,6}(\d+(?:\.\d+)?)\s*坪/);o.age=m(/屋齡[^\d\n]{0,4}(\d+(?:\.\d+)?)/);
+  return o;
+}
+/* 公司 CS 表（CASE STUDY）Excel 樣板：依固定儲存格讀取，不需 AI */
+function readCSExcel(wb){
+  const name=wb.SheetNames.find(n=>Object.keys(wb.Sheets[n]).some(k=>k[0]!=='!'&&/CASE\s*STUDY/i.test(String(wb.Sheets[n][k].v||''))));
+  if(!name)return null;
+  const ws=wb.Sheets[name],enc=XLSX.utils.encode_cell,dec=XLSX.utils.decode_cell;
+  const norm=x=>String(x??'').replace(/\s+/g,'');
+  const idx={};for(const k in ws){if(k[0]==='!')continue;const t=norm(ws[k].v);if(t&&!(t in idx))idx[t]=k}
+  // 用標籤找位置：label 在範本的位置 tl、值在範本的位置 tv；實際檔案若整塊位移，依標籤實際位置換算
+  const at=(label,tl,tv)=>{const L=idx[label];if(!L)return tv;const a=dec(L),b=dec(tl),c=dec(tv);return enc({r:a.r+c.r-b.r,c:a.c+c.c-b.c})};
+  const bad=x=>!x||/^(請選擇|0|：|:|#N\/A|無)$/.test(x);
+  const v=a=>{const c=ws[a];if(!c)return'';const x=String(c.w??c.v??'').trim();return bad(x)?'':x};
+  const num=a=>{const c=ws[a];if(!c)return'';const n=typeof c.v==='number'?c.v:parseFloat(String(c.v).replace(/[^\d.]/g,''));return isFinite(n)&&n>0?String(+n.toFixed(2)):''};
+  const dig=x=>(String(x).match(/\d+(?:\.\d+)?/)||[''])[0];
+  const f={},hl=[];
+  f.title_hint=v(at('案名','I9','Q9'));
+  const addr=v(at('物件坐落','BH9','BP9')).replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248));
+  const dm=addr.match(/(?:市|縣)(.{1,3}?[區鄉鎮市])/);if(dm)f.district=dm[1];
+  const rm=addr.replace(/^(?:.{2,3}[市縣])?.{1,3}?[區鄉鎮市]/,'').match(/^(.*?(?:路|街|大道)(?:[一二三四五六七八九十]段)?)/);if(rm)f.road=rm[1];
+  f.community=v(at('建案名稱','EA9','EK9'));
+  f.type=v(at('產品類型：','DN2','EA2'));
+  f.price=num(at('總價','BT12','CB12'));
+  f.area_total=num(at('總建','I12','Q12'));f.area_main=num(at('主建總坪','I15','W15'));f.area_land=num(at('土地','AP12','AX12'));
+  f.age=dig(v(at('建築完成','CC15','DJ15')));
+  f.rooms=dig(v(at('格局','CC19','CM19')));f.halls=dig(v(at('格局','CC19','CT19')));f.baths=dig(v(at('格局','CC19','DA19')));
+  const pk=v(at('汽車位','AL19','AV19'));
+  f.parking=pk==='無車位'?'無車位':[v(at('汽車位','AL19','AX20')),v(at('汽車位','AL19','BN19')),pk&&(/^\d+$/.test(pk)?pk+' 個':pk)].filter(Boolean).join('，');
+  const fee=num(at('管理費','CC22','DI23'));f.mgmt_fee=fee?fee+' 元/月':(/無管理費/.test(v(at('管理費','CC22','CS22')))?'無':'');
+  f.facing=v(at('朝向','DC18','DK18'));
+  const rw=num(at('面前路寬','CC16','CO16')),fw=num(at('建物面寬','CZ16','DK16'));
+  if(rw)hl.push(`面前路寬約 ${rw} 米`);if(fw)hl.push(`建物面寬約 ${fw} 米`);
+  const sch=(a,suf)=>{const x=v(a).replace(new RegExp(suf+'$'),'').trim();return x?x+suf:''};
+  const es=sch(at('學區','DT17','EA17'),'國小'),js=sch(at('學區','DT17','EA18'),'國中');
+  if(es||js)hl.push('學區參考：'+[es,js].filter(Boolean).join('、'));
+  // 生活機能：只取有實際內容的類別（捷運、市場等只有「步行／車行距離」，不列入；增建、現況不對外）
+  const base=at('生活機能/物件特色','DY16','DY16'),b0=dec(base);
+  for(let i=3;i<=9;i++){const cat=v(enc({r:b0.r+i,c:b0.c-5})),val=v(enc({r:b0.r+i,c:b0.c+2}));if(/^(公設|制震|工法)$/.test(cat)&&val&&!/距離$/.test(val))hl.push(val)}
+  v(enc({r:b0.r+10,c:b0.c})).split(/\r?\n/).map(x=>x.replace(/^\d+[.、]\s*/,'').trim()).filter(Boolean).forEach(x=>hl.push(x));
+  f.highlights=[...new Set(hl)].join('\n');
+  for(const k in f)if(!f[k])delete f[k];
+  let noAd='';for(const k in ws){if(k[0]==='!')continue;const m=String(ws[k].v||'').match(/不對外廣告|不刊登網路廣告/);if(m){noAd=m[0];break}}
+  return{fields:f,count:Object.keys(f).length,noAd};
+}
+async function csExcelResults(){
+  const out=[];if(!window.XLSX)return out;
+  for(const c of S.cands.filter(c=>c.sel&&c.kind==='xlsx')){try{const r=readCSExcel(XLSX.read(await c.f.arrayBuffer(),{type:'array'}));if(r)out.push(r)}catch(e){}}
+  return out;
+}
+async function showCSRef(){
+  const box=$('csRef'),sel=S.cands.filter(c=>c.sel);box.innerHTML='';
+  if(!sel.length){box.hidden=true;return}
+  const h=document.createElement('p');h.className='hint';h.textContent='CS 表對照：請看著下面的 CS 表，把價格、坪數、樓層、屋齡等數字填進欄位（已自動抓到的也請核對）。';box.appendChild(h);
+  for(const c of sel){
+    try{
+      if(c.kind==='img'){const im=document.createElement('img');im.className='csimg';im.src=URL.createObjectURL(c.f);box.appendChild(im)}
+      else if(c.kind==='pdf'){for(const b of await pdfImages(c.f)){const im=document.createElement('img');im.className='csimg';im.src=URL.createObjectURL(b);box.appendChild(im)}}
+      else if(window.XLSX){const wb=XLSX.read(await c.f.arrayBuffer(),{type:'array'});let t='';for(const n of wb.SheetNames){const x=XLSX.utils.sheet_to_csv(wb.Sheets[n],{blankrows:false,FS:'　'}).replace(/(　){2,}/g,'　').trim();if(x)t+=`【${n}】\n${x}\n`}const pre=document.createElement('pre');pre.className='cs';pre.textContent=t||'（Excel 內沒有文字）';box.appendChild(pre)}
+    }catch(e){}
+  }
+  box.hidden=false;
+}
+async function offlineRead(){
+  const b=$('btnRead');b.disabled=true;$('readMsg').innerHTML='<span class="spin"></span> 整理中…';
+  try{
+    S.docText='';if(S.docx&&window.mammoth){try{S.docText=(await mammoth.extractRawText({arrayBuffer:await S.docx.arrayBuffer()})).value.trim()}catch(e){}}
+    const f=Object.fromEntries(FIELDS.map(([k])=>[k,'']));
+    Object.assign(f,Object.fromEntries(Object.entries(parseDoc(S.docText)).filter(([,v])=>v)),parseFolder(S.folder));
+    const xs=await csExcelResults();S.noAd=xs.map(x=>x.noAd).find(Boolean)||'';
+    let n=0;for(const x of xs){Object.assign(f,x.fields);n+=x.count}
+    S.csInfo=n?`已從 CS 表 Excel 自動讀取 ${n} 個欄位，仍請逐格核對。`:'';
+    S.fields=f;S.internal={};renderFields();await showCSRef();on('s2');$('readMsg').textContent='完成，請到第 2 步核對。';location.hash='s2';
+  }catch(e){$('readMsg').textContent='整理失敗：'+(e.message||e)}
+  b.disabled=false;
+}
+function offlineCopy(){
+  const f=S.fields=readFields();
+  const lay=[f.rooms&&f.rooms+'房',f.halls&&f.halls+'廳',f.baths&&f.baths+'衛'].filter(Boolean).join('');
+  const nm=f.title_hint||f.community;const title=[f.district,nm,f.type&&!(nm||'').includes(f.type)&&f.type,f.rooms&&f.rooms+'房',f.price&&f.price+'萬'].filter(Boolean).join(' ');
+  const basics=[
+    f.price&&`■ 售價：${f.price} 萬`,f.community&&`■ 社區：${f.community}`,(f.district||f.road)&&`■ 位置：高雄市${f.district}${f.road}`,f.type&&`■ 型態：${f.type}`,lay&&`■ 格局：${lay}`,
+    f.area_total&&`■ 權狀：${f.area_total} 坪`,f.area_main&&`■ 主建物：${f.area_main} 坪`,f.area_land&&`■ 土地：${f.area_land} 坪`,
+    f.age&&`■ 屋齡：${f.age} 年`,f.parking&&`■ 車位：${f.parking}`,f.mgmt_fee&&`■ 管理費：${f.mgmt_fee}`,f.facing&&`■ 座向：${f.facing}`
+  ].filter(Boolean);
+  const hl=f.highlights.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>'✔ '+x);
+  const desc=[basics.length&&'【物件資料】\n'+basics.join('\n'),hl.length&&'【特色】\n'+hl.join('\n')].filter(Boolean).join('\n\n');
+  $('oTitle').value=title;
+  $('oDesc').value=desc+'\n'+footer();
+  $('oGroup').value=[title,basics.slice(0,6).join('\n'),hl.slice(0,3).join('\n')].filter(Boolean).join('\n\n')+'\n'+footer();
+  checkNumbers();
+  on('s3');on('s4');on('s5');renderMk();$('copyMsg').textContent='完成。';location.hash='s3';
+}
+
+/* ---------- 2. 確認重點 ---------- */
+function renderFields(){
+  $('fields').innerHTML=FIELDS.map(([k,l])=>k==='highlights'
+    ?`<label class="full">${l}<textarea id="f_${k}">${esc(S.fields[k])}</textarea></label>`
+    :`<label>${l}<input id="f_${k}" value="${esc(S.fields[k])}"></label>`).join('');
+  const it=S.internal||{},box=$('internal'),sens=(it.sensitive||[]).filter(Boolean);
+  box.hidden=!(it.expiry||sens.length||S.csInfo||S.noAd);
+  box.style.background=S.noAd?'light-dark(#fde8e6,#3d1814)':'';
+  box.textContent=[S.noAd&&`⚠ 這個物件的 CS 表勾選了「${S.noAd}」，不可以刊登到 Marketplace 或社團。`,S.csInfo,it.expiry&&`委託到期日：${it.expiry}（不會寫進文案，會存進上架紀錄提醒下架）`,sens.length&&`CS 表含有內部資訊（${sens.join('、')}），已排除在欄位之外。`].filter(Boolean).join('　');
+}
+const readFields=()=>{const o={};for(const[k]of FIELDS)o[k]=$('f_'+k).value.trim();return o};
+
+/* ---------- 3. 文案 ---------- */
+const cfg=()=>({name:$('cfName').value.trim(),phone:$('cfPhone').value.trim(),line:$('cfLine').value.trim(),lic:$('cfLic').value.trim()});
+function footer(){const c=cfg();const contact=[c.name&&`聯絡人：${c.name}`,c.phone&&`電話：${c.phone}`,c.line&&`LINE：${c.line}`,c.lic&&`營業員證號：${c.lic}`].filter(Boolean).join('｜');return['','——————','台灣房屋 澄果團隊（澄果資產有限公司）',contact,'店址：高雄市鼓山區青海路416號｜店電：07-9766977','物件資訊以現況及產權登記資料為準','經紀人：邱秀琴(109)屏縣字第000147號'].filter((x,i)=>i===0||x).join('\n')}
+const nums=s=>(String(s).replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-65248)).match(/\d+(?:\.\d+)?/g)||[]);
+function checkNumbers(){
+  const ok=new Set([...nums(JSON.stringify(S.fields)),...nums(S.docText),...nums(S.hints.join(' '))]);
+  const body=[$('oTitle').value,$('oDesc').value.split('——————')[0],$('oGroup').value.split('——————')[0]].join(' ');
+  const bad=[...new Set(nums(body).filter(n=>!ok.has(n)&&!ok.has(String(+n))&&+n>9))];
+  $('numFlag').innerHTML=bad.length?`<div class="flag">以下數字在第 2 步的資料裡找不到，請確認是否正確：<b class="mono">${bad.map(esc).join('、')}</b></div>`:'';
+}
+async function genCopy(){
+  if(!sample)return offlineCopy();
+  S.fields=readFields();const b=$('btnCopy');b.disabled=true;$('btnRe').disabled=true;
+  $('copyMsg').innerHTML='<span class="spin"></span> 正在寫文案…';
+  try{
+    const prompt=`你是高雄「台灣房屋 澄果團隊」的文案助理，要幫同仁寫 Facebook Marketplace 房屋出售刊登文案。
+語氣：${$('tone').value}。讀者：首購族與換屋家庭。
+
+物件資料（已由同仁核對，是唯一可用的事實來源）：
+${JSON.stringify(S.fields,null,1)}
+
+同仁原本的介紹文案，只供參考語感與賣點：
+"""${S.docText||'（無）'}"""
+
+硬性規則：
+1. 文案中出現的每一個數字（價格、坪數、樓層、屋齡、房數等）都必須來自上面的物件資料，不可推算、換算或新增。資料是空的就不要提。
+2. 不寫門牌號碼，地點只寫行政區＋路段或社區名。
+3. 不用誇大或保證字眼：最便宜、保證、穩賺、必漲、全區唯一、投資首選等。學校、捷運只能寫「鄰近」「步行可達」等描述，不可保證學區。
+4. 不寫任何聯絡方式與公司名稱（系統會自動加在結尾）。
+5. 不要寫任何樓層資訊（所在樓層、總樓層、地上幾層）。
+6. 可用少量符號整理段落（例如 ■ ▶ ✔），不要使用 hashtag 以外的網址。
+
+請產出：
+- title：Marketplace 標題，30 字內，包含行政區或社區、房數、價格。
+- description：Marketplace 描述，350～600 字，開頭一句吸引人的重點，接著條列基本資料，再寫 2～3 段生活機能與賣點。
+- group：社團轉發版，150～250 字，精簡有力，結尾附 3～5 個 hashtag。
+
+只回傳 JSON：{"title":"","description":"","group":""}`;
+    const r=await sample.json(prompt,{modelTier:'default'});
+    $('oTitle').value=r.title||'';$('oDesc').value=(r.description||'').trim()+'\n'+footer();$('oGroup').value=(r.group||'').trim()+'\n'+footer();
+    checkNumbers();on('s3');on('s4');on('s5');renderMk();$('copyMsg').textContent='完成。';location.hash='s3';
+  }catch(e){$('copyMsg').textContent=e.code==='rate_limited'?'使用太頻繁，請稍等一分鐘再試。':'產生失敗：'+(e.message||e)}
+  b.disabled=false;$('btnRe').disabled=false;
+}
+$('btnCopy').onclick=genCopy;$('btnRe').onclick=genCopy;
+['oTitle','oDesc','oGroup'].forEach(id=>$(id).addEventListener('input',()=>{checkNumbers();renderMk()}));
+
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('已複製')}catch(e){toast('無法自動複製，請手動選取')}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(b)copyText($(b.dataset.copy).value);const m=e.target.closest('[data-mk]');if(m)copyText(m.dataset.mk)});
+
+/* ---------- 4. 照片 ---------- */
+const MAXP=10;
+function defaultPick(){let k=0;for(const p of S.photos){p.sel=!isCS(p.f)&&!/配置/.test(p.name)&&k<MAXP;if(p.sel)k++}}
+const selCount=()=>S.photos.filter(p=>p.sel&&!isCS(p.f)).length;
+function renderPhotos(){
+  let k=0;
+  $('photos').innerHTML=S.photos.map((p,i)=>isCS(p.f)?'':`<div class="ph${p.sel?' sel':''}">${p.sel?`<span class="n">${++k}</span>`:''}<img src="${esc(p.url)}" alt="${esc(p.name)}" data-i="${i}"><div class="bar"><button data-mv="${i}" data-d="-1" aria-label="往前">◀</button><span>${esc(p.name)}</span><button data-mv="${i}" data-d="1" aria-label="往後">▶</button></div></div>`).join('');
+  $('phCount').textContent=`已選 ${k} / ${MAXP} 張（共 ${S.photos.filter(p=>!isCS(p.f)).length} 張）`;
+}
+$('photos').onclick=e=>{
+  const img=e.target.closest('img');if(img){const p=S.photos[+img.dataset.i];if(!p.sel&&selCount()>=MAXP){toast(`Marketplace 最多 ${MAXP} 張，請先取消一張`);return}p.sel=!p.sel;renderPhotos();return}
+  const b=e.target.closest('[data-mv]');if(b){const i=+b.dataset.mv,j=i+ +b.dataset.d;if(j<0||j>=S.photos.length)return;[S.photos[i],S.photos[j]]=[S.photos[j],S.photos[i]];renderPhotos()}
+};
+$('btnAll').onclick=()=>{defaultPick();renderPhotos()};
+$('btnNone').onclick=()=>{S.photos.forEach(p=>p.sel=false);renderPhotos()};
+$('btnZip').onclick=async()=>{
+  const sel=S.photos.filter(p=>p.sel&&!isCS(p.f));if(!sel.length){toast('請先選照片');return}
+  if(!downloads&&!LOCAL){$('zipMsg').textContent='這裡無法下載，請直接依上方順序到資料夾選取照片。';return}
+  $('zipMsg').innerHTML='<span class="spin"></span> 打包中…';
+  try{
+    const z=new JSZip();sel.forEach((p,i)=>z.file(`${String(i+1).padStart(2,'0')}_${p.name}`,p.f));
+    const blob=await z.generateAsync({type:'blob'});
+    await saveFile(`${S.folder}_上架照片.zip`,blob);$('zipMsg').textContent='已下載，解壓後依編號上傳。';
+  }catch(e){$('zipMsg').textContent='下載取消或失敗，可直接到資料夾依順序選照片。'}
+};
+
+/* ---------- 5. Marketplace 欄位 ---------- */
+function renderMk(){
+  const f=S.fields||{},p=parseFloat(f.price);
+  const rows=[
+    ['類別','房屋銷售'],
+    ['標題（你想賣些什麼？）',$('oTitle').value],
+    ['價格（NT$）',isFinite(p)?String(Math.round(p*10000)):''],
+    ['地點','維持預設「高雄市」'],
+    ['說明',$('oDesc').value]
+  ];
+  $('mk').innerHTML=`<p class="hint" style="margin:6px 0 4px">不用擴充功能時：用手機的 Facebook App（或手機瀏覽器開 m.facebook.com）→ Marketplace →「出售」，類別選「房屋銷售」，照下面的順序貼上；照片先用照片包傳到手機，最多 10 張。</p>`
+  +rows.map(([k,v],i)=>`<div class="mk"><span>${k}</span><span class="v">${v?esc(v.length>60?v.slice(0,60)+'…':v):'<span class="no">無資料</span>'}</span>${v&&i!==0&&i!==3?`<button data-mk="${esc(v)}">複製</button>`:'<span></span>'}</div>`).join('')
+  +`<div class="mk"><span>社團轉發</span><span class="v">發佈後到社團分享，或用第 3 步的社團版另外發文</span><button data-copy="oGroup">複製</button></div>`;
+}
+
+function listingData(){
+  const f=S.fields||{},p=parseFloat(f.price),a=parseFloat(f.area_total);
+  return{v:1,source:'chengguo-listing-helper',created:new Date().toISOString(),
+    title:$('oTitle').value.trim(),price:isFinite(p)?Math.round(p*10000):null,
+    property_type:/透天|別墅/.test(f.type)?'house':/店面/.test(f.type)?'other':'apartment',property_type_label:f.type||'',
+    bedrooms:parseInt(f.rooms)||null,bathrooms:parseFloat(f.baths)||null,
+    location:[f.district&&'高雄市'+f.district,f.road].filter(Boolean).join(''),
+    area_ping:isFinite(a)?a:null,area_m2:isFinite(a)?+(a*3.30579).toFixed(1):null,
+    description:$('oDesc').value,group_post:$('oGroup').value,
+    expiry:(S.internal&&S.internal.expiry)||'',photos:[]};
+}
+$('btnPack').onclick=async()=>{
+  const sel=S.photos.filter(p=>p.sel&&!isCS(p.f));
+  if(S.noAd){toast(`CS 表標示「${S.noAd}」，不能產生上架包`);return}
+  if(!$('oTitle').value.trim()){toast('請先產生文案');return}
+  {const c=cfg(),miss=[['cfName',c.name],['cfPhone',c.phone],['cfLic',c.lic]].find(x=>!x[1]);if(miss){toast('請先在第 3 步填好姓名、聯絡電話與營業員證號');location.hash='s3';$(miss[0]).focus();return}}
+  refreshFooter();
+  if(!sel.length){toast('請先在第 4 步選照片');return}
+  if(!downloads&&!LOCAL){$('packMsg').textContent='這裡無法下載，請改從桌面圖示開啟小幫手。';return}
+  $('packMsg').innerHTML='<span class="spin"></span> 打包中…';
+  try{
+    const d=listingData(),z=new JSZip();
+    sel.forEach((p,i)=>{const n=`photos/${String(i+1).padStart(2,'0')}${(p.name.match(/\.[^.]+$/)||['.jpg'])[0].toLowerCase()}`;d.photos.push(n);z.file(n,p.f)});
+    z.file('listing.json',JSON.stringify(d,null,1));
+    const blob=await z.generateAsync({type:'blob'});
+    await saveFile(`${S.folder}_上架包.zip`,blob);
+    $('packMsg').textContent=`已下載（${sel.length} 張照片）。`;
+  }catch(e){$('packMsg').textContent='下載取消或失敗，請再試一次。'}
+};
+/* ---------- 設定與紀錄 ---------- */
+function refreshFooter(){for(const id of['oDesc','oGroup']){const el=$(id),v=el.value;if(!v.trim())continue;const i=v.indexOf('\n——————');el.value=(i>=0?v.slice(0,i):v).replace(/\s+$/,'')+'\n'+footer()}checkNumbers();renderMk()}
+const saved=store.get('cg_cfg',{});['Name','Phone','Line','Lic'].forEach(k=>{const el=$('cf'+k);el.value=saved[k.toLowerCase()]||'';el.oninput=()=>{store.set('cg_cfg',cfg());refreshFooter()}});
+function renderLog(){
+  const L=store.get('cg_log',[]),today=new Date().toISOString().slice(0,10),soon=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+  $('log').innerHTML=L.length?L.map((r,i)=>{const st=!r.expiry?'':r.expiry<today?'background:light-dark(#fde8e6,#3d1814)':r.expiry<=soon?'background:var(--warn)':'';
+    return`<tr style="${st}"><td>${esc(r.name)}</td><td class="mono">${esc(r.date)}</td><td class="mono">${esc(r.expiry||'未填')}${r.expiry&&r.expiry<today?' 已過期，請下架':''}</td><td><button data-del="${i}" style="min-height:34px;padding:2px 10px;font-size:13px">已下架</button></td></tr>`}).join('')
+    :'<tr><td colspan="4" class="hint">還沒有紀錄。</td></tr>';
+}
+$('log').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;const L=store.get('cg_log',[]);L.splice(+b.dataset.del,1);store.set('cg_log',L);renderLog();toast('已移除')};
+$('btnLog').onclick=()=>{const L=store.get('cg_log',[]);L.unshift({name:$('oTitle').value||S.folder,date:new Date().toISOString().slice(0,10),expiry:(S.internal&&S.internal.expiry)||''});store.set('cg_log',L);renderLog();toast('已加入紀錄');location.hash='s6'};
+renderLog();
+setMode();
+}
+</script>
+</body>
+</html>
