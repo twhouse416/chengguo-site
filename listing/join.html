@@ -39,25 +39,18 @@ button:focus-visible,input:focus-visible,.btn:focus-visible{outline:3px solid va
 <header><b>澄果上架</b><span>台灣房屋 澄果團隊｜同仁專用</span></header>
 <main>
 <h1>同仁登記</h1>
-<p class="lead">填寫你的聯絡資料，送出後由管理者核對並啟用，就能使用「澄果上架」把官網物件上架到 Facebook、樂屋網與 591。這些資料會自動放在廣告的聯絡資訊裡。</p>
+<p class="lead">填寫你的 Google 帳號與聯絡資料，送出後由管理者核對並啟用，就能使用「澄果上架」。聯絡資料會自動放在廣告的聯絡資訊裡。</p>
 
-<section id="needExt" hidden>
-<h2>請先安裝「澄果上架」擴充功能</h2>
-<p class="hint" id="needExtWhy">登記需要用到擴充功能來確認你的 Google 帳號。</p>
-<p style="margin:12px 0 0"><a class="btn pri" href="./">前往安裝說明</a></p>
-</section>
-
-<section id="active" hidden>
-<h2>你已經可以使用了</h2>
-<div class="kv" id="activeKv"></div>
-<p class="hint" style="margin-top:12px">資料若要修改，請洽管理者。</p>
-<p style="margin:12px 0 0"><a class="btn pri" href="./">開始上架物件</a></p>
-</section>
-
-<section id="formBox" hidden>
+<section id="formBox">
 <h2>你的資料</h2>
-<label>Google 帳號<small>自動帶入你 Chrome 登入的帳號</small></label>
-<input id="email" readonly>
+<label for="email">Google 帳號（Gmail）</label>
+<input id="email" type="email" maxlength="120" autocomplete="email" inputmode="email" placeholder="例如：wang@gmail.com">
+<label for="email2">第二個 Google 帳號<small>選填，會用不同帳號上架才需要</small></label>
+<input id="email2" type="email" maxlength="120" autocomplete="off" inputmode="email">
+<label for="email3">第三個 Google 帳號<small>選填</small></label>
+<input id="email3" type="email" maxlength="120" autocomplete="off" inputmode="email">
+<p class="hint">請填你上架時 Chrome 右上角登入的帳號；用哪個帳號登入 Chrome，就要在這裡登記哪個帳號。</p>
+<input id="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
 <label for="name">姓名<small>廣告上的聯絡人名稱</small></label>
 <input id="name" maxlength="20" autocomplete="name" placeholder="例如：王小明">
 <label for="phone">電話<small>廣告上的聯絡電話</small></label>
@@ -71,44 +64,45 @@ button:focus-visible,input:focus-visible,.btn:focus-visible{outline:3px solid va
 <div class="msg" id="msg"></div>
 </section>
 
-<p class="hint">本頁僅供澄果團隊同仁使用。資料只會寫入團隊管理者的名單試算表。</p>
+<p class="hint">本頁僅供澄果團隊同仁使用。資料只會寫入團隊管理者的名單試算表，管理者啟用後才能使用。</p>
 </main>
 <script>
 {
-const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
+const API = 'https://script.google.com/macros/s/AKfycbyU7eB6dXEm-fv-faA7trOK9kGjpqA7aXy-IjNYlMpVKk1LXp-8nJ6GTfATX57rdVGX/exec';
+const TOKEN = 'cg_mXXrU7qcFjQaS-xUzTLGlUiG3Dq5WqYR';
 const $ = id => document.getElementById(id);
-const send = msg => new Promise(res => {
-  try { chrome.runtime.sendMessage(EXT_ID, msg, r => res(chrome.runtime.lastError ? null : r)); } catch (e) { res(null); }
-});
-async function init() {
-  if (!(window.chrome && chrome.runtime && chrome.runtime.sendMessage)) { $('needExtWhy').textContent = '請用 Google Chrome 開啟這一頁，並先安裝「澄果上架」擴充功能。'; $('needExt').hidden = false; return; }
-  const ping = await send({ type: 'ping' });
-  if (!ping) { $('needExt').hidden = false; return; }
-  if (ping.profile) {
-    const p = ping.profile;
-    $('activeKv').replaceChildren(...[['Google 帳號', p.email], ['姓名', p.name], ['電話', p.phone], ['LINE', p.line || '—'], ['營業員證號', p.lic]].flatMap(([k, v]) => { const a = document.createElement('span'); a.textContent = k; const b = document.createElement('span'); b.textContent = v || '—'; return [a, b]; }));
-    $('active').hidden = false; return;
+const ERR = { 'already-active': '已經啟用（資料沒有更動，要修改請洽管理者）', missing: '姓名、電話、營業員證號都要填', email: '帳號格式不正確', action: '名單程式還沒更新，請洽管理者', 'not-listed': '名單程式還沒更新，請洽管理者', token: '登記頁設定有誤，請洽管理者' };
+async function post(body) {
+  try {
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: TOKEN, action: 'register', ...body }), redirect: 'follow' });
+    return await r.json();
+  } catch (e) {
+    return { ok: false, message: '連不到名單，請確認網路連線後再試' };
   }
-  const me = await send({ type: 'myEmail' });
-  if (!me || me.error) { $('needExtWhy').textContent = '你的擴充功能版本太舊，請先更新到 2.8.1 以上（依安裝說明重新下載、覆蓋資料夾、按重新整理）。'; $('needExt').hidden = false; return; }
-  if (!me.email) { $('needExtWhy').textContent = '請先在 Chrome 右上角登入你自己的 Google 帳號，再重新整理這一頁。'; $('needExt').hidden = false; return; }
-  $('email').value = me.email;
-  $('formBox').hidden = false;
-  if (ping.error && /尚未啟用/.test(ping.error)) { $('msg').className = 'msg'; $('msg').textContent = '你已經登記過，正在等管理者啟用。資料要修改的話，改完再按一次「送出登記」。'; }
-  $('name').focus();
 }
 $('send').addEventListener('click', async () => {
   const v = id => $(id).value.trim(), msg = $('msg');
+  const bad = t => { msg.className = 'msg err'; msg.textContent = t; };
+  if ($('website').value) return bad('送出失敗。');
+  const emails = [...new Set(['email', 'email2', 'email3'].map(id => v(id).toLowerCase()).filter(Boolean))];
   const data = { name: v('name'), phone: v('phone'), line: v('line'), lic: v('lic') };
-  if (!data.name || !data.phone || !data.lic) { msg.className = 'msg err'; msg.textContent = '姓名、電話、營業員證號都要填。'; return; }
-  if (!/^[\d\-+()\s#]{8,20}$/.test(data.phone)) { msg.className = 'msg err'; msg.textContent = '電話格式看起來不對，請只填數字與「-」。'; return; }
+  if (!emails.length) return bad('請至少填一個 Google 帳號。');
+  const wrong = emails.find(e => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e));
+  if (wrong) return bad(`「${wrong}」不是正確的帳號格式，例如 wang@gmail.com。`);
+  if (!data.name || !data.phone || !data.lic) return bad('姓名、電話、營業員證號都要填。');
+  if (!/^[\d\-+()\s#]{8,20}$/.test(data.phone)) return bad('電話格式看起來不對，請只填數字與「-」。');
   $('send').disabled = true; msg.className = 'msg'; msg.textContent = '送出中…';
-  const r = await send({ type: 'register', ...data });
+  const lines = []; let okCount = 0;
+  for (const email of emails) {
+    const r = await post({ email, ...data });
+    if (r && r.ok) { okCount++; lines.push(`✔ ${email}：${r.updated ? '已更新登記資料' : '登記完成'}`); }
+    else lines.push(`✘ ${email}：${(r && (r.message || ERR[r.error])) || '登記失敗'}`);
+  }
   $('send').disabled = false;
-  if (r && r.ok) { msg.className = 'msg ok'; msg.textContent = (r.updated ? '已更新你的登記資料。' : '登記完成！') + '\n請通知管理者到名單勾選「啟用」，啟用後重新整理「澄果上架」頁面就能使用。'; }
-  else { msg.className = 'msg err'; msg.textContent = (r && r.error) || '送出失敗，請重新整理後再試。'; }
+  msg.className = okCount ? 'msg ok' : 'msg err';
+  msg.textContent = lines.join('\n') + (okCount ? '\n\n請通知管理者到名單勾選「啟用」，啟用後就能用這些帳號使用「澄果上架」。' : '');
 });
-init();
+$('email').focus();
 }
 </script>
 </body>
