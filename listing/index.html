@@ -49,6 +49,17 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <p id="joinRow" hidden style="margin:12px 0 0"><a class="btn pri" href="join.html">前往同仁登記</a></p>
 </section>
 
+<section id="update" hidden style="border-color:var(--or)">
+<h2>有新版本，請更新「澄果上架」</h2>
+<p class="note" style="margin:0 0 8px" id="updWhy"></p>
+<ol>
+<li><a class="btn pri" href="chengguo-uploader.zip" download style="margin:4px 0">下載新版 澄果上架</a></li>
+<li>解壓縮後，用新的 <code>chengguo-uploader</code> 資料夾<b>覆蓋</b>電腦上原本放的那個資料夾（位置要相同）。</li>
+<li>Chrome 網址列輸入 <code>chrome://extensions</code>，在「澄果上架」卡片上按重新整理圖示（↻）。</li>
+<li>重新整理這一頁，版本顯示為最新即完成。排程與設定都會保留。</li>
+</ol>
+</section>
+
 <section id="work" hidden>
 <h2>讀取官網物件</h2>
 <div class="row">
@@ -80,6 +91,26 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 </section>
 
 <section>
+<h2>下載／更新擴充功能</h2>
+<p class="note" style="margin:0 0 10px">最新版本：<b id="latestV"></b>。第一次安裝或要更新，都從這裡下載。</p>
+<a class="btn" href="chengguo-uploader.zip" download>下載 澄果上架（擴充功能）</a>
+<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">安裝與更新步驟</summary>
+<p style="margin:10px 0 4px;font-weight:700">第一次安裝</p>
+<ol>
+<li>解壓縮後，把 <code>chengguo-uploader</code> 資料夾放到固定位置（例如「文件」），之後不要刪除或搬移。</li>
+<li>Chrome 網址列輸入 <code>chrome://extensions</code> 按 Enter。</li>
+<li>打開右上角「開發人員模式」，按左上角「載入未封裝項目」，選 <code>chengguo-uploader</code> 資料夾。</li>
+<li>Chrome 右上角登入自己的 Google 帳號，並到 <a href="join.html">同仁登記</a> 填資料，等管理者啟用。</li>
+</ol>
+<p style="margin:10px 0 4px;font-weight:700">更新</p>
+<ol>
+<li>解壓縮後，用新的 <code>chengguo-uploader</code> 資料夾覆蓋原本那個資料夾。</li>
+<li>到 <code>chrome://extensions</code>，在「澄果上架」卡片按重新整理（↻）。</li>
+</ol>
+</details>
+</section>
+
+<section>
 <h2>新同仁？</h2>
 <p class="note" style="margin:0 0 10px">第一次使用請先登記你的聯絡資料（會放在廣告上），管理者啟用後即可使用。</p>
 <a class="btn" href="join.html">同仁登記</a>
@@ -90,6 +121,8 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
+const LATEST = '2.8.1';   // 每次更新擴充功能時，這裡也要改成新版本號
+const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
 const send = msg => new Promise(res => {
@@ -100,7 +133,8 @@ async function check() {
   if (!isChrome) { set('dExt', 'tExt', 'bad', '未偵測到擴充功能'); $('install').hidden = false; $('notChrome').hidden = !!window.chrome; return; }
   const r = await send({ type: 'ping' });
   if (!r) { set('dExt', 'tExt', 'bad', '這台電腦還沒安裝「澄果上架」擴充功能'); $('install').hidden = false; return; }
-  set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}）`);
+  if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充功能版本 ${r.version}，有新版本 ${LATEST}，請更新`); $('updWhy').textContent = `你的版本是 ${r.version}，最新版本是 ${LATEST}（新版才有樂屋網、591 等功能）。`; $('update').hidden = false; }
+  else set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}，已是最新）`);
   if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); }
   else { set('dMe', 'tMe', 'bad', r.error || '無法確認身分'); $('joinRow').hidden = false; }
 }
@@ -122,6 +156,7 @@ async function go() {
 $('go').addEventListener('click', go);
 $('url').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 $('sched').addEventListener('click', () => send({ type: 'openSched' }));
+$('latestV').textContent = LATEST;
 check();
 }
 </script>
