@@ -46,6 +46,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <h2>目前狀態</h2>
 <div class="status"><span class="dot" id="dExt"></span><span id="tExt">檢查擴充功能中…</span></div>
 <div class="status" style="margin-top:6px"><span class="dot" id="dMe"></span><span id="tMe">—</span></div>
+<p id="joinRow" hidden style="margin:12px 0 0"><a class="btn pri" href="join.html">前往同仁登記</a></p>
 </section>
 
 <section id="work" hidden>
@@ -67,7 +68,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <li>解壓縮後，把 <code>chengguo-uploader</code> 資料夾放到固定位置（例如「文件」），之後不要刪除或搬移。</li>
 <li>Chrome 網址列輸入 <code>chrome://extensions</code> 按 Enter。</li>
 <li>打開右上角「開發人員模式」，按左上角「載入未封裝項目」，選 <code>chengguo-uploader</code> 資料夾。</li>
-<li>確認 Chrome 右上角已登入你的 Google 帳號，且已請管理者把你的帳號加入名單。</li>
+<li>確認 Chrome 右上角已登入你的 Google 帳號，再到 <a href="join.html">同仁登記</a> 填寫資料，等管理者啟用。</li>
 <li>重新整理這一頁。</li>
 </ol>
 </section>
@@ -76,6 +77,12 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <h2>物件還沒上官網？</h2>
 <p class="note" style="margin:0 0 10px">改用「物件上架小幫手」讀物件資料夾與 CS 表 Excel，產生上架包後，再用擴充功能選擇上架包上架。</p>
 <a class="btn" href="helper.html">開啟物件上架小幫手</a>
+</section>
+
+<section>
+<h2>新同仁？</h2>
+<p class="note" style="margin:0 0 10px">第一次使用請先登記你的聯絡資料（會放在廣告上），管理者啟用後即可使用。</p>
+<a class="btn" href="join.html">同仁登記</a>
 </section>
 
 <p class="note">本頁僅供澄果團隊同仁使用。物件資料與照片只在你的電腦上處理，不會上傳到本網站。</p>
@@ -95,7 +102,7 @@ async function check() {
   if (!r) { set('dExt', 'tExt', 'bad', '這台電腦還沒安裝「澄果上架」擴充功能'); $('install').hidden = false; return; }
   set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}）`);
   if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); }
-  else set('dMe', 'tMe', 'bad', r.error || '無法確認身分');
+  else { set('dMe', 'tMe', 'bad', r.error || '無法確認身分'); $('joinRow').hidden = false; }
 }
 const norm = v => {
   v = v.trim();

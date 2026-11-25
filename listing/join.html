@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>同仁登記｜澄果上架</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--or:#FD7305;--bg:#F4F4F2;--ink:#151513;--mute:#62625c;--line:#dcdcd6;--ok:#18794e;--bad:#b42318}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Noto Sans TC",system-ui,sans-serif}
+header{background:var(--ink);color:#fff;padding:18px max(5vw,16px)}
+header b{font-weight:900;font-size:20px;letter-spacing:.02em}
+header span{color:#bdbdb6;font-size:14px;margin-left:10px}
+main{max-width:640px;margin:0 auto;padding:32px 16px 80px}
+h1{font-weight:900;font-size:clamp(28px,5vw,36px);line-height:1.15;margin:0 0 6px}
+.lead{color:var(--mute);margin:0 0 24px}
+section{background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px;margin:0 0 16px}
+h2{font-size:19px;font-weight:900;margin:0 0 10px}
+label{display:block;font-weight:700;font-size:15px;margin:14px 0 4px}
+label small{font-weight:400;color:var(--mute);margin-left:6px}
+input{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+input[readonly]{background:#ecece8;color:var(--mute)}
+.hint{color:var(--mute);font-size:14px;margin:4px 0 0}
+button,.btn{font:inherit;font-size:16px;min-height:46px;padding:10px 22px;border-radius:3px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.pri{background:var(--or);border-color:var(--or);color:#fff;font-weight:700}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,.btn:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.msg{min-height:24px;margin-top:12px;font-size:15px;white-space:pre-line}
+.err{color:var(--bad)}.ok{color:var(--ok)}
+.kv{display:grid;grid-template-columns:7em 1fr;gap:4px 12px;font-size:15px}
+.kv span:nth-child(odd){color:var(--mute)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><b>澄果上架</b><span>台灣房屋 澄果團隊｜同仁專用</span></header>
+<main>
+<h1>同仁登記</h1>
+<p class="lead">填寫你的聯絡資料，送出後由管理者核對並啟用，就能使用「澄果上架」把官網物件上架到 Facebook、樂屋網與 591。這些資料會自動放在廣告的聯絡資訊裡。</p>
+
+<section id="needExt" hidden>
+<h2>請先安裝「澄果上架」擴充功能</h2>
+<p class="hint" id="needExtWhy">登記需要用到擴充功能來確認你的 Google 帳號。</p>
+<p style="margin:12px 0 0"><a class="btn pri" href="./">前往安裝說明</a></p>
+</section>
+
+<section id="active" hidden>
+<h2>你已經可以使用了</h2>
+<div class="kv" id="activeKv"></div>
+<p class="hint" style="margin-top:12px">資料若要修改，請洽管理者。</p>
+<p style="margin:12px 0 0"><a class="btn pri" href="./">開始上架物件</a></p>
+</section>
+
+<section id="formBox" hidden>
+<h2>你的資料</h2>
+<label>Google 帳號<small>自動帶入你 Chrome 登入的帳號</small></label>
+<input id="email" readonly>
+<label for="name">姓名<small>廣告上的聯絡人名稱</small></label>
+<input id="name" maxlength="20" autocomplete="name" placeholder="例如：王小明">
+<label for="phone">電話<small>廣告上的聯絡電話</small></label>
+<input id="phone" maxlength="20" inputmode="tel" autocomplete="tel" placeholder="例如：0912-345-678">
+<label for="line">LINE ID<small>選填</small></label>
+<input id="line" maxlength="40" placeholder="例如：abc123">
+<label for="lic">營業員證號</label>
+<input id="lic" maxlength="40" placeholder="例如：(113)登字第000000號">
+<p class="hint">營業員證號依《不動產經紀業管理條例》會標示在廣告上，請照證書填寫。</p>
+<div style="margin-top:18px"><button class="pri" id="send">送出登記</button></div>
+<div class="msg" id="msg"></div>
+</section>
+
+<p class="hint">本頁僅供澄果團隊同仁使用。資料只會寫入團隊管理者的名單試算表。</p>
+</main>
+<script>
+{
+const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
+const $ = id => document.getElementById(id);
+const send = msg => new Promise(res => {
+  try { chrome.runtime.sendMessage(EXT_ID, msg, r => res(chrome.runtime.lastError ? null : r)); } catch (e) { res(null); }
+});
+async function init() {
+  if (!(window.chrome && chrome.runtime && chrome.runtime.sendMessage)) { $('needExtWhy').textContent = '請用 Google Chrome 開啟這一頁，並先安裝「澄果上架」擴充功能。'; $('needExt').hidden = false; return; }
+  const ping = await send({ type: 'ping' });
+  if (!ping) { $('needExt').hidden = false; return; }
+  if (ping.profile) {
+    const p = ping.profile;
+    $('activeKv').replaceChildren(...[['Google 帳號', p.email], ['姓名', p.name], ['電話', p.phone], ['LINE', p.line || '—'], ['營業員證號', p.lic]].flatMap(([k, v]) => { const a = document.createElement('span'); a.textContent = k; const b = document.createElement('span'); b.textContent = v || '—'; return [a, b]; }));
+    $('active').hidden = false; return;
+  }
+  const me = await send({ type: 'myEmail' });
+  if (!me || me.error) { $('needExtWhy').textContent = '你的擴充功能版本太舊，請先更新到 2.8.1 以上（依安裝說明重新下載、覆蓋資料夾、按重新整理）。'; $('needExt').hidden = false; return; }
+  if (!me.email) { $('needExtWhy').textContent = '請先在 Chrome 右上角登入你自己的 Google 帳號，再重新整理這一頁。'; $('needExt').hidden = false; return; }
+  $('email').value = me.email;
+  $('formBox').hidden = false;
+  if (ping.error && /尚未啟用/.test(ping.error)) { $('msg').className = 'msg'; $('msg').textContent = '你已經登記過，正在等管理者啟用。資料要修改的話，改完再按一次「送出登記」。'; }
+  $('name').focus();
+}
+$('send').addEventListener('click', async () => {
+  const v = id => $(id).value.trim(), msg = $('msg');
+  const data = { name: v('name'), phone: v('phone'), line: v('line'), lic: v('lic') };
+  if (!data.name || !data.phone || !data.lic) { msg.className = 'msg err'; msg.textContent = '姓名、電話、營業員證號都要填。'; return; }
+  if (!/^[\d\-+()\s#]{8,20}$/.test(data.phone)) { msg.className = 'msg err'; msg.textContent = '電話格式看起來不對，請只填數字與「-」。'; return; }
+  $('send').disabled = true; msg.className = 'msg'; msg.textContent = '送出中…';
+  const r = await send({ type: 'register', ...data });
+  $('send').disabled = false;
+  if (r && r.ok) { msg.className = 'msg ok'; msg.textContent = (r.updated ? '已更新你的登記資料。' : '登記完成！') + '\n請通知管理者到名單勾選「啟用」，啟用後重新整理「澄果上架」頁面就能使用。'; }
+  else { msg.className = 'msg err'; msg.textContent = (r && r.error) || '送出失敗，請重新整理後再試。'; }
+});
+init();
+}
+</script>
+</body>
+</html>
