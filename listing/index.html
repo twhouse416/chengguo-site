@@ -106,10 +106,14 @@ const send = msg => new Promise(res => {
   try { chrome.runtime.sendMessage(EXT_ID, msg, r => res(chrome.runtime.lastError ? null : r)); } catch (e) { res(null); }
 });
 async function check() {
-  const isChrome = !!(window.chrome && chrome.runtime && chrome.runtime.sendMessage);
-  const r = isChrome ? await send({ type: 'ping' }) : null;
+  // 判斷是不是 Google Chrome（Edge、Opera、三星等瀏覽器也帶有 Chrome 字樣，要排除）
+  const brands = (navigator.userAgentData && navigator.userAgentData.brands || []).map(b => b.brand);
+  const isChrome = brands.length ? brands.includes('Google Chrome') : (/Chrome\//.test(navigator.userAgent) && !/Edg\/|OPR\/|SamsungBrowser|Brave/.test(navigator.userAgent));
+  const canTalk = !!(window.chrome && chrome.runtime && chrome.runtime.sendMessage);   // 有裝且啟用擴充元件才會有
+  const r = canTalk ? await send({ type: 'ping' }) : null;
   if (!r) {
-    set('dExt', 'tExt', 'bad', isChrome ? '未安裝擴充元件' : '未安裝擴充元件（請改用 Google Chrome 開啟這一頁）');
+    set('dExt', 'tExt', 'bad', !isChrome ? '未安裝擴充元件（請改用 Google Chrome 開啟這一頁）'
+      : '未安裝擴充元件（如果是無痕視窗，擴充元件預設不會啟用，請改用一般視窗開啟）');
     $('tExt').className = 'err'; $('steps').open = true; return;
   }
   if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充元件版本 ${r.version}，有新版本 ${LATEST}，請用下方「下載／更新擴充功能」更新`); $('tExt').className = 'err'; $('steps').open = true; }
