@@ -71,12 +71,29 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 .minehead .mh-s{font-size:14px;color:var(--mute);flex:1}
 .minehead .mh-s .bad{color:var(--bad);font-weight:700}
 .minehead .mh-a{font-size:14px;color:var(--mute);white-space:nowrap}
+.bf{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.bf label{font-size:13px;color:var(--mute)}
+.bf input,.bf select,#bAreaOther,#bNote{width:100%;font:inherit;font-size:15px;padding:7px 9px;border:1px solid var(--line);border-radius:3px;background:#fff;margin-top:2px}
+.bf2{display:flex;gap:6px}
+.chks{display:flex;flex-wrap:wrap;gap:6px}
+.chks label{display:inline-flex;gap:4px;align-items:center;font-size:14px;background:#fff;border:1px solid var(--line);border-radius:3px;padding:4px 10px;cursor:pointer}
+.chks input{width:auto;flex:none;margin:0;padding:0}
 .tabs{display:flex;flex-wrap:wrap;gap:6px}
 .tabs button{min-height:34px;padding:4px 14px;font-size:14px;border-radius:17px}
 .tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .tabs button.warn:not(.on){border-color:#f0b4ae;color:var(--bad);font-weight:700}
 .chip{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin:1px 2px 1px 0;background:#ececE8;color:#9a9a93;white-space:nowrap}
 .chip.y{background:#e3f1ea;color:var(--ok);font-weight:700}
+.age{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;background:#ececE8;color:var(--mute);margin-left:4px;white-space:nowrap}
+.age.w{background:#FCEFE3;color:#7a3d00;font-weight:700}.age.r{background:#fde8e6;color:var(--bad);font-weight:700}
+.cnt{font-size:13px;color:var(--mute);margin-top:3px}
+.acts{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.acts button,.srcs button{min-height:28px;padding:1px 8px;font-size:12px}
+.srcs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;padding:6px;background:var(--bg);border-radius:3px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0 4px}
+.kpi div{background:var(--bg);border-radius:3px;padding:8px 10px}
+.kpi b{display:block;font-size:20px;font-family:"IBM Plex Mono",monospace}
+.kpi span{font-size:13px;color:var(--mute)}
 </style>
 </head>
 <body>
@@ -109,12 +126,38 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <button type="button" class="minehead" id="mineToggle" aria-expanded="false" aria-controls="mineBody"><span class="mh-t">我的刊登</span><span class="mh-s" id="mineSum">讀取中…</span><span class="mh-a" id="mineArrow">展開 ▾</span></button>
 <div id="mineBody" hidden>
 <p class="note" style="margin:10px 0 8px">近 180 天上架的物件。擴充功能每 12 小時檢查官網，物件下架、成交或改價會跳通知，官網下架時 FB 排程自動停止。樂屋網、591 顯示「填好」的日期。</p>
+<div class="kpi" id="mineKpi"></div>
+<p class="note" id="mineKpiNote" style="margin:0 0 10px"></p>
 <div class="tabs" id="mineTabs"></div>
 <div class="row" style="margin-top:8px"><input id="mineQ" placeholder="搜尋物件名稱或編號" autocomplete="off" style="flex:1 1 200px;padding:8px 10px;font-size:15px"><button id="mineCheck">立即檢查官網</button></div>
 <p class="note" id="mineInfo" style="margin:6px 0 0"></p>
 <div class="msg" id="mineMsg"></div>
 <div class="tblwrap"><table class="mine" id="mineTbl"></table></div>
 <div style="text-align:center;margin-top:10px"><button id="mineMore" hidden>顯示更多</button></div>
+</div>
+</section>
+
+<section id="buy" hidden>
+<button type="button" class="minehead" id="buyToggle" aria-expanded="false" aria-controls="buyBody"><span class="mh-t">我的買方</span><span class="mh-s" id="buySum">讀取中…</span><span class="mh-a" id="buyArrow">展開 ▾</span></button>
+<div id="buyBody" hidden>
+<p class="note" style="margin:10px 0 8px">登記手上買方的需求，讀取官網物件時，確認頁會自動列出「適合這筆物件的買方」並產生 LINE 推薦訊息。只有你自己看得到。<b>稱呼請用「王先生」這類寫法，不要填電話、身分證等個資。</b></p>
+<div class="row" style="margin-bottom:8px"><button class="pri" id="buyNew">＋新增買方</button><span class="note" id="buyMsg"></span></div>
+<form id="buyForm" hidden style="background:var(--bg);border-radius:4px;padding:14px;margin-bottom:12px">
+<input type="hidden" id="bId">
+<div class="bf"><label>客戶稱呼<input id="bName" placeholder="王先生" maxlength="30" required></label>
+<label>預算（萬）<span class="bf2"><input id="bMin" inputmode="decimal" placeholder="下限"><input id="bMax" inputmode="decimal" placeholder="上限"></span></label>
+<label>坪數（建坪）<span class="bf2"><input id="pMin" inputmode="decimal" placeholder="下限"><input id="pMax" inputmode="decimal" placeholder="上限"></span></label>
+<label>最少房數<select id="bRooms"><option value="">不限</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+<label>車位<select id="bPark"><option value="">不限</option><option>需要</option></select></label></div>
+<p class="note" style="margin:10px 0 4px">想找的區域（可複選）</p>
+<div class="chks" id="bAreas"></div>
+<label class="note" style="display:block;margin-top:6px">其他區域（用頓號分隔，例如：苓雅區、前鎮區）<input id="bAreaOther"></label>
+<p class="note" style="margin:10px 0 4px">類型（可複選，不選＝不限）</p>
+<div class="chks" id="bTypes"></div>
+<label class="note" style="display:block;margin-top:6px">備註<input id="bNote" maxlength="200" placeholder="例如：要近學校、低樓層"></label>
+<div class="row" style="margin-top:10px"><button class="pri" type="submit">儲存</button><button type="button" id="buyCancel">取消</button></div>
+</form>
+<div class="tblwrap"><table class="mine" id="buyTbl"></table></div>
 </div>
 </section>
 
@@ -167,7 +210,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
-const LATEST = '2.12.1';   // 每次更新擴充功能時，這裡也要改成新版本號
+const LATEST = '2.13.0';   // 每次更新擴充功能時，這裡也要改成新版本號
 const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
@@ -187,7 +230,7 @@ async function check() {
   }
   if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充元件版本 ${r.version}，有新版本 ${LATEST}，請用下方「下載／更新擴充功能」更新`); $('tExt').className = 'err'; $('wayUp').classList.add('focus'); }
   else set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}，已是最新）`);
-  if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); loadMine(); showPending(r.profile); }
+  if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); loadMine(); loadBuyers(); showPending(r.profile); }
   else { set('dMe', 'tMe', 'bad', r.error || '無法確認身分'); $('joinRow').hidden = false; }
 }
 // 管理者：新同仁登記後尚未啟用的提醒（只有管理者帳號看得到）
@@ -225,20 +268,38 @@ const md = t => { if (!t) return ''; const d = new Date(t); return `${d.getMonth
 const cell = (t, extra) => t ? `<span class="y">✔ ${md(t)}</span>${extra || ''}` : '<span class="n">✘</span>';
 let mineTab = '', mineShow = 10;
 const isIssue = c => !c.closed && (c.state === '官網已下架' || c.state === '官網改價');
+const ageDays = c => c.firstAt ? Math.floor((Date.now() - c.firstAt) / 864e5) : -1;
+const isOld = c => !c.closed && c.state !== '官網已下架' && ageDays(c) >= 30;
+let srcOpen = '';
+// 成效比較：各平台刊登中幾筆、本月詢問、平均每筆詢問，加上本月帶看
+function drawKpi() {
+  const open = mine.filter(c => !c.closed), m0 = new Date(); m0.setDate(1); m0.setHours(0, 0, 0, 0);
+  const plat = [['FB', 'fb', 'FB'], ['樂屋網', 'rakuya', '樂屋網'], ['591', 'f591', '591']];
+  let visits = 0, other = 0;
+  const inq = { FB: 0, '樂屋網': 0, '591': 0, '其他': 0 };
+  for (const c of mine) for (const [t, k, src] of (c.acts || [])) { if (t < m0.getTime()) continue; if (k === 'visit') visits++; else inq[src] = (inq[src] || 0) + 1; }
+  const html = plat.map(([label, key, src]) => { const n = open.filter(c => c[key]).length; const q = inq[src] || 0; return `<div><span>${label}｜刊登 ${n} 筆</span><b>${q}</b><span>本月詢問${n ? `・平均 ${(q / n).toFixed(1)}／筆` : ''}</span></div>`; }).join('')
+    + `<div><span>其他來源</span><b>${inq['其他'] || 0}</b><span>本月詢問</span></div><div><span>本月帶看</span><b>${visits}</b><span>次</span></div>`;
+  $('mineKpi').innerHTML = html;
+  const best = plat.map(([l, k, src]) => [l, (inq[src] || 0) / Math.max(1, open.filter(c => c[k]).length)]).sort((a, b) => b[1] - a[1])[0];
+  $('mineKpiNote').textContent = (inq.FB + inq['樂屋網'] + inq['591']) ? `本月平均每筆詢問最多的平台：${best[0]}。` : '在物件旁按「＋詢問」「＋帶看」記錄，這裡就會比較各平台的成效。';
+}
 const lastAt = c => Math.max(c.fb || 0, c.rakuya || 0, c.f591 || 0);
 const chip = (name, t, tip) => `<span class="chip${t ? ' y' : ''}" title="${t ? esc(tip || name + ' ' + md(t)) : '尚未上架'}">${name}${t ? ' ' + md(t) : ''}</span>`;
 function drawMine() {
   const open = mine.filter(c => !c.closed), issues = mine.filter(isIssue), closed = mine.filter(c => c.closed);
   if (!mineTab) mineTab = issues.length ? 'issue' : 'open';
-  const tabs = [['issue', `需要處理 ${issues.length}`, issues.length ? 'warn' : ''], ['open', `上架中 ${open.length}`], ['closed', `已結案 ${closed.length}`]];
+  const olds = mine.filter(isOld);
+  const tabs = [['issue', `需要處理 ${issues.length}`, issues.length ? 'warn' : ''], ['old', `掛牌 30 天+ ${olds.length}`], ['open', `上架中 ${open.length}`], ['closed', `已結案 ${closed.length}`]];
+  drawKpi();
   $('mineTabs').innerHTML = tabs.map(([k, t, cls]) => `<button data-tab="${k}" class="${(cls || '') + (k === mineTab ? ' on' : '')}">${t}</button>`).join('');
   const q = $('mineQ').value.trim().toLowerCase();
-  let list = mineTab === 'issue' ? issues : mineTab === 'closed' ? closed : open;
+  let list = mineTab === 'issue' ? issues : mineTab === 'old' ? olds.slice().sort((a, b) => ageDays(b) - ageDays(a)) : mineTab === 'closed' ? closed : open;
   if (q) list = list.filter(c => (c.title + ' ' + c.caseNo).toLowerCase().includes(q));
-  list = list.slice().sort((a, b) => (isIssue(b) - isIssue(a)) || (lastAt(b) - lastAt(a)));
+  if (mineTab !== 'old') list = list.slice().sort((a, b) => (isIssue(b) - isIssue(a)) || (lastAt(b) - lastAt(a)));
   const total = list.length; list = list.slice(0, mineShow);
   $('mineMore').hidden = total <= mineShow; $('mineMore').textContent = `顯示更多（還有 ${total - mineShow} 筆）`;
-  if (!total) { $('mineTbl').innerHTML = `<tr><td class="note">${q ? '找不到符合的物件。' : mineTab === 'issue' ? '沒有需要處理的物件 👍' : mineTab === 'closed' ? '沒有已結案的物件。' : '近 180 天還沒有上架紀錄。'}</td></tr>`; return; }
+  if (!total) { $('mineTbl').innerHTML = `<tr><td class="note">${q ? '找不到符合的物件。' : mineTab === 'issue' ? '沒有需要處理的物件 👍' : mineTab === 'old' ? '沒有掛牌超過 30 天的物件。' : mineTab === 'closed' ? '沒有已結案的物件。' : '近 180 天還沒有上架紀錄。'}</td></tr>`; return; }
   $('mineTbl').innerHTML = '<tr><th>物件</th><th>上架平台</th><th>官網狀態</th><th></th></tr>' + list.map(c => {
     let st = '<span class="note">未檢查</span>', act = '';
     if (c.state === '官網已下架') st = '<span class="st-gone">⚠ 官網已下架</span><div class="note">請把各平台廣告下架</div>';
@@ -249,7 +310,12 @@ function drawMine() {
     const href = c.url || (c.caseNo ? `https://www.twhg.com.tw/buy/${c.caseNo}` : '');
     const name = href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(c.title || c.caseNo)}</a>` : esc(c.title || c.caseNo);
     const fbTip = c.fb ? `FB ${md(c.fb)}${c.fbPub ? ' 已發佈' : ' 填好未確認發佈'}${c.sched ? '｜排程：' + ({ remind: '提醒', semi: '半自動', auto: '全自動' }[c.sched] || c.sched) : ''}` : '';
-    return `<tr class="${c.closed ? 'closed' : ''}"><td>${name}<div class="note">${esc(c.caseNo)}</div></td><td>${chip('FB', c.fb, fbTip)}${chip('樂屋', c.rakuya)}${chip('591', c.f591)}</td><td>${st}</td><td>${act}</td></tr>`;
+    const d = ageDays(c), age = d >= 0 ? `<span class="age${d >= 60 ? ' r' : d >= 30 ? ' w' : ''}" title="從第一次上架起算">掛牌 ${d} 天</span>` : '';
+    const srcTxt = c.src ? Object.entries(c.src).map(([k, v]) => `${k} ${v}`).join('、') : '';
+    const cnt = `<div class="cnt">詢問 ${c.inq || 0}${srcTxt ? `（${esc(srcTxt)}）` : ''}｜帶看 ${c.visit || 0}${(c.inq7 || c.visit7) ? `｜近 7 天 +${(c.inq7 || 0) + (c.visit7 || 0)}` : ''}</div>`;
+    const tools = c.closed ? '' : `<div class="acts"><button data-inq="${esc(c.caseNo)}">＋詢問</button><button data-visit="${esc(c.caseNo)}">＋帶看</button><button data-report="${esc(c.caseNo)}">屋主週報</button></div>`
+      + (srcOpen === c.caseNo ? `<div class="srcs"><span class="note" style="width:100%">詢問來自哪裡？</span>${['FB', '樂屋網', '591', '其他'].map(x => `<button data-src="${x}" data-case="${esc(c.caseNo)}">${x}</button>`).join('')}</div>` : '');
+    return `<tr class="${c.closed ? 'closed' : ''}"><td>${name}${age}<div class="note">${esc(c.caseNo)}</div>${cnt}${tools}</td><td>${chip('FB', c.fb, fbTip)}${chip('樂屋', c.rakuya)}${chip('591', c.f591)}</td><td>${st}</td><td>${act}</td></tr>`;
   }).join('');
 }
 async function loadMine() {
@@ -264,13 +330,69 @@ async function loadMine() {
 // 平常收起來，只顯示一行摘要；點了才展開
 function sumMine() {
   const open = mine.filter(c => !c.closed).length, iss = mine.filter(isIssue).length;
-  $('mineSum').innerHTML = mine.length ? `上架中 ${open} 筆${iss ? `　<span class="bad">⚠ ${iss} 筆需要處理</span>` : ''}` : '近 180 天沒有上架紀錄';
+  const old = mine.filter(isOld).length;
+  $('mineSum').innerHTML = mine.length ? `上架中 ${open} 筆${iss ? `　<span class="bad">⚠ ${iss} 筆需要處理</span>` : ''}${old ? `　<span style="color:#7a3d00;font-weight:700">${old} 筆掛牌超過 30 天</span>` : ''}` : '近 180 天沒有上架紀錄';
 }
 function toggleMine(force) {
   const show = typeof force === 'boolean' ? force : $('mineBody').hidden;
   $('mineBody').hidden = !show; $('mineToggle').setAttribute('aria-expanded', String(show)); $('mineArrow').textContent = show ? '收起 ▴' : '展開 ▾';
 }
 $('mineToggle').addEventListener('click', () => toggleMine());
+
+// ===== 我的買方 =====
+const AREAS = ['美術館特區', '農十六', '瑞豐巨蛋', '中都重劃區', '鼓山區', '左營區', '三民區'];
+const TYPES = ['大樓', '華廈', '公寓', '透天', '店面', '套房'];
+let buyers = [];
+$('bAreas').innerHTML = AREAS.map(a => `<label><input type="checkbox" value="${a}">${a}</label>`).join('');
+$('bTypes').innerHTML = TYPES.map(a => `<label><input type="checkbox" value="${a}">${a}</label>`).join('');
+const fmtB = (a, b, u) => a !== '' && b !== '' ? `${a}～${b}${u}` : a !== '' ? `${a}${u}以上` : b !== '' ? `${b}${u}以內` : '不限';
+function drawBuyers() {
+  $('buySum').textContent = buyers.length ? `有效買方 ${buyers.length} 位` : '還沒有登記買方';
+  if (!buyers.length) { $('buyTbl').innerHTML = '<tr><td class="note">按「＋新增買方」登記第一位客戶的需求。</td></tr>'; return; }
+  $('buyTbl').innerHTML = '<tr><th>客戶</th><th>預算／坪數</th><th>區域／類型</th><th></th></tr>' + buyers.map(b => `<tr><td><b>${esc(b.name)}</b>${b.note ? `<div class="note">${esc(b.note)}</div>` : ''}</td><td>${fmtB(b.bmin, b.bmax, ' 萬')}<div class="note">${fmtB(b.pmin, b.pmax, ' 坪')}${b.rooms ? `・${b.rooms} 房以上` : ''}${b.park ? `・${esc(b.park)}車位` : ''}</div></td><td>${esc(b.areas.join('、') || '不限')}<div class="note">${esc(b.types.join('、') || '類型不限')}</div></td><td><button data-bedit="${esc(b.id)}">編輯</button><br><button data-bclose="${esc(b.id)}" title="已成交或不再找房">結案</button></td></tr>`).join('');
+}
+async function loadBuyers() {
+  $('buy').hidden = false;
+  const r = await send({ type: 'buyers' });
+  if (!r || !r.ok) { $('buySum').textContent = (r && r.error) || '讀不到買方（擴充功能或名單程式可能需要更新）'; return; }
+  buyers = r.list; drawBuyers();
+}
+function toggleBuy(force) {
+  const show = typeof force === 'boolean' ? force : $('buyBody').hidden;
+  $('buyBody').hidden = !show; $('buyToggle').setAttribute('aria-expanded', String(show)); $('buyArrow').textContent = show ? '收起 ▴' : '展開 ▾';
+}
+$('buyToggle').addEventListener('click', () => toggleBuy());
+function fillForm(b) {
+  b = b || { id: '', name: '', bmin: '', bmax: '', pmin: '', pmax: '', rooms: '', park: '', areas: [], types: [], note: '' };
+  $('bId').value = b.id; $('bName').value = b.name; $('bMin').value = b.bmin; $('bMax').value = b.bmax; $('pMin').value = b.pmin; $('pMax').value = b.pmax;
+  $('bRooms').value = b.rooms || ''; $('bPark').value = b.park || ''; $('bNote').value = b.note || '';
+  $('bAreas').querySelectorAll('input').forEach(i => i.checked = b.areas.includes(i.value));
+  $('bTypes').querySelectorAll('input').forEach(i => i.checked = b.types.includes(i.value));
+  $('bAreaOther').value = b.areas.filter(a => !AREAS.includes(a)).join('、');
+  $('buyForm').hidden = false; $('bName').focus();
+}
+$('buyNew').onclick = () => fillForm(null);
+$('buyCancel').onclick = () => { $('buyForm').hidden = true; };
+$('buyForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const n = v => v.trim() === '' ? '' : Number(v);
+  const areas = [...$('bAreas').querySelectorAll('input:checked')].map(i => i.value).concat($('bAreaOther').value.split(/[、,，\s]+/).map(x => x.trim()).filter(Boolean));
+  const buyer = { id: $('bId').value, name: $('bName').value.trim(), bmin: n($('bMin').value), bmax: n($('bMax').value), pmin: n($('pMin').value), pmax: n($('pMax').value), rooms: n($('bRooms').value), park: $('bPark').value, areas, types: [...$('bTypes').querySelectorAll('input:checked')].map(i => i.value), note: $('bNote').value.trim() };
+  if (!buyer.name) { $('buyMsg').className = 'note err'; $('buyMsg').textContent = '請填客戶稱呼。'; return; }
+  if (/\d{4}[- ]?\d{3}[- ]?\d{3}|[A-Z][12]\d{8}/i.test(buyer.name + buyer.note)) { $('buyMsg').className = 'note err'; $('buyMsg').textContent = '看起來有電話或身分證號碼，請不要填個資。'; return; }
+  const r = await send({ type: 'buyerSave', buyer });
+  if (r && r.ok) { $('buyForm').hidden = true; $('buyMsg').className = 'note ok'; $('buyMsg').textContent = '已儲存。'; await loadBuyers(); }
+  else { $('buyMsg').className = 'note err'; $('buyMsg').textContent = (r && r.error) || '儲存失敗。'; }
+});
+$('buyTbl').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.bedit) { fillForm(buyers.find(x => x.id === b.dataset.bedit)); return; }
+  if (b.dataset.bclose) {
+    if (b.dataset.armed !== '1') { b.dataset.armed = '1'; b.textContent = '再按確認'; setTimeout(() => { b.dataset.armed = ''; b.textContent = '結案'; }, 3000); return; }
+    const r = await send({ type: 'buyerClose', id: b.dataset.bclose });
+    if (r && r.ok) { buyers = buyers.filter(x => x.id !== b.dataset.bclose); drawBuyers(); } else { $('buyMsg').className = 'note err'; $('buyMsg').textContent = (r && r.error) || '操作失敗。'; }
+  }
+});
 $('mineTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { mineTab = b.dataset.tab; mineShow = 10; drawMine(); } });
 $('mineQ').addEventListener('input', () => { mineShow = 10; drawMine(); });
 $('mineMore').addEventListener('click', () => { mineShow += 20; drawMine(); });
@@ -283,6 +405,22 @@ $('mineCheck').addEventListener('click', async () => {
 });
 $('mineTbl').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.inq) { srcOpen = srcOpen === b.dataset.inq ? '' : b.dataset.inq; drawMine(); return; }
+  if (b.dataset.report) { send({ type: 'openPage', page: 'report.html?case=' + encodeURIComponent(b.dataset.report) }); return; }
+  if (b.dataset.src || b.dataset.visit) {
+    const cid = b.dataset.case || b.dataset.visit, kind = b.dataset.visit ? '帶看' : '詢問', cc = mine.find(x => x.caseNo === cid) || {};
+    b.disabled = true;
+    const r = await send({ type: 'act', caseNo: cid, title: cc.title, kind, source: b.dataset.src || '' });
+    if (r && r.ok) {
+      const t = Date.now(), k = kind === '帶看' ? 'visit' : 'inq';
+      cc[k] = (cc[k] || 0) + 1; cc[k + '7'] = (cc[k + '7'] || 0) + 1; (cc.acts = cc.acts || []).push([t, k, b.dataset.src || '其他']);
+      if (k === 'inq') { cc.src = cc.src || {}; cc.src[b.dataset.src] = (cc.src[b.dataset.src] || 0) + 1; }
+      srcOpen = ''; drawMine();
+      $('mineMsg').className = 'msg ok'; $('mineMsg').innerHTML = `已記錄「${esc(cc.title || cid)}」${kind}${b.dataset.src ? '（' + esc(b.dataset.src) + '）' : ''}。 <button id="undoAct" style="min-height:28px;padding:1px 10px;font-size:13px">按錯了，復原</button>`;
+      $('undoAct').onclick = async () => { const u = await send({ type: 'actUndo', caseNo: cid, kind }); if (u && u.ok) { cc[k] = Math.max(0, (cc[k] || 1) - 1); cc[k + '7'] = Math.max(0, (cc[k + '7'] || 1) - 1); cc.acts.pop(); if (k === 'inq' && cc.src) cc.src[b.dataset.src] = Math.max(0, (cc.src[b.dataset.src] || 1) - 1); drawMine(); $('mineMsg').textContent = '已復原。'; } else { $('mineMsg').className = 'msg err'; $('mineMsg').textContent = (u && u.error) || '復原失敗。'; } };
+    } else { b.disabled = false; $('mineMsg').className = 'msg err'; $('mineMsg').textContent = (r && r.error) || '記錄失敗（擴充功能或名單程式可能需要更新）。'; }
+    return;
+  }
   const id = b.dataset.close || b.dataset.open || b.dataset.rep;
   const c = mine.find(x => x.caseNo === id) || {};
   b.disabled = true;
