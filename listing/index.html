@@ -79,6 +79,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <div class="status"><span class="dot" id="dExt"></span><span id="tExt">檢查擴充功能中…</span></div>
 <div class="status" style="margin-top:6px"><span class="dot" id="dMe"></span><span id="tMe">—</span></div>
 <p id="joinRow" hidden style="margin:12px 0 0"><a class="btn pri" href="join.html">填寫成員資訊</a></p>
+<p id="pendRow" hidden style="margin:12px 0 0;padding:10px 14px;background:#fde8e6;border-left:4px solid var(--bad);border-radius:3px;color:var(--bad);font-weight:700"></p>
 </section>
 
 <section id="work" hidden>
@@ -150,7 +151,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
-const LATEST = '2.11.0';   // 每次更新擴充功能時，這裡也要改成新版本號
+const LATEST = '2.12.0';   // 每次更新擴充功能時，這裡也要改成新版本號
 const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
@@ -170,8 +171,16 @@ async function check() {
   }
   if (older(r.version, LATEST)) { set('dExt', 'tExt', 'bad', `擴充元件版本 ${r.version}，有新版本 ${LATEST}，請用下方「下載／更新擴充功能」更新`); $('tExt').className = 'err'; $('wayUp').classList.add('focus'); }
   else set('dExt', 'tExt', 'ok', `擴充功能已安裝（版本 ${r.version}，已是最新）`);
-  if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); loadMine(); }
+  if (r.profile) { set('dMe', 'tMe', 'ok', `已登入：${r.profile.name}（${r.profile.email}）`); $('work').hidden = false; $('url').focus(); loadMine(); showPending(r.profile); }
   else { set('dMe', 'tMe', 'bad', r.error || '無法確認身分'); $('joinRow').hidden = false; }
+}
+// 管理者：新同仁登記後尚未啟用的提醒（只有管理者帳號看得到）
+function showPending(p) {
+  const pd = (p && p.pending) || [];
+  if (!pd.length) return;
+  const row = $('pendRow'); row.hidden = false; row.textContent = `有 ${pd.length} 位新同仁登記，待啟用：${pd.map(x => x.name + (x.at ? `（${x.at.slice(5, 10)}）` : '')).join('、')}　`;
+  const a = document.createElement('a'); a.href = p.sheetUrl || '#'; a.target = '_blank'; a.rel = 'noopener'; a.className = 'btn pri'; a.style.cssText = 'min-height:34px;padding:4px 14px;font-size:14px;margin-left:4px'; a.textContent = '開啟名單勾選「啟用」';
+  row.appendChild(a);
 }
 const norm = v => {
   v = v.trim();
