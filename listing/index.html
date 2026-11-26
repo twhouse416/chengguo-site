@@ -150,7 +150,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
-const LATEST = '2.10.2';   // 每次更新擴充功能時，這裡也要改成新版本號
+const LATEST = '2.11.0';   // 每次更新擴充功能時，這裡也要改成新版本號
 const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
