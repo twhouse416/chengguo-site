@@ -66,6 +66,11 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 .mine button{min-height:30px;padding:2px 10px;font-size:13px;margin:2px 0}
 .mine tr.closed td{color:#9a9a93}
 .tblwrap{overflow-x:auto}
+.minehead{width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:none;border:0;padding:0;min-height:32px;text-align:left;cursor:pointer}
+.minehead .mh-t{font-size:19px;font-weight:900}
+.minehead .mh-s{font-size:14px;color:var(--mute);flex:1}
+.minehead .mh-s .bad{color:var(--bad);font-weight:700}
+.minehead .mh-a{font-size:14px;color:var(--mute);white-space:nowrap}
 .tabs{display:flex;flex-wrap:wrap;gap:6px}
 .tabs button{min-height:34px;padding:4px 14px;font-size:14px;border-radius:17px}
 .tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -101,14 +106,16 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 
 
 <section id="mine" hidden>
-<h2>我的刊登</h2>
-<p class="note" style="margin:0 0 8px">每筆物件上了哪些平台、哪天上的（近 180 天）。擴充功能每 12 小時會自動檢查官網：物件<b>下架或成交</b>、或<b>改價</b>時會跳通知並寄信提醒；官網下架時 FB 排程也會自動停止。樂屋網、591 顯示的是「填好」的日期，實際上架以你按下上架為準。</p>
+<button type="button" class="minehead" id="mineToggle" aria-expanded="false" aria-controls="mineBody"><span class="mh-t">我的刊登</span><span class="mh-s" id="mineSum">讀取中…</span><span class="mh-a" id="mineArrow">展開 ▾</span></button>
+<div id="mineBody" hidden>
+<p class="note" style="margin:10px 0 8px">近 180 天上架的物件。擴充功能每 12 小時檢查官網，物件下架、成交或改價會跳通知，官網下架時 FB 排程自動停止。樂屋網、591 顯示「填好」的日期。</p>
 <div class="tabs" id="mineTabs"></div>
 <div class="row" style="margin-top:8px"><input id="mineQ" placeholder="搜尋物件名稱或編號" autocomplete="off" style="flex:1 1 200px;padding:8px 10px;font-size:15px"><button id="mineCheck">立即檢查官網</button></div>
 <p class="note" id="mineInfo" style="margin:6px 0 0"></p>
 <div class="msg" id="mineMsg"></div>
 <div class="tblwrap"><table class="mine" id="mineTbl"></table></div>
 <div style="text-align:center;margin-top:10px"><button id="mineMore" hidden>顯示更多</button></div>
+</div>
 </section>
 
 <section id="dl">
@@ -251,9 +258,19 @@ async function loadMine() {
   if (!r || !r.ok) { $('mineMsg').className = 'msg err'; $('mineMsg').textContent = (r && r.error) || '讀取失敗（擴充功能可能需要更新到最新版）。'; return; }
   mine = r.list; $('mineMsg').textContent = '';
   $('mineInfo').textContent = r.lastWatch ? `上次檢查官網：${new Date(r.lastWatch).toLocaleString('zh-TW', { hour12: false }).slice(0, -3)}` : '';
-  drawMine();
-  if (location.hash === '#mine') $('mine').scrollIntoView({ behavior: 'smooth' });
+  drawMine(); sumMine();
+  if (location.hash === '#mine') { toggleMine(true); $('mine').scrollIntoView({ behavior: 'smooth' }); }
 }
+// 平常收起來，只顯示一行摘要；點了才展開
+function sumMine() {
+  const open = mine.filter(c => !c.closed).length, iss = mine.filter(isIssue).length;
+  $('mineSum').innerHTML = mine.length ? `上架中 ${open} 筆${iss ? `　<span class="bad">⚠ ${iss} 筆需要處理</span>` : ''}` : '近 180 天沒有上架紀錄';
+}
+function toggleMine(force) {
+  const show = typeof force === 'boolean' ? force : $('mineBody').hidden;
+  $('mineBody').hidden = !show; $('mineToggle').setAttribute('aria-expanded', String(show)); $('mineArrow').textContent = show ? '收起 ▴' : '展開 ▾';
+}
+$('mineToggle').addEventListener('click', () => toggleMine());
 $('mineTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { mineTab = b.dataset.tab; mineShow = 10; drawMine(); } });
 $('mineQ').addEventListener('input', () => { mineShow = 10; drawMine(); });
 $('mineMore').addEventListener('click', () => { mineShow += 20; drawMine(); });
@@ -276,7 +293,7 @@ $('mineTbl').addEventListener('click', async e => {
     b.disabled = false; return;
   }
   const r = await send({ type: 'closeCase', caseNo: id, title: c.title, reopen: !!b.dataset.open });
-  if (r && r.ok) { c.closed = !b.dataset.open; drawMine(); } else { b.disabled = false; $('mineMsg').className = 'msg err'; $('mineMsg').textContent = (r && r.error) || '操作失敗。'; }
+  if (r && r.ok) { c.closed = !b.dataset.open; drawMine(); sumMine(); } else { b.disabled = false; $('mineMsg').className = 'msg err'; $('mineMsg').textContent = (r && r.error) || '操作失敗。'; }
 });
 check();
 }
