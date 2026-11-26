@@ -66,6 +66,12 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 .mine button{min-height:30px;padding:2px 10px;font-size:13px;margin:2px 0}
 .mine tr.closed td{color:#9a9a93}
 .tblwrap{overflow-x:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{min-height:34px;padding:4px 14px;font-size:14px;border-radius:17px}
+.tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabs button.warn:not(.on){border-color:#f0b4ae;color:var(--bad);font-weight:700}
+.chip{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin:1px 2px 1px 0;background:#ececE8;color:#9a9a93;white-space:nowrap}
+.chip.y{background:#e3f1ea;color:var(--ok);font-weight:700}
 </style>
 </head>
 <body>
@@ -97,9 +103,12 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <section id="mine" hidden>
 <h2>我的刊登</h2>
 <p class="note" style="margin:0 0 8px">每筆物件上了哪些平台、哪天上的（近 180 天）。擴充功能每 12 小時會自動檢查官網：物件<b>下架或成交</b>、或<b>改價</b>時會跳通知並寄信提醒；官網下架時 FB 排程也會自動停止。樂屋網、591 顯示的是「填好」的日期，實際上架以你按下上架為準。</p>
-<div class="row"><button id="mineCheck">立即檢查官網</button><label class="note"><input type="checkbox" id="mineAll" style="flex:none;width:auto;margin-right:4px">顯示已結案</label><span class="note" id="mineInfo"></span></div>
+<div class="tabs" id="mineTabs"></div>
+<div class="row" style="margin-top:8px"><input id="mineQ" placeholder="搜尋物件名稱或編號" autocomplete="off" style="flex:1 1 200px;padding:8px 10px;font-size:15px"><button id="mineCheck">立即檢查官網</button></div>
+<p class="note" id="mineInfo" style="margin:6px 0 0"></p>
 <div class="msg" id="mineMsg"></div>
 <div class="tblwrap"><table class="mine" id="mineTbl"></table></div>
+<div style="text-align:center;margin-top:10px"><button id="mineMore" hidden>顯示更多</button></div>
 </section>
 
 <section id="dl">
@@ -151,7 +160,7 @@ code{font-family:"IBM Plex Mono",monospace;background:var(--bg);padding:1px 6px;
 <script>
 {
 const EXT_ID = 'ghggfddljokdfohlabkefndkgpofnmei';
-const LATEST = '2.12.0';   // 每次更新擴充功能時，這裡也要改成新版本號
+const LATEST = '2.12.1';   // 每次更新擴充功能時，這裡也要改成新版本號
 const older = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
 const $ = id => document.getElementById(id);
 const set = (dot, el, cls, text) => { $(dot).className = 'dot ' + cls; $(el).textContent = text; };
@@ -207,19 +216,33 @@ let mine = [];
 const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const md = t => { if (!t) return ''; const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()}`; };
 const cell = (t, extra) => t ? `<span class="y">✔ ${md(t)}</span>${extra || ''}` : '<span class="n">✘</span>';
+let mineTab = '', mineShow = 10;
+const isIssue = c => !c.closed && (c.state === '官網已下架' || c.state === '官網改價');
+const lastAt = c => Math.max(c.fb || 0, c.rakuya || 0, c.f591 || 0);
+const chip = (name, t, tip) => `<span class="chip${t ? ' y' : ''}" title="${t ? esc(tip || name + ' ' + md(t)) : '尚未上架'}">${name}${t ? ' ' + md(t) : ''}</span>`;
 function drawMine() {
-  const all = $('mineAll').checked;
-  const list = mine.filter(c => all || !c.closed);
-  if (!list.length) { $('mineTbl').innerHTML = `<tr><td class="note">${mine.length ? '沒有未結案的物件。' : '近 180 天還沒有上架紀錄。'}</td></tr>`; return; }
-  $('mineTbl').innerHTML = '<tr><th>物件</th><th>上架價</th><th>FB</th><th>樂屋網</th><th>591</th><th>官網狀態</th><th></th></tr>' + list.map(c => {
+  const open = mine.filter(c => !c.closed), issues = mine.filter(isIssue), closed = mine.filter(c => c.closed);
+  if (!mineTab) mineTab = issues.length ? 'issue' : 'open';
+  const tabs = [['issue', `需要處理 ${issues.length}`, issues.length ? 'warn' : ''], ['open', `上架中 ${open.length}`], ['closed', `已結案 ${closed.length}`]];
+  $('mineTabs').innerHTML = tabs.map(([k, t, cls]) => `<button data-tab="${k}" class="${(cls || '') + (k === mineTab ? ' on' : '')}">${t}</button>`).join('');
+  const q = $('mineQ').value.trim().toLowerCase();
+  let list = mineTab === 'issue' ? issues : mineTab === 'closed' ? closed : open;
+  if (q) list = list.filter(c => (c.title + ' ' + c.caseNo).toLowerCase().includes(q));
+  list = list.slice().sort((a, b) => (isIssue(b) - isIssue(a)) || (lastAt(b) - lastAt(a)));
+  const total = list.length; list = list.slice(0, mineShow);
+  $('mineMore').hidden = total <= mineShow; $('mineMore').textContent = `顯示更多（還有 ${total - mineShow} 筆）`;
+  if (!total) { $('mineTbl').innerHTML = `<tr><td class="note">${q ? '找不到符合的物件。' : mineTab === 'issue' ? '沒有需要處理的物件 👍' : mineTab === 'closed' ? '沒有已結案的物件。' : '近 180 天還沒有上架紀錄。'}</td></tr>`; return; }
+  $('mineTbl').innerHTML = '<tr><th>物件</th><th>上架平台</th><th>官網狀態</th><th></th></tr>' + list.map(c => {
     let st = '<span class="note">未檢查</span>', act = '';
-    if (c.state === '官網已下架') { st = '<span class="st-gone">⚠ 官網已下架</span><div class="note">請把三個平台的廣告下架</div>'; }
-    else if (c.state === '官網改價') { st = `<span class="st-price">⚠ 改價 ${esc(c.price)}→${esc(c.curPrice)}萬</span><div class="note">三個平台的價格還是舊的</div>`; if (c.sched) act += `<button data-rep="${esc(c.caseNo)}">FB 換新價格</button><br>`; }
-    else if (c.state === '上架中') st = '<span class="st-ok">上架中</span>';
+    if (c.state === '官網已下架') st = '<span class="st-gone">⚠ 官網已下架</span><div class="note">請把各平台廣告下架</div>';
+    else if (c.state === '官網改價') { st = `<span class="st-price">⚠ ${c.price ? `改價 ${esc(c.price)}→${esc(c.curPrice)}萬` : `官網改為 ${esc(c.curPrice)}萬`}</span><div class="note">各平台價格還是舊的</div>`; if (c.sched) act += `<button data-rep="${esc(c.caseNo)}">FB 換新價格</button><br>`; }
+    else if (c.state === '上架中') st = `<span class="st-ok">上架中</span>${c.curPrice || c.price ? `<div class="note">${esc(c.curPrice || c.price)}萬</div>` : ''}`;
     else if (c.state) st = `<span class="note">${esc(c.state)}</span>`;
     act += c.closed ? `<button data-open="${esc(c.caseNo)}">取消結案</button>` : `<button data-close="${esc(c.caseNo)}" title="已處理完，不再檢查與提醒">結案</button>`;
-    const name = c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title || c.caseNo)}</a>` : esc(c.title || c.caseNo);
-    return `<tr class="${c.closed ? 'closed' : ''}"><td>${name}<div class="note">${esc(c.caseNo)}</div></td><td class="c">${c.price ? esc(c.price) + '萬' : '—'}</td><td class="c">${cell(c.fb, c.fb && !c.fbPub ? '<div class="note">填好未確認發佈</div>' : c.sched ? `<div class="note">排程：${({ remind: '提醒', semi: '半自動', auto: '全自動' })[c.sched] || c.sched}</div>` : '')}</td><td class="c">${cell(c.rakuya)}</td><td class="c">${cell(c.f591)}</td><td>${st}</td><td>${act}</td></tr>`;
+    const href = c.url || (c.caseNo ? `https://www.twhg.com.tw/buy/${c.caseNo}` : '');
+    const name = href ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(c.title || c.caseNo)}</a>` : esc(c.title || c.caseNo);
+    const fbTip = c.fb ? `FB ${md(c.fb)}${c.fbPub ? ' 已發佈' : ' 填好未確認發佈'}${c.sched ? '｜排程：' + ({ remind: '提醒', semi: '半自動', auto: '全自動' }[c.sched] || c.sched) : ''}` : '';
+    return `<tr class="${c.closed ? 'closed' : ''}"><td>${name}<div class="note">${esc(c.caseNo)}</div></td><td>${chip('FB', c.fb, fbTip)}${chip('樂屋', c.rakuya)}${chip('591', c.f591)}</td><td>${st}</td><td>${act}</td></tr>`;
   }).join('');
 }
 async function loadMine() {
@@ -231,7 +254,9 @@ async function loadMine() {
   drawMine();
   if (location.hash === '#mine') $('mine').scrollIntoView({ behavior: 'smooth' });
 }
-$('mineAll').addEventListener('change', drawMine);
+$('mineTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { mineTab = b.dataset.tab; mineShow = 10; drawMine(); } });
+$('mineQ').addEventListener('input', () => { mineShow = 10; drawMine(); });
+$('mineMore').addEventListener('click', () => { mineShow += 20; drawMine(); });
 $('mineCheck').addEventListener('click', async () => {
   $('mineCheck').disabled = true; $('mineMsg').className = 'msg'; $('mineMsg').textContent = '檢查官網中，每筆約 1～2 秒…';
   const r = await send({ type: 'watchNow' });
