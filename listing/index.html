@@ -509,20 +509,31 @@ $('btnUpdate').onclick = async () => {
   const box = 'flowUp';
   if (!canFS) { show(box, '<span class="err">這個瀏覽器不支援一鍵更新，請用 Google Chrome，或展開下方「手動方式」。</span>'); return; }
   try {
-    const before = await ext({ type: 'ping' });
-    let target = await kvGet('dir').catch(() => null);
-    if (target && (await target.requestPermission({ mode: 'readwrite' })) !== 'granted') target = null;
-    if (target && !(await isOurs(target))) target = null;
+    // 注意：Chrome 的資料夾選擇視窗必須在按下按鈕後幾秒內打開，所以這裡每一步都限時，不能卡住
+    const within = (p, ms, v) => Promise.race([p, new Promise(ok => setTimeout(() => ok(v), ms))]);
+    const saved = await within(kvGet('dir').catch(() => null), 800, null);
+    let target = null;
+    if (saved) {
+      const perm = await within(saved.queryPermission({ mode: 'readwrite' }).catch(() => 'denied'), 800, 'timeout');
+      if (perm === 'granted' && await within(isOurs(saved), 800, false)) target = saved;
+    }
     if (!target) {
-      show(box, step(1, '請選擇當初安裝的 <b>chengguo-uploader</b> 資料夾（不知道在哪：到 chrome://extensions →「澄果上架」→「詳細資料」→「來源」可以看到位置）。'));
-      let dir = await window.showDirectoryPicker({ id: 'cg-install', mode: 'readwrite', startIn: 'documents' });
+      show(box, step(1, '請在跳出的視窗選擇當初安裝的 <b>chengguo-uploader</b> 資料夾，按「選取資料夾」，Chrome 詢問時按「編輯檔案」。（不知道在哪：到 chrome://extensions →「澄果上架」→「詳細資料」→「來源」可以看到位置。）'));
+      const opts = { id: 'cg-install', mode: 'readwrite' };
+      if (saved) opts.startIn = saved; else opts.startIn = 'documents';
+      let dir;
+      try { dir = await window.showDirectoryPicker(opts); }
+      catch (e) { if (e && e.name === 'AbortError') throw e; dir = await window.showDirectoryPicker({ id: 'cg-install', mode: 'readwrite', startIn: 'documents' }); }
       if (!(await isOurs(dir))) {
         try { const sub = await dir.getDirectoryHandle('chengguo-uploader'); if (await isOurs(sub)) dir = sub; } catch (e) {}
       }
       if (!(await isOurs(dir))) { show(box, '<span class="err">這個資料夾不是「澄果上架」。請選裡面有 manifest.json 的 chengguo-uploader 資料夾。</span>'); return; }
       target = dir;
     }
+    const before = await within(ext({ type: 'ping' }), 1500, null);
     const zip = await getZip(box);
+    let want = '';
+    try { want = JSON.parse(await zip.file('chengguo-uploader/manifest.json').async('string')).version; } catch (e) {}
     await writeZip(zip, target, box);
     await kvSet('dir', target);
     show(box, step(1, `已覆蓋新版檔案：<b>${target.name}</b>`, true) + step(2, '重新載入擴充功能中…'));
@@ -530,6 +541,14 @@ $('btnUpdate').onclick = async () => {
     if (r && r.ok) {
       await sleep(2500);
       let after = null; for (let i = 0; i < 10 && !after; i++) { after = await ext({ type: 'ping' }); if (!after) await sleep(800); }
+      if (want && after && after.version !== want) {
+        // 檔案寫進去了，但 Chrome 用的是另一個資料夾
+        await kvSet('dir', null);
+        show(box, step(1, `已把新版放進「${target.name}」，但 Chrome 目前使用的擴充功能仍是 ${after.version}，表示 Chrome 載入的是<b>另一個資料夾</b>。`, true)
+          + step(2, `網址列貼上 ${copyBtn('chrome://extensions')}，在「澄果上架」按「詳細資料」，看「來源」寫的資料夾位置。`)
+          + step(3, '回到這一頁再按一次「一鍵更新」，選那個資料夾。'));
+        return;
+      }
       show(box, step(1, '已覆蓋新版檔案', true) + step(2, `<span class="ok">更新完成（版本 ${after ? after.version : '—'}）！頁面即將重新整理。</span>`, true));
       await sleep(1500); location.reload();
     } else {
