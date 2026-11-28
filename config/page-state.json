@@ -1,26 +1,26 @@
 {
  "_說明": "每一頁的內容指紋與真正的最後變動日，給 sitemap 的 lastmod 用。由 scripts/lib/page-dates.js 自動維護，不要手改。",
- "generated": "2026-11-27",
+ "generated": "2026-11-28",
  "pages": {
   "about/index.html": {
    "fingerprint": "2a707d2771bc1a81",
    "lastmod": "2026-11-22"
   },
   "areas/art-museum/index.html": {
-   "fingerprint": "4a2dd02fd81fa3d9",
-   "lastmod": "2026-11-27"
+   "fingerprint": "700ad68e72f04445",
+   "lastmod": "2026-11-28"
   },
   "areas/index.html": {
    "fingerprint": "c7653a9b2457b925",
    "lastmod": "2026-11-22"
   },
   "areas/nong16/index.html": {
-   "fingerprint": "3e542332ae546195",
-   "lastmod": "2026-11-27"
+   "fingerprint": "f7c5d600c1fcf716",
+   "lastmod": "2026-11-28"
   },
   "areas/ruifeng-arena/index.html": {
-   "fingerprint": "c1907fc7a83e6a36",
-   "lastmod": "2026-11-26"
+   "fingerprint": "54a0dac2b7905496",
+   "lastmod": "2026-11-28"
   },
   "areas/trend/index.html": {
    "fingerprint": "dac0dc563aee4ff1",
@@ -31,8 +31,8 @@
    "lastmod": "2026-11-25"
   },
   "communities/aihe-shuiyue-abd.html": {
-   "fingerprint": "99982964685163e7",
-   "lastmod": "2026-11-17"
+   "fingerprint": "abc8dbe230af026e",
+   "lastmod": "2026-11-28"
   },
   "communities/aimeiguan.html": {
    "fingerprint": "df6afa8b0005b384",
@@ -43,8 +43,8 @@
    "lastmod": "2026-11-21"
   },
   "communities/aman16.html": {
-   "fingerprint": "660dad694d8df910",
-   "lastmod": "2026-11-26"
+   "fingerprint": "4a5d759fe827972f",
+   "lastmod": "2026-11-28"
   },
   "communities/baixing-houjue.html": {
    "fingerprint": "8fb63cea2124a97e",
@@ -175,8 +175,8 @@
    "lastmod": "2026-11-22"
   },
   "communities/dushi-xiuxianjia.html": {
-   "fingerprint": "8e67b9a1384d0e0f",
-   "lastmod": "2026-11-17"
+   "fingerprint": "917eaafd53436777",
+   "lastmod": "2026-11-28"
   },
   "communities/fanersai.html": {
    "fingerprint": "a7e02463ec5d796d",
@@ -223,8 +223,8 @@
    "lastmod": "2026-11-17"
   },
   "communities/guan-meishu.html": {
-   "fingerprint": "0ecc27c5af0cd097",
-   "lastmod": "2026-11-17"
+   "fingerprint": "8ebbe7d5ad00b522",
+   "lastmod": "2026-11-28"
   },
   "communities/guangzhou-yuncui.html": {
    "fingerprint": "7a7b6b1db41e9ee2",
@@ -267,8 +267,8 @@
    "lastmod": "2026-11-22"
   },
   "communities/huangyi-meishuguanhui.html": {
-   "fingerprint": "f9fe3c327de160d4",
-   "lastmod": "2026-11-22"
+   "fingerprint": "3f84e78e81987bf0",
+   "lastmod": "2026-11-28"
   },
   "communities/huangyuan-guojiguan.html": {
    "fingerprint": "9ccb1fe55e0ec98d",
@@ -315,8 +315,8 @@
    "lastmod": "2026-11-23"
   },
   "communities/index.html": {
-   "fingerprint": "44b92b6c4b5aa26d",
-   "lastmod": "2026-11-27"
+   "fingerprint": "6a1d23decbe8051a",
+   "lastmod": "2026-11-28"
   },
   "communities/jiaan-pushi.html": {
    "fingerprint": "c2387ec0b19a788d",
@@ -423,8 +423,8 @@
    "lastmod": "2026-11-17"
   },
   "communities/jingcheng-mozhate.html": {
-   "fingerprint": "28810877f1435409",
-   "lastmod": "2026-11-22"
+   "fingerprint": "695953d4facce051",
+   "lastmod": "2026-11-28"
   },
   "communities/jingcheng-niuyue.html": {
    "fingerprint": "3b132b56ce030346",
@@ -575,16 +575,16 @@
    "lastmod": "2026-11-22"
   },
   "communities/meishu-fenghuang.html": {
-   "fingerprint": "da8afc3aba087430",
-   "lastmod": "2026-11-17"
+   "fingerprint": "cc34c51ef8a15d4c",
+   "lastmod": "2026-11-28"
   },
   "communities/meishu-gaofenghui.html": {
    "fingerprint": "d51400887bd4da89",
    "lastmod": "2026-11-26"
   },
   "communities/meishu-huangju.html": {
-   "fingerprint": "8b31d375616e06c0",
-   "lastmod": "2026-11-22"
+   "fingerprint": "4aacba2a9276c2f7",
+   "lastmod": "2026-11-28"
   },
   "communities/meishu-junlin.html": {
    "fingerprint": "ccd7e965cbf53a01",
@@ -603,8 +603,8 @@
    "lastmod": "2026-11-17"
   },
   "communities/meishu-mingjia.html": {
-   "fingerprint": "69e33ea4a322c8e0",
-   "lastmod": "2026-11-17"
+   "fingerprint": "8f387778f091c94a",
+   "lastmod": "2026-11-28"
   },
   "communities/meishu-senlin.html": {
    "fingerprint": "8219408fe23264c9",
@@ -779,12 +779,12 @@
    "lastmod": "2026-11-17"
   },
   "communities/shenghuo-huangjia.html": {
-   "fingerprint": "16e89c903402077c",
-   "lastmod": "2026-11-27"
+   "fingerprint": "0d984065166fbb16",
+   "lastmod": "2026-11-28"
   },
   "communities/shengxie-jianzhen.html": {
-   "fingerprint": "e3b49bd352ffd64b",
-   "lastmod": "2026-11-26"
+   "fingerprint": "9e5a710a1bdf6dc8",
+   "lastmod": "2026-11-28"
   },
   "communities/shidai-fuhao.html": {
    "fingerprint": "f78f95421197f169",
@@ -1091,8 +1091,8 @@
    "lastmod": "2026-11-17"
   },
   "developers/jingcheng/index.html": {
-   "fingerprint": "0647f7041d1d967e",
-   "lastmod": "2026-11-27"
+   "fingerprint": "93bd59693a52d210",
+   "lastmod": "2026-11-28"
   },
   "developers/lijing/index.html": {
    "fingerprint": "6af674452a8b5637",
@@ -1331,20 +1331,20 @@
    "lastmod": "2026-11-22"
   },
   "schools/longhua-es/index.html": {
-   "fingerprint": "3dc948dac5b784c2",
-   "lastmod": "2026-11-27"
+   "fingerprint": "88abe92c23c0ba04",
+   "lastmod": "2026-11-28"
   },
   "schools/longhua-js/index.html": {
    "fingerprint": "f7e20762cc83ed60",
    "lastmod": "2026-11-22"
   },
   "schools/minghua-js/index.html": {
-   "fingerprint": "25d80475043ffe9a",
-   "lastmod": "2026-11-27"
+   "fingerprint": "523306f0f08fa2b5",
+   "lastmod": "2026-11-28"
   },
   "schools/qixian-js/index.html": {
-   "fingerprint": "d9c96fa48e7210f2",
-   "lastmod": "2026-11-27"
+   "fingerprint": "0f074fc499200945",
+   "lastmod": "2026-11-28"
   },
   "schools/sanmin-es/index.html": {
    "fingerprint": "f4c0ee833871e398",
@@ -1367,8 +1367,8 @@
    "lastmod": "2026-11-22"
   },
   "schools/zhongshan-es/index.html": {
-   "fingerprint": "6681d8526f758528",
-   "lastmod": "2026-11-27"
+   "fingerprint": "5fc67df4e19ebfa8",
+   "lastmod": "2026-11-28"
   },
   "schools/zuoying-js/index.html": {
    "fingerprint": "476aaffb397f0e51",
